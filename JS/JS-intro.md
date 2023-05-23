@@ -105,3 +105,57 @@ nombreDePostParPage = 30; // retournera une erreur dans la console car on ne peu
 
 ## II. ENREGISTRER DES DONNEES AVEC DES TYPES DE DONNEES
 
+### A. QU'EST-CE QU'UN TYPE DE DONNEES
+
+Le type d'une variable est le genre de données qu'elle enregistre. 
+En JavaScript, il existe 3 types primitifs principaux :
+* number (number);
+* string (chaîne de caractères);
+* boolean (valeur logique vraie ou fausse);
+
+Les types primitis sont les briques de base de chaque structure de données en JavaScript, peu importe la complecité finale de l'application.
+
+En JavaScript il n'est pas important de déclarer le type d'une variable. 
+
+### B. LES NOMBRES : LE TYPE "NUMBER"
+
+les variables de type number peuvent être positives ou négatives. Ces variables peuvent être des nombres entiers ou décimaux. 
+
+N.B. : en programmation, les nombres entiers sont aussi appelés (entiers ou) integers et les nombres décimaux sont appelés (virgule flottante ou) floating-point.
+
+Il faut faire attention aux floating-point qui peut provoquer des erreurs en langage de programmation. 
+
+Quand c'est possible, il est préférable d'utiliser des calculs entiers (pour de calculs de prix, il est préférable de calculer en centimes).
+
+### C. LES VALEURS LOGIQUES : LE TYPE "BOOLEAN"
+
+Les booléens sont le plus simples de types primitifs : il n'y a que deux valeurs, <strong>true</strong> ou <strong>false</strong> (vrai ou faux). 
+
+On les utilise dans toutes sortes de cas. Indiquer si un utilisateur est connecté ou non, si une case est cochée ou non, si en ensemble de conditions particulières est réuni...
+
+### D. LES CHAÎNES DE CARACTERES : LE TYPE "STRING"
+
+Les chaînes de caractères sont la façon d'enregistrer du texte dans des variables JavaScript. 
+On peut enregistrer dans une variable de type string n'importe quelle chaîne de caractères : d'une seule lettre à un très grand nombre (jusqu'à 134 millions).
+
+On encadre la valeur d'une variable de type string par des guillemets simples ou doubles : '' ou "".
+
+On peut aussi concaténer (ajouter à la fin l'une de l'autre) les chaînes de caractères, grâce à l'opérateur +.
+
+Pour simplifier la concaténation, on peut utiliser <strong>la string interpolation</strong>. On va alors utiliser le signe ` pour encadrer le texte et si on veut injecter une variable on utilise l'expression ${maVariable}.
+
+```javascript
+const myName = 'Romain';
+const salutation = `Bienvenue sur mon site ${myName}!`;
+console.log(salutation); // retourne "Bienvenue sur mon site Romain!" dans la console
+```
+
+Les autres opérateurs pour les chaînes seront vu plus tard.
+
+### C. COMPRENDRE LES TYPES EN JAVASCRIPT
+
+JavaScript est un langage dit à <i>type dynamiques et à <strong>typage faible</strong></i>. Cela signifie qu'on peut initialiser une variable en tant que nombre et la réaffecter comme une chaîne ou tout autre type de variable. 
+
+Cela permet une grande souplesse, mais comporte des risques de comportement inattendu si on ne fait pas attention. 
+
+En résumé, il vaut mieux utiliser des constantes lorsque cela est possible afin d'éviter les erreurs intempestives. 
