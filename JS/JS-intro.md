@@ -235,3 +235,55 @@ let objectProp2 = myObject[propertyToAccess]; // renvoie : 'valeur2'
 
 Une <strong>classe</strong> est un modèle pour un objet dans le code. Elle permet de construire plusieurs objects de même type (appelés <strong>instances</strong> de la même classe) plus facilement, rapidement et en toute fiabilité.
 
+Pour créer une classe dans JavaScript, on utilise le mot <strong>class</strong>, suivi par un nom. On encadre ensuite le code de la classe entre accolades { } :
+
+```javascript
+class Name {
+    ...
+}
+```
+
+Pour cette classe, on souhaite que chaque <i>Name</i> ait une propriété 1, propriété 2, propriété 3.
+
+Pour cela, on va utiliser un <strong><i>constructor</i></strong>.
+
+Le constructor d'une classe est la fonction qui est appelée quand on crée une nouvelle instance de cette classe avec le mot clé <strong>new</strong>.
+
+```javascript
+class Name {
+    constructor(propriete1, propriete2, propriete3) {
+        ...
+    }
+}
+```
+
+Pour créer une instance de la classe <strong><i>Name</i></strong>, il y a un ensemble d'instructions à suivre à l'intérieur du constructor.
+
+Pour attribuer les propriétés reçues à cette instance, on va utiliser le mot clé <strong><i>this</i></strong> et la notation dot :
+
+```javascript
+class Name {
+    constructor(propriete1, propriete2, propriete3) {
+        this.propriete1 = propriete1;
+        this.propriete2 = propriete2;
+        this.propriete3 = propriete3;
+    }
+}
+```
+
+Ici, le mot clé <strong>this</strong> fait référence à la nouvelle instance. Donc il utilise la notation dot pour attribuer les valeurs reçues aux clés correspondantes.
+
+Une fois la classe terminée, on peut créer des instances par le mot clé _**new**_ :
+
+```javascript
+let myName = new Name("Toto", "Pimpin", 9);
+
+// Cette ligne va créer l'objet suivant :
+{
+    propriete1: "Toto",
+    propriete2: "Pimpin",
+    propriete3: 9
+}
+```
+
+Avec une classe _**Name**_ on peut créer facilement et rapidement de nouveaux objets _**Name**_.
