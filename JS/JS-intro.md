@@ -162,7 +162,7 @@ En résumé, il vaut mieux utiliser des constantes lorsque cela est possible afi
 
 ## III. DEFINIR DES OBJETS ET LEURS ATTRIBUTS AVEC DES CLASSES
 
-## A. LES OBJETS JAVASCRIPT
+### A. LES OBJETS JAVASCRIPT
 
 ### Définition
 
@@ -229,7 +229,7 @@ let propertyToAccess = "propriete1"; // renvoie : 'valeur1'
 let objectProp2 = myObject[propertyToAccess]; // renvoie : 'valeur2'
 ```
 
-## B. MANIPULER DES CLASSES
+### B. MANIPULER DES CLASSES
 
 ### Qu'est-ce qu'une classe ?
 
@@ -273,6 +273,13 @@ class Name {
 
 Ici, le mot clé <strong>this</strong> fait référence à la nouvelle instance. Donc il utilise la notation dot pour attribuer les valeurs reçues aux clés correspondantes.
 
+    THIS est utilisé pour faire référence aux objets :
+    JavaScript possède ce mot clé spécial : this, 
+    qui peut être utilisé à l'intérieur d'une méthode 
+    pour faire référence à l'objet courant.
+
+voir memo sur <a href="#">THIS</a>
+
 Une fois la classe terminée, on peut créer des instances par le mot clé _**new**_ :
 
 ```javascript
@@ -287,3 +294,6 @@ let myName = new Name("Toto", "Pimpin", 9);
 ```
 
 Avec une classe _**Name**_ on peut créer facilement et rapidement de nouveaux objets _**Name**_.
+
+### IV. REGROUPER LES DONEES AVEC LES TABLEAUX ET LES OBJETS
+
