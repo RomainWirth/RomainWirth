@@ -159,3 +159,29 @@ JavaScript est un langage dit à <i>type dynamiques et à <strong>typage faible<
 Cela permet une grande souplesse, mais comporte des risques de comportement inattendu si on ne fait pas attention. 
 
 En résumé, il vaut mieux utiliser des constantes lorsque cela est possible afin d'éviter les erreurs intempestives. 
+
+## III. DEFINIR DES OBJETS ET LEURS ATTRIBUTS AVEC DES CLASSES
+
+## A. LES OBJETS JAVASCRIPT
+
+Les objects JS sont écrits en <strong>JSON (JavaScript Object Notation)</strong>. Il s'agit de séries de <strong>paires clés-valeurs</strong>, séparées par des virgules, entre accolades. On peut les enregistrer dans une variable :
+
+```javascript
+let myObject = {
+    propriete1: 'valeur1',
+    propriete2: 2,
+    propriete3: true,
+    propriete4: [{
+        proprieteA: 'valeurA',
+        proprieteB: 'valeurB',
+        proprieteC: 5,
+        proprieteD: false
+    }, {
+        proprieteA: 'valeurE',
+        proprieteB: 'valeurF',
+        proprieteC: 5,
+        proprieteD: false
+    }]
+}
+```
+Chaque clé est une chaîne 
