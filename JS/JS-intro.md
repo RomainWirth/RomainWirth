@@ -164,6 +164,8 @@ En résumé, il vaut mieux utiliser des constantes lorsque cela est possible afi
 
 ## A. LES OBJETS JAVASCRIPT
 
+### Définition
+
 Les objects JS sont écrits en <strong>JSON (JavaScript Object Notation)</strong>. Il s'agit de séries de <strong>paires clés-valeurs</strong>, séparées par des virgules, entre accolades. On peut les enregistrer dans une variable :
 
 ```javascript
@@ -184,4 +186,52 @@ let myObject = {
     }]
 }
 ```
-Chaque clé est une chaîne 
+Chaque clé est une chaîne (propriete1, propriete2, propriete3...) et les valeurs peuvent avoir tout type de données : string, number, boolean, tableau d'objets...
+
+Cela permet de regrouper les attributs d'une chose unique à un même emplacement (profil d'utilisateur, configuration d'une application, etc.).
+
+### Accéder aux données d'un objet
+
+Pour accéder aux données d'un objet, on va utiliser <strong>la notation pointée</strong>. 
+
+Une fois qu'un objet est enregistré dans une variable, on peut accéder à ses données de cette manière (utiliser le nom de la variable, suivi d'un point ( . ) puis le nom de la clé (propriété) dont on veut récupérer la valeur ):
+
+```javascript
+let myObject = {
+    propriete1: 'valeur1',
+    propriete2: 'valeur2',
+    propriete3: 'valeur3',
+};
+let objectProp1 = myObject.propriete1; // renvoie : 'valeur1'
+let objecyProp2 = myObjecy.propriete2; // renvoie : 'valeur2'
+```
+Une autre manière d'accéder aux données : <strong>La notation bracket (bracket notation)</strong>.
+
+```javascript
+let myObject = {
+    propriete1: 'valeur1',
+    propriete2: 'valeur2',
+    propriete3: 'valeur3',
+};
+let objectProp1 = myObject["propriete1"]; // renvoie : 'valeur1'
+let objectProp2 = myObject["propriete2"]; // renvoie : 'valeur2'
+```
+
+L'intérêt de cette notation sera qu'on va pouvoir mettre entre bracket une variable qui contient en string le nom de la propriété que l'on souhaite atteindre :
+
+```javascript
+let myObject = {
+    propriete1: 'valeur1',
+    propriete2: 'valeur2',
+    propriete3: 'valeur3',
+};
+let propertyToAccess = "propriete1"; // renvoie : 'valeur1'
+let objectProp2 = myObject[propertyToAccess]; // renvoie : 'valeur2'
+```
+
+## B. MANIPULER DES CLASSES
+
+### Qu'est-ce qu'une classe ?
+
+Une <strong>classe</strong> est un modèle pour un objet dans le code. Elle permet de construire plusieurs objects de même type (appelés <strong>instances</strong> de la même classe) plus facilement, rapidement et en toute fiabilité.
+
