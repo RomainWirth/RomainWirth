@@ -295,5 +295,49 @@ let myName = new Name("Toto", "Pimpin", 9);
 
 Avec une classe _**Name**_ on peut créer facilement et rapidement de nouveaux objets _**Name**_.
 
-### IV. REGROUPER LES DONEES AVEC LES TABLEAUX ET LES OBJETS
+## IV. REGROUPER LES DONEES AVEC LES TABLEAUX ET LES OBJETS
 
+### A. UTILISER UN TABLEAU POUR ENREGISTRER UNE LISTE ORDONNEE D'ELEMENTS
+
+Pour créer un tableau vide et l'enregistrer dans une variable, on utilise une paire de crochets :
+
+```javascript
+let array = [];
+```
+
+ici, on déclare la variable _**array**_ et on lui assigne un tableau vide avec les crochets **[ ]**.
+
+On peut remplir directement le tableau lors de sa déclaration en l'initialisant avec les données :
+
+```javascript
+let array = ["valeur1", "valeur2", "valeur3", "valeur4",];
+```
+
+on peut accéder au tableau grâce à la notation brackets de cette manière :
+
+```javascript
+let firstValue = array[0]; // "valeur1"
+let secondValue = array[1]; // "valeur2"
+let thirdValue = array[2]; // "valeur3"
+```
+
+N.B. : l'indice (index) d'un tableau commence toujours à 0.
+
+### B. UTILISER DES VALEURS PLUTÔT QUE DES REFERENCES
+
+En JS, les types primitis (numbers, boolean, string) sont passés par **valeur**. 
+
+```javascript
+let firstVariable = 20;
+let secondVariable = firstValue; // 20
+```
+c'est la valeur de la première variable qui est copiée dans la nouvelle variable, et aucun lien n'est maintenu entre mes deux variables. C'est à dire que la seconde variable fera référence à la valeur de la première variable, et non pas à la première variable elle-même.
+Si la première variable est modifiée par la suite dans le code (valeur modifiée à 40), la seconde variable contiendra toujours la première valeur de la première variable (valeur reste 20).
+
+Ce n'est pas le cas avec les objets et tableaux qui sont passés par **référence**.
+
+voir cet <a href="https://codeburst.io/explaining-value-vs-reference-in-javascript-647a975e12a0">article</a> (en anglais expliqué ci-dessous) : 
+
+Les variables auxquelles une valeur non primitive est affectée reçoivent une référence à cette valeur. Cette référence pointe vers l'emplacement de l'objet en mémoire. Les variables ne contiennent pas réellement la valeur.
+
+C'est à dire que les objets sont créés à un endroit dans la mémoire de l'ordinateur. Quand on écrit array = []
