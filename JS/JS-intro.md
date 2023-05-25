@@ -316,5 +316,38 @@ Ce n'est pas le cas avec les objets et tableaux qui sont passés par **référen
 
 voir cet <a href="https://codeburst.io/explaining-value-vs-reference-in-javascript-647a975e12a0">article</a> (en anglais) expliqué <a href="./value_vs_reference.md">ici</a>.
 
+### C. TRVAILLER SUR LES TABLEAUX
 
+Les tableaux sont très puissants et ont beauocup d'attributs et de méthodes utiles. Voici quelques-uns d'entre eux :
+
+#### Le Comptage d'Eléments
+
+La propriété _length_ d'un tableau indique le nombre d'éléments qu'il contient :
+
+```javascript
+let array = ["valeur1", "valeur2", "valeur3"];
+let arraySize = array.length; // 3
+```
+
+On utilise la notation dot pour accéder à la propriété _length_ du tableau.<br>
+Cela est particulièrement utile lorsqu'on ne connaît pas le nombre d'éléments du tableau.
+
+#### L'ajout et la suppression d'éléments
+
+Pour **ajouter** un élément à la fin du tableau, on utilise la méthode _push_ :
+
+```javascript
+let array = ["valeur1", "valeur2", "valeur3"];
+array.push("valeur4"); // le tableau aura un élément supplémentaire à la fin
+```
+On utilise la notation dot pour accéder à la méthode _push_ du tableau et placer l'élément à ajouter entre parenthèses.
+
+Pour ajouter un élément au début du tableau, on utilisera la méthode _unshift_ à la place de push.
+
+Pour **supprimer** le dernier élément d'un tableau, on va appeler la méthode _pop_, dans passer aucun argument :
+
+```javascript
+let array = ["valeur1", "valeur2", "valeur3"];
+array.pop(); // supprimera la valeur3 du tableau
+```
 
