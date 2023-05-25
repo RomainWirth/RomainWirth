@@ -3,12 +3,14 @@
 ### Où utilise-t-on le JavaScript ?
 
 Le JavaScript s'utilise dans le document html dans la balise :
+
 ```HTML
 <script></script>
 ```
-Elle est placé dans le head ou à la fin du body.
-Cette balise peut faire référence à un document index.js (ou script.js) pour décentraliser le code et gagner en lisibilité. 
+Elle est placé dans le head ou à la fin du body.<br>
+Cette balise peut faire référence à un document index.js (ou script.js) pour décentraliser le code et gagner en lisibilité.<br>
 Dans ce cas, la balise script du html sera comme suit :
+
 ```HTML
 <script src="index.js"></script>
 ```
@@ -22,9 +24,9 @@ Pour fonctionner, le programme a besoin de variables pour enregistrer et manipul
 ### A. LES VARIABLES
 #### 1. Définition
 
-Une vrariables est un contenant utilisé pour enregistrer une donnée spécifique utile au programme pour fonctionner. 
-Une donnée placée dans une variable s'appelle une valeur. 
-Pour connaître ce à quoi correspond la variable, il faut lui donner un nom.
+Une vrariables est un contenant utilisé pour enregistrer une donnée spécifique utile au programme pour fonctionner.<br> 
+Une donnée placée dans une variable s'appelle une valeur.<br> 
+Pour connaître ce à quoi correspond la variable, il faut lui donner un nom.<br>
 Le nom doit indiquer ce qui se trouve à l'intérieur de la variable.
 
 #### 2. Règles générales pour nommer une variable
@@ -35,7 +37,7 @@ Le nom doit indiquer ce qui se trouve à l'intérieur de la variable.
 
 #### 3. Création d'une variable - la déclaration
 
-Pour utiliser une variable dans le code, il faut la déclarer.
+Pour utiliser une variable dans le code, il faut la déclarer.<br>
 En JavaScript une variable se déclare ainsi : 
 
 ```javascript
@@ -43,11 +45,13 @@ let numberOfCats = 2;
 let numberOfCats = 4;
 ```
 
-N.B. : auparavant, une variable se déclarait avec le mot clé "var", il a été remplacé par "let" (rapport à la portée des variables et pour mieux lire le code, voir partie sur la portée des variables).
+N.B. : auparavant, une variable se déclarait avec le mot clé "var", il a été remplacé par "let"<br> 
+(rapport à la portée des variables et pour mieux lire le code, voir partie sur la portée des variables).
 
 #### 4. Modification de la valeur d'une variable
 
 La manière la plus simple de modifier la valeur d'une variable est simplement de la réaffecter : 
+
 ```javascript
 let numberOfCats = 2;
 numberOfCats = 4;
@@ -78,38 +82,25 @@ De la même manière que pour l'addition et la soustraction, on peut utiliser le
 
 #### Mutabilité des variables
 
-Une variable est de base mutable : elle peut changer dans le temps.
+Une variable est de base mutable : elle peut changer dans le temps.<br>
 Elle est déclarée avec le mot clé "let", suivi de son nom et on lui affecte une valeur.
 
 par la suite, on va pouvoir changer sa valeur autant de fois qu'on le souhaite. 
 
 exemple avec un compteur :
 
-```javascript
-let compteur = 0;
-compteur++;
-compteur = 10;
-```
+De la même manière que pour l'addition et la soustraction, on peut utiliser les opérateurs *= et /= pour multiplier ou diviser un nombre.
 
-### B. LES CONSTANTES
 
 Une constante est une donnée qui ne sera jamais modifiée durant l'exécution du programme. 
 
-Il s'agit d'une variable qui n'est <strong>pas mutable.</strong>
-On lui donnera une valeur de départ et on ne pourra plus changer sa valeur par la suite. Une erreur sera retournée par javascript si on a une erreur logique dans notre code en changeant la valeur d'une constante.
+Il s'agit d'une variable qui n'est <strong>pas mutable.</strong><br>
+On lui donnera une valeur de départ et on ne pourra plus changer sa valeur par la suite.<br> 
+Une erreur sera retournée par javascript si on a une erreur logique dans notre code en changeant la valeur d'une constante.
+
 ```javascript
-const nombreDePostParPage = 20;
-nombreDePostParPage = 30; // retournera une erreur dans la console car on ne peut pas changer sa valeur
-```
+De la même manière que pour l'addition et la soustraction, on peut utiliser les opérateurs *= et /= pour multiplier ou diviser un nombre.
 
-
-## II. ENREGISTRER DES DONNEES AVEC DES TYPES DE DONNEES
-
-### A. QU'EST-CE QU'UN TYPE DE DONNEES
-
-Le type d'une variable est le genre de données qu'elle enregistre. 
-En JavaScript, il existe 3 types primitifs principaux :
-* number (number);
 * string (chaîne de caractères);
 * boolean (valeur logique vraie ou fausse);
 
@@ -119,23 +110,18 @@ En JavaScript il n'est pas important de déclarer le type d'une variable.
 
 ### B. LES NOMBRES : LE TYPE "NUMBER"
 
-les variables de type number peuvent être positives ou négatives. Ces variables peuvent être des nombres entiers ou décimaux. 
+les variables de type number peuvent être positives ou négatives.<br> 
+De la même manière que pour l'addition et la soustraction, on peut utiliser les opérateurs *= et /= pour multiplier ou diviser un nombre.
 
-N.B. : en programmation, les nombres entiers sont aussi appelés (entiers ou) integers et les nombres décimaux sont appelés (virgule flottante ou) floating-point.
-
-Il faut faire attention aux floating-point qui peut provoquer des erreurs en langage de programmation. 
-
-Quand c'est possible, il est préférable d'utiliser des calculs entiers (pour de calculs de prix, il est préférable de calculer en centimes).
-
-### C. LES VALEURS LOGIQUES : LE TYPE "BOOLEAN"
 
 Les booléens sont le plus simples de types primitifs : il n'y a que deux valeurs, <strong>true</strong> ou <strong>false</strong> (vrai ou faux). 
 
-On les utilise dans toutes sortes de cas. Indiquer si un utilisateur est connecté ou non, si une case est cochée ou non, si en ensemble de conditions particulières est réuni...
+On les utilise dans toutes sortes de cas.<br> 
+Indiquer si un utilisateur est connecté ou non, si une case est cochée ou non, si en ensemble de conditions particulières est réuni...
 
 ### D. LES CHAÎNES DE CARACTERES : LE TYPE "STRING"
 
-Les chaînes de caractères sont la façon d'enregistrer du texte dans des variables JavaScript. 
+Les chaînes de caractères sont la façon d'enregistrer du texte dans des variables JavaScript.<br> 
 On peut enregistrer dans une variable de type string n'importe quelle chaîne de caractères : d'une seule lettre à un très grand nombre (jusqu'à 134 millions).
 
 On encadre la valeur d'une variable de type string par des guillemets simples ou doubles : '' ou "".
@@ -154,19 +140,17 @@ Les autres opérateurs pour les chaînes seront vu plus tard.
 
 ### C. COMPRENDRE LES TYPES EN JAVASCRIPT
 
-JavaScript est un langage dit à <i>type dynamiques et à <strong>typage faible</strong></i>. Cela signifie qu'on peut initialiser une variable en tant que nombre et la réaffecter comme une chaîne ou tout autre type de variable. 
+JavaScript est un langage dit à <i>type dynamiques et à <strong>typage faible</strong></i>.<br> 
+Cela signifie qu'on peut initialiser une variable en tant que nombre et la réaffecter comme une chaîne ou tout autre type de variable. 
 
-Cela permet une grande souplesse, mais comporte des risques de comportement inattendu si on ne fait pas attention. 
-
-En résumé, il vaut mieux utiliser des constantes lorsque cela est possible afin d'éviter les erreurs intempestives. 
-
-## III. DEFINIR DES OBJETS ET LEURS ATTRIBUTS AVEC DES CLASSES
+De la même manière que pour l'addition et la soustraction, on peut utiliser les opérateurs *= et /= pour multiplier ou diviser un nombre.
 
 ### A. LES OBJETS JAVASCRIPT
 
 ### Définition
 
-Les objects JS sont écrits en <strong>JSON (JavaScript Object Notation)</strong>. Il s'agit de séries de <strong>paires clés-valeurs</strong>, séparées par des virgules, entre accolades. On peut les enregistrer dans une variable :
+Les objects JS sont écrits en <strong>JSON (JavaScript Object Notation)</strong>.<br> 
+Il s'agit de séries de <strong>paires clés-valeurs</strong>, séparées par des virgules, entre accolades. On peut les enregistrer dans une variable :
 
 ```javascript
 let myObject = {
@@ -177,16 +161,8 @@ let myObject = {
         proprieteA: 'valeurA',
         proprieteB: 'valeurB',
         proprieteC: 5,
-        proprieteD: false
-    }, {
-        proprieteA: 'valeurE',
-        proprieteB: 'valeurF',
-        proprieteC: 5,
-        proprieteD: false
-    }]
-}
-```
-Chaque clé est une chaîne (propriete1, propriete2, propriete3...) et les valeurs peuvent avoir tout type de données : string, number, boolean, tableau d'objets...
+De la même manière que pour l'addition et la soustraction, on peut utiliser les opérateurs *= et /= pour multiplier ou diviser un nombre.
+es valeurs peuvent avoir tout type de données : string, number, boolean, tableau d'objets...
 
 Cela permet de regrouper les attributs d'une chose unique à un même emplacement (profil d'utilisateur, configuration d'une application, etc.).
 
@@ -194,7 +170,8 @@ Cela permet de regrouper les attributs d'une chose unique à un même emplacemen
 
 Pour accéder aux données d'un objet, on va utiliser <strong>la notation pointée</strong>. 
 
-Une fois qu'un objet est enregistré dans une variable, on peut accéder à ses données de cette manière (utiliser le nom de la variable, suivi d'un point ( . ) puis le nom de la clé (propriété) dont on veut récupérer la valeur ):
+Une fois qu'un objet est enregistré dans une variable, on peut accéder à ses données de cette manière :<br> 
+(utiliser le nom de la variable, suivi d'un point ( . ) puis le nom de la clé (propriété) dont on veut récupérer la valeur)
 
 ```javascript
 let myObject = {
@@ -233,7 +210,7 @@ let objectProp2 = myObject[propertyToAccess]; // renvoie : 'valeur2'
 
 ### Qu'est-ce qu'une classe ?
 
-Une <strong>classe</strong> est un modèle pour un objet dans le code. Elle permet de construire plusieurs objects de même type (appelés <strong>instances</strong> de la même classe) plus facilement, rapidement et en toute fiabilité.
+Une <strong>classe</strong> est un modèle pour un objet dans le code. Elle permet de construire plusieurs objects de même type<br> (appelés <strong>instances</strong> de la même classe) plus facilement, rapidement et en toute fiabilité.
 
 Pour créer une classe dans JavaScript, on utilise le mot <strong>class</strong>, suivi par un nom. On encadre ensuite le code de la classe entre accolades { } :
 
@@ -331,13 +308,13 @@ En JS, les types primitis (numbers, boolean, string) sont passés par **valeur**
 let firstVariable = 20;
 let secondVariable = firstValue; // 20
 ```
-c'est la valeur de la première variable qui est copiée dans la nouvelle variable, et aucun lien n'est maintenu entre mes deux variables. C'est à dire que la seconde variable fera référence à la valeur de la première variable, et non pas à la première variable elle-même.
+c'est la valeur de la première variable qui est copiée dans la nouvelle variable, et aucun lien n'est maintenu entre mes deux variables.<br> 
+C'est à dire que la seconde variable fera référence à la valeur de la première variable, et non pas à la première variable elle-même.<br>
 Si la première variable est modifiée par la suite dans le code (valeur modifiée à 40), la seconde variable contiendra toujours la première valeur de la première variable (valeur reste 20).
 
 Ce n'est pas le cas avec les objets et tableaux qui sont passés par **référence**.
 
-voir cet <a href="https://codeburst.io/explaining-value-vs-reference-in-javascript-647a975e12a0">article</a> (en anglais expliqué ci-dessous) : 
+voir cet <a href="https://codeburst.io/explaining-value-vs-reference-in-javascript-647a975e12a0">article</a> (en anglais) expliqué <a href="./value_vs_reference.md">ici</a>.
 
-Les variables auxquelles une valeur non primitive est affectée reçoivent une référence à cette valeur. Cette référence pointe vers l'emplacement de l'objet en mémoire. Les variables ne contiennent pas réellement la valeur.
 
-C'est à dire que les objets sont créés à un endroit dans la mémoire de l'ordinateur. Quand on écrit array = []
+
