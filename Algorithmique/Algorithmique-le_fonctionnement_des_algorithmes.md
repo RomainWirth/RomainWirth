@@ -324,7 +324,7 @@ Les plus connues :
 
 Dans ces structures de données, on peut créer, lire, modifier ou même supprimer des éléments. On parle alors de type d’opération qu’on peut effectuer sur notre structure. 
 
-Le type d’opération qu’on souhaite effectuer va déterminer notre choix de structure (selon si on souhaite faire des recherches, créer ou supprimer des éléments.
+Le type d’opération qu’on souhaite effectuer va déterminer notre choix de structure (selon si on souhaite faire des recherches, créer ou supprimer des éléments).
 
 ### Les tableaux (arrays)
 
@@ -349,7 +349,7 @@ La syntaxe en pseudo-code pour déclarer un tableau est la suivante :
 - On peut aussi donner le type de valeur contenue dans chaque case.
 
 en pseudo-code :
-
+```
 Algorithme Tableau
 
 Variable
@@ -357,10 +357,9 @@ Variable
 objets[5] : TABLEAU CHAÎNE DE CARACTERES
 
 Début
-
-Instructions
-
+    Instructions
 Fin
+```
 
 Un tableau est très facile à lire. on peut également facilement modifier ses données grâce à son index (chaque donnée ayant son numéro, il suffit de le reconnaître et le tour est joué). 
 Cependant, un tableau a une taille fixe. On ne peut pas ajouter ou supprimer les données d’un tableau. Il faut en faire une copie qui intègre les ajouts ou les suppressions. Ce n’est pas pratique si on doit modifier fréquemment la taille du tableau. 
@@ -486,27 +485,23 @@ Notre bibliothèque est composée de 10 livres. Nous utiliserons une boucle POUR
 Quand nous sommes dans la boucle, on va intervertir les livres SI le second est plus grand que le premier. On va donc utiliser une structure conditionnelle.
 
 pseudo-code : premier jet
-
+```
 Algorithme Tri_a_bulle(tableau)
 
 taille ← Taille du tableau
 
 Pour i allant de taille -1 jusqu’à 1 : 
-
-Si  tableau [i+1] < tableau[i] : 
-
-échanger(tableau[i+1], tableau[i])
-
-Fin Si
-
+    Si  tableau [i+1] < tableau[i] : 
+        échanger(tableau[i+1], tableau[i])
+    Fin Si
 Fin Pour
 
 Fin
-
+```
 On remarque qu’une fois le premier livre trié, on a plus besoin de le parcourir dans la liste. On va donc effectuer un tour de boucle de moins. On va procéder ainsi jusqu’à atteindre 1.
 
 pseudo-code : final
-
+```
 Algorithme Tri_a_bulle(tableau)
 
 Début
@@ -514,21 +509,14 @@ Début
 tailleTableau ← Taille(tableau)
 
 Pour i allant de taille -1 jusqu’à 1 : (Pour i ← tailleTableau - 1 à 1 :)
-
-Pour j allant de 0 jusqu’à i - 1 : (Pour j ← 0 à i - 1 :)
-
-Si  tableau[j+1] < tableau[j] : 
-
-échanger(tableau[j+1], tableau[j])
-
-Fin Si
-
+    Pour j allant de 0 jusqu’à i - 1 : (Pour j ← 0 à i - 1 :)
+        Si  tableau[j+1] < tableau[j] : 
+            échanger(tableau[j+1], tableau[j])
+        Fin Si
+    Fin Pour
 Fin Pour
-
-Fin Pour
-
 Fin
-
+```
 ### Autres algorithmes de tri
 
 Le tri à bulles n’est pas le plus efficace, puisqu’il compare les valeurs deux par deux. 
