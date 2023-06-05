@@ -167,6 +167,9 @@ L'agrégation permet de spécifier qu'une entité est nécessaire pour identifie
     - la classe d'entité permettant d'identifier est appelée _classe d'entité agrégeante_
     - la classe d'entité identifiée est appelée _classe d'entité agrégée_
 
+_**Le MPD : Modèle Physique de Données**_<br>
+_C'est un outil de conception de BDD qui permet de définir la mise en oeuvre de structures physiques et de requêtes portant sur les données.<br>
+Selon le type de BDD qu'on souhaite concevoir, on sera amené à utiliser des types de diagrammes différents dans le MPD._
 
 ### Le MLD : Modèle Logique de Données
 
