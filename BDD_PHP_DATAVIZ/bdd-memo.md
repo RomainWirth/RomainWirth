@@ -159,7 +159,7 @@ intervalle dans lequel la cardinalité d'une entité peut prendre sa valeur :<br
     et une cadrinalité 0.N signifie que chaque entité appartenant à une classe d'entité ne participe pas forcément à la relation.
 
 * Les **identifiants** :<br>
-Un identifiant est un ensemble de propriétés permettant de désigner une et une seule entité.<br>
+Un identifiant est un ensemble de propriétés permettant de désigner une et une seule entité.<br> 
 _L'identifiant est une propriété particulière d'une objet telle qu'il n'existe pas deux occurences de cet objet pour lesquelles cette propriété pourrait prendre la même valeur._
 
 * **Agrégation** (ou identification relative) :<br>
