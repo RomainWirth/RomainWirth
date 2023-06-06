@@ -70,13 +70,11 @@ Pour la plupart, elles représentent différents types de nombres et chaînes de
 Dans MySQL, on retrouve des mots clés qui vont indiquer le type de données qu'on va avoir dans une colonne de notre base de données:<br> 
 **INT** pour integer (des nombres entiers) ou **FLOAT** pour des nombres décimaux (à virgule).<br>
 Pour de petites chaînes de caractères (string), on utilise **VARCHAR**,<br> 
-et pour de plus longues chaînes de caractères on utilisera **TEXT**.
+et pour de plus longues chaînes de caractères on ut
+## Le RDBMS = Relational DataBase Management System
 
-En plus du type de données, une colonne pourrait avoir certaines contraintes :<br>
-Une colonne pourra ne pas être capable de stocker une valeur "null"<br> 
-ou peut-être que chaque valeur dans cette colonne devra être unique (une ID utilisateur par exemple).<br>
-
-Une clé primaire ne pourra pas être "null" et doit être unique.
+Composé de deux choses principales :
+* La BDD en elle-même, qui est une collection de être unique.
 
 Tout cela résulte de la normalisation des bases de données relationnelles :<br>
 chaque entité sera organisée dans sa plus petite forme normale.
@@ -86,9 +84,10 @@ Cela va permettre de stocker le détail de notre connection, visualiser la BDD e
 
 ### Commandes pour créer sa base de données :
 
-Pour information : pour créer une BDD, ou une TABLE, on utilisera le mot clé CREATE suivi de l'élément qu'on veut créer : DATABASE, TABLE...
+## Le RDBMS = Relational DataBase Management System
 
-Pour écrire un commentaire, on utilisera "--" suivi du commentaire.
+Composé de deux choses principales :
+* La BDD en elle-même, qui est une collection de  du commentaire.
 
 Un **"STATEMENT"** est du code qui réalise quelque chose. Un "statement" se termine toujours pas **";"**.
 
@@ -152,8 +151,8 @@ email, bio et country.<br>
 N.B. : l'ID n'est pas modifié car on a spécifié **AUTO_INCREMENT** 
 lors de la création de la table. La modification se fera toute seule.
 ```
-Puis le mot clé **VALUES** permettra de spécifier les valeurs correspondantes aux colonnes (passées en paramètres).
-
+Puis le mot clé **VALUES** permettra de spécifier les valeurs correspondantes aux colonnes (passées en paramètres).<br>
+Attention à bien respecter la structure des tables.
 
 ```SQL
 INSERT INTO Users (email, bio, country)
@@ -208,7 +207,9 @@ toujours en spécifiant l'identificateur de la colonne et la valeur qu'on souhai
 exemple :
 
 ```SQL
-SELECT email, id, country FROM Users WHERE country = 'US' AND email LIKE 'h%' ORDER BY id DESC LIMIT 2;
+SELECT email, id, country FROM Users 
+WHERE country = 'US' AND email LIKE 'h%' 
+ORDER BY id DESC LIMIT 2;
 
 ```
 * ici on cherche les informations emails, id et pays dans la table utilisateur
@@ -218,7 +219,7 @@ SELECT email, id, country FROM Users WHERE country = 'US' AND email LIKE 'h%' OR
 
 ATTENTION : ce genre de requêtes risquera de faire ralentir au fur et à mesure que la BDD grandira.
 
-Afin de retrouver des données plus rapidement, on va employer une 'lookup table'.<br>
+Afin de retrouver des données plus rapidement, on va employer une 'lookup table' = un INDEX.<br>
 Une **'BDD index'** est comme un index à la fin d'un livre.<br>
 Elle permet à la BDD de trouver des mots clés importants sans avoir à scanner la totalité des données.<br>
 Cependant, cela vient avec un coût : des droits plus lents et plus de mémoire utilisée.
@@ -226,3 +227,93 @@ Cependant, cela vient avec un coût : des droits plus lents et plus de mémoire 
 ```SQL
 CREATE INDEX email_index ON Users(email);
 ```
+
+#### Créer une relation entre deux tables : la jointure
+
+Afin de créer une relation entre les tables, on utilisera une jointure.<br>
+
+Tout d'abord, on crée une table contenant une clé étrangère faisant référence à une autre table :
+
+```SQL
+CREATE TABLE Rooms(
+    id INT AUTO_INCREMENT,
+    street VARCHAR(255),
+    owner_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (owner_id) REFERENCES Users(id)
+);
+```
+
+* Ici, on crée la table 'Rooms'.<br>
+* l'id sera un nombre entier qui s'implémente automatiquement.<br>
+* la colonne 'owner_id' sera également un entier, non null.<br>
+* On indique ensuite la clé primaire qui prend en paramètre le nom de la colonne 'id'.<br>
+* la clé étrangère s'appelle 'onwer_id', elle fait référence à la colonne 'id' de la table 'Users'.<br> 
+Cela signifie que cette colonne dans la nouvelle table fait référence à une autre table 'Users' grâce à une clé étrangère.<br>
+Cela indique à la BDD de ne pas supprimer de données concernant un utilisateur qui a des données associées dans la table room au même moment.<br>
+Ainsi, on va conserver l'intégrité des données. 
+
+```SQL
+INSERT INTO Rooms (Owner_id, street)
+VALUES (
+    id INT AUTO_INCREMENT,
+    street VARCHAR(255),
+    owner_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (owner_id) REFERENCES Users(id)
+);
+```
+
+Pour insérer des données, on procédera ainsi :
+
+```SQL
+INSERT INTO Rooms (Owner_id, street)
+VALUES
+    (1, 'san diego sailboat'),
+    (1, 'nantucket cottage'),
+    (1, 'vail cabin'),
+    (1, 'sf cardboard box');
+```
+
+#### Concernant les jointures :
+
+La jointure permet d'expliquer au SGBD comment **joindre deux tables selon un identifiant qu'elles ont en commun.**<br>
+
+par exemple, si on possède une table 'utilisateur' et une table 'langue', on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être égale à l'id de l'utilisateur :
+
+```SQL
+SELECT * FROM utilisateurs --sélectionne tous les utilisateurs
+JOIN langue --joindre les langues
+ON utilisateur.langue_id = langue_id --relation entre tous les utilisateurs ayant configuré dans une langue spécifique.
+```
+* On demande au SGBD de sélectionner tous les utilisateurs grâce à **SELECT * FROM `utilisateurs`**
+* Au résultat de cette commande, on a joint la table langue grâce à **JOIN `langue`
+* Pour pouvoir faire cette jointure, on précise au SGBD la correspondance entre la table _langue_ et la table _utilisateur_.<br>
+La correspondance est effectuée via la clé _langue_id_ pour la table langue et _id_ pour la table utilisateur.<br>
+Cela se fait grâce à **ON `utilisateur`.`langue_id` = `langue`.`id`.
+
+
+Il existe 4 types de jointures (joints en anglais) :
+
+![](./representation_joints-tables.png)
+
+* **INNER JOIN** :<br> 
+jointure interne pour retourner les enregistrements quand la condition est vraie dans les deux tables.<br>
+C'est l'une des jointures les plus communes.<br>
+* **LEFT JOIN (ou LEFT OUTER JOIN)** :<br> 
+jointure externe pour retourner tous les enregistrements de la table de gauche (LEFT = gauche),<br>
+même si la condition n'est pas vérifiée dans l'autre table.
+* **RIGHT JOIN** (ou **RIGHT OUTER JOIN**) :<br>
+jointure externe pour retourner tous les enregistrements de la table de gauche (RIGHT = droite),<br>
+même si la condition n'est pas vérifiée dans l'autre table.
+* **OUTER JOIN** (ou **FULL OUTER JOIN**) :<br>
+jointure externe pour retourner les résultats quand la condition est vrai dans au moins une des 2 tables.
+
+il existe encore d'autre JOINS :
+* **CROSS JOIN** : jointure croisée permettant de faire le produit cartésien de 2 tables.<br>
+Cela permet de joindre chaque lignes d'une table avec chaque lignes d'une seconde table.<br>
+Attention, le nombre de résultats est en général très élevé.
+* **SELF JOIN** : permet d'effectuer une jointure d'une table avec elle-même comme si c'était une autre table.<br>
+* **NATURAL JOIN** : jointure naturelle entre 2 tables s'il y a au moins une coonne qui porte le même nom entre les 2 tables SQL.<br>
+* **UNION JOIN** : jointure d'union.
+
