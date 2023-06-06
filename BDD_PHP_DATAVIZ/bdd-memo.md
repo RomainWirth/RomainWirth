@@ -96,17 +96,18 @@ La BDD (Base De Données) désigne un ensemble d'informations stockées de mani�
 
 **VULGAIREMENT :**
 
-**Le SI est le réseau permettant de traiter l'information, le SGDB est l'outil de traitement et la BDD est la donnée collectée et stockée**
+**Le SI est le réseau permettant de traiter l'information, le SGBD est l'outil de traitement et la BDD est la donnée collectée et stockée**
 
 ## Schématiser avec les MCD et MLD
 
 ### LE MCD : Modèle Conceptuel de Données
 
 source : https://web.maths.unsw.edu.au/~lafaye/CCM/merise/mcd.htm 
+source : https://grafikart.fr/tutoriels/sql-mcd-mld-1989 
 
 #### Qu'est-ce que le MCD ?
 
-le **schéma conceptuel de données** (ou modèle conceptuel de données) est un outil de la méthode Merise, développée dans les années 1970 dans le contexte d'informatisation des systèmes des entreprises.<br>
+le **schéma conceptuel de données** (ou modèle conceptuel de données) est un <u>outil de la méthode Merise</u>, développée dans les années 1970 dans le contexte d'informatisation des systèmes des entreprises.<br>
 Il s'agit d'une étape analytique dans le processus de dévelopement d'un projet informatique de type construction de base de données.
 
 Le schéma conceptuel modélise la problématique à traiter lors de la réalisation d'un SI (système d'information),<br> 
@@ -131,7 +132,7 @@ Enfin, on va pouvoir construire le MCD.
 Les informations sont représentées logiquement en utilisant un ensemble de règles et de diagrammes codifiés : 
 
 * les **entités** :<br> 
-c'est la représentation d'un élément matériel ou immatériel ayant un rôle dans le système que l'on souhaite décrire.<br>
+<u>c'est la représentation d'un élément matériel ou immatériel ayant un rôle dans le système que l'on souhaite décrire.</u><br>
 On appelle classe d'entité un ensemble composé d'entités de même type (dont la définition est la même).<br>
 Le classement des entités au sein d'une classe s'appelle _classification_. Une entité est une _instanciation_ de la classe.<br>
 Chaque entité est composée de **propriétés** (données élémentaires permettant de la décrire, elles contiennent les données qui composent les entités).<br>
@@ -148,10 +149,38 @@ Dénominations des classes de relation selon le nombre d'intervenants :<br>
     - Une classe de relation **ternaire** relie trois classes d'entités
     - Une classe de relation **n-aire** relie n classes d'entités<br>
 
+```
+Les bonnes pratiques dans le schéma entités associations
+
+- Normalisation des entités : toutes les entités qui sont remplaçables par une association doivent être remplacées.
+- Normalisation des noms : le nom d'une entité, d'une association ou d'un attribut doit être unique.
+    => pour les entités, utiliser un nom commun usuel (ex: clients).
+    => pour les associations, utiliser un verbe à l'infinitif (ex: effectuer, concerner) à la forme passive (être commandé) et accompagné d'un adverbe (avoir lieu dans, pendant, à).
+    => pour les attributs, utiliser un nom commun singulier (ex: nom, numéro, libellé, description), accompagné du nom de l'entité ou de l'association dans laquelle il se trouve.
+- Normalisation des identifiants : chaque entité doit posséder un identifiant.
+    => éviter les identifiants composés de plusieurs attributs (un identifiant formé par les attributs nom et prénom), car c'est mauvais pour les performances et l'unicité supposée par une telle démarche finit tôt ou tard par être démentie. 
+    => préférer un id court pour rendre la recherche la plus rapide possible (éviter une chaîne de caractères type n° de plaque d'immatriculation, n° de sécurité sociale ou code postal).
+    => éviter les id susceptibles de changer au court du temps (n° plaque immatriculation ou n° sécu sociale provisoire).
+- Normalisation des attributs : remplacer les attributs en plusieurs exemplaires par une association supplémentaire de cardinalités maximales n et ne pas ajouter d'attribut calculable à partir d'autres attributs.
+    => On va créer une entité avec une liaison supplémentaire : ex, un utilisateur possède un numéro de téléphone fixe et portable, et il possède une adresse postale principale et secondaire. Dans chaque cas, on crée un entité numéro de téléphone avec deux attributs (fixe et portable) et une entité adresse. Chaque entité est reliée à l'entité utilisateur par une liaison.
+    => Certains attributs peuvent être remplacés par des calculs et il ne sera pas nécessaire de multiplier les champs.
+- Normalisation des attributs des associations : les attributs d'une association doivent dépendre directement des identifiants de toutes les entités en association. Cela signifie que les attributs de la liaison doivent dépendre aux autres entités auquelles elles sont associées. 
+- Normalisation des associations : il faut éliminer les associations fantômes. Si on se retrouve sur une association de type 1,1 (voir les cardinalités), on va fusionner les choses.
+- Normalisation des cardinalités : une cardinalité minimale est toujours 0 ou 1 (et pas 2, 3 ou n) et une cardinalité maximale est toujours 1 ou n (et pas 2, 3, ...). 
+    => Cela veut dire que si une cardinalité maximale vaut 2, 3 ou plus, on va quand même considérer qu'elle est indéterminée et vaut n, car si on connaitn au moment de sa conception, il se peut que sa valeur évolue au cours du temps. Donc on la considère comme inconnue dès le départ.
+    => Cela signifie aussi qu'on ne modélise pas les cardialités minimales qui valent plus de 1 car ce genre de valeur peut aussi évoluer. 
+    (=> Dans un SGBDR, on pourrait assurer les cardinalités valant 2, 3 ou plus via l'utilisation de déclencheurs.)
+```
+
 * les **cardinalités** :<br>
 Elles permettent de caractériser le lien qui existe entre une entité et la relation à laquelle elle est reliée.<br>
 La cardinalité d'une relation est composée d'un couple comportant une borne maximale et une borne minimale,<br> 
-intervalle dans lequel la cardinalité d'une entité peut prendre sa valeur :<br>
+<u>_**la cardinalité représente le nombre de fois qu'une liaison peut être faite dans un sens ou dans l'autre<br>
+Une relation pouvant aller dans deux sens la liaison aura deux branches.**_</u><br>
+<u>exemple de notation de cardinalité :</u><br> 
+un user peut ne pas créer de contenu (0) ou en créer plusieurs (n), la cardinalité sera donc notée : 0,n<br> 
+et un contenu peut être créé par 1 seul utilisateur et au maximum 1, la cardinalité sera donc notée : 1,1.<br>
+Intervalle dans lequel la cardinalité d'une entité peut prendre sa valeur :<br>
     - la borne minimale (généralement 0 ou 1) décrit le nombre minimum de fois qu'une entité peut participer à une relation.
     - la borne maximale (généralement 1 ou n) décrit le nombre maximum de fois qu'une entité peut participer à une relation.<br>
     <br>
@@ -167,6 +196,22 @@ L'agrégation permet de spécifier qu'une entité est nécessaire pour identifie
     - la classe d'entité permettant d'identifier est appelée _classe d'entité agrégeante_
     - la classe d'entité identifiée est appelée _classe d'entité agrégée_
 
+```
+Les formes normales :
+
+- Première forme normale : à un instant donné dans une entité, pour un individu, 
+un attribut ne peut prendre qu'une valeur et non pas un ensemble ou une liste de valeurs.
+    => Si un attribut prend plusieurs valeurs, alors ces valeurs doivent faire l'objet d'une entité supplémentaire,
+    en association avec la première.
+
+- Deuxième forme normale : L'identifiant peut être composé de plusieurs attributs mais les autres attributs de l'entité doivent dépendre de l'identifiant en entier 
+(et non pas une partie de cet identifiant).
+    => Cette deuxième forme normale est rendue obsolète par la règle de normalisation des attributs des associations.
+
+- Troisième forme normale de Boyce-Codd : tous les attributs d'une entité doivent dépendre directement de son identifiant et d'aucun autre attribut. 
+Si ce n'est pas le cas, il faut placer l'attribut pathologique dans une entité séparée, mais en association avec la première.
+```
+
 _**Le MPD : Modèle Physique de Données**_<br>
 _C'est un outil de conception de BDD qui permet de définir la mise en oeuvre de structures physiques et de requêtes portant sur les données.<br>
 Selon le type de BDD qu'on souhaite concevoir, on sera amené à utiliser des types de diagrammes différents dans le MPD._
@@ -177,7 +222,7 @@ Selon le type de BDD qu'on souhaite concevoir, on sera amené à utiliser des ty
 Un MLD est une représentation de la base de données à informatiser consécutive au travail d'analyse MCD et MPD.<br> 
 _MLD prend parfois un R et devient MLDR (ou MLD-R), R signifiant Relationnel._**
 
-Il s'agit de la représentation textuelle du MPD. C'est une étape de la méthodologie Merise.<br>
+Il s'agit de la représentation textuelle du MCD. C'est une étape de la méthodologie Merise.<br>
 Elle permet d'implémenter la BDD en transcrivant le MCD en instructions SQL adaptées au SGBDR (Système de Gestion de Base de Données Relationnelles) prévu.<br>
 Concrètement, le MLD permet de connaîre le nombre de tables ainsi que leurs contraintes (liaisons entre tables) à mettre en oeuvre dans une BDD relationelle. 
 
@@ -195,7 +240,7 @@ On représente les données issues de la modélisation Merise ainsi :
 
 #### Règle numéro 1 :
 
-**a. Une entité du MCD devient une relation, c'est à dire une table :**
+**a. Une entité du MCD devient une table :**
 
 Dans un SGBD de type relationnel, une table est une structure tabulaire dont chaque ligne correspond aux données d'un objet enregistré,<br>
 et chaque colonne correspond à une propriété de cet objet.<br>
@@ -222,6 +267,14 @@ Une clé étrangère référence la clé primaire de la relation correpondante �
 #### Règle numéro 3 :
 
 Une association de type N:N (c-à-d qui a les cardinalités maximales positionnées à "N" des 2 côtés de l'association)<br>
-se traduit par la création d'une table dont la clé primaire est composée des clés étrangères référençant les relations correspondant aux entités liées par l'association.<br>
-Les éventuelles propriétés de l'association deviennent des attributs de la relation.
+se traduit par la création d'une table intermédiaire dont la clé primaire est composée des clés étrangères référençant les relations correspondant aux entités liées par l'association.<br>
+Les éventuelles propriétés de l'association deviennent des attributs de la relation.<br>
 
+#### Règle numéro 4 :
+
+Une association de type 1:1 se traduit par une association binaire de type 1:n sauf que la clé étrangère se voit imposer une contrainte d'unicité en plus d'une éventuelle contrainte de non vacuité<br> 
+(cette contrainte impose à la colonne correspondante de ne prendre que des valeurs distinctes).<br>
+
+Si les associations fantômes ont été éliminées, il devrait y avoir au moins un côté de cardinalité 0,1.<br>
+C'est alors dans la table du côté opposé que doit aller la clé étrangère.<br>
+Si les deux côtés sont de cardinalité 0,1 alors la clé étrangère peut être placée indifféremment dans l'une des deux tables.
