@@ -1,5 +1,6 @@
 # SQL - Initiation
 
+Doc officielle : https://sql.sh/cours <br>
 Source : https://www.youtube.com/watch?v=Cz3WcZLRaWc <br>
 Source : https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7139618-decouvrez-le-systeme-de-gestion-de-base-de-donnees-sgbd <br>
 
@@ -112,10 +113,18 @@ Au sein d'une table, on pourra créer des colonnes grâce aux parenthèses :<br>
 * le nom est obligatoirement suivi du **type de données**, primordial pour éviter de sauvegarder le mauvais type de données et donc de renvoyer une ERREUR<br> 
 (SQL est très strict sur l'intégrité des données)<br>
 * on pourra aussi ajouter des contraintes (**CONSTRAINTS**) : PRIMARY KEY par exemple.<br>
-PRIMARY KEY indique à la BDD que cette colonne identifie une ligne unique :<br>
-la donnée doit donc être unique, non nulle (!null).<br>
+PRIMARY KEY indique à la BDD que cette colonne identifie une ligne unique : la donnée doit donc être unique, non nulle (!null).<br>
 Les contraintes sont une sorte de couche supplémentaire de validation de données<br>
 * la colonne est **fermée par une virgule**
+
+```
+la PRIMARY KEY (clé primaire) permet d'identifier chaque enregistrement dans une table de base de données.
+Chaque enregistrement de cette clé primaire doit être UNIQUE et ne doit pas contenir de valeur NULL.
+
+La clé primaire est un index. Chacune des tables ne peut contenir qu'une seule clé primaire, composée d'une ou plusieurs colonnes.
+
+L'usage le plus fréquent consiste à créer une colonne numérique qui s'incrémente automatiquement à chaque enregistrement grâce à AUTO_INCREMENT
+```
 
 (voir exemple ci-dessous) :<br>
 
@@ -219,14 +228,24 @@ ORDER BY id DESC LIMIT 2;
 
 ATTENTION : ce genre de requêtes risquera de faire ralentir au fur et à mesure que la BDD grandira.
 
+#### à propos des INDEX
+
 Afin de retrouver des données plus rapidement, on va employer une 'lookup table' = un INDEX.<br>
 Une **'BDD index'** est comme un index à la fin d'un livre.<br>
 Elle permet à la BDD de trouver des mots clés importants sans avoir à scanner la totalité des données.<br>
+
+```
+En SQL, la commande CREATE INDEX permet de créer un index.
+L'index est utile pour accélérer l'exécution d'une requête SQL qui lit des données
+et ainsi améliorer les performances d'une application en utilisant une base de données.
+```
+
 Cependant, cela vient avec un coût : des droits plus lents et plus de mémoire utilisée.
 
 ```SQL
 CREATE INDEX email_index ON Users(email);
 ```
+
 
 #### Créer une relation entre deux tables : la jointure
 
@@ -279,7 +298,30 @@ VALUES
 
 La jointure permet d'expliquer au SGBD comment **joindre deux tables selon un identifiant qu'elles ont en commun.**<br>
 
-par exemple, si on possède une table 'utilisateur' et une table 'langue', on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être égale à l'id de l'utilisateur :
+```
+Les jointures permettent d'associer plusieurs tables dans une même requête.
+Cela permet d'exploiter la puissance des bases de données relationnelles
+pour obtenir des résultats qui combinent les données de plusieurs tables 
+de manière efficace.
+
+En général, les jointures consistent à associer des lignes de 2 tables 
+en associant l'égalité des valeurs d'une colonne d'une première table 
+par rapport à la valeur d'une colonne d'une seconde table.
+```
+
+Par exemple :<br> 
+une base de 2 données qui possède une table 'user'<br> 
+et une table 'adress' qui contient les adresses de ces utilisateurs.<br>
+Avec une jointure, il est possible d'obtenir les données de l'utilisateur et de son adresse en une seule requête.
+
+Un site web qui possède une table pour les articles (titre, contenur, date de publi...)<br>
+et une autre pour les rédacteurs (nom, date d'inscription, date de naissance).<br>
+Avec une jointure, il est possible d'effectuer une seule recherche pour afficher un article et le nom du rédacteur.<br>
+Cela évite d'avoir à afficher le nom du rédacteur dans la table 'article'.
+
+exemple plus concret :<br>
+Si on possède une table 'utilisateur' et une table 'langue',<br> 
+on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être égale à l'id de l'utilisateur :
 
 ```SQL
 SELECT * FROM utilisateurs --sélectionne tous les utilisateurs
@@ -293,7 +335,7 @@ La correspondance est effectuée via la clé _langue_id_ pour la table langue et
 Cela se fait grâce à **ON `utilisateur`.`langue_id` = `langue`.`id`.
 
 
-Il existe 4 types de jointures (joints en anglais) :
+Il existe plusieurs types de jointures (joins en anglais) :
 
 ![](./representation_joints-tables.png)
 
@@ -317,3 +359,61 @@ Attention, le nombre de résultats est en général très élevé.
 * **NATURAL JOIN** : jointure naturelle entre 2 tables s'il y a au moins une coonne qui porte le même nom entre les 2 tables SQL.<br>
 * **UNION JOIN** : jointure d'union.
 
+### Sélectionner et renommer certaines colonnes dans une liste de résultats
+
+**SQL AS (alias)**
+
+Dans le langage SQL, il est possible d'utiliser des **alias** pour renommer temporairement une colonne ou une table dans une requête.<br>
+Cette astuce est particulièrement utile pour faciliter la lecture des requêtes.
+
+**Intérêts et utilités**
+
+* **Alias sur une colonne :**<br>
+Permet de renommer le nom d'une colonne dans les résultats d'une requête SQL.<br>
+C'est pratique pour avoir un nom facilement identifiable dans une application<br> 
+qui doit ensuite exploiter les résultats d'une recherche.<br>
+ex : une colonne qui s'appelle c_iso_3166 peut être renommée 'code_pays', ce qui est plus simple à comprendre.<br>
+_**SYNTAXE :**_<br>
+```SQL
+SELECT colonne1 AS c1, colonne2
+FROM `table`
+
+--peut aussi s'afficher de cette manière :
+SELECT colonne1 c1, colonne2
+FROM `table`
+
+```
+
+* **Alias sur une table :**<br>
+Permet d'attribuer un autre nom à une table dans une requête SQL.<br>
+Cela peut aider à avoir des noms plus court, plus simple et plus facilement compréhensible.<br>
+Ceci est particulièrement vrai lorsqu'il y a des jointures.<br>
+_**SYNTAXE :**_<br>
+```SQL
+SELECT *
+FROM `nom_table` AS t1
+
+--peut aussi s'afficher de cette manière :
+SELECT *
+FROM `nom_table` t1
+
+```
+
+**N.B. : il est préférable d'utiliser la commande AS pour que ce soit plus explicite**
+
+### Supprimer une table et une base de données
+
+**SQL DROP TABLE**
+
+La commande DROP TABLE en SQL permet de supprimer définitivement une table d'une base de données.<br>
+Cela supprimer en même temps les éventuels index, trigger, contraintes et permissions associées à cette table.<br>
+
+**Attention :** il faut utiliser cette commande avec attention car une fois supprimée, les données sont perdues.<br>
+Avant de l'utiliser sur une base importante, il peut être judicieux d'effectuer un backup (au sauvegarde)<br> 
+pour éviter les mauvaises surprises.
+
+_**SYNTAXE :**_<br>
+```SQL
+DROP TABLE nom_table
+
+```
