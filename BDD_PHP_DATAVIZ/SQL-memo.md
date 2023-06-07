@@ -512,4 +512,27 @@ VALUES
     ('tweet 2 NonNon', 3),
     ('tweet 3 NonNon', 3);
 -- SELECT * FROM Tweets;
+
+-- @block
+INSERT INTO Tweets_users (user_id, tweet_id)
+VALUES 
+    (1, 4),
+    (1, 5),
+    (1, 6),
+    (1, 7),
+    (1, 8),
+    (1, 9),
+    (2, 1),
+    (2, 2),
+    (2, 3),
+    (2, 7),
+    (2, 8),
+    (2, 9),
+    (3, 1),
+    (3, 2),
+    (3, 3),
+    (3, 4),
+    (3, 5),
+    (3, 6);
+-- SELECT * FROM Tweets_users;
 ```
