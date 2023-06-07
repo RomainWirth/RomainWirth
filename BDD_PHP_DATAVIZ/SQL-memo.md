@@ -415,5 +415,4 @@ pour éviter les mauvaises surprises.
 _**SYNTAXE :**_<br>
 ```SQL
 DROP TABLE nom_table
-
 ```
