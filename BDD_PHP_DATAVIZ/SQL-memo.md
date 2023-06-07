@@ -333,13 +333,15 @@ ON utilisateur.langue_id = langue_id --relation entre tous les utilisateurs ayan
 * Pour pouvoir faire cette jointure, on précise au SGBD la correspondance entre la table _langue_ et la table _utilisateur_.<br>
 La correspondance est effectuée via la clé _langue_id_ pour la table langue et _id_ pour la table utilisateur.<br>
 Cela se fait grâce à **ON `utilisateur`.`langue_id` = `langue`.`id`.
+ble 'utilisateur' et une table 'langue',<br> 
+on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être égale à l'id de l'utilisateur :
 
-
-Il existe plusieurs types de jointures (joins en anglais) :
-
-![](./representation_joints-tables.png)
-
-* **INNER JOIN** :<br> 
+```SQL
+SELECT * FROM utilisateurs --sélectionne tous les utilisateurs
+JOIN langue --joindre les langues
+ON utilisateur.langue_id = langue_id --relation entre tous les utilisateurs ayant configuré dans une langue spécifique.
+```
+* On demande au SGBD de sélectionner tous les utilisateurs grâce à **SELECT * FROM `utilisateurs`** 
 jointure interne pour retourner les enregistrements quand la condition est vraie dans les deux tables.<br>
 C'est l'une des jointures les plus communes.<br>
 * **LEFT JOIN (ou LEFT OUTER JOIN)** :<br> 
@@ -415,4 +417,99 @@ pour éviter les mauvaises surprises.
 _**SYNTAXE :**_<br>
 ```SQL
 DROP TABLE nom_table
+```
+
+## EN PRATIQUE
+
+Exemple du MCD - MLD Twitter
+
+### 1. SUPPRIMER LES DONNEES EXISTANTES
+
+Il faut commencer par supprimer les tables qui existent : DROP TABLE
+
+```SQL
+-- @block
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Tweets;
+DROP TABLE IF EXISTS Hashtags;
+DROP TABLE IF EXISTS Users_users;
+DROP TABLE IF EXISTS Tweets_users;
+DROP TABLE IF EXISTS Hashtags_tweets;
+```
+
+### 2. CREER LES TABLES QUI COMPOSENT LA BDD
+
+On utilisera : CREATE TABLE
+
+```SQL
+-- @block
+CREATE TABLE Users(
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_name TEXT NOT NULL UNIQUE,
+    user_email TEXT NOT NULL UNIQUE,
+    user_address TEXT,
+    user_postal_code INTEGER,
+    user_city TEXT,
+    user_country TEXT
+);
+
+-- @block
+CREATE TABLE Tweets(
+    tweet_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tweet_content TEXT NOT NULL,
+    tweet_created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    u_id INTEGER NOT NULL,
+    FOREIGN KEY(u_id) REFERENCES Users(user_id) 
+);
+
+-- @block
+CREATE TABLE Hashtags(
+    hashtag_name TEXT PRIMARY KEY
+);
+
+-- @block
+CREATE TABLE Users_users(
+    user1_id INTEGER,
+    user2_id INTEGER,
+    PRIMARY KEY(user1_id, user2_id),
+    FOREIGN KEY(user1_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(user2_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
+
+-- @block
+CREATE TABLE Hashtags_tweets(
+    hashtag_name TEXT,
+    tweet_id INTEGER,
+    PRIMARY KEY(hashtag_name, tweet_id),
+    FOREIGN KEY(hashtag_name) REFERENCES Hashtags(hashtag_name) ON DELETE CASCADE,
+    FOREIGN KEY(tweet_id) REFERENCES Tweets(tweet_id) ON DELETE CASCADE
+);
+```
+
+### 3. INSERER DES DONNEES
+
+On utilisera INSERT INTO
+
+```SQL
+-- @block
+INSERT INTO Users (user_name, user_email, user_address, user_postal_code, user_city, user_country)
+VALUES
+    ('Toto', 'toto@domaine.com', '123 nous irons aux bois', 78000, 'PARIS', 'FRANCE'),
+    ('OuiOui', 'ouioui@domaine.com', '456 cueillir des cerises', 69000, 'LYON', 'FRANCE'),
+    ('NonNon', 'nonnon@domaine.com', '789 dans mon panier neuf', 74000, 'ANNECY', 'FRANCE');
+-- SELECT * FROM Users;
+
+-- @block
+INSERT INTO Tweets (tweet_content, u_id)
+VALUES
+    ('tweet 1 Toto', 1),
+    ('tweet 2 Toto', 1),
+    ('tweet 3 Toto', 1),
+    ('tweet 1 OuiOui', 2),
+    ('tweet 2 OuiOui', 2),
+    ('tweet 3 OuiOui', 2),
+    ('tweet 1 NonNon', 3),
+    ('tweet 2 NonNon', 3),
+    ('tweet 3 NonNon', 3);
+-- SELECT * FROM Tweets;
 ```
