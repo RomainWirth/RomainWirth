@@ -90,12 +90,11 @@ Cela va permettre de stocker le détail de notre connection, visualiser la BDD e
 Composé de deux choses principales :
 * La BDD en elle-même, qui est une collection de  du commentaire.
 
-Un **"STATEMENT"** est du code qui réalise quelque chose. Un "statement" se termine toujours pas **";"**.
+Tout cela résulte de la normalisation des bases de données relationnelles :<br>
+chaque entité sera organisée dans sa plus petite forme normale.
 
-Les termes qui apparaissent en couleur sont des mots clé SQL que le langage va interprêter pour réaliser quelque chose.<br>
-La convention veut qu'on les écrive en majuscule mais SQL n'est pas sensible à la casse.
-
-Le terme qui suivra les mots clés est l'identificateur. il permet d'identifier le contenu de la BDD, table, etc.
+On pourra utiliser l'extension _SQLTools sur VSCode_.<br>
+Cela va permettre de stocker le détail de notre connection, visualiser la BDD et voir l'historique des queries qui ont éidentificateur. il permet d'identifier le contenu de la BDD, table, etc.
 
 #### Pour créer une BDD, on procédera ainsi :
 
@@ -351,14 +350,12 @@ même si la condition n'est pas vérifiée dans l'autre table.
 jointure externe pour retourner tous les enregistrements de la table de gauche (RIGHT = droite),<br>
 même si la condition n'est pas vérifiée dans l'autre table.
 * **OUTER JOIN** (ou **FULL OUTER JOIN**) :<br>
-jointure externe pour retourner les résultats quand la condition est vrai dans au moins une des 2 tables.
+jointure externe pour retourner les résultats
+Tout cela résulte de la normalisation des bases de données relationnelles :<br>
+chaque entité sera organisée dans sa plus petite forme normale.
 
-il existe encore d'autre JOINS :
-* **CROSS JOIN** : jointure croisée permettant de faire le produit cartésien de 2 tables.<br>
-Cela permet de joindre chaque lignes d'une table avec chaque lignes d'une seconde table.<br>
-Attention, le nombre de résultats est en général très élevé.
-* **SELF JOIN** : permet d'effectuer une jointure d'une table avec elle-même comme si c'était une autre table.<br>
-* **NATURAL JOIN** : jointure naturelle entre 2 tables s'il y a au moins une coonne qui porte le même nom entre les 2 tables SQL.<br>
+On pourra utiliser l'extension _SQLTools sur VSCode_.<br>
+Cela va permettre de stocker le détail de notre connection, visualiser la BDD et voir l'historique des queries qui ont é<br>
 * **UNION JOIN** : jointure d'union.
 
 ### Sélectionner et renommer certaines colonnes dans une liste de résultats
