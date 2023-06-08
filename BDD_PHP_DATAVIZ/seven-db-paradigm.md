@@ -35,4 +35,50 @@ Ce type de BDD est comme une ket value db à laquelle on a ajouté une deuxième
 Concrètement, on un espace "clé", qui comportera des colonnes qui comportent un jeu de colonnes rangées, permettant de regrouper des données rangés ensemble.<br>
 Mais, contrairement à une BDD relationnelle, elle ne possède pas de schéma.<br>
 Cela permet de gérer des données non structurées.<br>
-Pour cela, on utilise un 'query language' appelé CQL (Context Query Language), similaire à SQL
+Pour cela, on utilise un 'query language' appelé CQL (Cassandra Query Language), similaire à SQL.
+
+**Apache Cassandra :**
+
+C'est un SGBD de type NoSQL conçu pour gérer des quantités massives de données sur un grand nombre de serveurs,<br>
+assurant une haute disponibilité en éliminant les points de défaillance unique.<br>
+
+Le CQL (Cassandra Query Language) est le langage spécifique à Cassandra.<br>
+Il existe des implémentations spécifiques pour les langages Java, Python, Node.js, Go et C++.<br>
+Ce langage est plus limité que SQL et on ne peut pas faire de JOINS.<br>
+
+CQL est décentralisé et permet d'évoluer de la donnée au sein de multiples nodes.<br>
+L'évolution peut se faire horizontalement.<br>
+
+Ce langage est meilleurs pour des données chronologiques, des documents historiques.<br>
+Par exemple, Netflix utilise ce système pour mettre en avant l'historique des différents programmes qu'on a regardé.<br>
+
+Ce ne sera cependant pas utilisé en tant que BDD primaire pour un application.
+
+## 3. DOCUMENT ORIENTED DATABASE
+
+![](./document-oriented-db.png)
+
+BDD populaires de ce type : MongoDB, FireStore, Dynamite.<br>
+
+Dans ce paradygme, on a des documents. Où chaque document est un conteneur pour des paires clé - valeur (format JSON).<br>
+Ces données sont non structurées et ne requierent pas de schéma.<br>
+
+Les documents sont groupés ensembles en collections. Des champs de collections peuvent être indexés,<br>
+et les collections peuvent être organisées en plus hautes archives logiques :
+
+![](./doc-oriented-db-exhb1.png)
+
+Cela permet de modéliser et récupérer à un degré assez important.<br>
+Ce type de DB ne supporte pas les jointures, ce qui implique de stocker la donnée en un seul et unique document.<br>
+
+Il est donc plus rapide d'accéder à la donnée, mais l'ajout et la modification est bien plus complexe.<br>
+Très facile à utiliser, on en fera un usage plus général général :<br> 
+Applications, Jeux Mobiles, IOT, management de données etc.
+
+En revenche, on évitera ce type de BDD pour les données déconnectées mais en relation que l'on va souvent updater (graphs) telle les réseaux sociaux (amis, commentaires, posts, etc.).<br>
+Ce genre de données doivent êtres jointes et ce n'est pas facile à l'échelle des documented-db.
+
+## 4. RELATIONAL DATABASE
+
+![](./relational-db.png)
+
