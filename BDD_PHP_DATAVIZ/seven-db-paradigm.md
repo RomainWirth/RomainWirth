@@ -82,3 +82,95 @@ Ce genre de données doivent êtres jointes et ce n'est pas facile à l'échelle
 
 ![](./relational-db.png)
 
+BDD populaires : MySQL, PostGreSQL, SQLServer...
+
+Ce type de BDD existe depuis une cinquantaine d'années et continue d'être un des plus populaire.<br>
+Elles ont été conçues par un informaticien appelé Ted Codd (IBM) qui a passé beaucoup de temps à travailler sur la modélisation des données relationnelles. (MLD, MCD) <br>
+
+Son travail a inspiré la création du SQL (Structured Query Language).<br>
+
+Ce type de BDD fonctionne ainsi :<br>
+La BDD va être structurée en tables, contennant des données spécifiques.<br>
+On va ensuite mettre en relation ces tables (via leurs ID) afin de récupérer les données pertinente selon les besoins.<br>
+On utilise des Clés primaires pour faire référence à une table,<br> 
+et une table utilise des clés étrangères pour faire référence à des données d'une autre table.<br>
+Pour joindre ces données, on utilisera des JOINS.<br>
+
+Ce type de BDD a besoin d'un schéma pour comprendre comment est strucurée la donnée.<br>
+C'est là qu'entre en jeu les MLD et MCD.<br>
+
+Les bases de données relationnelles (SQL) sont 'ACID' component :<br>
+* Atomicity
+* Consistency
+* Isolation
+* Durability
+
+Cela signifique qu'à chaque fois qu'il y a une transaction dans la BDD,<br> 
+on pourra garantir la validité des données, même s'il y a une panne de réseau ou de hardware.<br>
+C'est essentiel pour les banques ou les institutions financières,<br> 
+mais cela rend ce type de DB plus difficile à faire évoluer.<br>
+Cependant, il existe des BDD modernes comme CockroachDB qui sont spécifiquement designées pour évoluer.
+
+Ce type de BDD sera utilisé pour la plupart des Applications,<br> 
+mais n'est pas idéal pour des données non structurées.
+
+## 5. GRAPHS DATABASE
+
+![](./graphs-db.png)
+
+La donnée est représentée en noeuds (nodes), et leurs relations sont appelées des arrêtes (edges).<br>
+
+Les BDD populaires : Neo4j, Dgraph.<br>
+
+Les BDD graph n'ont pas besoins de JOINS pour mettre en relation les données.<br> 
+Il suffit de trouver une arrête (edge) et de la connecter aux autres enregistrements (nodes).<br>
+
+La querie CYPHER pour ce type de donnée est plus concise et plus facile à lire.<br>
+On aura une meilleure performance sur des BDD plus larges.<br>
+Les BDD graph sont une bonne alternative aux BDD SQL,<br> 
+spécialement si on utilise beaucoup de JOINS et que les performances sont impactées à cause de ça.
+
+Elles sont souvent utilisées pour la détection des fraudes en finance,<br> 
+pour créer des graphes de connaissance interne aux entreprises,<br> 
+ou pour générer des moteurs de recommandation comme sur Airbnb.
+
+## 6. SEARCH DATABASE
+
+![](./search-db.png)
+
+utilisé pour les moteurs de recherche par texte.<br>
+La plupart des bases de données sont basées sur le "lucene project" (1999), comme Solr et Elastic Search.<br>
+En plus, on aura des options basées sur le cloud comme algolia,<br> 
+ou meilisearch (un fulltech search engine basé sur RUST).<br>
+
+Ce type de BDD fonctionne comme les document oriented db :<br> 
+On commence avec un index et on y ajoute des données.<br>
+La différence est que le search db va analyser tout le texte dans le document et créer un index des termes qu'on peut rechercher.<br>
+Cela fonctionne comme l'index qu'on trouvera à la fin d'un livre.<br>
+A chaque fois qu'on va effectuer une recherche, la bdd aura simplement à regarder l'index pour retrouver la donnée en question.<br>
+C'est très rapide, même sur de larges quantités de données.<br>
+Ce type de DB pourra procéder à différents algorithmes de tri, pour classer ces données, etc.<br> 
+
+Ce type de BDD est donc utilisé pour les moteurs de recherche,<br> 
+ou une 'typeahead search box' (méthode pour rechercher progressivement et filtrer du texte).
+
+
+## 7. MULTI-MODEL DATABASE
+
+![](./mutli-model-db.png)
+
+FaunaDB
+
+Avec ce type de BDD, on va simplement se concentrer sur la description de la manière dont on veut accéder aux données en utilisant graphql.<br>
+En injectant notre schéma graphql sur fauna, cela génère automatiquement des collections ou on peut stocker des données,<br>
+et un index pour faire des requêtes de données.
+
+Concrètement, cela met en oeuvre plusieurs méthodes de BDD (graphs, relationnelles, document-oriented db).<br>
+Ce type de DB est ACID, très rapide et on a pas à se soucier de l'infrastructure des données.<br>
+On se concentre sur la manière dont on veut utiliser les données, et on laisse le cloud se débrouiller avec ça.<br>
+
+
+## Pour aller plus loin : les autres pradigmes des DB
+
+Time-series DB<br>
+Data Warehouse<br>
