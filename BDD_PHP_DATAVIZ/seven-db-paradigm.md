@@ -1,6 +1,7 @@
 # PARADIGME DES BASES DE DONNEES
 
 Source : https://www.youtube.com/watch?v=W2Z7fbCLSTw <br>
+Source : https://fireship.io/lessons/top-seven-database-paradigms/ <br>
 
 Cette vidéo traite du paradigme des 7 types de bases de données.
 
