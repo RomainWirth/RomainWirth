@@ -45,7 +45,7 @@ Peu propice à l'utilisation sur un grand nombre de données, c'est un SGBD trè
 On va le privilégier pour développer une BDD en local, alors qu'en prod on utilisera plutôt MySQL ou PostgreSQL.<br>
 Utilisé par les applications Android pour stocker de la donnée.
 
-![](./comparatif_SGBD.png)
+![](./img/comparatif_SGBD.png)
 
 Actuellement, il existe des ORM (Object Relational Mapping) = des outils qui permettent d'éviter d'utiliser du SQL brut, et permettent d'augmenter la productivité.<br>
 Pour JS : Sequelize, Python : SQL Alchemy, Ruby on rails : Active Records.<br>
@@ -124,21 +124,15 @@ La clé primaire est un index. Chacune des tables ne peut contenir qu'une seule 
 
 L'usage le plus fréquent consiste à créer une colonne numérique qui s'incrémente automatiquement à chaque enregistrement grâce à AUTO_INCREMENT
 ```
-
-(voir exemple ci-dessous) :<br>
-
-```SQL
--- @block
-CREATE TABLE Users(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    bio TEXT,
-    country VARCHAR(2)
-); 
-```
-
-* @block permet d'exécuter une requête SQL pour contrôler si l'étape est bien réalisée.<br>
-* La table Utilisateur est créée. Elle contient 4 colonnes, identifiées chacunes par un identificateur : id, email, bio, pays.<br>
+..
+..
+..
+..
+..
+..
+..
+..
+..acunes par un identificateur : id, email, bio, pays.<br>
 Chaque colonne aura un type de données<br>
 * la colonne **"ID"** comporte le mot clé **PRIMARY KEY** indique une donnée unique et non nulle<br>
 **AUTO_INCREMENT** indique à la BDD qu'elle doit créer automatiquement une ID pour l'utilisateur.<br>

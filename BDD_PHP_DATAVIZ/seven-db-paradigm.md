@@ -7,7 +7,7 @@ Cette vidéo traite du paradigme des 7 types de bases de données.
 
 ## 1. Le type de BDD le plus simple : KEY-VALUE DATABASE
 
-![](./key-value-db.png)
+![](./img/key-value-db.png)
 
 Ce type de BDD est structuré comme un objet JS ou un dictionnaire Python :<br>
 Il s'agit d'une paire clé, valeur, ou chaque clé est unique et pointe vers une valeur.<br>
@@ -29,7 +29,7 @@ Ces types de BDD sont utilisées en complément de BDD qui sont plus persistante
 
 ## 2. Les BDD : WIDE COLUMN DATABASE
 
-![](./wide-column-db.png)
+![](./img/wide-column-db.png)
 
 Des DB populaires de ce type sont : Cassandra (https://cassandra.apache.org/_/index.html) et Apache Hbase (https://hbase.apache.org/).<br>
 Ce type de BDD est comme une ket value db à laquelle on a ajouté une deuxième dimension.<br>
@@ -57,7 +57,7 @@ Ce ne sera cependant pas utilisé en tant que BDD primaire pour un application.
 
 ## 3. DOCUMENT ORIENTED DATABASE
 
-![](./document-oriented-db.png)
+![](./img/document-oriented-db.png)
 
 BDD populaires de ce type : MongoDB, FireStore, Dynamite.<br>
 
@@ -67,7 +67,7 @@ Ces données sont non structurées et ne requierent pas de schéma.<br>
 Les documents sont groupés ensembles en collections. Des champs de collections peuvent être indexés,<br>
 et les collections peuvent être organisées en plus hautes archives logiques :
 
-![](./doc-oriented-db-exhb1.png)
+![](./img/doc-oriented-db-exhb1.png)
 
 Cela permet de modéliser et récupérer à un degré assez important.<br>
 Ce type de DB ne supporte pas les jointures, ce qui implique de stocker la donnée en un seul et unique document.<br>
@@ -81,9 +81,9 @@ Ce genre de données doivent êtres jointes et ce n'est pas facile à l'échelle
 
 ## 4. RELATIONAL DATABASE
 
-![](./relational-db.png)
+![](./img/relational-db.png)
 
-BDD populaires : MySQL, PostGreSQL, SQLServer...
+BDD populaires : MySQL, PostGreSQL, SQLServer..
 
 Ce type de BDD existe depuis une cinquantaine d'années et continue d'être un des plus populaire.<br>
 Elles ont été conçues par un informaticien appelé Ted Codd (IBM) qui a passé beaucoup de temps à travailler sur la modélisation des données relationnelles. (MLD, MCD) <br>
@@ -107,7 +107,7 @@ Les bases de données relationnelles (SQL) sont 'ACID' component :<br>
 * Durability
 
 Cela signifique qu'à chaque fois qu'il y a une transaction dans la BDD,<br> 
-on pourra garantir la validité des données, même s'il y a une panne de réseau ou de hardware.<br>
+on pourra garantir la validité des données, même s'il y a une panne de réseau ou de h>ardware.<br>
 C'est essentiel pour les banques ou les institutions financières,<br> 
 mais cela rend ce type de DB plus difficile à faire évoluer.<br>
 Cependant, il existe des BDD modernes comme CockroachDB qui sont spécifiquement designées pour évoluer.
@@ -117,7 +117,7 @@ mais n'est pas idéal pour des données non structurées.
 
 ## 5. GRAPHS DATABASE
 
-![](./graphs-db.png)
+![](./img/graphs-db.png)
 
 La donnée est représentée en noeuds (nodes), et leurs relations sont appelées des arrêtes (edges).<br>
 
@@ -137,7 +137,7 @@ ou pour générer des moteurs de recommandation comme sur Airbnb.
 
 ## 6. SEARCH DATABASE
 
-![](./search-db.png)
+![](./img/search-db.png)
 
 utilisé pour les moteurs de recherche par texte.<br>
 La plupart des bases de données sont basées sur le "lucene project" (1999), comme Solr et Elastic Search.<br>
@@ -158,7 +158,7 @@ ou une 'typeahead search box' (méthode pour rechercher progressivement et filtr
 
 ## 7. MULTI-MODEL DATABASE
 
-![](./mutli-model-db.png)
+![](./img/mutli-model-db.png)
 
 FaunaDB
 
