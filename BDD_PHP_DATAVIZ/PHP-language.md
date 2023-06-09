@@ -75,6 +75,11 @@ On doit donc le compléter avec d'autres programmes.
 
 C'est ce logiciel qui gère les protocoles HTTP pour rendre lisible le langage SERVEUR vers le CLIENT.
 
+#### HTTP 
+
+Langage de communication entre le client et le serveur.<br>
+Ce langage n'est pas sécurisé.<br>
+HTTPS : HTTP sécurisé
 
 #### PHP
 
