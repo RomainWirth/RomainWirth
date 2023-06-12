@@ -124,15 +124,7 @@ La clé primaire est un index. Chacune des tables ne peut contenir qu'une seule 
 
 L'usage le plus fréquent consiste à créer une colonne numérique qui s'incrémente automatiquement à chaque enregistrement grâce à AUTO_INCREMENT
 ```
-..
-..
-..
-..
-..
-..
-..
-..
-..acunes par un identificateur : id, email, bio, pays.<br>
+Chacunes par un identificateur : id, email, bio, pays.<br>
 Chaque colonne aura un type de données<br>
 * la colonne **"ID"** comporte le mot clé **PRIMARY KEY** indique une donnée unique et non nulle<br>
 **AUTO_INCREMENT** indique à la BDD qu'elle doit créer automatiquement une ID pour l'utilisateur.<br>
@@ -319,12 +311,12 @@ on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être 
 ```SQL
 SELECT * FROM utilisateurs --sélectionne tous les utilisateurs
 JOIN langue --joindre les langues
-ON utilisateur.langue_id = langue_id --relation entre tous les utilisateurs ayant configuré dans une langue spécifique.
+ON utilisateurs.langue_id = langue.id --relation entre tous les utilisateurs ayant configuré dans une langue spécifique.
 ```
 * On demande au SGBD de sélectionner tous les utilisateurs grâce à **SELECT * FROM `utilisateurs`**
 * Au résultat de cette commande, on a joint la table langue grâce à **JOIN `langue`
 * Pour pouvoir faire cette jointure, on précise au SGBD la correspondance entre la table _langue_ et la table _utilisateur_.<br>
-La correspondance est effectuée via la clé _langue_id_ pour la table langue et _id_ pour la table utilisateur.<br>
+La correspondance est effectuée via la clé _langue_id_ pour la table utilisateurs et _id_ pour la table langue.<br>
 Cela se fait grâce à **ON `utilisateur`.`langue_id` = `langue`.`id`.
 ble 'utilisateur' et une table 'langue',<br> 
 on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être égale à l'id de l'utilisateur :
@@ -332,7 +324,7 @@ on peut spécifier grâce au mot clé **JOIN** que l'id de la langue doit être 
 ```SQL
 SELECT * FROM utilisateurs --sélectionne tous les utilisateurs
 JOIN langue --joindre les langues
-ON utilisateur.langue_id = langue_id --relation entre tous les utilisateurs ayant configuré dans une langue spécifique.
+ON utilisateurs.langue_id = langue.id --relation entre tous les utilisateurs ayant configuré dans une langue spécifique.
 ```
 * On demande au SGBD de sélectionner tous les utilisateurs grâce à **SELECT * FROM `utilisateurs`** 
 jointure interne pour retourner les enregistrements quand la condition est vraie dans les deux tables.<br>
