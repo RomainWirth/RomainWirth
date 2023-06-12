@@ -4,6 +4,18 @@
 
 ### Le fonctionnement d'un site web :
 
+Internet est un système créé pour transporter de l'information.<br>
+Il s'agit d'un réseau de réseaux qui utilisent chacun des protocoles différents pour envoyer de l'information.<br>
+```
+Protocole = ensemble de règles établies qui définissent comment formater,
+transmettre et recevoir des données.
+```
+
+Le web est l'un des réseaux de l'Internet. le web n'est donc qu'une partie d'Internet.<br>
+Le web est un réseau de machines interconnectées qui stockent des sites.<br>
+Lorsqu'une machine est connectée au web et fournit un accès à un site web,<br> 
+on s'apelle serveur car elle "sert" le site web.<br>
+
 Lorsqu'on visite un site web, on tape l'adresse dans le navigateur web.<br>
 Mais comment fait la page web pour arriver jusqu'à nous ?<br>
 
@@ -12,6 +24,7 @@ Internet est un réseau composé d'ordinateurs qui sont classés en deux catégo
 HTML, CSS et Javascript sont des langages clients. 
 * Les **serveurs** : ordinateurs puissants qui stockent et délivrent des sites web aux clients.<br>
 Ces ordinateurs sont indispensables au bon fonctionnement du web.<br>
+ils fonctionnent 24h/24 et 7j/7.<br>
 Il existe plusieurs langages serveur, dont PHP.
 
 la consultation d'un site statique se passe en deux temps : 
@@ -34,10 +47,11 @@ C'est là que le PHP entre en jeu.
 
 ### QU'EST-CE QUE PHP ?
 
-PHP est un accronyme pour PHP Hypertext Processor qui s'exécute uniquement côté serveur.<br>
+PHP est un accronyme pour "PHP Hypertext Processor" qui s'exécute uniquement côté serveur.<br>
+Ce langage a été créé en 1994.<br>
 C'est un langage de scripts généraliste et Open Source, spécialement conçu pour le développement d'applications web.<br>
-Il peut être intégré facilement au HTML.<br>
-Son rôle est de générer des pages web, cependant, seul un serveur peut lire du PHP, et l'ordinateur du client n'est pas un serveur.<br> 
+Il peut être intégré facilement au HTML et son rôle est de générer des pages web dynamiquement.<br>
+Cependant, seul un serveur peut lire du PHP, et l'ordinateur du client n'est pas un serveur.<br> 
 
 Le PHP est principalement conçu pour servir de langage de script côté serveur.<br>
 Il est capable de réaliser tout ce qu'il script CGI quelconque peut faire, voici quelques exemples :
@@ -49,6 +63,21 @@ Afin de pouvoir lire du PHP, l'ordinateur doit donc se comporter comme un serveu
 Pour cela, on doit installer les mêmes programmes que ceux que l'on trouve sur les serveurs qui délivrent les sites web aux internautes.<br>
 
 Ces programmes viendront compléter les autres programmes qui vont nous permettre d'éditer du texte et de visualiser les pages web.<br>
+
+#### HTTP 
+
+Le web repose sur le protocole HTTP : HyperText Transfer Protocol (Protocole de transfert hypertexte).<br>
+HTTPS utilise lui des clefs de cryptage (Secure HTTP).<br>
+Pour accéder directement à une page web, on passe par un avigateur en utilisant le protocole HTTP.<br>
+On va passer une adresse à notre navigateur sous le format URL :<br>
+Uniform Resource Locator (ou localisateur uniforme de ressource), qui sert à identifier une page web de manière unique.<br>
+
+Le navigateur (et donc notre ordinateur) est client : on demande accès à la page web.<br>
+
+Le navigateur va chercher ou se trouve le serveur hébergeant la page demandée,<br>
+en utilisant un service DNS (Domaine Name Server).<br>
+Ce sont des serveurs qui permettent d'associer un nom de domaine à une adresse IP unique.<br>
+
 
 #### L'IDE (Editeur de Texte)
 
@@ -75,11 +104,7 @@ On doit donc le compléter avec d'autres programmes.
 
 C'est ce logiciel qui gère les protocoles HTTP pour rendre lisible le langage SERVEUR vers le CLIENT.
 
-#### HTTP 
 
-Langage de communication entre le client et le serveur.<br>
-Ce langage n'est pas sécurisé.<br>
-HTTPS : HTTP sécurisé
 
 #### PHP
 
@@ -90,7 +115,36 @@ En combinant Apache et PHP, notre ordinateur sera capable de lire des pages web 
 
 SGBD qui permet de gérer une BDD de manière organisée.
 
-#### INSTALLATION DES PROGRAMMES
+#### INSTALLATION DE PHP sous Linux
+
+1. Ouvrir un terminal (Ctrl + Alt + T)
+
+2. Update les packages
+```bash
+sudo apt-get update
+```
+
+3. Upgrade les packages
+```bash
+sudo apt-get upgrade
+```
+
+4. Install PHP et vérifier la version
+```bash
+sudo apt-get install php
+
+php --version
+```
+
+5. Pour lancer PHP et démarrer un serveur web
+se placer à la racine du fichier contenant le index.html (ou index.php)<br> 
+et taper cette commande : 
+```bash
+sudo -S localhost:8000
+```
+
+
+#### INSTALLATION DES PROGRAMMES XAMPP, WAMPP, MAMPP etc.
 
 **LINUX**
 
@@ -134,3 +188,14 @@ Pour démarrer le xampp control panel :
 ```bash
 sudo /opt/lampp/manager-linux-x64.run
 ```
+
+Si le serveur Apache ne démarre pas : 
+```bash
+sudo /etc/init.d/apache2 stop 
+
+sudo /etc/init.d/mysql stop
+
+sudo /etc/init.d/proftpd stop
+```
+Ces trois commandes arrêtent l'exécution de Apache, MySQL et php. 
+Cela permet de pouvoir relancer le tout par la suite.
