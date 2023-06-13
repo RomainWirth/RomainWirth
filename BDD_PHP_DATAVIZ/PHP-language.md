@@ -104,8 +104,6 @@ On doit donc le compléter avec d'autres programmes.
 
 C'est ce logiciel qui gère les protocoles HTTP pour rendre lisible le langage SERVEUR vers le CLIENT.
 
-
-
 #### PHP
 
 C'est un _plug-in_ pour Apache qui le rend capable de traiter des pages web dynamiques en PHP.<br>
