@@ -112,8 +112,12 @@ _pour la seconde_, si la valeur est 'about', on affiche la page about.
 
 ## Connecter avec la BDD et DOCKER
 
-Pour commencer, il faut ajouter les fichiers .sql et le fichier docker-compose.yml<br>
-On va ensuite connecter la base de donnée au format du SGBD (postgre, mysql ou autre).<br>
+Pour commencer, il faut ajouter le fichier *.sql qui contient la BDD et le fichier docker-compose.yml<br>
+
+On va ensuite connecter la base de donnée au format du SGBD (postgre, mysql ou autre) :<br>
+**clic droit > run database**<br>
+**  **
+
 Puis connecter DOCKER :<br>
 ```bash
 sudo docker-compose up
@@ -152,6 +156,12 @@ Il faudra utiliser une interface d'abstraction complète si on en a besoin.<br>
 ### Connecter à PostgreSQL 
 
 Ce tuto (en anglais indique la procédure) : https://www.phptutorial.net/php-pdo/pdo-connecting-to-postgresql/<br>
+
+D'autres sources :<br>
+* https://www.youtube.com/watch?v=Rh7mXaZl1oc
+* https://openclassrooms.com/fr/courses/918836-concevez-votre-site-web-avec-php-et-mysql/913655-travaillez-avec-une-base-de-donnees
+* https://www.enterprisedb.com/postgres-tutorials/connecting-postgresql-using-php
+* https://yard.onl/sitelycee/cours/php/SeconnecterlabasededonnesenPHP.html
 
 #### éléments requis :
 
@@ -203,7 +213,12 @@ et s'il y a une erreur, il va exécuter le contenu du bloc 'catch'.<br>
 PDO_PGSQL est un driver qui implémente l'interface PDO. Il nous permet d'accéder aux BDD PsogreSQL depuis PHP.<br>
 
 Afin de vérifier si ce driver estactivé, il faut ouvrir le fichier 'php.ini'.<br>
-Ce fichier est localisé en général sous le dossier php.<br>
+Ce fichier est localisé en général sous le dossier php (cli).<br>
+
+pour obtenir les droits de modification, il faut entrer cette commande dans le terminal :<br>
+```bash
+sudo chmod -R 777 /opt/lampp/htdocs
+```
 
 _N.B. : sous windows, si on utilise XAMPP, ce fichier sera localisé sous C:\xampp\php.
 
@@ -240,6 +255,8 @@ Dans le fichier config.php, on aura le code suivant (même code que celui écrit
 
 ?>
 ```
+_N.B.: concernant les erreurs, voir le tuto qui explique la gestion des erreurs de PDO._
+
 
 Et le fichier index.php contiendra le code suivant :
 
