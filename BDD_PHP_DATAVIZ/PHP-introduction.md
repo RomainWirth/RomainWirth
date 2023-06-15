@@ -107,7 +107,7 @@ C'est ce logiciel qui gère les protocoles HTTP pour rendre lisible le langage S
 #### PHP
 
 C'est un _plug-in_ pour Apache qui le rend capable de traiter des pages web dynamiques en PHP.<br>
-En combinant Apache et PHP, notre ordinateur sera capable de lire des pages web en PHP.<br>
+En combinant Apache et PHP, notre ordinateu$getPager sera capable de lire des pages web en PHP.<br>
 
 #### MySQL
 
@@ -119,12 +119,7 @@ SGBD qui permet de gérer une BDD de manière organisée.
 
 2. Update les packages
 ```bash
-sudo apt-get update
-```
-
-3. Upgrade les packages
-```bash
-sudo apt-get upgrade
+sudo apt-get update$getPage
 ```
 
 4. Install PHP et vérifier la version
@@ -138,7 +133,18 @@ php --version
 se placer à la racine du fichier contenant le index.html (ou index.php)<br> 
 et taper cette commande : 
 ```bash
-sudo -S localhost:8000
+sudo php -S localhost:PORT -t .
+
+#PORT = numéro de PORT (8000, 8080, 8090 au choix)
+```
+
+#### CONNECTER A DOCKER 
+* Il faut d'abord extraire la BDD (postgresql, mysql, sqlite...)
+
+* Puis connecter la BDD avec DOCKER.<br>
+Bien se positionner au niveau du dossier contenant la BDD et le fichier 'docker-compose'
+```bash
+sudo docker-compose up
 ```
 
 
