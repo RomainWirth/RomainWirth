@@ -3,13 +3,20 @@
 
 - 📫 How to reach me **wirth.romain@gmail.com**
 
-- ⚡ Fun fact **i'm a moto gymkhana racer, mountain lover and sport addict. I also play video games and board games. I like to learn about new things.**
+- ⚡ Fun facts :<br> 
+**i'm a moto gymkhana racer, mountain lover and sport addict. I also play video games and board games. I like to learn about new things.**
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
-<a href="https://linkedin.com/in/romainwirth" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="romainwirth" height="30" width="40" /></a>
-<a href="https://stackoverflow.com/users/romsteak74" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/stack-overflow.svg" alt="romsteak74" height="30" width="40" /></a>
-<a href="https://www.youtube.com/c/romwir74" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/youtube.svg" alt="romwir74" height="30" width="40" /></a>
+<a href="https://linkedin.com/in/romainwirth" target="blank">
+    <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="romainwirth" height="30" width="40" />
+</a>
+<a href="https://stackoverflow.com/users/romsteak74" target="blank">
+    <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/stack-overflow.svg" alt="romsteak74" height="30" width="40" />
+</a>
+<a href="https://www.youtube.com/c/romwir74" target="blank">
+    <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/youtube.svg" alt="romwir74" height="30" width="40" />
+</a>
 </p>
 
 <h3 align="left">Languages and Tools:</h3>

@@ -1,6 +1,6 @@
 # ECRIRE DU PHP
 
-## SYNTAXE PHP
+## Syntaxe PHP
 
 _à compléter_
 
@@ -8,7 +8,7 @@ _à compléter_
 Le PHP s'écrit dans un fichier ayant l'extension '.php'.<br>
 On remplacera donc l'extension '.html' par '.php'.<br>
 
-Le dossier s'organisera de cette manière :
+Le dossier s'organisera de cette manière :<br>
 ![](./img/exemple_dossier_php.png)
 
 Ici, à la racine on retrouve index.php.<br>
