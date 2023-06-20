@@ -46,3 +46,30 @@ Cela peut-être perturbant et frustrant au début.<br>
 
 Documentation TypeScript : https://www.typescriptlang.org/docs/
 
+## Installer TypeScript
+
+Tout d'abord, vérifier que nodejs soit installé sur la machine.<br>
+
+```bash
+npm --version
+```
+
+sur Linux 
+
+```bash
+sudo apt update
+
+sudo apt install nodejs
+
+nodejs -v
+
+sudo apt install npm
+```
+
+Une fois Node.js installé, créer un nouveau dossier où on le souhaite dans l'ordinateur, y entrer et y lancer un terminal.<br>
+
+
+```bash
+npm init -y
+```
+
