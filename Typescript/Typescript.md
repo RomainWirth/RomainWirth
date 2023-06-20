@@ -68,8 +68,14 @@ sudo apt install npm
 
 Une fois Node.js installé, créer un nouveau dossier où on le souhaite dans l'ordinateur, y entrer et y lancer un terminal.<br>
 
-
 ```bash
 npm init -y
 ```
+Cette commande génère un projet TypeScript à la racine du dossier.<br>
+Un fichier package.json sera généré, on pourra par la suite installer TypeScript :<br>
 
+```bash
+npm install --save-dev typescript
+```
+
+Nous allons ensuite créer un fichier _'mon-fichier.ts'_ dans lequel on écrira un peu de code en TS.<br>
