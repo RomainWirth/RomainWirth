@@ -217,3 +217,190 @@ au lieu de passer en paramètres le contenu de l'objet : _characterToDamage: {li
 on va déclarer un type objet : _Hero_, qui sera passé en paramètres de la fonction.
 
 Il est possible d'ajouter autant de propriétés que l'on veut à un objet, et chaque propriété peut avoir n'importe quel type.<br>
+```TypeScript
+type Pet = {
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+};
+type Hero = {
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+    pet?: Pet;
+};
+```
+
+à noter le '?' sur la dernière propriété de Hero. Ceci indique que "pet" est optionnel.<br>
+Un objet Helo sera valide, qu'il ait un animal de compagnie ou non.<br>
+
+Pour éviter de rendre le code répétitif, on va refactoriser ainsi :
+```TypeScript
+type Character = {
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+};
+type Pet = Character;
+type Hero = Character & {
+    pet?: Pet;
+};
+```
+Pet est un alias de Character. Le symbole & indique que le type Hero est une intersection entre le type Character et { pet?: Pet}.<br>
+
+Une intersection indique à TS que l'on souhaite fusionner les types entre eux.<br>
+Cela signifie qu'on indique à TS que Hero est un Character avec une propriété optionnelle pet, qui a pour type Pet.
+
+#### Type ou Interface ?
+
+le mot clé interface (très similaire à type), à la différence de type qui définit des objets et leurs propriété avec un alias,<br>
+a pour but de définir une structure stricte pour un objet.<br>
+Il semble donc plus correct d'utiliser interface pour définir des objets.
+
+```TypeScript
+interface Character {
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+};
+type Pet = Character;
+interface Hero extends Character {
+    pet?: Pet;
+};
+```
+Les syntaxes sont assez similaires et les résultats de ces deux codes sont équivalents.
+
+N.B. : type ou interface, ces deux mots clés ne sont utilisés que dans la syntaxe TS et n'apparaîtront pas dans le code JS généré après compilation.<br>
+
+### Manipuler des listes fortement typées 
+
+En TypeScript, il est possible de dire à notre code qu'un tableau (Array) contiendra des données avec un type spécifique.<br>
+Pour cela, on va ajouter des crochets [] à droite du type souhaité :<br>
+
+```TypeScript
+type MyArrayOfNumbers = number[]; // définition d'un tableau de nombres
+
+const arrayOk: MyArrayOfNumbers = [1, 2, 3]; // ce tableau est OK
+
+const arrayNotOk: MyArrayOfNumbers = [1, 'two', false]; // renvoie une erreur TS
+```
+
+Quand on manipule un tableau typé, il faut s'assurer qu'il ne contiendra que des variables du type qu'on a défini.<br>
+
+Il existe une syntaxe alternative préférable à utiliser lorsqu'on ne connaît pas le contenu du tableau :<br>
+```TypeScript
+type MyArrayOfNumbers = Array<number>;
+``` 
+
+## Rendre ses types génériques 
+
+### Donner des paramètres aux types
+
+Les génériques sont un concept très puissant de TypeScript.<br>
+Cela va permettre de rendre un type générique tel un modèle et de réutiliser ce modèle pour définir d'autres types :<br>
+
+On va assigner au type une sorte de paramètre noté entre "< >".
+Ainsi, lorsqu'on appelle ce type générique pour définir un autre type, on pourra lui passer en paramètre un type qu'on souhaite.<br>
+ex 1 :
+```TypeScript
+type Shop<T> = { // le paramètre T est une convention. On peut utiliser ce qu'on veut : ItemType, ou unknown par exemple. Ce type est utilisable partout dans le générique
+    name: string;
+    items: Array<T>; // on passe le paramètre T qui est pour l'instant inconnu, mais sera défini plus tard lors de l'appel de type Shop. Il est important que le terme utilisé soit le même que celui du paramètre situé après 'Shop'.
+};
+type ShopOfNumbers = Shop<number>;
+type ShopOfNumbers = Shop<string>;
+type ShopOfNumbers = Shop<boolean>;
+
+```
+ex 2 :
+```TypeScript
+interface Character {
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+};
+type Pet = Character;
+interface Hero extends Character {
+    pet?: Pet;
+};
+type Shop<ItemType> = { 
+    name: string;
+    owner: Character;
+    items: Array<ItemType>; // on passe le paramètre T qui est pour l'instant inconnu, mais sera défini plus tard lors de l'appel de type Shop. Il est important que le terme utilisé soit le même que celui du paramètre situé après 'Shop'.
+};
+type Equipment = {
+    price: number;
+    attack?: number;
+    defense?: numnber;
+};
+type Potion = {
+    price: number;
+    magic: number;
+    attack?: number;
+    defense?: numnber;
+}
+// Armurerie est un shop qui vend des équipements
+type Armory = Shop<Equipment>;
+// l'animalerie est un shop qui vend des animaux
+type PetShop = Shop<Pet>;
+// l'Apothicaire est un shop qui vend des potions
+type Apothecary = Shop<Potion>;
+```
+Dans l'exemple 2, il faut bien comprendre que les trois types Armory, PetShop et Apothecary sont des alias pour les types respectifs :<br>
+```TypeScript
+Shop<Equipment>;
+Shop<Pet>;
+Shop<Potion>;
+```
+On préférera donc utiliser le mot clé 'interface' et refactoriser le code comme suit :
+```TypeScript
+interface Character {
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+};
+type Pet = Character;
+interface Hero extends Character {
+    pet?: Pet;
+};
+interface Shop<ItemType> { 
+    name: string;
+    owner: Character;
+    items: Array<ItemType>; // on passe le paramètre T qui est pour l'instant inconnu, mais sera défini plus tard lors de l'appel de type Shop. Il est important que le terme utilisé soit le même que celui du paramètre situé après 'Shop'.
+};
+// On va utiliser une fonction générique 
+function createShop<ItemType>(name: string, owner: Character, items: Array<ItemType>;): Shop<ItemType> {
+    return {name, owner, items};
+}
+// Appel de la fonction générique
+const aromry = createShop<Equipment>('My Armory', {name: 'Bob', life: 100, attack: 1, defense: 2}, []);
+```
+
+#### Les fonctions génériques
+
+Il n'est pas nécessaire de préciser le "paramètre type" si celui-ci est utilisé pour définir le type d'un des paramètres de la fonction.<br>
+TypeScript peut le deviner lui-même.<br>
+
+```TypeScript
+// Une fonction qui retourne simplement ce qu'elle reçoit en paramètre
+function returnParameter<T>(x: T): T {
+    return x;
+}
+// Ceci fonctionne, c'est ce que nous avons vu jusque-là
+const a = returnParameter<number>(1);
+// Mais puisque le type "T" est utilisé pour typer le paramètre "x",
+// il n'est pas nécessaire de le préciser en appelant la fonction.
+// Avec la ligne ci-dessous, TypeScript devine tout seul que "T" est "number" !
+const a2 = returnParameter(1);
+```
+
+Les génériques permettent aux types d'être plus facilement réutilisables.<br>
+Mais cela rend le code plus complexe.<br>
+
+### Utiliser les génériques proposés par TypeScript
