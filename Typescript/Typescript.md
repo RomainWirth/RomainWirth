@@ -78,14 +78,14 @@ Nous allons ensuite créer un fichier _'mon-fichier.ts'_ dans lequel on écrira 
 Dans ce fichier on écrira du code en TS, puis on lancera la commande :
 
 ```bash
-npx tsc mon-fichier.ts'
+npx tsc mon-fichier.ts
 ```
 
 Cette commande permet de compiler le code TS dans un fichier JS afin qu'il puisse être lu par le navigateur.<br>
 
 N.B. : afin de compiler dans la dernière version de JS, on utilisera '--target es6' dans la commande :
 ```bash
-npx tsc mon-fichier.ts' --target es6
+npx tsc mon-fichier.ts --target es6
 ``` 
 
 ### Ajouter des types à JavaScript :
