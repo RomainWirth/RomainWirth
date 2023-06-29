@@ -135,6 +135,7 @@ _ou des ondes infrarouges_ (rarement utilisées sur des réseaux informatiques c
 Il s'agit du point de connexion entre deux réseaux. C'est la partie qui assure la connexion entre un terminal utilisateur et un réseau (public ou privé).<br>
 
 **Qu'est-ce qu'une adresse MAC ?**<br>
+https://www.noodo-wifi.com/faq/adresse-mac/ <br>
 L'adresse MAC (Media Access Control) est l'adresse physique d'un périphérique réseau.<br>
 Une adresse MAC est sensée être unique au monde. C'est une sorte de plaque d'immatriculation d'un appareil électronique.<br>
 Elle peut être modifiée dans certains cas mais c'est assez rare car elle est activée dès la fabrication en usine.<br>
@@ -143,6 +144,7 @@ Les 12 caractères sont des aplhanumériques de 0 à 9 et de A à F.<br>
 Les 6 premiers chiffres permettent d'identifier le fabricant de l'appareil.<br>
 
 **Qu'est-ce qu'une adresse IP ?**<br>
+https://fr.wikipedia.org/wiki/Adresse_IP <br>
 L'adresse IP (Internet Protocol) est un numéro d'identification unique attribué de façon permanente (ou provisoire) à chaque périphérique faisant partie d'un réseau informatique utilisant l'Internet Protocol.<br>
 L'adresse IP est à l'origine du système d'acheminement (le routage) des paquets de données sur internet.<br>
 Il existe deux grandes versions d'adresses IP :
@@ -150,3 +152,43 @@ Il existe deux grandes versions d'adresses IP :
 C'est la plus utilisée, généralement représentée en notation décimale avec 4 nombres compris entre 0 et 255, séparés par des points.<br>
 _ex: 181.174.87.53_
 * IPV6 (IP Version 6) : codée en 128 bits.
+
+```
+Explication de l'adresse IP :
+L'IPV4 est codée en 32 bits. 
+C'est à dire que les 4 séries de nombres représentent un total de 32 bits.
+Donc : 181.174.87.53 représente une série de : <8 bits . 8 bits . 8 bits . 8 bits>
+
+```
+**Tableau de conversion d'un décimal en binaire.**<br>
+Le tableau ci-dessous 
+(|1bit|1bit|1bit|1bit|1bit|1bit|1bit|1bit|): 
+|  | 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
+|-|-|-|-|-|-|-|-|-|
+| numéro 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| numéro 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| numéro 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| ... |  |  |  |  |  |  |  |  |
+| numéro 9 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 |
+| numéro 10 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 |
+| ... |  |  |  |  |  |  |  |  |
+| numéro 20 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
+| numéro 21 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1 |
+
+**Interprêtation du tableau :** <br>
+Le numéro 10, ici, se décompose en 8 + 2, on l'écrira donc en binaire : 0 0 0 0 1 0 1 0.<br>
+N.B. : 1 octet = 8 bits. les données en binaires sont stockées par groupes de 8 bits.<br>
+Le nombre 10 est représenté en langage binaire par : 00001010 => il prendra 4 bits d'espace mémoire.<br>
+la somme : 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255 (valeur décimale maximale sur 8 bits)<br>
+
+Une adresse IPV4 est codée en 32 bits : 4 groupes de 8 bits (4 x 8 = 32)<br>
+un espace de 8 bits peut contenir jusqu'à 255 adresses différentes :<br>
+[0 à 255].[0 à 255].[0 à 255].[0 à 255]<br>
+
+L'adress IPV4 192.168.1.0 indique l'adresse du réseau.<br>
+On va pouvoir avoir jusqu'à 253 entités sur ce réseau :<br>
+192.168.1.[1 à 254]<br>
+la dernire adresse : 192.168.1.255 indique l'adresse de podcast : elle permet de communiquer avec toutes les entités du réseau.<br>
+
+#### Comment tester la bonne configuration et la communication entre deux machines ?
+
