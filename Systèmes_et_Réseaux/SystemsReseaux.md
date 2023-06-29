@@ -157,7 +157,7 @@ _ex: 181.174.87.53_
 Explication de l'adresse IP :
 L'IPV4 est codée en 32 bits. 
 C'est à dire que les 4 séries de nombres représentent un total de 32 bits.
-Donc : 181.174.87.53 représente une série de : <8 bits . 8 bits . 8 bits . 8 bits>
+Donc : 181.174.87.53 représente une série de : <[8 bits] . [8 bits] . [8 bits] . [8 bits]>
 
 ```
 **Tableau de conversion d'un décimal en binaire.**<br>
@@ -181,14 +181,61 @@ N.B. : 1 octet = 8 bits. les données en binaires sont stockées par groupes de 
 Le nombre 10 est représenté en langage binaire par : 00001010 => il prendra 4 bits d'espace mémoire.<br>
 la somme : 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255 (valeur décimale maximale sur 8 bits)<br>
 
-Une adresse IPV4 est codée en 32 bits : 4 groupes de 8 bits (4 x 8 = 32)<br>
-un espace de 8 bits peut contenir jusqu'à 255 adresses différentes :<br>
+Une adresse IPV4 est codée en 32 bits : 4 groupes de 8 bits (4 x 8 = 32) (ou un total de 4 octets)<br>
+un espace de 8 bits peut contenir jusqu'à 255 valeurs différentes :<br>
 [0 à 255].[0 à 255].[0 à 255].[0 à 255]<br>
 
 L'adress IPV4 192.168.1.0 indique l'adresse du réseau.<br>
 On va pouvoir avoir jusqu'à 253 entités sur ce réseau :<br>
 192.168.1.[1 à 254]<br>
-la dernire adresse : 192.168.1.255 indique l'adresse de podcast : elle permet de communiquer avec toutes les entités du réseau.<br>
+la dernire adresse : 192.168.1.255 indique l'adresse de broadcast : elle permet de communiquer avec toutes les entités du réseau. (on envoie un message à cette adresse pour le communiquer à toutes les entités)<br>
 
 #### Comment tester la bonne configuration et la communication entre deux machines ?
 
+https://web.maths.unsw.edu.au/~lafaye/CCM/outils-reseau/ping.htm 
+
+On utilise l'outil **"PING"** (Packet INternet Groper).<br>
+Cet outil simple permet de vérifier, par l'envoi de paquets, si une machine distante répond et qu'elle est accessible par le réseau.<br>
+L'outil **ping** permet de diagnostiquer la connectivité réseau grâce à une commande type :<br>
+ping nom.de.la.machine<br>
+
+N.B. : nom.de.la.machine représente l'adresse IP de la machine, son nom ou encore un nom de domaine.
+
+Cet outil s'appuie sur le protocole ICMP qui permet de diagnostiquer les conditions de transmissions.<br>
+
+**la commande :**
+```bash
+ping 172.217.20.174
+```
+_renvoie :_
+```bash
+PING 172.217.20.174 (172.217.20.174) 56(84) bytes of data.
+64 bytes from 172.217.20.174: icmp_seq=1 ttl=117 time=11.9 ms
+64 bytes from 172.217.20.174: icmp_seq=2 ttl=117 time=11.9 ms
+64 bytes from 172.217.20.174: icmp_seq=3 ttl=117 time=12.1 ms
+64 bytes from 172.217.20.174: icmp_seq=4 ttl=117 time=12.1 ms 
+...
+--- 172.217.20.174 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3004ms
+rtt min/avg/max/mdev = 12.011/12.037/12.086/0.029 ms
+```
+elle renvoie un 'ping' vers l'adresse ip spécifiée, le message de retour indique le temps que ce message a mis.<br>
+**l'adresse IP** correspondante au nom de la machine distante.<br>
+**icmp_seq** indique le numéro séquence ICMP.<br>
+**ttl** (= The Time To Live) indique la durée de vie du paquet : permet de connaître le nombre de routeurs traversés par le paquet lors de l'échange entre les deux machines.<br>
+chaque paquet IP possède un champ TTL positionné à une valeur relativement grande.<br>
+**time** est le temps nécessaire pour que le paquet puisse atteindre l'hôte distant (IP de l'hôte) et faire le chemin retour pour revenir à notre machine. (exprimé en millisecondes).
+**nombre de paquets envoyés et reçus**, et donc le nombre de paquets perdus.
+
+**la commande :**
+```bash
+ping 192.0.2.255 
+```
+```bash
+PING 192.0.2.255 (192.0.2.255) 56(84) bytes of data.
+^C
+--- 192.0.2.255 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3052ms
+```
+On a dû interrompre le protocole dans ce cas.<br>
+Cette commande ne renvoie pas de retour. puisque 255 indique l'adresse de broadcast, uniquement utilisée pour envoyer des données.<br>
