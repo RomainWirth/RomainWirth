@@ -1,5 +1,8 @@
 # SYSTEMES ET RESEAUX
 
+Cours de William Burillon :<br>
+https://cours-systemes-reseaux.williamburillon.com/#/c/readme 
+
 ## MODELES OSI
 
 ### Qu'est-ce qu'un réseau, qu'est-ce qu'internet ? Notions sur Internet et le Web.
@@ -74,11 +77,7 @@ lorsqu'on tape la commande :
 ping google.com
 ```
 le terminal retourne ceci : 
-```bash
-PING google.com (216.58.214.174) 56(84) bytes of data.
-64 bytes from par10s42-in-f14.1e100.net (216.58.214.174): icmp_seq=1 ttl=117 time=12.1 ms
-64 bytes from mad01s26-in-f14.1e100.net (216.58.214.174): icmp_seq=2 ttl=117 time=12.2 ms
-64 bytes from par10s42-in-f14.1e100.net (216.58.214.174): icmp_seq=3 ttl=117 time=12.0 ms
+```bashhttps://cours-systemes-reseaux.williamburillon.com/#/c/readmeet (216.58.214.174): icmp_seq=3 ttl=117 time=12.0 ms
 64 bytes from mad01s26-in-f14.1e100.net (216.58.214.174): icmp_seq=4 ttl=117 time=12.0 ms
 64 bytes from mad01s26-in-f14.1e100.net (216.58.214.174): icmp_seq=5 ttl=117 time=12.0 ms
 ```
@@ -182,7 +181,7 @@ Le nombre 10 est représenté en langage binaire par : 00001010 => il prendra 4 
 la somme : 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255 (valeur décimale maximale sur 8 bits)<br>
 
 Une adresse IPV4 est codée en 32 bits : 4 groupes de 8 bits (4 x 8 = 32) (ou un total de 4 octets)<br>
-un espace de 8 bits peut contenir jusqu'à 255 valeurs différentes :<br>
+un espace de 8 bits peut contenir jusqu'à 256 valeurs différentes :<br>
 [0 à 255].[0 à 255].[0 à 255].[0 à 255]<br>
 
 L'adress IPV4 192.168.1.0 indique l'adresse du réseau.<br>
@@ -231,6 +230,7 @@ chaque paquet IP possède un champ TTL positionné à une valeur relativement gr
 ```bash
 ping 192.0.2.255 
 ```
+_renvoie : (après interruption)_
 ```bash
 PING 192.0.2.255 (192.0.2.255) 56(84) bytes of data.
 ^C
@@ -239,3 +239,20 @@ PING 192.0.2.255 (192.0.2.255) 56(84) bytes of data.
 ```
 On a dû interrompre le protocole dans ce cas.<br>
 Cette commande ne renvoie pas de retour. puisque 255 indique l'adresse de broadcast, uniquement utilisée pour envoyer des données.<br>
+
+#### Lorsqu'on a un serveur et plusieurs machines ?
+
+Notre serveur de stockage comporte un seul port RJ45.<br>
+Si on a plusieurs PC (ou entités) qui doivent être connectées, on va devoir ajouter d'autres entités intermédiaires.<br>
+
+* **La solution _"carte réseau"_** :<br>
+https://www.inmac-wstore.com/guides-achat-composants-definition-role-carte-reseau/cp37684.htm <br>
+La carte réseau d'un ordinateur permet de se connecter à internet et au réseau local.<br>
+Elle est installée sur la carte-mère et se connecte au réseau via un adaptateur USB-Ethernet ou un cable RJ45.<br>
+Ajouter une carte réseau supplémentaire limite le nombre de machines qu'on peut connecter au nombre de ports RJ45 de la carte.<br>
+Cela comporte un problème d'espace physique. 
+
+* **La solution _"switch"_** :<br>
+https://fr.wikipedia.org/wiki/Commutateur_r%C3%A9seau <br>
+un switch (ou commutateur réseau) permet de relier plusieurs segments dans un réseau informatique et permet de créer des circuits virtuels.<br>
+En réseau local (LAN), il s'agit d'un boitier disposant de plusieurs ports RJ45 (entre 4 et plusieurs centaines), comme un hub.<br>
