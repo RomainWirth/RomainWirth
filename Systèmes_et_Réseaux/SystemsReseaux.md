@@ -52,7 +52,7 @@ Ils acheminent les informations ou paquets IP échangés sur les réseaux locaux
 
 #### Les avantages du LAN ?
 
-1. La récurité
+1. La sécurité
 2. La simplicité : un seul LAN mais un accès internet commun.
 
 #### Les différentes typo du réseau LAN ?
@@ -200,7 +200,11 @@ ping nom.de.la.machine<br>
 
 N.B. : nom.de.la.machine représente l'adresse IP de la machine, son nom ou encore un nom de domaine.
 
-Cet outil s'appuie sur le protocole ICMP qui permet de diagnostiquer les conditions de transmissions.<br>
+Cet outil s'appuie sur le protocole ICMP (Internet Control Message Protocol) qui permet de diagnostiquer les conditions de transmissions.<br>
+Il permet de signaler les erreurs. Il est utilisé par les appareils de réseau comme les routeurs  pour générer des messages d'erreurs à l'adresse IP source lordque des problèmes de réseau empêchent la livraison de paquets IP.<br>
+L’Internet Control Message Protocol crée et envoie des messages à l’adresse IP source indiquant qu’une passerelle vers l’internet qu’un routeur, un service ou un hôte ne peut pas être atteint pour la livraison de paquets.<br> 
+Tout dispositif de réseau IP a la capacité d’envoyer, de recevoir ou de traiter des messages ICMP.
+(Pour plus d'informaiton : suivez ce <a href="https://actualiteinformatique.fr/definition/definition-icmp-internet-control-message-protocol">lien</a>)
 
 **la commande :**
 ```bash
@@ -256,3 +260,42 @@ Cela comporte un problème d'espace physique.
 https://fr.wikipedia.org/wiki/Commutateur_r%C3%A9seau <br>
 un switch (ou commutateur réseau) permet de relier plusieurs segments dans un réseau informatique et permet de créer des circuits virtuels.<br>
 En réseau local (LAN), il s'agit d'un boitier disposant de plusieurs ports RJ45 (entre 4 et plusieurs centaines), comme un hub.<br>
+
+#### Connecter 2 réseaux
+
+L'adresse IP d'un réseau d'apparente à ceci : 192.168.0.0<br>
+les deux dernières séries de nombres :<br>
+* le premier [0] indique le numéro de réseau.
+* le deuxième [0] indique l'adresse du réseau sur le réseau.
+
+La première entité sur ce réseau aura pour adresse IP 192.168.0.1,<br>
+La deuxième aura pour adresse IP 192.168.0.2, etc.<br>
+
+Dans chaque cas, il faut indiquer le SebnetMask (le masque) :<br>
+indiquant le nombre maximum de machines disponibles : 255.255.255.0
+
+Une adresse IP écrite comme ceci : 192.168.0.1/24 (adresse IP écrite en 24bits)<br>
+équivaut à une adresse IP écrite comme ça :<br>
+192.168.0.1
+255.255.255.0
+
+Il est nécessaire d'indiquer le SubnetMask afin d'identifier la partie de l'adresse IP qui correspond à l'adresse du réseau.<br>
+c'est à dire que l'adresse IP se décompose en 2 parties :<br>
+[192.168.0][.1] = première partie indique l'adresse réseau, et la deuxième l'adresse de l'entité sur le réseau.
+
+explications plus détaillées SubnetMask <a href="https://avinetworks.com/glossary/subnet-mask/">ici</a>
+
+Afin de connecter la machine à un routeur, on va devoir lui indiquer la Default Gateway.<br>
+La default gateway est l'adresse IP qui indique au routeur l'adresse du réseau.<br>
+Cette adresse sera écrite comme ceci : 192.168.0.254<br>
+C'est l'avant dernière adresse disponible (dernière se termine par 255 = adresse broadcast).<br>
+
+Nous avons donc deux réseaux : `192.168.0.0` et `192.168.100.0`.<br>
+Afin de les connecter, on va faire appel à un routeur.<br>
+Ce routeur, cablé aux deux switchs, devra renseigner les adresses IP des deux réseaux de cette manière : (attention, bien faire attention au numéro de port du câble RJ45)<br>
+* Ethernet 0/0/0 : IPV4 = 192.168.0.254 ; Subnet Mask = 255.255.255.0
+* Ethernet 0/0/1 : IPV4 = 192.168.100.254 ; Subnet Mask = 255.255.255.0
+
+Ainsi, les messages envoyés depuis le réseau 192.168.0 seront identifiés comme tel,<br>
+et les messages envoyés depuis l'autre réseau 192.168.100 aussi.<br>
+
