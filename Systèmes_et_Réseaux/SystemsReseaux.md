@@ -276,8 +276,11 @@ indiquant le nombre maximum de machines disponibles : 255.255.255.0
 
 Une adresse IP écrite comme ceci : 192.168.0.1/24 (adresse IP écrite en 24bits)<br>
 équivaut à une adresse IP écrite comme ça :<br>
-192.168.0.1
-255.255.255.0
+192.168.0.1<br>
+255.255.255.0<br>
+
+Ceci dépendra de la classe du Subnet Mask.<br>
+
 
 Il est nécessaire d'indiquer le SubnetMask afin d'identifier la partie de l'adresse IP qui correspond à l'adresse du réseau.<br>
 c'est à dire que l'adresse IP se décompose en 2 parties :<br>
@@ -298,4 +301,63 @@ Ce routeur, cablé aux deux switchs, devra renseigner les adresses IP des deux r
 
 Ainsi, les messages envoyés depuis le réseau 192.168.0 seront identifiés comme tel,<br>
 et les messages envoyés depuis l'autre réseau 192.168.100 aussi.<br>
+
+## Les modèles OSI et TCP/IP
+
+Il existe deux grandes familles de règles dans le monde des réseaux informatique :<br>
+* règles liées à l'aspect matériel = les normes.
+* règles liées à l'aspect logiciel = les protocoles.
+
+Concernant les règles d'harmonisation des normes :<br> 
+* on a vu les choix des connecteurs :câbles RJ45 (cuivre),<br> 
+* et les contraintes d'attribuer les adresses IP aux machines sur un réseau.
+
+`ATTENTION LISTE NON EXHAUSTIVE`
+
+### Le modèle OSI 
+
+<a href="https://www.cloudflare.com/fr-fr/learning/ddos/glossary/open-systems-interconnection-model-osi/">Source</a>
+
+Le modèle OSI (Open Systems Interconnection) est un modèle créé par l'ornganisation internationale de normalisation.<br>
+Ce modèle permet de normaliser la communication entre systèmes informatiques à l'aide de protocoles standards.<br>
+
+Ce modèles est un langage universel pour la mise en réseau d'ordinateurs.<br>
+
+**Les différentes couches du modèles OSI** : il y en a 7<br>
+
+7. **Couche applicative** :<br>
+C'est la seule couche qui interagit directement avec les données utilisateur.<br>
+Les applis logiciel telles que les navigateurs web et les clients e-mail se servent de cette couche pour initier les communications.<br>
+N.B. : les applis logicielles ne font pas partie de la couche applicative.<br>
+Cette couche est responsable des protocoles et de la manipulation des données sur lesquels le logiciel s'appuie pour présenter des données significatives à l'utilisateur.<br>
+Les protocoles de cette couche incluent : HTTP et SMTP (Simple Mail Transfer Protocol = pour le courrier électronique).<br>
+6. **Couche de présentation** :<br>
+Elle est responsable de la présentation des données afin qu'elles puissent être utilisées par la couche applicative.<br>
+C'est à dire qu'elle rend les données présentables pour les applications. Elle est responsable de la traduction, du chiffrement et de la compression des données.<br>
+5. **Couche de session** :<br>
+Cette couche est reponsable de l'ouverture et de la fermeture de la communication entre deux appareils.<br>
+L'intervalle entre l'ouverture et la fermeture de la communication est appelée session.<br>
+Cette couche garantit que la session reste ouverte suffisamment longtemps pour transférer toutes les données échangées, puis ferme rapidement la session afin d'éviter le gaspillage de ressources.<br>
+Elle synchronise également le transfert de données avec les points de contrôle.<br>
+4. **Couche de transport** :<br>
+La couche 4 est responsable de la communication de bout en bout entre les deux appareils.<br>
+Cela inclut la récupération de données de la couche session et leur décomposition en morceaux appelés segments avant de les envoyer vers la couche réseau.<br>
+Elle est également responsable du contrôle des flux et des erreurs. (détermination de la vitesse optimale de transmission pour éviter qu'un émetteur en submerge un autre s'ils n'ont pas les mêmes vitesses de connexion).<br>
+Enfin, elle s'assure que les données reçues sont complètes et demande la retransmission si ce n'est pas le cas.<br>
+3. **Couche réseau** :<br>
+Elle est chargée de faciliter le transfert de données entre deux réseaux différents.<br>
+Elle divise les segments de la couche transport en unités plus petites : les paquets, sur le périphérique de l'expéditeur et réassemble ces paquets sur le périphérique récepteur.<br>
+Enfin, elle trouve le meilleur chemin physique pour que les données atteignent leur destination : c'est le routage.<br>
+2. **Couche de liaison de données** :<br>
+Cette couche est similaire à la couche réseau, à la différence qu'elle facilite le transfert de donées entre deux périphériques d'un même réseau.<br>
+elle prend les paquets de la couche réseauet les divise en fragments plus petits appelés images.<br>
+Elle est également responsable du contrôle des flux et des erreurs dans les communications intra-réseau.<br>
+1. **Couche physique** :<br>
+Elle inclut les équipements physiques impliqués dans le transfert de données (câbles, commutateurs).<br>
+C'est dans cette couche que les données sont converties en binaire.<br>
+Elle doit aussi cenvenir d'une convention de signal pour distinguer le binaire des deux périphériques.<br>
+
+**Importance du modèle OSI** : <br>
+Ce modèle permet de dépanner les problèmes réseaux en isolant la source du problème.<br>
+C'est à dire qu'on peut identifier sur quelle couche se situe le problème, et donc de résoudre le problème plus rapidement.<br>
 
