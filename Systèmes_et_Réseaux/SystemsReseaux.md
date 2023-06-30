@@ -350,7 +350,7 @@ Elle divise les segments de la couche transport en unités plus petites : les pa
 Enfin, elle trouve le meilleur chemin physique pour que les données atteignent leur destination : c'est le routage.<br>
 2. **Couche de liaison de données** :<br>
 Cette couche est similaire à la couche réseau, à la différence qu'elle facilite le transfert de donées entre deux périphériques d'un même réseau.<br>
-elle prend les paquets de la couche réseauet les divise en fragments plus petits appelés images.<br>
+elle prend les paquets de la couche réseau et les divise en fragments plus petits appelés images.<br>
 Elle est également responsable du contrôle des flux et des erreurs dans les communications intra-réseau.<br>
 1. **Couche physique** :<br>
 Elle inclut les équipements physiques impliqués dans le transfert de données (câbles, commutateurs).<br>
@@ -360,4 +360,38 @@ Elle doit aussi cenvenir d'une convention de signal pour distinguer le binaire d
 **Importance du modèle OSI** : <br>
 Ce modèle permet de dépanner les problèmes réseaux en isolant la source du problème.<br>
 C'est à dire qu'on peut identifier sur quelle couche se situe le problème, et donc de résoudre le problème plus rapidement.<br>
+
+### Le modèle TCP/IP
+
+<a href="https://www.fortinet.com/fr/resources/cyberglossary/tcp-ip">Source</a>
+
+**le protocole TCP** est une norme de communication qui permet aux programmes et aux entités d'échanger des messages sur un réseau.<br>
+Il permet d'envoyer des paquets sur internet et d'assurer la transmission effective des données et des messages via les réseaux.<br>
+
+**le protocole IP** est la méthode utilisée pour envoyer des données d'un appareil à un autre via Internet.<br>
+Il s'appuie sur les adresses IP des entités et leur permet d'échanger des données entre elles.<br>
+
+**La différence entre TCP et IP ?** :<br>
+Ce sont des protocoles distinct qui permettent ensemble de garantir la transmission des données à leur destination au sein d'un réseau.<br>
+* Le protocole IP obtient et définit l'adresse (IP) de l'entité.<br>
+* Le protocole TCP veille au transport des données et permet d'assurer qu'elles sont transmises à l'entité de destination défini par le protocole IP.<br>
+
+**Le protocole TCP/IP** est composé de 4 couches :<br>
+1. **Couche de liaison de données (hôte-réseau):**<br>
+elle définit la manière dont les données doivent être envoyées, gère l’acte physique d’envoi et de réception des données,<br> 
+et assure la transmission des données entre les applications ou les périphériques sur un réseau.<br>
+Elle détermine également la manière dont les données doivent être signalées par le matériel et d’autres dispositifs de transmission sur un réseau.<br>
+Elle équivaut à la combinaison des couches physique et de liaison des données du modèle OSI.<br>
+2. **Couche Internet :**<br>
+elle permet l’envoi de paquets à partir d’un réseau et contrôle leur mouvement à travers un réseau afin de s’assurer qu’ils atteignent leur destination.<br> 
+Elle offre les fonctions et les procédures de transfert des séquences de données entre les applications et les périphériques sur les réseaux.<br>
+Elle correspond à la couche réseau du modèle OSI.<br>
+3. **Couche transport :**<br>
+elle permet d’établir une connexion de données de qualité et fiable entre l’application ou le périphérique d’origine et sa destination prévue.<br>
+la couche transport détermine la quantité de données à envoyer, leur destination et leur débit.<br>
+Elle correspond à la couche transport du modèle OSI.<br>
+4. **Couche application :**<br>
+elle fait référence aux programmes qui ont besoin de TCP/IP pour les aider à communiquer entre eux.<br>
+Elle combine les couches session, présentation et application du modèle OSI.<br>
+
 
