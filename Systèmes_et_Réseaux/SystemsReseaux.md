@@ -394,7 +394,7 @@ Elle correspond à la couche transport du modèle OSI.<br>
 elle fait référence aux programmes qui ont besoin de TCP/IP pour les aider à communiquer entre eux.<br>
 Elle combine les couches session, présentation et application du modèle OSI.<br>
 
-## Le DNS
+## Le service DNS
 
 **DNS** pour Domain Name System permet de faire la correspondance entre noms et adresses IP.<br>
 Il existe deux types de noms pour identifier une machine :<br>
@@ -402,3 +402,127 @@ Il existe deux types de noms pour identifier une machine :<br>
 * Le nom d'hôte (hostname) : est utilisé pour identifier la machine.<br>
 
 Ainsi, le serveur DNS permet de stocker l'association entre le nom et l'adresse IP de la machine.<br>
+
+### Fonctionnement :
+Nous avons deux entités : une émettrice, une destinataire.<br>
+
+L'entité émettrice ne connaît que le nom d'hôte du destinataire et pas son adresse IP.<br>
+Lorsqu'il émet un ping, l'émetteur envoie un message vers le serveur DNS.<br>
+Le message contient le nom d'hôte, le rôle du serveur DNS est de faire le lien entre nom d'hôte et adresse IP.<br>
+Une fois ce lien fait, il envoie la réponse au PC émetteur, qui connaîtra ainsi l'adresse IP du destinataire.<br>
+Il pourra donc envoyer le ping vers le destinataire.<br>
+Et recevra un message retour.<br>
+
+### Nom de domaine et sous-domaine
+
+1. **Le nom de domaine** est l'adresse d'un site internet.<br>
+Il s'agit d'un nom associé à une adresse IP physique sur internet.<br>
+C'est le nom unique qui apparaît après le signe `@` dans les adresses e-mail, et après le `www` dans les adresses web.<br>
+Cela facilite la mémorisation et la saisie des adresses web.<br>
+ex. : le nom de domaine _exemple.com_ peut être associé à l'adresse physique _192.102.434.8_.
+2. **Le sous domaine** est un domaine qui appartient à un domaine plus important.<br>
+ex. : _mail.google.com_, _www.google.com_ et _docs.google.com_ sont des sous-domaines de _google.com_.<br>
+Un propriétaire de domaine peut créer un sous-domaine pour attribuer des adresses facilement mémorisables aux pages Web et aux services au sein de son domaine de premier niveau.<br>
+
+### Les différents types d'enregistrement DNS
+
+Il existe plusieurs types d'enregistrement DNS, voici les plus courant :<br>
+1. **Enregistrement A** : enrigstrement qui contient l'adresse IP (IPv4) d'un domaine.<br>
+2. **Enregistrement AAAA** : contient IPv6 d'un domaine.<br>
+3. **Enregistrement CNAME** : Transfère un domaine ou un sous-domaie à un autre domaine, mais ne fournit pas d'adresse IP.<br>
+4. **Enregistrement MX** : Dirige le courrier vers un serveur de messagerie.<br>
+5. **Enregistrement TXT** : Permet à un admin de stocker des notes de texte dans l'enregistrement, souvent utilisés pour la sécurité des e-mails.
+6. **Enregistrement NS** : Stocke le serveur de noms pour une entrée DNS.<br>
+7. **Enregistrement SOA** : Stocke les infos administratives d'un domaine.<br>
+8. **Enregistrement SRV** : Spécifie un port pour des services spécifiques.<br>
+9. **Enregistrement PTR** : Fournit un nom de domaine dans les recherches inversées.<br>
+
+
+## Les Requêtes HTTP
+
+### Qu'est ce qu'une API
+
+Une API (accronyme pour Application Programming Interface) est une interface de communication.<br>
+Pour faire simple, il s'agit d'un moyen de communication entre deux logiciels,<br> 
+que ce soit entre différents composants d'une application ou entre deux applications différentes.<br>
+Il en existe différents types :<br>
+* privées : garantissent que les personnes en dehors de l'entreprise ou de l'application n'aient pas accès aux données disponibles dans la BDD.<br>
+Elles permettent uniquement aux utilisateurs autorisés d'accéder aux données de la BDD.<br>
+* publiques : utilisables par d'autres personnes sur une application ou non.<br>
+exemple : les API météo pour obtenir les infos météo, ou encore les API spotify pour écouter de la musique sur son site web.<br>
+* intermédiaires : à mi chemin entre les deux précédemment citées.<br> 
+Cela va dépendre du niveau d'accès de l'utilisateur.<br>
+
+L'API correspond à l'ensemble des demandes que l'on peut faire à un service web.<br>
+Ces demandes sont appelées des **requêtes**.<br>
+L'API sert de tampon (une couche intermédiaire) entre la BDD et le client.<br>
+Cela évite les requêtes directes vers le serveur qui pourraient engendrer le chaos !<br> 
+Ces requêtes sont formulées dans la communication client / serveur :<br>
+* Le client formule une requête pour obtenir une information.
+* le serveur envoie une réponse contenant les données si cela est possible.
+
+### API REST
+
+REST signifie REpresentational State Transfer (ou transfert d'état de représentation).<br>
+Cela constitue un ensemble de normes ou de lignes architecturales qui structurent la façon de communiquer les données entre l'application et le reste du monde ou différents composants de l'application.<br>
+
+Les API RESTful se basent sur le protocole HTTP pour transférer les informations.<br>
+
+une API Rest a 6 lignes architecturales :<br>
+1. Client-serveur separation :<br>
+La séparation du client et du serveur est l'une des normes REST.<br>
+Cette séparation permet au client de se concentrer uniquement sur la récupération et l'affichage de l'information,<br>
+et permet au serveur de se concentrer sur le stockage et la manipulation des données.<br>
+2. stateless :<br>
+= Sans état, cela signifie que le serveur ne sauvegarde aucune des requêtes ou des réponses précédentes.<br>
+Chaque message est isolé et indépendant du reste, il faut donc s'assurer d'envoyer avec la requête qu'on formule les données nécessaires<br>
+pour être sûr d'avoir la réponse la plus précise possible.<br>
+Ainsi, chaque requête et chaque réponse doit être très déterminée et compréhensible.<br>
+3. Cacheable (ou sauvegardable) :<br>
+Le cache est un moyen de sauvegarder des données pour pouvoir répondre plus facilement aux prochaînes requêtes qui seront identiques.<br>
+4. Uniforme Interface (interface uniforme): <br>
+Chaque API a une interface uniforme.<br>
+L'interface constitue un contrat entre le client et le service. Cela permet une compréhension entre tous les développeurs qui créent des API.<br>
+5. Layered system (Système de couches) :<br>
+Chaque composant qui utilise REST n'a pas accès aux composants au-delà du composant précis avec lequel il interagit.<br>
+il s'agit d'une sorte d'écran qui empêche un client de savoir avec quoi intéragit le composant intermédiaire auquel il se connecte.<br>
+6. Code on demand (code à la demande) :<br>
+Le code à la demande signifie que le serveur peut étendre sa fonctionnalité en envoyant le code au client pour téléchargement.<br>
+C'est facultatif, car tous les clients ne seront pas capables de télécharger et d'exécuter le même code.<br>
+
+Alternative aux API REST : API SOAP (Simple Object Access Protocole).
+
+### Le protocole HTTP :
+
+HTTP = HyperText Transfer Protocol.<br>
+C'est un protocole qui permet de communiquer avec un site internet.<br>
+Il va permettre de charger des pages HTML, des styles CSS, des polices de caractères, des images...<br>
+Le protocole HTTP nous permet aussi d'envoyer des formulaires et de récupérer et d'envoyer toutes sortes de données depuis ou vers un serveur implémentant ce protocole grâce à son API.<br>
+
+La méthode :<br>
+* **GET** : permet de récupérer des ressources (ex: temps actuel sur un service météo).
+* **POST** : permet de créer ou modifier une ressource (ex: création d'un nouvel utilisateur).
+* **PUT** : permet de modifier une ressource (ex: nom d'utilisateur créé avec POST).
+* **DELETE** : permet de supprimer une ressource (ex: un commentaire dans un fil de discussion).
+
+L'URL :<br>
+L'adresse sur le service web que vous souhaitez atteindre. Un peu comme l'identifiant unique afin que le web service comprenne ce qu'on veut.<br>
+
+Les données :<br>
+Lorsqu'on fait une requête pour enregistrer des données, il faut pouvoir envoyer ces données au service web.
+
+La réponse du service web contiendra les informations suivantes :<br>
+* Les données demandées.<br>
+* Le code HTTP (voici les plus courants) :<br>
+**200** = tout s'est bien passé.<br>
+**400** = requête non conforme à ce qui est attendu.<br>
+**401** = on doit être authentifié pour faire cette requête.<br>
+**403** = bien authentifié mais pas autorisé à faire la requête.<br>
+**404** = la ressource demandée n'existe pas.<br>
+**500** = erreur avec le service web.<br>
+
+Le protocole HTTPS est un protocole HTTP Sécurisé. Il utilise un protocole de transport particulier : SSL/TLS.<br>
+
+Afin de sécuriser l'API, on va utiliser un token d'authentification : le bearer token.<br>
+Il s'agit d'une clé d'identification qui est délivrée au développeur par le site wen de l'API.<br>
+Ce token doit être utilisé dans la requête pour s'identifier.<br>
