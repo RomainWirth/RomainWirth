@@ -394,4 +394,11 @@ Elle correspond à la couche transport du modèle OSI.<br>
 elle fait référence aux programmes qui ont besoin de TCP/IP pour les aider à communiquer entre eux.<br>
 Elle combine les couches session, présentation et application du modèle OSI.<br>
 
+## Le DNS
 
+**DNS** pour Domain Name System permet de faire la correspondance entre noms et adresses IP.<br>
+Il existe deux types de noms pour identifier une machine :<br>
+* Le nom de domaine : il sert à identifier un service comme un site web ou un stockage de fichier.<br>
+* Le nom d'hôte (hostname) : est utilisé pour identifier la machine.<br>
+
+Ainsi, le serveur DNS permet de stocker l'association entre le nom et l'adresse IP de la machine.<br>
