@@ -52,7 +52,7 @@ Ils acheminent les informations ou paquets IP échangés sur les réseaux locaux
 
 #### Les avantages du LAN ?
 
-1. La récurité
+1. La sécurité
 2. La simplicité : un seul LAN mais un accès internet commun.
 
 #### Les différentes typo du réseau LAN ?
@@ -200,7 +200,11 @@ ping nom.de.la.machine<br>
 
 N.B. : nom.de.la.machine représente l'adresse IP de la machine, son nom ou encore un nom de domaine.
 
-Cet outil s'appuie sur le protocole ICMP qui permet de diagnostiquer les conditions de transmissions.<br>
+Cet outil s'appuie sur le protocole ICMP (Internet Control Message Protocol) qui permet de diagnostiquer les conditions de transmissions.<br>
+Il permet de signaler les erreurs. Il est utilisé par les appareils de réseau comme les routeurs  pour générer des messages d'erreurs à l'adresse IP source lordque des problèmes de réseau empêchent la livraison de paquets IP.<br>
+L’Internet Control Message Protocol crée et envoie des messages à l’adresse IP source indiquant qu’une passerelle vers l’internet qu’un routeur, un service ou un hôte ne peut pas être atteint pour la livraison de paquets.<br> 
+Tout dispositif de réseau IP a la capacité d’envoyer, de recevoir ou de traiter des messages ICMP.
+(Pour plus d'informaiton : suivez ce <a href="https://actualiteinformatique.fr/definition/definition-icmp-internet-control-message-protocol">lien</a>)
 
 **la commande :**
 ```bash
@@ -256,3 +260,269 @@ Cela comporte un problème d'espace physique.
 https://fr.wikipedia.org/wiki/Commutateur_r%C3%A9seau <br>
 un switch (ou commutateur réseau) permet de relier plusieurs segments dans un réseau informatique et permet de créer des circuits virtuels.<br>
 En réseau local (LAN), il s'agit d'un boitier disposant de plusieurs ports RJ45 (entre 4 et plusieurs centaines), comme un hub.<br>
+
+#### Connecter 2 réseaux
+
+L'adresse IP d'un réseau d'apparente à ceci : 192.168.0.0<br>
+les deux dernières séries de nombres :<br>
+* le premier [0] indique le numéro de réseau.
+* le deuxième [0] indique l'adresse du réseau sur le réseau.
+
+La première entité sur ce réseau aura pour adresse IP 192.168.0.1,<br>
+La deuxième aura pour adresse IP 192.168.0.2, etc.<br>
+
+Dans chaque cas, il faut indiquer le SebnetMask (le masque) :<br>
+indiquant le nombre maximum de machines disponibles : 255.255.255.0
+
+Une adresse IP écrite comme ceci : 192.168.0.1/24 (adresse IP écrite en 24bits)<br>
+équivaut à une adresse IP écrite comme ça :<br>
+192.168.0.1<br>
+255.255.255.0<br>
+
+Ceci dépendra de la classe du Subnet Mask.<br>
+
+
+Il est nécessaire d'indiquer le SubnetMask afin d'identifier la partie de l'adresse IP qui correspond à l'adresse du réseau.<br>
+c'est à dire que l'adresse IP se décompose en 2 parties :<br>
+[192.168.0][.1] = première partie indique l'adresse réseau, et la deuxième l'adresse de l'entité sur le réseau.
+
+explications plus détaillées SubnetMask <a href="https://avinetworks.com/glossary/subnet-mask/">ici</a>
+
+Afin de connecter la machine à un routeur, on va devoir lui indiquer la Default Gateway.<br>
+La default gateway est l'adresse IP qui indique au routeur l'adresse du réseau.<br>
+Cette adresse sera écrite comme ceci : 192.168.0.254<br>
+C'est l'avant dernière adresse disponible (dernière se termine par 255 = adresse broadcast).<br>
+
+Nous avons donc deux réseaux : `192.168.0.0` et `192.168.100.0`.<br>
+Afin de les connecter, on va faire appel à un routeur.<br>
+Ce routeur, cablé aux deux switchs, devra renseigner les adresses IP des deux réseaux de cette manière : (attention, bien faire attention au numéro de port du câble RJ45)<br>
+* Ethernet 0/0/0 : IPV4 = 192.168.0.254 ; Subnet Mask = 255.255.255.0
+* Ethernet 0/0/1 : IPV4 = 192.168.100.254 ; Subnet Mask = 255.255.255.0
+
+Ainsi, les messages envoyés depuis le réseau 192.168.0 seront identifiés comme tel,<br>
+et les messages envoyés depuis l'autre réseau 192.168.100 aussi.<br>
+
+## Les modèles OSI et TCP/IP
+
+Il existe deux grandes familles de règles dans le monde des réseaux informatique :<br>
+* règles liées à l'aspect matériel = les normes.
+* règles liées à l'aspect logiciel = les protocoles.
+
+Concernant les règles d'harmonisation des normes :<br> 
+* on a vu les choix des connecteurs :câbles RJ45 (cuivre),<br> 
+* et les contraintes d'attribuer les adresses IP aux machines sur un réseau.
+
+`ATTENTION LISTE NON EXHAUSTIVE`
+
+### Le modèle OSI 
+
+<a href="https://www.cloudflare.com/fr-fr/learning/ddos/glossary/open-systems-interconnection-model-osi/">Source</a>
+
+Le modèle OSI (Open Systems Interconnection) est un modèle créé par l'ornganisation internationale de normalisation.<br>
+Ce modèle permet de normaliser la communication entre systèmes informatiques à l'aide de protocoles standards.<br>
+
+Ce modèles est un langage universel pour la mise en réseau d'ordinateurs.<br>
+
+**Les différentes couches du modèles OSI** : il y en a 7<br>
+
+7. **Couche applicative** :<br>
+C'est la seule couche qui interagit directement avec les données utilisateur.<br>
+Les applis logiciel telles que les navigateurs web et les clients e-mail se servent de cette couche pour initier les communications.<br>
+N.B. : les applis logicielles ne font pas partie de la couche applicative.<br>
+Cette couche est responsable des protocoles et de la manipulation des données sur lesquels le logiciel s'appuie pour présenter des données significatives à l'utilisateur.<br>
+Les protocoles de cette couche incluent : HTTP et SMTP (Simple Mail Transfer Protocol = pour le courrier électronique).<br>
+6. **Couche de présentation** :<br>
+Elle est responsable de la présentation des données afin qu'elles puissent être utilisées par la couche applicative.<br>
+C'est à dire qu'elle rend les données présentables pour les applications. Elle est responsable de la traduction, du chiffrement et de la compression des données.<br>
+5. **Couche de session** :<br>
+Cette couche est reponsable de l'ouverture et de la fermeture de la communication entre deux appareils.<br>
+L'intervalle entre l'ouverture et la fermeture de la communication est appelée session.<br>
+Cette couche garantit que la session reste ouverte suffisamment longtemps pour transférer toutes les données échangées, puis ferme rapidement la session afin d'éviter le gaspillage de ressources.<br>
+Elle synchronise également le transfert de données avec les points de contrôle.<br>
+4. **Couche de transport** :<br>
+La couche 4 est responsable de la communication de bout en bout entre les deux appareils.<br>
+Cela inclut la récupération de données de la couche session et leur décomposition en morceaux appelés segments avant de les envoyer vers la couche réseau.<br>
+Elle est également responsable du contrôle des flux et des erreurs. (détermination de la vitesse optimale de transmission pour éviter qu'un émetteur en submerge un autre s'ils n'ont pas les mêmes vitesses de connexion).<br>
+Enfin, elle s'assure que les données reçues sont complètes et demande la retransmission si ce n'est pas le cas.<br>
+3. **Couche réseau** :<br>
+Elle est chargée de faciliter le transfert de données entre deux réseaux différents.<br>
+Elle divise les segments de la couche transport en unités plus petites : les paquets, sur le périphérique de l'expéditeur et réassemble ces paquets sur le périphérique récepteur.<br>
+Enfin, elle trouve le meilleur chemin physique pour que les données atteignent leur destination : c'est le routage.<br>
+2. **Couche de liaison de données** :<br>
+Cette couche est similaire à la couche réseau, à la différence qu'elle facilite le transfert de donées entre deux périphériques d'un même réseau.<br>
+elle prend les paquets de la couche réseau et les divise en fragments plus petits appelés images.<br>
+Elle est également responsable du contrôle des flux et des erreurs dans les communications intra-réseau.<br>
+1. **Couche physique** :<br>
+Elle inclut les équipements physiques impliqués dans le transfert de données (câbles, commutateurs).<br>
+C'est dans cette couche que les données sont converties en binaire.<br>
+Elle doit aussi cenvenir d'une convention de signal pour distinguer le binaire des deux périphériques.<br>
+
+**Importance du modèle OSI** : <br>
+Ce modèle permet de dépanner les problèmes réseaux en isolant la source du problème.<br>
+C'est à dire qu'on peut identifier sur quelle couche se situe le problème, et donc de résoudre le problème plus rapidement.<br>
+
+### Le modèle TCP/IP
+
+<a href="https://www.fortinet.com/fr/resources/cyberglossary/tcp-ip">Source</a>
+
+**le protocole TCP** est une norme de communication qui permet aux programmes et aux entités d'échanger des messages sur un réseau.<br>
+Il permet d'envoyer des paquets sur internet et d'assurer la transmission effective des données et des messages via les réseaux.<br>
+
+**le protocole IP** est la méthode utilisée pour envoyer des données d'un appareil à un autre via Internet.<br>
+Il s'appuie sur les adresses IP des entités et leur permet d'échanger des données entre elles.<br>
+
+**La différence entre TCP et IP ?** :<br>
+Ce sont des protocoles distinct qui permettent ensemble de garantir la transmission des données à leur destination au sein d'un réseau.<br>
+* Le protocole IP obtient et définit l'adresse (IP) de l'entité.<br>
+* Le protocole TCP veille au transport des données et permet d'assurer qu'elles sont transmises à l'entité de destination défini par le protocole IP.<br>
+
+**Le protocole TCP/IP** est composé de 4 couches :<br>
+1. **Couche de liaison de données (hôte-réseau):**<br>
+elle définit la manière dont les données doivent être envoyées, gère l’acte physique d’envoi et de réception des données,<br> 
+et assure la transmission des données entre les applications ou les périphériques sur un réseau.<br>
+Elle détermine également la manière dont les données doivent être signalées par le matériel et d’autres dispositifs de transmission sur un réseau.<br>
+Elle équivaut à la combinaison des couches physique et de liaison des données du modèle OSI.<br>
+2. **Couche Internet :**<br>
+elle permet l’envoi de paquets à partir d’un réseau et contrôle leur mouvement à travers un réseau afin de s’assurer qu’ils atteignent leur destination.<br> 
+Elle offre les fonctions et les procédures de transfert des séquences de données entre les applications et les périphériques sur les réseaux.<br>
+Elle correspond à la couche réseau du modèle OSI.<br>
+3. **Couche transport :**<br>
+elle permet d’établir une connexion de données de qualité et fiable entre l’application ou le périphérique d’origine et sa destination prévue.<br>
+la couche transport détermine la quantité de données à envoyer, leur destination et leur débit.<br>
+Elle correspond à la couche transport du modèle OSI.<br>
+4. **Couche application :**<br>
+elle fait référence aux programmes qui ont besoin de TCP/IP pour les aider à communiquer entre eux.<br>
+Elle combine les couches session, présentation et application du modèle OSI.<br>
+
+## Le service DNS
+
+**DNS** pour Domain Name System permet de faire la correspondance entre noms et adresses IP.<br>
+Il existe deux types de noms pour identifier une machine :<br>
+* Le nom de domaine : il sert à identifier un service comme un site web ou un stockage de fichier.<br>
+* Le nom d'hôte (hostname) : est utilisé pour identifier la machine.<br>
+
+Ainsi, le serveur DNS permet de stocker l'association entre le nom et l'adresse IP de la machine.<br>
+
+### Fonctionnement :
+Nous avons deux entités : une émettrice, une destinataire.<br>
+
+L'entité émettrice ne connaît que le nom d'hôte du destinataire et pas son adresse IP.<br>
+Lorsqu'il émet un ping, l'émetteur envoie un message vers le serveur DNS.<br>
+Le message contient le nom d'hôte, le rôle du serveur DNS est de faire le lien entre nom d'hôte et adresse IP.<br>
+Une fois ce lien fait, il envoie la réponse au PC émetteur, qui connaîtra ainsi l'adresse IP du destinataire.<br>
+Il pourra donc envoyer le ping vers le destinataire.<br>
+Et recevra un message retour.<br>
+
+### Nom de domaine et sous-domaine
+
+1. **Le nom de domaine** est l'adresse d'un site internet.<br>
+Il s'agit d'un nom associé à une adresse IP physique sur internet.<br>
+C'est le nom unique qui apparaît après le signe `@` dans les adresses e-mail, et après le `www` dans les adresses web.<br>
+Cela facilite la mémorisation et la saisie des adresses web.<br>
+ex. : le nom de domaine _exemple.com_ peut être associé à l'adresse physique _192.102.434.8_.
+2. **Le sous domaine** est un domaine qui appartient à un domaine plus important.<br>
+ex. : _mail.google.com_, _www.google.com_ et _docs.google.com_ sont des sous-domaines de _google.com_.<br>
+Un propriétaire de domaine peut créer un sous-domaine pour attribuer des adresses facilement mémorisables aux pages Web et aux services au sein de son domaine de premier niveau.<br>
+
+### Les différents types d'enregistrement DNS
+
+Il existe plusieurs types d'enregistrement DNS, voici les plus courant :<br>
+1. **Enregistrement A** : enrigstrement qui contient l'adresse IP (IPv4) d'un domaine.<br>
+2. **Enregistrement AAAA** : contient IPv6 d'un domaine.<br>
+3. **Enregistrement CNAME** : Transfère un domaine ou un sous-domaie à un autre domaine, mais ne fournit pas d'adresse IP.<br>
+4. **Enregistrement MX** : Dirige le courrier vers un serveur de messagerie.<br>
+5. **Enregistrement TXT** : Permet à un admin de stocker des notes de texte dans l'enregistrement, souvent utilisés pour la sécurité des e-mails.
+6. **Enregistrement NS** : Stocke le serveur de noms pour une entrée DNS.<br>
+7. **Enregistrement SOA** : Stocke les infos administratives d'un domaine.<br>
+8. **Enregistrement SRV** : Spécifie un port pour des services spécifiques.<br>
+9. **Enregistrement PTR** : Fournit un nom de domaine dans les recherches inversées.<br>
+
+
+## Les Requêtes HTTP
+
+### Qu'est ce qu'une API
+
+Une API (accronyme pour Application Programming Interface) est une interface de communication.<br>
+Pour faire simple, il s'agit d'un moyen de communication entre deux logiciels,<br> 
+que ce soit entre différents composants d'une application ou entre deux applications différentes.<br>
+Il en existe différents types :<br>
+* privées : garantissent que les personnes en dehors de l'entreprise ou de l'application n'aient pas accès aux données disponibles dans la BDD.<br>
+Elles permettent uniquement aux utilisateurs autorisés d'accéder aux données de la BDD.<br>
+* publiques : utilisables par d'autres personnes sur une application ou non.<br>
+exemple : les API météo pour obtenir les infos météo, ou encore les API spotify pour écouter de la musique sur son site web.<br>
+* intermédiaires : à mi chemin entre les deux précédemment citées.<br> 
+Cela va dépendre du niveau d'accès de l'utilisateur.<br>
+
+L'API correspond à l'ensemble des demandes que l'on peut faire à un service web.<br>
+Ces demandes sont appelées des **requêtes**.<br>
+L'API sert de tampon (une couche intermédiaire) entre la BDD et le client.<br>
+Cela évite les requêtes directes vers le serveur qui pourraient engendrer le chaos !<br> 
+Ces requêtes sont formulées dans la communication client / serveur :<br>
+* Le client formule une requête pour obtenir une information.
+* le serveur envoie une réponse contenant les données si cela est possible.
+
+### API REST
+
+REST signifie REpresentational State Transfer (ou transfert d'état de représentation).<br>
+Cela constitue un ensemble de normes ou de lignes architecturales qui structurent la façon de communiquer les données entre l'application et le reste du monde ou différents composants de l'application.<br>
+
+Les API RESTful se basent sur le protocole HTTP pour transférer les informations.<br>
+
+une API Rest a 6 lignes architecturales :<br>
+1. Client-serveur separation :<br>
+La séparation du client et du serveur est l'une des normes REST.<br>
+Cette séparation permet au client de se concentrer uniquement sur la récupération et l'affichage de l'information,<br>
+et permet au serveur de se concentrer sur le stockage et la manipulation des données.<br>
+2. stateless :<br>
+= Sans état, cela signifie que le serveur ne sauvegarde aucune des requêtes ou des réponses précédentes.<br>
+Chaque message est isolé et indépendant du reste, il faut donc s'assurer d'envoyer avec la requête qu'on formule les données nécessaires<br>
+pour être sûr d'avoir la réponse la plus précise possible.<br>
+Ainsi, chaque requête et chaque réponse doit être très déterminée et compréhensible.<br>
+3. Cacheable (ou sauvegardable) :<br>
+Le cache est un moyen de sauvegarder des données pour pouvoir répondre plus facilement aux prochaînes requêtes qui seront identiques.<br>
+4. Uniforme Interface (interface uniforme): <br>
+Chaque API a une interface uniforme.<br>
+L'interface constitue un contrat entre le client et le service. Cela permet une compréhension entre tous les développeurs qui créent des API.<br>
+5. Layered system (Système de couches) :<br>
+Chaque composant qui utilise REST n'a pas accès aux composants au-delà du composant précis avec lequel il interagit.<br>
+il s'agit d'une sorte d'écran qui empêche un client de savoir avec quoi intéragit le composant intermédiaire auquel il se connecte.<br>
+6. Code on demand (code à la demande) :<br>
+Le code à la demande signifie que le serveur peut étendre sa fonctionnalité en envoyant le code au client pour téléchargement.<br>
+C'est facultatif, car tous les clients ne seront pas capables de télécharger et d'exécuter le même code.<br>
+
+Alternative aux API REST : API SOAP (Simple Object Access Protocole).
+
+### Le protocole HTTP :
+
+HTTP = HyperText Transfer Protocol.<br>
+C'est un protocole qui permet de communiquer avec un site internet.<br>
+Il va permettre de charger des pages HTML, des styles CSS, des polices de caractères, des images...<br>
+Le protocole HTTP nous permet aussi d'envoyer des formulaires et de récupérer et d'envoyer toutes sortes de données depuis ou vers un serveur implémentant ce protocole grâce à son API.<br>
+
+La méthode :<br>
+* **GET** : permet de récupérer des ressources (ex: temps actuel sur un service météo).
+* **POST** : permet de créer ou modifier une ressource (ex: création d'un nouvel utilisateur).
+* **PUT** : permet de modifier une ressource (ex: nom d'utilisateur créé avec POST).
+* **DELETE** : permet de supprimer une ressource (ex: un commentaire dans un fil de discussion).
+
+L'URL :<br>
+L'adresse sur le service web que vous souhaitez atteindre. Un peu comme l'identifiant unique afin que le web service comprenne ce qu'on veut.<br>
+
+Les données :<br>
+Lorsqu'on fait une requête pour enregistrer des données, il faut pouvoir envoyer ces données au service web.
+
+La réponse du service web contiendra les informations suivantes :<br>
+* Les données demandées.<br>
+* Le code HTTP (voici les plus courants) :<br>
+**200** = tout s'est bien passé.<br>
+**400** = requête non conforme à ce qui est attendu.<br>
+**401** = on doit être authentifié pour faire cette requête.<br>
+**403** = bien authentifié mais pas autorisé à faire la requête.<br>
+**404** = la ressource demandée n'existe pas.<br>
+**500** = erreur avec le service web.<br>
+
+Le protocole HTTPS est un protocole HTTP Sécurisé. Il utilise un protocole de transport particulier : SSL/TLS.<br>
+
+Afin de sécuriser l'API, on va utiliser un token d'authentification : le bearer token.<br>
+Il s'agit d'une clé d'identification qui est délivrée au développeur par le site wen de l'API.<br>
+Ce token doit être utilisé dans la requête pour s'identifier.<br>
