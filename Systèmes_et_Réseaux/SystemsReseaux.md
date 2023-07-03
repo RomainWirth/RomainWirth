@@ -490,7 +490,19 @@ il s'agit d'une sorte d'écran qui empêche un client de savoir avec quoi intér
 Le code à la demande signifie que le serveur peut étendre sa fonctionnalité en envoyant le code au client pour téléchargement.<br>
 C'est facultatif, car tous les clients ne seront pas capables de télécharger et d'exécuter le même code.<br>
 
-Alternative aux API REST : API SOAP (Simple Object Access Protocole).
+Alternative aux API REST : 
+* API SOAP (Simple Object Access Protocole):<br> 
+Protocole standard qui assure la conformité des comminucations et est ainsi privilégié des entreprises.<br>
+Les standards de conformité :<br>
+  - La sécurité
+  - L'atomicité
+  - La cohérence
+  - L'isolement
+  - La durabilité (ACID)
+* API RPC (Remote procedure Call):<br>
+Permet l'appel d'actions ou de fonctions via JSON ou XML et suivent des normes : JSON-RPC et XML-RPC.<br>
+  - JSON-RPC : ne prend en charge que les échanges de données alphanimériques (textuelles).
+  - XML-RPC : plus flexible avec la prise en charge de texte, image, diagramme, etc.
 
 ### Le protocole HTTP :
 
