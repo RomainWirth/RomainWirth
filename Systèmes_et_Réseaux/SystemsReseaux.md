@@ -442,6 +442,8 @@ Il existe plusieurs types d'enregistrement DNS, voici les plus courant :<br>
 
 ### Qu'est ce qu'une API
 
+<a href="https://course.valentinflgt.fr/#/c/2023/web/api#d%25C3%25A9finition">Source</a>
+
 Une API (accronyme pour Application Programming Interface) est une interface de communication.<br>
 Pour faire simple, il s'agit d'un moyen de communication entre deux logiciels,<br> 
 que ce soit entre différents composants d'une application ou entre deux applications différentes.<br>
@@ -490,7 +492,19 @@ il s'agit d'une sorte d'écran qui empêche un client de savoir avec quoi intér
 Le code à la demande signifie que le serveur peut étendre sa fonctionnalité en envoyant le code au client pour téléchargement.<br>
 C'est facultatif, car tous les clients ne seront pas capables de télécharger et d'exécuter le même code.<br>
 
-Alternative aux API REST : API SOAP (Simple Object Access Protocole).
+Alternative aux API REST : 
+* API SOAP (Simple Object Access Protocole):<br> 
+Protocole standard qui assure la conformité des comminucations et est ainsi privilégié des entreprises.<br>
+Les standards de conformité :<br>
+  - La sécurité
+  - L'atomicité
+  - La cohérence
+  - L'isolement
+  - La durabilité (ACID)
+* API RPC (Remote procedure Call):<br>
+Permet l'appel d'actions ou de fonctions via JSON ou XML et suivent des normes : JSON-RPC et XML-RPC.<br>
+  - JSON-RPC : ne prend en charge que les échanges de données alphanimériques (textuelles).
+  - XML-RPC : plus flexible avec la prise en charge de texte, image, diagramme, etc.
 
 ### Le protocole HTTP :
 
@@ -514,12 +528,12 @@ Lorsqu'on fait une requête pour enregistrer des données, il faut pouvoir envoy
 La réponse du service web contiendra les informations suivantes :<br>
 * Les données demandées.<br>
 * Le code HTTP (voici les plus courants) :<br>
-**200** = tout s'est bien passé.<br>
-**400** = requête non conforme à ce qui est attendu.<br>
-**401** = on doit être authentifié pour faire cette requête.<br>
-**403** = bien authentifié mais pas autorisé à faire la requête.<br>
-**404** = la ressource demandée n'existe pas.<br>
-**500** = erreur avec le service web.<br>
+  - **200** = tout s'est bien passé.<br>
+  - **400** = requête non conforme à ce qui est attendu.<br>
+  - **401** = on doit être authentifié pour faire cette requête.<br>
+  - **403** = bien authentifié mais pas autorisé à faire la requête.<br>
+  - **404** = la ressource demandée n'existe pas.<br>
+  - **500** = erreur avec le service web.<br>
 
 Le protocole HTTPS est un protocole HTTP Sécurisé. Il utilise un protocole de transport particulier : SSL/TLS.<br>
 

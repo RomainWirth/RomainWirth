@@ -144,9 +144,28 @@ sudo php -S localhost:PORT -t .
 * Puis connecter la BDD avec DOCKER.<br>
 Bien se positionner au niveau du dossier contenant la BDD et le fichier 'docker-compose'
 ```bash
-sudo docker-compose up
+sudo docker-compose up -d
 ```
 
+#### LANCER LA BASE DE DONNEES ET LE FRONT
+
+1. Ouvrir un terminal :
+   - naviguer jusque dans la racine du dossier contenant la base de données et le fichier docker.
+   - insérer la commande suivante : 
+
+```bash
+sudo docker-compose up -d
+```
+
+2. Ouvrir un autre terminal :
+   - naviguer jusque dans la racine du dossier du projet
+   - insérer la commande suivante :
+
+```bash
+sudo php -S localhost:PORT
+
+#PORT = numéro de PORT (8000, 8080, 8090 au choix)
+```
 
 #### INSTALLATION DES PROGRAMMES XAMPP, WAMPP, MAMPP etc.
 
