@@ -652,4 +652,90 @@ HTML
 
 La liste complète est disponible sur le site du <a href="https://www.w3.org/Style/css3-selectors-updates/WD-css3-selectors-20010126.fr.html#selectors">W3C</a>
 
- 
+## Structurer sa page
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+</head>
+<body>
+    <header></header><!-- En-tête -->
+    <main></main><!-- corps du site -->
+    <footer></footer><!-- Pied de page -->
+</body>
+</html>
+```
+
+### La balise header pour l'en-tête
+
+La balise `<header></header>` contient l'en-tête du site.<br>
+Elle est généralement présentée sur chaque page, avec le logo ou le nom,<br>
+ainsi que les principaux liens de navigation sur le site avec la balise `<nav></nav>`.<br>
+
+### La balise footer pour le pied de page
+
+La balise `<footer></footer>` contient le pied de page du site.<br>
+On y retrouve généralement des informations comme des liens de contact, les mentions légales, la politique de confidentialité.<br>
+
+### La balise main pour structurer le contenu principal
+
+La balise `<main></main>` permet de déclarer le contenu principal du site.<br>
+Elle englobe la majeure partie du `<body>` mais exclu les éléments comme le `<header>` et le `<footer>`.<br>
+On pourra utiliser des balises `<section>` pour structurer le contenu. Elle servent à regrouper des contenus en fonction de leur thématique.<br>
+La balise `<aside>` permet de contenir du contenu additionnel, des informations complémentaires au document qu'on visualise.<br>
+
+On pourra aussi utiliser la balise `<article>` pour englober une portion généralement autonome.<br>
+Cela peut être utile si on souhaite mettre en avant un article de journal par exemple.<br>
+
+## Les modèles des boîtes
+
+### Différencier les balises de type block et de type inline
+
+En HTML, la plupart des balises peuvent se ranger dans deux catégories :<br>
+* Balises de type "block" : ce type crée automatiquement un retour à la ligne avant et après.<br>
+ex : les titres `h1`, `h2`..., les paragrapghes `p`, etc.<br>
+* Balises de type "inline" : ce type se trouve obligatoirement à l'intérieur d'une balise block.<br>
+ex : les liens `a`
+
+### Bien utiliser les balises universelles
+
+1. La balise `<span>` est une balise inline.
+2. La balise `<div>` est une balise block.
+
+Attention à ne pas trop en abuser au détriment de balises plus adaptées.
+
+### Dimensionner les éléments
+
+Les balises de type block peuvent avoir une largeur et une hauteur précise.<br>
+On va utiliser les propriétés CSS :<br>
+* `width` pour la largeur.
+* `height` pour la hauteur.
+
+On exprimera les valeurs en `px` ou en `%`.
+
+### Définir les marges
+
+On utilisera les propriétés CSS :
+* `margin` pour la marge externe à l'élément.
+* `padding` pour la marge interne à l'élément.
+
+**Spécifier les propriétés des marges :** (dans l'ordre)<br>
+* `top` pour le haut
+* `right` pour la droite
+* `bottom` pour le bas
+* `left` pour la gauche
+
+On pourra les utiliser de plusieurs manière :<br>
+* en spécifiant quelle marge influence : [margin/padding]-top, [margin/padding]-right, [margin/padding]-bottom, [margin/padding]-left<br>
+* ou de manière raccourcie : [margin/padding]: 2px 0 3px 1px;<br> 
+les valeurs représentent dans l'ordre : top, right, bottom et left.<br>
+
+### Centrer les blocs 
+
+En utilisant les propriétés CSS width et margin: auto.<br>
+1. donner une largeur au bloc avec `width`<br>
+2. indiquer `margin: auto;` : les marges extérieures seront alors automatiques, et permettront de centrer le contenu.<br>
+
+## Faire sa mise en page avec Flexbox
+
