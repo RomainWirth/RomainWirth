@@ -42,7 +42,7 @@ L'une des problématiques qu'on peut avoir est le nombre de variables pour stock
 On risque de se retrouve rapidement avec un grand nombre de variables pour véhiculer les données, ce qui peut devenir ingérable.<br>
 Quand on se retrouve avec la même structure d'information, on va utiliser les objets pour remédier à cela.
 
-## Les objets
+## Les objets et les classes
 
 Concrètement, pour simplifier l'utilisation des informations, on va les regrouper sous une _**"super variable"**_.<br>
 
@@ -64,7 +64,6 @@ CLASSE Personnage
     nom : CHAINE DE CARACTERES
     taille : ENTIER
     age : ENTIER
-    vitesse : ENTIER
     sexe : BOOLEEN
 FIN CLASSE
 ```
@@ -72,5 +71,7 @@ Par convention, une classe commence toujours pas une majuscule.<br>
 Les informations d'une classe sont appelées des attributs.<br>
 
 Les objets vont découler des classes.<br>
-On va pouvoir multiplier les objets qui ont tous la même structure définie par la classe.
+On va pouvoir multiplier les objets qui ont tous la même structure définie par la classe :<br>
+l'objet "romain" aura donc un nom, une taille, un age, un sexe.<br>
+l'objet "flora" aura la même construction que l'objet romain.
 
