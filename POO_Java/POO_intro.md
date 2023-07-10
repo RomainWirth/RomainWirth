@@ -98,7 +98,7 @@ Elles stockent des valeurs qui représentent l'objet représenté.
 ## Les concepts de programmation
 
 Bien que la logique de programmation entre procédural/séquentiel et POO soit radicalement différente,<br>
-les bases apprises pour réaliser des programmes restent valables :<br>
+les bases apprises en programmation procédurale/séquentielle pour réaliser des programmes restent valables :<br>
 On utilisera toujours des variables, des tableaux, des boucles, des fonctions, etc.
 
 Ce qui va différer sera la réflexion et la conception des programmes :<br> 
