@@ -230,3 +230,113 @@ ensuite, on imprime `2100`, qui est la valeur de `myAccount.balance` après l'ex
 Changer les propriétés est la manière dont on change l'état d'un objet.<br>
 Cela rend notre objet plus flexible et réaliste.<br>
 
+## Returns
+
+Rappel : les variables n'existent que dans le scope dans lequel elles sont déclarées.<br>
+On peut utiliser une valeur en degors de la méthode dans laquelle elle a été créée si on la retourne depuis cette méthode.<br>
+
+Pour retourner une valeur, on utilise le mot clé `return` :
+```
+public int numberOfTires() {
+   int tires = 4;
+   // return statement
+   return tires;
+}
+```
+cette méthode `numberOfTires()` retourne `4`.<br>
+une fois la déclaration de retour exécutée, le compiler quite la fonction.<br>
+Tout le code qui existe après ce terme dans la fonction sera **ignoré**.
+
+Ici, la méthode `numberOfTires()` doit retourner un type `int`, comme indiqué lors de sa déclaration.<br>
+
+Le mot clé `void` signifie "complètement vide". Cela indique qu'aucune valeur n'est retournée après avoir appelé cette méthode.<br>
+
+Une méthode non `void`, comme `numberOfTires()` retourne une valeur lorsqu'elle est appelée.<br>
+On pourra utiliser des mots clé de types de données (int, char, etc.) pour spécifier le type de valeur que la méthode doit retourner.<br>
+Le type de valeur de retour **_doit_** correspondre le type de retour de la méthode.<br>
+Si l'expression retournée est compatible avec le type, une copie de cette valeur est retournée dans un processus appelé : `return by value`.
+
+A l'inverse des méthodes `void`, les méthodes non void peuvent être utilisées comme une valeur de variable ou comme une exression :
+```
+public static void main(String[] args){
+    Car myCar = new Car("red");
+    int numTires = myCar.numberOfTires();
+}
+```
+Dans cet exemple, au sein de `main()`, on appelle la méthode `numberOfTires()` sur l'objet `myCar`.<br>
+Comme cette méthode retourne une valeur `int` de `4`, on stocke la valeur dans une variable entier appelée `numTires`.<br>
+Si on print `numTires`, on verrait `4`.
+
+### Retourner un objet avec une méthode 
+
+Lorsqu'on retourne une valeur primitive, une copie de cette valeur est retournée.<br>
+En revanche, lorsqu'on retourne un objet, on retourne une **référence** à l'objet au lieu d'une copie de cet objet.<br>
+
+exemple : création d'une seconde classe `carLot` qui prend `Car` en paramètre et contient une méthode qui retourne un objet `Car`
+```
+class CarLot {
+    Car carInLot;
+    public CarLot(Car givenCar) {
+        carInLot = givenCar;
+    }
+ 
+    public Car returnACar() {
+        // return Car object
+        return carInLot;
+    }
+ 
+    public static void main(String[] args) {
+        Car myCar = new Car("red", 70);
+        System.out.println(myCar); 
+        CarLot myCarLot = new CarLot(myCar);
+        System.out.println(myCarLot.returnACar());
+    }
+}
+```
+Ce code renvoie la même adresse mémoire, car `myCar` et `carInLot` ont la même valeur de référence :
+```
+Car@2f333739
+Car@2f333739
+```
+
+## la méthode "toString()"
+
+Lorsqu'on print des objets, on voit souvent une String qui n'aide pas vraiment à déterminer ce que l'objet représente.<br>
+dans l'exemple précédent, l'élément imprimé dans la console `Car@2f333739` fait référence à l'adresse dans l'espace mémoire de l'ordinateur.<br>
+
+Cela n'indique rien à propos de l'élément qui pourrait nous être utile.<br>
+On peut ajouter une méthode aux classes qui permettent de rendre le print plus descriptif.
+
+Quand on définit une méthode _toString()_ pour une classe, on peut retourner une `String` qui sera imprimé lors du print de l'objet :
+```
+class Car {
+ 
+    String color;
+ 
+    public Car(String carColor) {
+        color = carColor;
+    }
+ 
+    public static void main(String[] args){
+        Car myCar = new Car("red");
+        System.out.println(myCar);
+    }
+ 
+   public String toString(){
+       return "This is a " + color + " car!";
+   }
+}
+```
+Lorsque ce code est exécuté, la commande `System.out.println(myCar)` imprimera `"This is a red car!"`, ce qui nous donne des indications sur l'objet `myCar`.
+
+## Résumé 
+
+Les méthodes sont un moyen puissant pour abstraire les tâches et pour les réutiliser.<br>
+Elles nous permettent de définir le comportement des classes afin de créer des objets qui effectuent ce qu'on souhaite qu'ils fassent.<br>
+En résumé : 
+* _Définir une méthode_ : la déclaration d'une méthode retourne un type, un nom et des paramètres.<br>
+* _Appeler une méthode_ : les méthodes sont invoquées avec un opérateur `.` et des `()`.<br>
+* _Les paramètres_ : Les entrées d'une méthode et leurs types sont déclarés dans les parenthèses de la signature de la méthode.<br>
+* _Changer les propriétés_ : Les méthodes peuvent être utilisées pour changer la valeur des propriétés (variables de la classe).<br>
+* _Scope_ : Les variables n'existent que dans le domaine dans lequel elles sont créées.<br>
+* _Return_ : le type de variable qui ressort est déclaré dans la déclaration de la méthode.<br>
