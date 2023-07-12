@@ -48,8 +48,8 @@ l'élément `System.out.println("Hello World !");` permet au programme d'affiche
 `System.out.println("Hello World !");` fait ressortir l'information "Hello World !" dans la console.<br>
 
 * `System` est une classe intégrée de Java qui contient des outils utiles pour des programmes.
-* `out` est un raccourcis pour "output".
-* `println` est un raccourcis pour "print line".
+* `out` est un raccourci pour "output".
+* `println` est un raccourci pour "print line".
 
 On utilisera cette déclaration : `System.out.println()` à chaque fois qu'on souhaite que le programme crée une nouvelle ligne dans la console.<br>
 
