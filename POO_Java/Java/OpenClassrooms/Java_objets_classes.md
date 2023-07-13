@@ -109,3 +109,141 @@ On peut ainsi modifier les valeurs des champs à l'intérieur de l'objet.<br>
 
 ## SPECIALISER LES CLASSES AVEC L'HERITAGE ET LE POLYMORPHISME
 
+### L'HERITAGE
+
+Différentes classes peuvent avoir des points communs.<br>
+par exemple, un livre et un cd ont tous les deux un titre, un auteur.<br> 
+Ils ont également des éléments particuliers : le livre un nombre de pages, le cd une durée.<br>
+
+L'idée est que le socle commun peut être mutualisé.<br>
+Pour cela, on créera une **classe mère**.<br>
+Les classes qui ont ce socle commun sont appelées des **classes filles**.<br>
+l'héritage permet aux classes filles de reprendre les mêmes attributs et méthodes que leur classe mère,<br> 
+et d'ajouter en plus leurs particularités en les spécialisant par des attributs et/ou méthodes qui leur sont propres.
+
+La classe mère est considérée comme la "référence" et grâce au mécanisme d'héritage, on partagera ses attributs et ses méthodes à ses classes filles.<br>
+
+Attention : 
+* un champs défini comme private ne peut pas être hérité ni manipulé par la classe fille.
+* en Java, une classe fille ne peut hériter que d'une seule classe mère.
+* une classe mère peut en revanche avoir plusieurs filles.
+
+exemple :<br>
+Création d'une classe mère `FigureGeometrique`
+```
+public class FigureGeometrique {
+    private int x;
+    private int y;
+    public void moveTo(int newX, int newY) {
+        this.x = newX;
+        this.y = newY;
+    }
+}
+```
+Puis création d'une classe fille `Carre`
+```
+public class Carre extends FigureGeometrique {
+    private long cote;
+    public long getCote() {
+        return cote;
+    }
+    public long getPerimetre(){
+        return 4*cote;
+    }
+}
+```
+Avec la classe `Carre`, on récupère automatiquement les attributs de la classe mère `FigureGeometrique`.<br>
+On lui ajoute un nouvel attribut de classe et 2 nouvelles méthodes permettant sa spécialisation.<br>
+
+Lorsqu'on fait l'héritage, tous les champs sont hérités. Ils peuvent être manipulés **si leur accessibilité le permet**.<br>
+
+#### Initialiser les attributs hérités
+
+L'initialisation des attributs d'une instance de classe se fait dans le constructeur de classe.<br>
+Quand des attributs sont hérités, on peut les initialiser dans le constructeur de la fille en appelant le constructeur de la classe parent.<br>
+
+exemple :<br>
+création d'un constructeur dans la classe mère
+```
+class FigureGeometrique {
+    private int x;
+    private int y;
+    FigureGeometrique(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+```
+utilisation de ce constructeur dans la classe fille 
+```
+class Carre extends FigureGeometrique {
+  long cote;
+  Carre(long cote, int x, int y){
+     //Appel du constructeur de la classe mère FigureGeometrique
+     super(x, y);
+     this.cote = cote;
+  }
+}
+```
+En java, pour appeler le constructeur de la classe mère depuis le constructeur de la classe fille, on utilise la méthode **super**.<br>
+Cette méthode fait directement référence à la méthode écrite dans la classe parent, ici le constructeur. (voir polymorphisme)
+
+### LE POLYMORPHISME
+
+Lorsqu'on construit une classe héritant d'une autre classe, on peut redéfinir certaines méthodes de la classe mère.<br>
+Il s'agit de remplacer le comportement de la fonction qui a été définie par la classe mère.<br>
+
+Ce concept s'appelle le **polymorphisme**.<br>
+L'idée est de pouvoir utiliser le même nom de méthode sur des objets différents.<br>
+Cela n'a de sens que si le comportement des méthodes est différent.<br>
+Le polymorphisme permet de modifier le comportement d'une classe fille par rapport à sa classe mère.<br>
+Cela permet d'utiliser l'héritage comme un mécanisme d'extension en adaptant le comportement des objets.<br>
+
+#### redéfinir une méthode d'une classe parente
+
+exemple :<br>
+Nous avons une classe mère `Animal` qui possède la méthode `deplacer()` :
+```
+class Animal {
+    void deplacer() {
+    System.out.println("Je me déplace");
+}
+```
+En appliquant le principe de polymorphisme dans les classes filles `Chien`, `Oiseau` et `Pigeon`, on obtient ceci :
+```
+class Chien extends Animal {
+   void deplacer() {
+      System.out.println("Je marche");
+   }
+}
+```
+```
+class Oiseau extends Animal {
+   void deplacer(){
+      System.out.println("Je vole");
+   }
+}
+```
+```
+class Pigeon extends Oiseau {
+   void deplacer() {
+      System.out.println("Je vole surtout en ville");
+   }
+}
+```
+On peut appeler `deplacer()` sur toutes les classes. Le polymorphisme permet d'appeler la méthode adéquate selon le type d'objet.
+```
+public class Test {
+public static void main(String[] args) {
+    Animal a1 = new Animal();
+    Animal a2 = new Chien();
+    Animal a3 = new Pigeon();
+
+    a1.deplacer();
+    a2.deplacer();
+    a3.deplacer();
+    }
+}
+```
+
+#### Appeler 
