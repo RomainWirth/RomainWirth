@@ -382,4 +382,258 @@ public > protected > package-protected (par défaut) > private
 
 ## IV. ECRIRE DES BOUCLES DANS LES FONCTIONS
 
+### A. Les boucles FOR
 
+Les **boucles énumérées** sont les boucles qui sont utilisées quand on sait à l'avance combien de tour de boucles on veut effectuer.<br>
+On appelle cela les boucles `for`.<br>
+
+On peut indiquer le nombre d'itérations à effectuer :<br>
+1. En tant que valeur entière.
+2. Comme résultat d'une expression qui génère une valeur entière.
+
+exemple : 
+```
+for (int i=0; i<5;i++) {
+   System.out.println("Clap your hands!");
+}
+```
+Cette boucle équivaut au code suivant :
+```
+System.out.println("Clap your hands!");
+System.out.println("Clap your hands!");
+System.out.println("Clap your hands!");
+System.out.println("Clap your hands!");
+System.out.println("Clap your hands!");
+```
+
+Voici la syntaxe générale de l'instruction `for` :
+```
+for (initialisation; terminaison; increment) {
+  // code à répéter
+}
+```
+1. **L'initialisation** est la déclaration et l'assignation d'un **itérateur**.<br>
+On utilise en général une lettre `i` de type `int` avec une valeur de `0` (il s'agit de la variable d'itération).<br>
+2. **La terminaison** est l'expression qui est évaluée avant chaque exécution de boucle.<br>
+Si elle est évaluée "false", la boucle s'arrête.<br>
+On compare la valeur de `i` avec un nombre à atteindre.<br> 
+Une fois que la valeur de `i` a atteint ce nombre, l'expression devient "false" et la boucle s'arrête.<br> 
+3. **L'incrément** est une expression qui est évaluée à chaque fois qu'une itération de boucle est effectuée.<br>
+par exemple, `i++` signifie `i = i + 1` : on augmente la valeur de `i` de 1 à chaque itération.<br>
+4. La liste des instructions est située entre les accolades : `{` et `}`. Ce code est exécuté à chaque fois que la boucle est exécutée.<br>
+
+N.B. : les variables itératives peuvent avoir n'importe quel nom. Les noms `i`, `j` ou `k` sont souvent utilisés.<br>
+Sinon, il st préférable d'utiliser des noms descriptifs.
+
+**Les boucles for avec les collections**<br>
+
+Il s'agit d'une boucle effectuée sur un tableau ou sur une collection. C'est souvent utilisé pour consulter tous les éléments de l'objet.<br>
+
+On peut utiliser les boucles `for each`, qui spécifie qu'on souhaite couvrir tous les éléments du tableau.
+
+```
+La boucle for est idéale si on souhaite faire une boucle avec un nombre prédéfini de tours, ou sur tous les éléments d'un tableau.<br>
+Si ce n'est pas le cas, on utilisera les boucles conditionnelles.
+```
+
+### Les boucles while
+
+Il s'agit de boucles qui se répètent jusqu'à atteindre une condition.<br>
+Tant que la condition est vraie, la boucle va continuer.<br>
+Le nombre de répétitions sera défini par une condition similaire que celle d'une instruction `if`.
+
+Il en existe deux :<br>
+1. `while`
+2. `do... while`
+
+La boucle `while` :<br>
+La syntaxe 
+```
+while (expressionLogique) {
+  // liste de déclarations
+}
+```
+Cette boucle peut être implémentée comme "tant que l'expression logique est vraie, répéter les instructions".<br>
+Fonctionnement :<br>
+1. Le programme vérifie que l'expression logique est vraie (`true`).
+2. Si l'expression est fausse (`false`), les instructions sont ignorées (on entre même pas dans le corps de la boucle située en parenthèses).
+3. Si l'expression est vraie, la liste des instructions est exécutée.
+4. Une fois exécutée, on retourne à la première étape.
+
+La boucle `do... while` :<br>
+Similaire à la boucle while, mais avec une condition placée à la fin du bloc de code.<br>
+Cela permet au code d'être exécuté au moins une fois.<br>
+La syntaxe :
+```
+do {
+  // instructions
+} while (expressionLogique);
+```
+
+### Ignorer quelques instructions à l'intérieur d'une boucle 
+
+Pour cela, on utilise l'instruction `continue;`.<br>
+exemple :
+```
+for ( int i=0; i <10; i++) {
+// déclarations exécutées à chaque itération
+   if(i == 2 ||i == 5) {
+   continue;
+   }
+System.out.println(“Valeur de i : “ + i + “.”);
+}
+```
+
+On peut également interrompre complètement la séquence grâce à l'instruction `break;`.<br>
+De la même manière que continue, on arrêtera la séquence une fois qu'une condition est remplie.<br>
+exemple :
+```
+int [] myArray = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
+
+for (int i =0; i<myArray.length;i++) {
+   if (myArray[i] == "50") {
+   System.out.println ("J’ai trouvé mon  " +basket[i]+ " !");
+   break;
+   }
+System.out.println ("J’en suis à " +basket[i]+ " ...");
+}
+```
+
+## LES CONDITIONS
+
+### if ... else ...
+
+Les conditions si... sinon... permettent d'exécuter des lignes de codes selon des si une conditin est vraie ou non.<br>
+```
+if (condition) {
+  // code à exécuter
+} else {
+  // code à exécuter
+}
+```
+La condition est une expression logique qui est ramenée à un booléen : `true` ou `false`.<br>
+
+### Les opérateurs de comparaison
+
+On utilisera les opérateurs de comparaison pour effectuer la vérification de la condition de deux valeurs entre elles :<br>
+* `==` égal à (exactement le même)
+* `!=` différent de
+* `<` inférieur à
+* `<=` inférieur ou égal à
+* `>` supérieur à
+* `>=` supérieur ou égal à
+
+Le résultat de la comparaison d'une variable à une autre renvoit un booléen. L'expression est donc vraie ou fausse.
+
+### Les opérateur logiques
+
+Ces opérateurs permettent de combiner des valeurs booléennes (valeurs booléennes spécifiques ou résutats d'expressions).<br>
+il en existe trois :
+1. `&&` : ET logique.<br>
+Le résultat est vrai si toutes les conditions sont vraies : `expression1 && expression2` = les deux expressions doivent être vraies.
+2. `||` : OU logique.<br>
+Le résultat est vrai si au moins l'une des conditions est vraies : `expression1 || expression2` = l'une des (ou les) deux expressions doivent être vraies.
+3. `!` : NON logique.<br>
+Cela revient à vérifier l'inverse de l'expression donnée : le résultat de `!expression1` est vrai si `expresion1` est fausse.
+
+### Les chaînes de condition
+
+if... else if... (else if...) else
+
+On vérifier d'abord une condition, puis une autre, (puis encore une autre), et le reste.
+
+exemple :
+```
+public static void main(String[] args) {
+    if (args.length==1) {
+        sayHelloTo(args[0]);
+    } else if (args.length==2) {
+        sayHelloTo(args[0] + "-" + args[1]);
+    } else if (args.length==3) {
+        sayHelloTo(args[0] + "-" + args[1] + "-" + args[2]);
+    } else {
+        sayHelloTo("world");
+    }
+}
+```
+
+### L'instruction switch
+
+Plutôt que d'utiliser de multiples conditions avec une chaîne de condition, on peut utiliser le `switch case`.<br>
+exemple :
+```
+public static void main(String[] args) {
+    switch(args.length) {
+        case 0: // aucun argument n'a été envoyé
+            sayHelloTo("world");
+            break;
+        case 1: // l'utilisateur a fourni un argument dans le terminal
+            sayHelloTo(args[0]);
+            break;
+        case 2: // l'utilisateur a fourni 2 arguments
+            sayHelloTo(args[0] + "-" + args[1]);
+            break;
+        default: // l'utilisateur a fourni plus d'arguments qu'on peut en gérer !
+            System.out.println("Sorry, I don't know how to manage more than 2 names!");
+    }
+}
+```
+Avec l'instruction `switch` :
+* l'expression conditionnelle `args.length` n'est évaluée qu'une seule fois
+* chaque cas compare le résultat de l'expression à une valeur spécifique.
+* par défaut, une fois qu'un cas est évalué `true`, tous les cas ci-dessous sont également validés en **_cascade_**.<br>
+Pour éviter cela, on utilise l'instruction `break;` pour arrêter l'exécution du code.
+* la clause `default` est validée si aucun des autres cas n'est validé.
+
+Ce genre d'instruction rend les intentions plus claires qu'une chaîne if/else et permet d'évaluer l'état une seule fois.<br>
+Il existe encore un autre type de données : les énumérations.
+
+### Le type énumération
+
+Il s'agit de listes de cas prédéfinis destinés à nous aider pendant le développement.<br>
+Elles améliorent la lisibilité du code et diminuent les risques d'erreurs.<br>
+Le code n'en sera que plus propre.
+
+exemples :
+```
+public class myDirection {
+
+    /** listez toutes les directions possibles */
+    enum Direction {
+        north, east, south, west;
+    }
+
+    /** trouvez le nord */
+    public static void main(String[] args) {
+        Direction direction = Direction.north;
+        switch (direction) {
+            case north:
+                System.out.println("You are heading north");
+                break;
+            case east:
+                System.out.println("You are heading east");
+                break;
+            case south:
+                System.out.println("You are heading south");
+                break;
+            case west:
+                System.out.println("You are heading west");
+                break;
+        }
+    }
+}
+```
+Dans ce cas, on énumère toutes les directions. On a théoriquement pas besoin de la clause `default`.
+
+```
+public static void main(String[] args) {
+    Direction direction = Direction.north;
+    switch (direction) {
+        case north:
+            System.out.println("You are heading north");
+            break;
+        default:
+            System.out.println("You are lost!");
+    }
+}
+```
