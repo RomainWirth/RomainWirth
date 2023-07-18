@@ -107,6 +107,35 @@ myBook.numberOfPages = myBook.numberOfPages + 10;
 ```
 On peut ainsi modifier les valeurs des champs à l'intérieur de l'objet.<br>
 
+#### RESUME
+
+Structure d'une classe : 3 parties<br>
+1. Attributs (ou propriétés)
+   * Un attribut se déclare (comme une variable)
+   * Il y a trois types d'attributs : 
+     * Public = accessible depuis l'extérieur, via la référence sur l'attribut de la classe
+     * Privé = Même si on dispose de leur référence à l'objet, on ne peut pas accéder à l'attribut 
+     * Protégé = ces attributs sont publics, mais uniquement pour la descendance (voir héritage)
+2. Constructeurs<br>
+   * Il s'agit de méthodes particulières qui permettent l'élaboration de l'objet 
+   * Il est possible d'avoir plusieurs constructeurs qui vont différer grâce à leurs paramètres
+   * Il existe un paramètre par défaut
+3. Méthodes
+   * Il existe des méthodes publiques, privées ou protégées 
+   * Permettent la manipulation de la classe
+   * Ce sont des services rendus aux autres classes "utilisatrices"
+
+Il existe une méthode particulière : `toString`.<br>
+Cette méthode permet d'afficher l'objet créé. il s'agit d'un Getter<br>
+
+Nous avons deux méthodes particulières : les **Getters** et les **Setters**.<br>
+Les _Getters_ permettent de récupérer les données.<br>
+Par convention, un getter sera appelé : `getNomDeLAttribut`.<br>
+Les _Setters_ permettent d'affecter des valeurs aux attributs.<br>
+Par convention, un setter sera appelé : `setNomDeLAttribut`.<br>
+
+voir cette <a href="https://youtu.be/On0X8RLMqko">ressource</a>
+
 ## SPECIALISER LES CLASSES AVEC L'HERITAGE ET LE POLYMORPHISME
 
 ### L'HERITAGE
@@ -123,8 +152,15 @@ et d'ajouter en plus leurs particularités en les spécialisant par des attribut
 
 La classe mère est considérée comme la "référence" et grâce au mécanisme d'héritage, on partagera ses attributs et ses méthodes à ses classes filles.<br>
 
-Attention : 
-* un champs défini comme private ne peut pas être hérité ni manipulé par la classe fille.
+L'idée derrière la notion d'héritage est la possibilité d'enrichir ou de modifier des instances de classe (objets) :<br>
+` Animal > Mammifère > Humain `<br>
+On introduit la notion de `super-classe` et la notion de hiérarchie de classe<br>
+
+Attention :
+* un champs défini comme private ne peut pas être hérité ni manipulé par la classe fille. 
+  * cf. encapsulation
+  * un élément public peut être manipulé
+  * un élément privé est protégé
 * en Java, une classe fille ne peut hériter que d'une seule classe mère.
 * une classe mère peut en revanche avoir plusieurs filles.
 
@@ -188,6 +224,16 @@ class Carre extends FigureGeometrique {
 En java, pour appeler le constructeur de la classe mère depuis le constructeur de la classe fille, on utilise la méthode **super**.<br>
 Cette méthode fait directement référence à la méthode écrite dans la classe parent, ici le constructeur. (voir polymorphisme)
 
+#### EN RESUME
+
+1. L'héritage permet d'étendre une classe.
+   * En modifiant son comportement via des constructeurs et des méthodes.
+   * En rajoutant des attributs et des méthodes.
+2. L'héritage ne permet pas en pratique de supprimer des méthodes ou des attributs.
+   * Possibilité de surcharger des méthodes avec un code "vide".
+3. L'héritage donne la possibilité de définir des "généalogies complexes".
+4. Il n'y a pas d'héritage multiple en Java.
+
 ### LE POLYMORPHISME
 
 Lorsqu'on construit une classe héritant d'une autre classe, on peut redéfinir certaines méthodes de la classe mère.<br>
@@ -206,7 +252,8 @@ Nous avons une classe mère `Animal` qui possède la méthode `deplacer()` :
 ```
 class Animal {
     void deplacer() {
-    System.out.println("Je me déplace");
+      System.out.println("Je me déplace");
+    }
 }
 ```
 En appliquant le principe de polymorphisme dans les classes filles `Chien`, `Oiseau` et `Pigeon`, on obtient ceci :
@@ -234,16 +281,174 @@ class Pigeon extends Oiseau {
 On peut appeler `deplacer()` sur toutes les classes. Le polymorphisme permet d'appeler la méthode adéquate selon le type d'objet.
 ```
 public class Test {
-public static void main(String[] args) {
-    Animal a1 = new Animal();
-    Animal a2 = new Chien();
-    Animal a3 = new Pigeon();
+    public static void main(String[] args) {
+        Animal a1 = new Animal();
+        Animal a2 = new Chien();
+        Animal a3 = new Pigeon();
 
-    a1.deplacer();
-    a2.deplacer();
-    a3.deplacer();
+        a1.deplacer();
+        a2.deplacer();
+        a3.deplacer();
     }
 }
 ```
 
-#### Appeler 
+#### Appeler une méthode d'une classe parente
+
+La redéfinition des méthodes dans la classe fille remplace tout le code de la méthode mère.<br>
+Parfois, c'est un fonctionnement idéal, <br>
+et parfois, on souhaite quand même appeler le code de la classe mère en y ajoutant autre chose dans la classe fille.<br>
+
+exemple :
+```
+class Chien extends Animal {
+   void deplacer() {
+      super.deplacer();
+      System.out.println("ouaf ouaf");
+   }
+```
+
+**_Attention_**, dans le cas d'un héritage multiple (classe mère > classe fille > classe petiteFille),<br> 
+il est seulement possible d'accéder à l'implémentation de la classe parente et pas plus.
+
+#### Utiliser les annotations 
+
+En Java, il existe des types spéciaux commençant par `@` : ce sont les **annotations**.<br>
+Ces types servent à préciser le comportement d'une classe, d'une méthode, d'un attribut ou même d'une variable.<br>
+Les annotations donnent des informations au compilateur pour l'exécution du code de notre programme.
+
+L'une des annotations les plus connues et utilisées est `@Override`.<br>
+Elle est utilisée en complément du polymorphisme pour indiquer que la méthode annotée est une redéfinition d'une méthode de la classe mère.<br>
+si l'annotation est présente sur une méthode, le compilateur va vérifier que la signature de la méthode est bien identique à celle de la méthode dans la classe mère.<br>
+
+exemple :
+```
+class Animal {
+   void deplacer() {
+   System.out.println("Je me déplace");
+}
+class Chien extends Animal {
+   @Override
+   void deplacer() {
+      System.out.println("Je marche");
+   }
+}
+```
+
+### EN RESUME
+
+**L'héritage** est un concept fondamental en java qui permet de réutiliser du code d'une classe mère.<br>
+**Le Polymorphisme** permet de "surcharger" les méthodes de la classe mère pour redéfinir leurs comportements sans changer leur signature.<br>
+
+## GERER LES PILES DE DONNEES AVEC LA BONNE COLLECTION
+
+Java propose une structure de données capable de contenir un nombre fixe de valeurs d'un même type.<br>
+cette structure s'appelle un **tableau** (ou **Array**).
+
+### Utiliser un tableau pour stocker un nombre fixe d'éléments
+
+Un **tableau** est un liste ordonnée et numérotée d'éléments du même type.<br>
+Chaque élément est associé à un numéro appelé **index**.<br>
+L'index commence par 0.<br>
+
+La **Déclaration** d'un tableau utilise la même syntaxe que n'importe quelle variable.<br>
+On doit fournir :<br>
+* Le **type** des éléments que le tableau contiendra, suivi de `[]`.
+* Le **nom** de la variable qui doit expliciter clairement l'intention du tableau.
+
+exemple :
+```
+// Déclarez la variable
+int[] cupsOfCoffeePerDayOfTheWeek;
+
+// Créez le tableau et assignez-le à la variable
+cupsOfCoffeePerDayOfTheWeek = new int[7];
+```
+Lorsque le tableau est créé, chaque élément est initialisé avec la valeur par défaut du type du tableau.<br>
+Dans le cas d'un tableau de `int`, le tableau est initialisé avec la valeur `0`.
+
+On peut aussi déclarer un tableau en une seule ligne : `Type [] nomDuTableau = new Type [nombreDElements];`
+```
+int[] myArray = new int[3];
+```
+
+Une fois le tableau créé, on peut y effectuer deux opérations :
+1. **Accéder** à une valeur à un index donné.
+2. **Définir** une nouvelle valeur à un index donné.
+
+Dans les deux cas, on utilise le nom de la variable suivi du crochet d'ouverture, de la valeur de l'index souhaité et du crochet de fermeture.<br>
+```
+// Attribuez la valeur 3 au cinquième jour de la semaine
+// C'est l'index 4, puisque le premier index est 0
+cupsOfCoffeePerDayOfTheWeek[4]=3;
+
+//Afficher le nombre de cafés le premier jour de la semaine
+System.out.println(cupsOfCoffeePerDayOfTheWeek[0]);
+```
+
+#### Les tableaux multidimentionnels 
+
+Un tableau ne contient qu'une seule ligne et plusieurs colonnes.<br>
+Dans le cas d'un tableau multidimentionnel, on aura un tableau qui contient plusieurs lignes et plusieurs colonnes.<br>
+
+Un tel tableau se déclare ainsi :<br>
+```
+// Créez un tableau multidimensionnel pour gérer tous les rangs d'un théâtre
+String[][] myTheatreSeats = new String[30][12];
+// Rang 10, siège 6. N'oubliez pas que l'index commence à 0!
+myTheatreSeats[9][5] = "James Logan";
+```
+
+Les tableaux sont efficaces et parfaits pour gérer un nombre fixe d'éléments.<br>
+Dans la pratique, on doit souvent gérer un nombre variable d'éléments.<br>
+Pour cela, on va utiliser les **collections**.<br>
+
+### Utiliser les listes si le nombre d'éléments n'est pas fixe
+
+Un tableau est assez limité : on ne peut pas insérer d'élément supplémentaire, on peut seulement remplacer des éléments.<br>
+On va alors utiliser une **liste ordonnée**.<br>
+
+Comme ces listes sont modifiables, on peut modifier leur contenu et le nombre d'éléments d'une collection.<br>
+Une liste se déclare ainsi :<br>
+```
+List<String> myList = new ArrayList<String>();
+```
+Voici un aperçu de ce que l'on peut faire avec les listes :<br>
+* **accéder** à chaque élément via son index
+* **ajouter** (append) un nouvel élément à la fin
+* **insérer** un nouvel élément à un index spécifique
+* **supprimer** un nouvel élément à un index spécifique
+
+Attention ! Malgré la puissance de `ArrayList`, on ne peut pas changer le **type**. On ne pourra changer que la valeur des éléments.<br>
+
+Il existe plusieurs classes qui utilisent des listes. La plus utilisée étant `ArrayList`.<br>
+On peut créer notre propre classe, l'important est d'utiliser l'**interface** `List` sur notre classe.<br>
+
+N.B. : une interface est une classe définissant les signatures des méthodes que devront implémenter toutes les classes qui l'implémentent.<br>
+
+C'est un contrat imposé par celui qui l'écrit à toutes les classes qui l'utiliseront.<br>
+Ce contrat définit toutes les opérations qu'une classe doit fournir.<br>
+_Voir toutes les opérations prises en charges et la manière d'utiliser les classes ici : <a href="https://docs.oracle.com/javase/tutorial/collections/interfaces/list.html">Tuto Java</a>_
+
+### La classe ArrayList
+
+#### Créer une liste et ajouter des éléments
+
+Pour créer une liste, on doit : 
+1. Déclarer une variable dont le type est l'interface `List`.<br>
+Cela signifie qu'on peut assigner n'importe quel objet à la variable qui met en place l'interface `List`, y compris la classe `ArrayList`.<br>
+2. Initialiser la variable avec une expression commençant par le mot clé `new` qui crée une intance de la classe `ArrayList`.
+
+On peut procéder en une seule ligne avec la syntaxe suivante : Type nom = new [Type de liste]<br>
+`List<Integer> myList = new ArrayList<Integer>();`<br>
+* Type : **List<Integer>**
+* nom : **myList**
+* opérateur d'affectation : **=**
+* mot clé : **new**
+* Type de liste : **ArrayList<Integer>()**
+
+1. La déclaration a lieu avant l'opérateur d'affectation `=`.<br>
+On déclare d'abord le type `List` suivi directement du paramètre de type (ici <Interger>).<br>
+Le paramètre de type limite le type d'objets qui peuvent être stockés dans la liste (ici des nombres entiers).<br>
+2. la création en tant que telle a lieu avec l'expression `new ArrayList<Integer>()`.<br>
+L'objet initialisé est assigné à la variable myList.
