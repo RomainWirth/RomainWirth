@@ -168,8 +168,11 @@ exemple :<br>
 Création d'une classe mère `FigureGeometrique`
 ```
 public class FigureGeometrique {
+    // attributs
     private int x;
     private int y;
+    
+    // constructeur
     public void moveTo(int newX, int newY) {
         this.x = newX;
         this.y = newY;
@@ -179,6 +182,7 @@ public class FigureGeometrique {
 Puis création d'une classe fille `Carre`
 ```
 public class Carre extends FigureGeometrique {
+    // attributs
     private long cote;
     public long getCote() {
         return cote;
