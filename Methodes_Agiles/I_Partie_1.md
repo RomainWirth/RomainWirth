@@ -74,7 +74,7 @@ Nous reconnaissons la valeur des seconds éléments, mais privilégions les prem
 
 ### F. SCRUM
 
-* <p style="color: red;">Méthode Agile = "entreprise friendly"</p>
+* Méthode Agile = "entreprise friendly"
   1. Production backlog = alimente chaque itération : liste de tout ce qu'il y a à faire de manière ordonnée
   2. Sprint Backlog = liste de ce qu'il y a à faire durant le sprint
   3. Itération = lancement du sprint
@@ -83,3 +83,36 @@ ce qui a été fait hier, ce qui a posé de la difficulté, ce qui sera fait dan
   5. Potentially shippable product increment = livrable en production
 * Souvent utilisé conjointement avec d'autres méthodologies de travail ou de développement
 
+### G. LE LEAN
+
+Apporté par Toyota dans leur chaîne de production
+
+LEAN manufacturer = minimalisation des 3M :
+* MUDA (gaspillage)
+* MURA (irrégularité)
+* MURI (excès)
+
+Le but est de réduire le superflu dans la chaîne de production et d'optimiser.
+
+### H. LE KANBAN (= Trello)
+
+* Inspiré du Lean<br>
+* Limite le Work in progress<br>
+* Applicable à peu près partout.
+
+### I. METHODES AGILES ET DESIGN THINKING
+
+Ce sont deux approches incrémentales centrées sur l'utilisateur.<br>
+Le design thinking est fait en amont de la méthode agile.<br>
+Le but est d'observer, exprimer des idées, émettre des hypothèses et prototyper pour répondre à un besoin client.
+Cette étape permet d'alimenter le product backlog.
+
+### K. LE "MINIMUM VIABLE PRODUCT"
+
+Le MVP est le livrable finalisé le plus petit qui est présentable et qui apporte de la valeur au client.<br>
+Le MVP s'inscrit dans un projet global. Il donne "du grain à moudre" au client, pour obtenir un retour en vue d'une amélioration.<br>
+Le but est d'avoir quelque chose de tangible, rapidement en production pour être utilisé.
+
+### L. POUR BIEN DEMARRER EN AGILE
+
+Définir ce que doit contenir le MVP.1 
