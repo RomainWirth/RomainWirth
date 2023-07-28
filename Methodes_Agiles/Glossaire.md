@@ -31,7 +31,8 @@ Déroulement :
 
 ## Product Backlog
 
-Il s’agit d’une liste d’éléments ou de fonctionnalités nécessaires pour atteindre les objectifs ou définir les attentes au sein d’une équipe,<br> le tout classé par ordre de priorité.
+Il s’agit d’une liste d’éléments ou de fonctionnalités nécessaires pour atteindre les objectifs ou définir les attentes au sein d’une équipe,<br> 
+le tout classé par ordre de priorité.<br>
 Elle permet à ses membres de suivre leurs tâches.
 
 ## Product Owner
