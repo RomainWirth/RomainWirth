@@ -46,7 +46,7 @@ Son rôle est de hiérarchiser les priorités, de décider ce qui est réalisabl
 
 ## Release
 
-Il s’agit d’une nouvelle version du produit. Elle est le fruit de plusieurs sprints.<br>
+Il s’agit d’une nouvelle version du produit livrée aux utilisateurs. Elle est le fruit de plusieurs sprints.<br>
 Pour arriver au release, on va créer un plan de release.<br>
 Un plan de release est une séquence de sprints à venir, avec une vision du contenu prévu de ces sprints (éléments de backlogs de produit).
 
@@ -109,7 +109,9 @@ Cet événement est timeboxé et a une durée maximale de 4 heures pour un sprin
 
 ## Rétrospective
 
-Il s’agit d’une réunion de travail qui permet de tirer les leçons du sprint pour recueillir des feedbacks, et faire le point sur l’avancement du projet.
+Il s’agit d’une réunion de travail qui permet de tirer les leçons du sprint pour recueillir des feedbacks, et faire le point sur l’avancement du projet.<br>
+Elle permet à chacun de mettre en avant son vécu pendant le sprint écoulé pour améliorer l'organisation et être plus efficace.<br>
+C'est un élément clef du principe d'amélioration continue rendant une équipe auto-apprenante.<br>
 
 ## User Story
 
@@ -118,9 +120,43 @@ Technique qui permet de formaliser synthétiquement les besoins sans perdre de v
 * En QUOI il consiste ?
 * Dans quel BUT ?
 
+La User Story sera définie selon le principe "INVEST" :
+* Indépendante : l'élément du product backlog (PBI) doit être unique.
+* Négociable : l'élément n'est pas définitif, on doit pouvoir en discuter pour pouvoir le faire évoluer.
+* Valeur : l'élément doit délivrer de la valeur pour l'utilisateur/la partie prenante.
+* Estimable : On doit pouvoir estimer la taille de l'élément.
+* Small : l'élément doit être de taille raisonnable pour être planifié, tâché, priorisé avec un certain niveau de précision. 
+* Testable : la description de l'élément doit apporter les informations nécessaires pour rendre un test de développement possible.
+
+Pour la formuler, l'écrira comme suit :
+EN TANT QUE {PERSONA}, JE VEUX {FONCTIONNALITE}, AFIN DE {VALEUR PERCUE}.
+
 ## Valeur métier
 
+La valeur métier est aussi appelée la valeur économique. Elle est basée sur un rapport bénéfices/coûts.<br>
+Elle est déterminée par les caractéristiques suivantes :
+* La valeur commerciale (ce produit me fait gagner/économiser de l'argent)
+* La valeur marché (clients potentiels)
+* La valeur sociale (statut social)
+* La valeur temporelle (gain à long terme)
 
+Ces critères définissent la valeur métier qui sera attribuée à chaque fonctionnalité du produit pour les prioriser.
 
 ## Vélocité
 
+La vélocité permet de déterminer l'effort qu'est capable de fournir une équipe de développement pour la réalisation des tâches programmées dans un sprint.<br>
+La vélocité est exprimée en nombre de points.<br>
+Le product owner place dans le product backlog un certain nombre de fonctionnalités à réaliser (ou items) généralement formalisés sous la forme de user stories.<br>
+L'équipe de développement attribue à chaque product backlog item (PBI) un certain nombre de points.<br>
+Ces points représentent à la fois la complexité et la durée de la réalisation du PBI, estimées de façon empirique.<br>
+On utilise souvent la suite de Fibonacci pour attribuer les points :<br>
+* 1 pour une tâche extrêmement simple (ex: correction d'un libellé).
+* 2, 3, 5 pour une tâche légèrement plus complexe (ex: création d'un formulaire de saisie).
+* 8, 13, 21, 34, 55, 89, 144 si on ne dispose pas suffisamment d'informations pour estimer correctement une tâche.
+
+La vélocité agile de l'équipe de développement est calculée à l'issue d'un sprint. Il suffit d'additionner les valeurs de tous les PBI entièrement réalisés et livrés durant un sprint.<br>
+
+Pour obtenir une vélocité d'équipe de développement stable, on va devoir attendre entre 3 et 5 sprints.<br>
+Le sprint 0 est généralement complexe : il s'agit de la mise en route de l'équipe dont les membres ne se connaissent pas nécessairement.<br>
+La vélocité est rarement élevée et va augmenter progressivement durant les 3 ou 4 premiers sprints, jusqu'à ce qu'elle se stabilise.<br>
+Elle est alors optimale et est relativement représentative de l'effort qu'est capable de produire l'équipe durant un sprint, même si elle reste une estimation.
