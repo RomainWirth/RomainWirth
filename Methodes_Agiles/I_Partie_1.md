@@ -107,12 +107,12 @@ Le design thinking est fait en amont de la méthode agile.<br>
 Le but est d'observer, exprimer des idées, émettre des hypothèses et prototyper pour répondre à un besoin client.
 Cette étape permet d'alimenter le product backlog.
 
-### K. LE "MINIMUM VIABLE PRODUCT"
+### J. LE "MINIMUM VIABLE PRODUCT"
 
 Le MVP est le livrable finalisé le plus petit qui est présentable et qui apporte de la valeur au client.<br>
 Le MVP s'inscrit dans un projet global. Il donne "du grain à moudre" au client, pour obtenir un retour en vue d'une amélioration.<br>
 Le but est d'avoir quelque chose de tangible, rapidement en production pour être utilisé.
 
-### L. POUR BIEN DEMARRER EN AGILE
+### K. POUR BIEN DEMARRER EN AGILE
 
 Définir ce que doit contenir le MVP.1 
