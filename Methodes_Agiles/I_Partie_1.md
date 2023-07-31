@@ -8,11 +8,11 @@
 **_Un produit_**, quant à lui, n'a pas de limite de temps définie.
 
 #### Comment définir un projet/produit ?<br>
-1. on part d'un besoin (un cahier des charges, parfois une phrase...)
-2. on a des parties prenantes (clients, collaborateurs, fournisseurs...)
-3. on établit un planning
-4. ...un budget
-5. et des livrables
+1. on part d'un **besoin** (un cahier des charges, parfois une phrase...)
+2. on a des **parties prenantes** (clients, collaborateurs, fournisseurs...)
+3. on établit un **planning**
+4. ...un **budget**
+5. et des **livrables**
 
 ### B. Le triangle qualité / coût / délai
 
@@ -77,6 +77,8 @@ L'adaptation au changement plus que le suivi d'un plan.<br>
 
 Nous reconnaissons la valeur des seconds éléments, mais privilégions les premiers."
 
+![](./src/agile_manifesto.png)
+
 ### F. SCRUM
 
 * Méthode Agile = "entreprise friendly"
@@ -108,6 +110,8 @@ Le but est de réduire le superflu dans la chaîne de production et d'optimiser.
 * Limite le Work in progress<br>
 * Applicable à peu près partout.
 
+![](./src/Kanban.png)
+
 ### I. METHODES AGILES ET DESIGN THINKING
 
 Ce sont deux approches incrémentales centrées sur l'utilisateur.<br>
@@ -115,12 +119,23 @@ Le design thinking est fait en amont de la méthode agile.<br>
 Le but est d'observer, exprimer des idées, émettre des hypothèses et prototyper pour répondre à un besoin client.
 Cette étape permet d'alimenter le product backlog.
 
+![](./src/design_thinking.png)
+
 ### J. LE "MINIMUM VIABLE PRODUCT"
 
 Le MVP est le livrable finalisé le plus petit qui est présentable et qui apporte de la valeur au client.<br>
 Le MVP s'inscrit dans un projet global. Il donne "du grain à moudre" au client, pour obtenir un retour en vue d'une amélioration.<br>
 Le but est d'avoir quelque chose de tangible, rapidement en production pour être utilisé.
 
+![](./src/MVP.png)
+
 ### K. POUR BIEN DEMARRER EN AGILE
 
-Définir ce que doit contenir le MVP.1 
+Définir ce que doit contenir le MVP.1
+
+La vision produit = AKA "ze prodeuct vigionne"
+
+* Une vision partagée et comprise par tous
+* L'ADN du produit / de l'entreprise, ce qui ne change pas dans le temps
+* Incarne les objectifs sur le long terme
+* Englobe le "quoi", le "qui" ou encore le "pourquoi", mais pas le "comment"
