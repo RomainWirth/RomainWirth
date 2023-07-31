@@ -16,6 +16,8 @@
 
 ### B. Le triangle qualité / coût / délai
 
+![](./src/triangle_quali_cout_delai.png)
+
 Dans ce triangle, on a deux choix possibles :
 * Un produit de bonne qualité et rapide => il sera plus cher
 * Un produit de bonne qualité et pas cher => prend plus de temps
@@ -30,12 +32,14 @@ Conquête spatiale, avancée militaire, avancée technologique...
 
 Il existe deux approches opposées qui coexistent dans la conduite d'un projet :<br>
 1. Le mode "cascade" (ou "cycle en V")
+![](./src/wasserfallmodell-FR-1.jpg)
    * définition du projet
    * création du projet
    * lancement du projet
    * retour<br>
 => risque grandissant au cours du temps de création du projet
 2. Le mode "Agile" (ou "itératif")
+![](./src/methode_agile_sprints.jpg)
    1. première phase
       * définition
       * création
@@ -49,6 +53,7 @@ Il existe deux approches opposées qui coexistent dans la conduite d'un projet :
    3. troisième phase
       * etc.<br>
 => risque amoindris au cours du temps
+
 
 La prise d'ampleur de la technologie et des logiciels dans la vie de tous les jours implique une augmentation de la complexité dans leur réalisation.<br>
 La méthode en cascade utilisée à l'origine ne permet pas l'anticipation de besoins supplémentaires.<br>
@@ -81,6 +86,9 @@ Nous reconnaissons la valeur des seconds éléments, mais privilégions les prem
   4. Sprint (2 - 4 weeks) + daily stand-up = 2 à 4 semaines de développement, avec des rapports journaliers (10-15 minutes) :<br>
 ce qui a été fait hier, ce qui a posé de la difficulté, ce qui sera fait dans la journée.
   5. Potentially shippable product increment = livrable en production
+
+![](./src/scrum.jpg)
+
 * Souvent utilisé conjointement avec d'autres méthodologies de travail ou de développement
 
 ### G. LE LEAN
