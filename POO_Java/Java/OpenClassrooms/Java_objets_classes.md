@@ -456,3 +456,139 @@ On déclare d'abord le type `List` suivi directement du paramètre de type (ici 
 Le paramètre de type limite le type d'objets qui peuvent être stockés dans la liste (ici des nombres entiers).<br>
 2. la création en tant que telle a lieu avec l'expression `new ArrayList<Integer>()`.<br>
 L'objet initialisé est assigné à la variable myList.
+
+Le terme `Integer` est écrit en toutes lettres avec une majuscule. la raison est qu'**une liste ne peut stocker que des objets**, et pas de types primitifs.<br>
+De la même manière, on doit utiliser :
+* `Double` au lieu de `double` si on veut stocker des décimales
+* `Boolean` au lieu de `boolean` si on veut enregister des valeurs vraies/fausses
+* `Float` au lieu de `float` si on insiste vraiment pour les utiliser
+
+La version objet des types primitifs est très utile car équipée de méthodes.<br>
+Voir la doc officielle <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Integer.html">oracle</a>
+
+Pour ajouter des éléments à la liste, on doit procéder un par un :
+``` 
+List<Integer> myList = new ArrayList<Integer>();
+myList.add(7);
+myList.add(5); //-> [7,5]
+```
+La première affectation crée une liste vide appelée `myList`.<br>
+On ajoute le premier élément avec l'affectation : `myList.add(7)`. Java place automatiquement la valeur dans un objet `Integer` et l'ajoute à l'index 0.<br>
+L'affectation `myList.add(5)` crée une instance de la classe `Integer` avec une valeur de 5 et l'ajoute à la liste à l'index 1.
+
+N.B. : Le boxing java est une conversion automatique que Java effectue entre un type primitif et sa classe correspondante, lorsqu'un objet est attendu.<br>
+C'est le cas avec la classe `ArrayList`.<br>
+voir l'<a href="https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html">histoire complète</a> sur le site de tutoriels Java.
+
+Explication de `.add()` :<br>
+En Java, ajouter, modifier ou supprimer des éléments nécessite l'utilisation d'une méthode.<br>
+Pour l'interface `List`, il y a trois méthodes implémentées par la classe `ArrayList` qui sont très pratiques :
+* `add` : pour ajouter un nouvel élément à la fin d'un tableau.<br> 
+On peut également ajouter un élément à une position donnée de cette manière : `myList.add(1,12)`
+* `set` : pour remplacer un nouvel élément sur un index spécifique.<br>
+On doit fournir l'élément et l'index sur lequel on souhaite que la valeur soit positionnée.
+* `remove` : pour supprimer un élément existant sur un index spécifique.<br>
+On doit fournir l'index de l'élément qu'on souhaite supprimer.
+
+exemple de syntaxe :
+``` 
+List<Integer> myList = new ArrayList<Integer>(); // -> []
+myList.add(7); // -> [7]
+myList.add(5); //-> [7, 5]
+myList.add(1,12) //-> [7, 12, 5]
+myList.set(0,4); // -> [4, 12, 5]
+myList.remove(1); // removed 12 -> [4, 5]
+```
+
+#### Assurer le suivi du nombre d'éléments 
+
+La méthode `myArray.size()` permet d'obtenir le nombre d'éléments dans une liste.<br>
+On peut aussi obtenir ces informations avec les tableaux : on utilisera la propriété `myArray.length` au lieu de `.size()`.
+
+La méthode `.size()` est largement utilisée, particulièrement quand on a besoin de faire une boucle sur une liste.
+
+### Utiliser une collection non ordonnée - ensembles
+
+Un ensemble est une collection d'éléments unique non ordonnés.<br>
+On peut les utiliser si on ne se soucie pas de l'ordre des éléments (ex : liste d'ingrédients d'une recette).<br>
+
+#### Déclaration des ensembles 
+
+De la même manière qu'on gère les listes, on va utiliser les différentes classes de Java pour gérer les ensembles.<br>
+L'ensemble le plus communément utilisé est le `HashSet`.
+
+La section <a href="https://docs.oracle.com/javase/tutorial/collections/interfaces/set.html">Tutoriel</a> de Java donne plus d'information sur les différents implémentations des ensembles.
+
+Voici comment se réclare un ensemble :
+```
+Set<Type> nomDeLaVariable = new HashSet<String>();
+```
+
+On va d'abord déclarer le type avant le nom de la variables de l'ensemble, puis employer l'opérateur d'affectation suivi du mot clé "new" et du type d'ensemble.<br>
+C'est comparable avec le fonctionnement d'une `ArrayList` : on déclare d'abord la variable avec l'interface `Set` et on l'initialie avec une instance de la classe concrète `HashSet`.
+
+#### Manilupation des éléments d'un ensemble
+
+Voici les opérations fréquentes qu'on peut utiliser avec les ensembles :
+* `.add()` permet d'ajouter un élément.
+* `.remove()` permet de supprimer un élément.
+* `.size()` permet de connaître le nombre d'éléments de l'ensemble.
+
+### Consulter les dictionnaires ou "maps"
+
+Un dictionnaire est une liste d'éléments organisés en fonction d'une clé.<br>
+cette clé est un terme spécifique qu'on recherche pour trouver sa définition ou sa valeur.<br>
+C'est ce qu'on appelle une association "**Clé<>Valeur**" (**Key <> Value**).
+
+Toutes les clés d'un dictionnaire doivent être uniques, tout comme un numéro de plaque d'immatriculation.<br>
+
+#### Déclarer un dictionnaire
+
+Comme pour les listes et les ensembles, il existe plusieurs classes Java pour manipuler les dictionnaires.<br>
+Chacune de ces classes respecte l'interface `Map`, pour laquelle il y aune doc complète sur le site des <a href="https://docs.oracle.com/javase/tutorial/collections/interfaces/map.html">Tutoriels Java</a>
+
+La classe la plus courante est `HashMap`.<br>
+Pour déclarer et initialiser une instance de cette classe, on procédera ainsi :
+```
+Map<String, Integer>myMap = new HashMap<String, Integer>();
+```
+On appelle l'interface Map, suivi du type de clé et du type de valeur entre <>, puis le nom de la variable.<br>
+On utilise ensuite l'opérateur d'assignation, suivi du mot clé "new", puis du type de dictionnaire et enfin le type de clé et le type de valeur.<br>
+Dans cette syntaxe ci-dessus :
+* `String` est le type de la clé.
+* `Integer` est le type de la valeur associée.
+
+Pour ajouter des éléments au dictionnaire, on utilisera la méthode : `.put()` sur le nom de la variable déclarée.<br>
+Entre les parenthèses, on ajoutera le nom de la clé, suivi de la valeur associée à cette clé.<br>
+Les clés sont sensibles à la casse. Aussi, on pourra avoir deux clés similaires, l'une avec une lettre majuscule au début, l'autre avec une minuscule :<br>
+"Romain" et "romain", qui auront chacune leur propre valeur.<br>
+
+Afin d'éviter des similarités dans les clés, il existe une astuce qui consiste à utiliser des constantes pour spécifier les clés une fois et les réutiliser ensuite dans tout le code :
+```
+// Définissez des clés en tant que constantes dans votre classe
+private static final String KJENNY = "Jenny";
+private static final String KLIVIA = "Livia";
+private static final String KPAUL = "Paul";
+// Utilisez des constantes en tant que keys
+myMap.put(KJENNY, 34);
+myMap.put(KLIVIA, 28);
+myMap.put(KPAUL, 31);
+
+// Accédez à un élément
+System.out.println(myMap.get(KJENNY)); // -> 34
+```
+
+Une constante se déclare avec les mots clé : `private static final`.
+
+N.B. : le type d'un dictionnaire ne peut pas être modifié.<br>
+Toutes les clés doivent être du même type et toutes les valeurs doivent être du même type.
+
+#### Manipulation des éléments du dictionnaire
+
+Voici les opération fréquentes qu'on peut effectuer avec les dictionnaires :
+* `get()` est une méthode pour accéder à un élément, il faut spécifier la clé en argument.
+* `put()` permet d'ajouter un élément, il faudra spécifier la clé et la valeur en argument.
+* `remove()` sera employé pour supprimer un élément, seule la clé devra être spécifiée en argument.
+
+Pour compter les éléments, on utilisera la propriété `size()`.
+
