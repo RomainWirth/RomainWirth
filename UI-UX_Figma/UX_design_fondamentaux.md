@@ -89,3 +89,50 @@ Bien qu'on confonde UX design et usabilité, l'utabilité n'est qu'une composabt
 * l'UX design est une discipline plus large dont l'objectif est de rendre l'utilisateur heureux,<br> 
 d'offrir une expérience agréable et significative. L'émotion entre en ligne de compte ;
 * la dimension d'usabilité (englobée dans l'UX design) consiste à permettre aux utilisateurs d'accomplir un ensemble de tâches avec simplicité.
+
+### RECHERCHE LE TAUX DE RETENTION
+
+#### Mesurer le succès de l'UX
+
+Il y a plusieur façons de mesurer le succès de l'UX : de façon qualitative et/ou quantitative.<br>
+
+* De manière qualitative, on peut regarder la notation d'une application mobile dans l'APP Store/le Play Store (nombre d'étoiles),<br>
+Ou bien lire et analyser les commentaires des utilisateurs.<br>
+
+* De manière quantitative, on regardera le taux de rétention.<br> 
+Il s'agit de la part d'utilisateurs qui continuent d'aller régulièrement sur une app ou un site web plus de 3 mois après l'avoir découvert et utilisé pour la première fois.
+
+#### Viser 30% de taux de rétention
+
+Les applications qui ont le meilleurs taux de rétention sont les app de messagerie instantanées : Facebook (98%) ou WhatsApp (77%).<br>
+Le côté instantané et les nouvelles façons de communiquer entraînent une fréquence d'usage très importante et génèrent de l'addiction.<br>
+
+Le taux de rétention moyen des applications mobiles est de 11%.<br>
+Au delà de 30% (ex : Snapchat = 33%), on considère que c'est un succès.<br>
+
+Sur internet, la star incontestée est **Youtube**.
+
+### ACCROCHER LES UTILISATEURS AVEC LE "HOOK CANVAS"
+
+Le modèle économique d'applications comme Facebook, YouTube ou encore Instagram repose sur un comportement d'utilisateur :<br>
+tuer l'ennui, regarder si on à rien loupé, se connecter de manière compulsive pour combler un moment de solitude.<br>
+On parle de relation "haute fréquence" avec les utilisateurs.<br>
+
+Le modèle Hook Canvas (modèle du crochet) a été développé par Nir Eyal, professeur à l'école de commerce de Stanford.<br>
+Le but est d'accrocher les utilisateurs. Le flow de l'application doit s'articuler en 4 phases qui se complètent et se répètent, et forment ainsi une boucle.
+
+#### Phase 1 : l'élément déclencheur
+
+Il existe deux types d'éléments déclencheurs : **déclencheurs internes** et **déclencheurs externes**.<br>
+
+* le déclencheur interne tire l'utilisateur vers l'application. Les plus puissants déclencheurs sont des états psychologiques ou des émotions :
+    * la solitude
+    * l'ennui
+    * la peur de manquer quelque chose<br>
+Ces sentiments sont souvent négatifs car ils sont la manifestation du problème que l'utilisateur cherche à résoudre avec le produit
+
+* les déclencheurs externes poussent l'utilisateur vers l'application :
+    * la publicité
+    * les notifications
+    * les boutons d'appel à l'action
+
