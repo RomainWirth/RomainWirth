@@ -129,6 +129,7 @@ Il existe deux types d'éléments déclencheurs : **déclencheurs internes** et 
     * la solitude
     * l'ennui
     * la peur de manquer quelque chose<br>
+
 Ces sentiments sont souvent négatifs car ils sont la manifestation du problème que l'utilisateur cherche à résoudre avec le produit
 
 * les déclencheurs externes poussent l'utilisateur vers l'application :
