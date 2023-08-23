@@ -593,3 +593,95 @@ C'est la zone la plus confortable à toucher lorsqu'on utilise une seule main.<b
 Le contenu important et cliquable doit se situer dans cette zone pour faciliter la navigation de l'utilisateur mobile.<br>
 
 ![](./assets/thumb_zone.png)
+
+#### Empêcher les utilisateurs de réfléchir (éviter de les laisser se prendre la tête)
+
+En plus de faciliter la **navigation physique** (pour le pouce), on doit faciliter la **navigation mentale**.<br>
+
+Le **chemin de navigation** (le parcours que l'utilisateur va avoir depuis la page d'accueil jusqu'à l'information désirée),<br> 
+vous devez le penser en amont (et surtout le tester régulièrement par vous et des bêta-testeurs/utilisateurs).
+* **Hiérarchie de l’information claire** :<br> 
+les titres de niveau 1 sont plus gros que les titres de niveau 2 qui eux-mêmes sont plus gros que le corps de texte (les paragraphes de texte).<br> 
+Les paragraphes sont espacés, et les mots importants sont mis en valeur (gras, couleur différente…).<br> 
+Ne cachez pas l'information (prix, accès, mode de livraison, etc.) dont l'utilisateur a besoin.
+* **Noms des pages, boutons et menus explicites** :<br> 
+n'inventez pas des noms farfelus ou mystérieux… ☹️ <br>
+Par exemple, si vous avez une page qui liste les offres d'emploi de votre entreprise, appelez cette page "On recrute", plutôt que "RH", "Joborama", etc.
+* **Pushs et notifications non parasites** :<br> 
+vos notifications, qu'elles soient visuelles, sonores ou vibrantes, ne doivent pas parasiter l'attention de l'utilisateur ni lui demander trop de choses<br> 
+(par exemple, dans des formulaires d'inscription ou de connexion, ne demandez pas plus d'informations que nécessaire).<br> 
+Sinon, cela lui donnera l'impression que votre application mobile est très intrusive et très dérangeante, voire insupportable… ce qui est fâcheux.
+
+Le but est de rendre l'expérience utilisateur très positive.
+
+### TESTER REGULIEREMENT LES PROTOTYPES
+
+#### Comprendre l'importance du test utilisateur
+
+Le test utilisateur est d'une importance fondamentale.<br>
+
+Il permet de comprendre si on correspond bien aux **besoins** et aux **attentes** de l'utilisateur.<br>
+Il faut y assister et le faire regarder par toute l'équipe. Ce qu'on va observer va permettre de faire des progrès considérables sur le produit.<br>
+
+Le but est d'observer comment les utilisateurs intéragissent avec le produit, détecter les problèmes qu'ils rencontrent et comprendre ce qu'ils apprécient.<br>
+
+#### Tester le produit, pas l'utilisateur
+
+C'est à dire que s'ils n'arrivent pas à utiliser le produit, c'est que le produit a des défauts.<br>
+L'utilisateur va permettre de mettre à jour ces défauts afin de pouvoir les corriger, afin de proposer un produit appréciable, simple, clair et pratique.<br>
+
+Les critiques sont une bonne chose afin de pouvoir s'améliorer !
+
+#### Regarder ce qu'il ne faut pas faire
+
+A regarder : Série Silicon Valley (saison 3 épisode 9) : cet épisode dévoile ce qui peut se passer de "pire" lors d'un test utilisateur.<br>
+Surtout si on a pas fait de recherche utilisateur ni intégré l'usabilité dans le prototype.<br>
+
+En résumé, le concepteur d'une application doit expliquer à un focus group l'utilisation de son produit car ils n'ont pas compris par eux-même comment l'utiliser.<br>
+
+### MENER UNE SEANCE DE TEST UTILISATEUR
+
+Pour mener une séance de test utilisateur, il faut :
+* des **utilisateurs** (un petit nombre, de préférence) ;
+* un **facilitateur** (c'est la personne qui va animer la séance, et ce peut être vous) **patient et à l'écoute** ;
+* une **salle avec le confort minimum** (des tables et des chaises, de quoi écrire si besoin, et pensez à proposer à boire et à manger : un café et des viennoiseries, ça fait toujours plaisir).
+
+#### Mener la séance de A à Z
+
+* **Accueillir chaleureusement les participants (5 minutes)**<br>
+Se présenter, les questionner, intéragir pour les mettre à l'aise.
+
+* **Leur demander d'effectuer des tâches avec le produit (30 minutes)**<br>
+Il s'agit du coeur du test : leur demander d'effectuer une tâche avec le produit.<br>
+par exemple :
+    * créer un compte
+    * simuler un achat
+    * compléter son profil
+    * ou autre
+
+* **Conclure et les remercier (5 minutes)**
+
+#### Lever le voile sur les situations typiques d'une séance de test 
+
+Si l'utilisateur arrête de parler ?
+* Demandez-lui à quoi il pense.
+* Posez-lui des questions sur ce qu'il est en train de faire, quelle tâche il essaie d'accomplir, etc.
+
+Si l'utilisateur n'arrive pas à effectuer une tâche (et demande de l'aide) ?
+* N'intervenez pas, ne lui montrez rien, ne lui expliquez rien. Ne l'aidez pas.
+* À la place, demandez-lui ce qui le dérange, ce qu'il voudrait faire mais n'arrive pas : faites-le parler !
+* Demandez-lui ce qu'il ferait si vous n'étiez pas là.
+
+Si l'utilisateur s'énerve ou s'impatiente ?
+* Soyez patient et n’y mettez pas d’ego.
+* Écoutez-le et ne lui coupez pas la parole : vous avez vraiment besoin de savoir ce qui le dérange, pas d'avoir raison.
+* Demandez-lui ce qui l'énerve précisément, et pourquoi.
+* Prenez en compte ses remarques, notez-les.
+
+#### Sélectionner les problèmes à résoudre
+
+Le résultat d'une séance de test utilisateur permet de mettre à jour les problèmes rencontrés par les utilisateurs sur le produit. 
+
+* Les problèmes à prendre en compte : noter les 3 problèmes les plus importants en matière d'usabilité.
+* Les problèmes à ne pas prendre en compte : choses dont on a pas besoin de se préoccuper, du type la couleur d'un bouton.
+* Faire un planning de résolution de problèmes : établir un planning en vue de la prochaine phase de test.
