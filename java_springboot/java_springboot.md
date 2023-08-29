@@ -119,3 +119,12 @@ Spring Initializr permet de composer une application selon ses besoins.
 
 Pour débuter : <a href="https://start.spring.io/">https://start.spring.io/ </a>
 
+Sélectionner : 
+* le gestionnaire de projet (Maven ou Gradle)
+* le langage Java (Kotlin ou Groovy)
+* la version de SpringBoot
+
+On peut initialiser :
+* Les métadonnées du projet
+* le packaging et la version de Java
+* et les dépendances grâce au bouton "Add dependencies"
