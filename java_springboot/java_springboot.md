@@ -147,7 +147,7 @@ dans l'arborescence, on retrouve :
 
 #### pom.xml
 
-```
+```xml
 <parent>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-parent</artifactId>
@@ -183,7 +183,7 @@ Dans cette liste on retrouve principalement :
 #### MicroserviceApplication.java
 
 Classe générée automatiquement par Spring Boot, elle est le point de démarrage de l'application :
-```
+```java 
 package com.ecommerce.microservice;
 
 import org.springframework.boot.SpringApplication;
@@ -209,7 +209,7 @@ Ces configurations se font via des Beans.
 3. **@ComponentScan** : indique qu'il faut scanner les classes de ce package afin de trouver des Beans de configuration.<br>
 
 Pour personnaliser finement le comportement de Spring Boot, on peut remplacer cette annotation : @SpringBootApplication par les 3 annotations vu ci-dessus :
-```
+```java 
 ...
 ...
 
@@ -314,5 +314,198 @@ Procéder ainsi :<br>
 * écrire dans la boîte de dialoque : **web.controller.ProductController**
 
 Quand on clique sur OK, IntelliJ crée un _package web_, puis crée à l'intérieur de celui-ci un package controller.<br>
-La classe ProductController est alors créée à l'intereur de ce dernier package.
+La classe ProductController est alors créée à l'interieur de ce dernier package.
+
+Dans la fichier (la classe) ProductController, on va saisir le code suivant :
+```java 
+package com.ecommerce.microcommerce.web.controller;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductController {
+
+}
+```
+l'annotation `@RestController` est la combinaison de deux annotations : `@Controller` et `@ResponseBody`.
+* **@Controller** permet de désigner une classe comme controller, lui donnant la capacité de traiter les requêtes GET, POST, etc.
+* **@ResponseBody** est ajouté aux méthodes qui devront directement répondre sans passer par une vue.
+
+=> **@RestController** indique que la classe va pouvoir traiter les requêtes qu'on va définir et il indique que chaque méthode va renvoyer une réponse JSON à l'utilisateur.
+
+```
+N.B. : 
+par convention, les conventions de nommage des API REST est ainsi :
+* tout en camelCase et au pluriel !
+* en anglais !
+```
+
+##### Méthode pour GET /products
+
+Cette méthode retourne une "String".<br>
+Etant donné qu'on a pas encore de produits, on va simplement retourner une phrase pour tester :
+
+```java
+package com.ecommerce.micrommerce.web.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductController {
+
+   @GetMapping("/products")
+   public String productsList() {
+       return "Product example";
+   }
+
+}
+```
+
+Dans les anciennes versions de Spring, on aurait utilisé : `@RequestMapping(value="/products", method=RequestMethod.GET)`.<br>
+Cette méthode prends deux paramètres :
+* **value** qui sert à définir l'URL sur laquelle on peut atteindre la méthode.
+* **method** qui définit le verbe HTTP pour interroger l'URL.
+
+Les nouvelles annotations sont les suivantes : **@GetMapping**, **@PostMapping**, **@PutMapping**, **DeleteMapping**.<br>
+Ces méthodes permettent de ne spécifier que l'URL pour en utilisant le verbe HTTP lié (présent juste avant le mapping).<br>
+
+Dans le code ci-dessus, on utilise l'annotation `@GetMapping` qui permet de faire le lien entre l'URL "/products", invoquée via GET et la méthode productsList.<br>
+Cette annotation prend <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html">plusieurs paramètres</a> dont voici les principaux :
+* **value** = URL à laquelle cette méthode doit répondre.
+* **produces** = dans certains cas d'utilisation avancées, on aura besoin de préciser si la méthode est capable de répondre en XML ou en JSON.<br>
+Si la requête contient du XML et qu'on a deux méthodes identiques dont une capable de produire du XML, c'est cette dernière qui sera appelée.<br>
+C'est la même chose pour **consumes** qui précise les formats acceptés. Dans la plupart des cas, on a pas besoin de renseigner ces paramètres.
+
+##### Méthode pour GET /products/{id}
+
+Cette méthode est à ajouter à la suite de la précédent et s'écrit comme ça :
+```java
+    @GetMapping("/products/{id}")
+    public String displayProduct(@PathVariable int id) {
+        return "You asked for a proudct with the id : " + id;
+    }
+```
+On remarque l'ajout de l'`id` à l'URL. Cette notation permet d'indiquer que cette méthode doit répondre uniquement aux requêtes avec une URI de type `/products/25` par exemple.<br>
+`@Pathvariable int id` indique que l'id retournée doit être un integer. Ainsi on ne pourra pas passer de chaîne de caractères. Sinon on aura une erreur.<br>
+
+##### Renvoyer une réponse JSON
+
+Pour commencer, on va créer une classe qui représente un produit. Cette classe s'appelle "Model" (ou "Bean" plus anciennement, ou POJO pour Plain Old Java Object).<br>
+**Un Model est une classe classique** qui doit être "sériablisable" et avoir au minimum :
+* un constructeur public sans arguments.
+* des getters et setters pour toutes les propriétés de la classe.
+
+On va donc créer une nouvelle classe "Product" qu'on va place dans un package "model" sous le package "microservice".
+On va ensuite créer les propriétés de base de la classe :
+```java
+package com.ecommerce.micrommerce.model;
+
+public class Product {
+  private int id;
+  private String nom;
+  private int prix;
+}
+```
+
+En va générer ensuite le constructeur, les getters et les setters.<br>
+`Alt` + `insert` (ou clic droit puis Générer) pour afficher la fenêtre de génération de code :
+* Constructor : dans lequel on précise "sans arguments".
+* Getters et Setters pour toutes les propriétés.
+* methode toString().
+* On ajoutera enfin un constructeur pour obtenir des instances de produits préremplies avec des informations de tests.
+
+Le code obtenu devra ressembler à cela :
+```java
+package com.ecommerce.micrommerce.model;
+
+public class Product {
+    private int id;
+    private String name;
+    private int price;
+
+    public Product() {
+    }
+
+    public Product(int id, String name, int price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                '}';
+    }
+}
+```
+A chaque fois que quelqu'un appelera l'URL "/products/{od}", on renverra un produit au format JSON qui correspond à la classe Product.<br>
+
+Dans la classe ProductController, on va modifier la méthode displayProduct, le code complet de la classe sera le suivant :
+```java
+package com.ecommerce.micrommerce.web.controller;
+
+import com.ecommerce.micrommerce.model.Product;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ProductController {
+  @GetMapping("/products")
+  public String productsList() {
+    return "Product example";
+  }
+
+  @GetMapping("/products/{id}")
+  public Product displayProduct(@PathVariable int id) {
+    Product product = new Product(id, new String("Aspirateur"), 100);
+    return product;
+  }
+}
+```
+
+```
+N.B. :
+La syntaxe exacte à la place de celle ci-dessus est celle ci :
+return product = new Product(id, new String("Aspirateur"), 100);
+```
+
+On indique ici que la méthode va retourner un "Product" au lieu d'une String.<br>
+La réponse dans le navigateur sera formatée au format JSON.<br> 
+Cela est possible car on a indiqué au début de la classe qu'elle est un contrôleur REST grâce à l'annotation @RestController.<br>
+Spring sait alors que les réponses aux requêtes qu'il passe devront être très probablement au format JSON.
+
+L'autoconfigurateur va alors chercher si on a une dépendance capable de transformer un objet Java en JSON dans notre classpath et inversement.<br>
+Il y a Jackson qui a été importé avec le starter qu'on a utillisé. Le Bean Product qu'on renvoit est donc transformé en JSON, puis servi en réponse.
+
+Voici donc le premier microservice REST dans avoir à manipuler JSON ni a parser les requêtes HTTP.
 
