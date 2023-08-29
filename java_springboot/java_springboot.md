@@ -128,3 +128,191 @@ On peut initialiser :
 * Les métadonnées du projet
 * le packaging et la version de Java
 * et les dépendances grâce au bouton "Add dependencies"
+
+### Créer et importer à partir de Spring Initializr
+
+Renseigner les Metadata du projet :
+* Groupe : `com.nom_du_projet` // ici ecommerce
+* Artifact : `microservice` // à modifier selon le projet
+* Name : `microservice` // à modifier selon le projet
+* Packaging : `jar`
+* Java Version : `11` (ou ultérieur)
+
+Sélectionner ensuite le starter Web.<br>
+Cliquer sur "Generate Project" et télécharger l'application générée.<br>
+Penser à créer un dossier racine au projet et procéder à l'extraction de l'application téléchargée qui devrait s'appeler "microservice.zip" (selon le nom renseigné dans les metadata).<br>
+Dans IntelliJ, cliquer sur "File", puis "Open" et sélectionner le dossier de l'application extrait précédemment.<br>
+
+dans l'arborescence, on retrouve :
+
+#### pom.xml
+
+```
+<parent>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-parent</artifactId>
+  <version>2.7.15</version>
+  <relativePath/> <!-- lookup parent from repository -->
+</parent>
+
+<properties>
+  <java.version>11</java.version>
+</properties>
+
+<dependencies>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+  </dependency>
+
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+  </dependency>
+</dependencies> 
+```
+
+On peut retrouver la liste des dépendances importées dans "External Libraries".<br>
+Dans cette liste on retrouve principalement :
+* **Jackson** : permet de parser JSON et faire le lien entre les classes Java et le contenu JSON.
+* **Tomcat** : intégré, il permet de lancer l'application en exécutant tout simplement le JAR sans avoir à le déployer dans un serveur d'application.
+* **Hibernate** : facilite la gestion des données.
+* **Logging** : remonte ce qui se passe dans l'application grâce à logback et autres.
+
+#### MicroserviceApplication.java
+
+Classe générée automatiquement par Spring Boot, elle est le point de démarrage de l'application :
+```
+package com.ecommerce.microservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+
+public class MicroserviceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MicrommerceApplication.class, args);
+	}
+
+}
+```
+Cette classe lance la classe SpringApplication, responsable du démarrage de l'application Spring.<br>
+Elle va créer le fameux _ApplicationContext_ dans lequel iront toutes les configurations générées automatiquement ou qu'on aura ajoutées.<br>
+
+l'annotation **@SpringBootApplication** est l'information la plus importante : elle encapsule 3 annulations :
+1. **@Configuration** : donne à la classe actuelle la possibilité de définir des configurations qui iront remplacer les traditionnels fichiers XML.<br> 
+Ces configurations se font via des Beans.
+2. **@EnableAutoConfiguration** : cette annotation permet, au démarrage de Spring, de générer automatiquement les configs nécessaires en fonction des dépendances situées dans le classpath.<br>
+3. **@ComponentScan** : indique qu'il faut scanner les classes de ce package afin de trouver des Beans de configuration.<br>
+
+Pour personnaliser finement le comportement de Spring Boot, on peut remplacer cette annotation : @SpringBootApplication par les 3 annotations vu ci-dessus :
+```
+...
+...
+
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+
+public class MicroserviceApplication {
+...
+...
+}
+```
+
+#### application.properties
+
+Ce fichier va permettre de modifier très simplement un nombre impressionnant de configurations liées à Spring Boot et à ses dépendances.<br>
+par exemple : changer le port d'écoute de Tomcat, l'emplacement des fichiers de log, les paramètres d'envoi d'emails, etc.<br>
+voir la <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html">liste complète</a>
+
+#### MicroserviceApplicationTests.java
+
+Ce fichier permet d'écrire les tests.
+
+### Exécuter l'application
+
+malgré le fait qu'on ait encore rien ajouté à l'application, on peut déjà l'exécuter.<br>
+
+```
+N.B. :
+Dans IntelliJ, si le panneau "Maven" à droite n'apparaît pas, il faudra l'activer : en bas à gauche sur le double lozange.
+```
+
+Cliquer sur le panneau de droite "Maven", puis ouvrir l'arborescence.<br>
+Double-cliquer ensuite sur "Install" sous "LifeCycle". 
+
+L'application sera compilée, et on retrouve le JAR sous le nouveau dossier "Target" créé pour l'occasion par Maven.
+
+On peut ensuite exécurer l'application depuis n'importe quel terminal avec la commande :
+```bash
+java -jar Chemin/vers/microservice/target/microservice-0.0.1-SNAPSHOT.jar
+```
+**Ou par le bouton "RUN" d'IntelliJ dans le fichier `MicroserviceApplication.java` à la ligne de la classe.**
+
+On aura alors un retour du type : 
+```
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v2.7.15)
+
+2023-08-29 12:05:25.530  INFO 19440 --- [           main] c.e.micrommerce.MicrommerceApplication   : Starting MicrommerceApplication using Java 18.0.2 on user-HP-ProDesk-600-G3-SFF with PID 19440 (/home/user/Cours/Java_Springboot/projet_test/micrommerce/target/classes started by user in /home/user/Cours/Java_Springboot/projet_test/micrommerce)
+2023-08-29 12:05:25.532  INFO 19440 --- [           main] c.e.micrommerce.MicrommerceApplication   : No active profile set, falling back to 1 default profile: "default"
+2023-08-29 12:05:26.071  INFO 19440 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-08-29 12:05:26.077  INFO 19440 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-08-29 12:05:26.077  INFO 19440 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.79]
+2023-08-29 12:05:26.131  INFO 19440 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-08-29 12:05:26.131  INFO 19440 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 567 ms
+2023-08-29 12:05:26.363  INFO 19440 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-08-29 12:05:26.370  INFO 19440 --- [           main] c.e.micrommerce.MicrommerceApplication   : Started MicrommerceApplication in 1.08 seconds (JVM running for 1.52)
+
+```
+
+On peut remarque cette phrase : "Tomcat started on port(s): 8080 (http)".<br>
+Cela indique que l'application tourne et qu'elle est en écoute grâce à Tomcat sur le port 8080.<br>
+Dans le navigateur, on peut aller à l'adresse : <a href="http://localhost:8080/">http://localhost:8080/ </a> <br>
+Cela affiche une erreur actuellement car on a fourni aucun éléments à afficher.
+
+On peut essayer de personnaliser la personnalisation de l'autoconfiguration de Spring Boot avec **application.properties**.<br>
+par exemple, on peut ajouter dans ce fichier : `server.port=9090` puis rerun l'application à partir du fichier **MicroserviceApplication.java**<br>
+et aller à l'adresse <a href="http://localhost:9090/">http://localhost:9090/ </a> dans le navigateur pour obtenir le même affichage.<br>
+On a simplement modifié le port d'écoute.<br>
+
+### Créer une API REST
+
+Le microservice qu'on souhaite développer va devoir être RESTful et donc communiquer de cette manière.<br>
+
+#### Définition des besoins 
+
+On va avoir besoin d'un **microservice** qui sera capable de gérer les produits.<br>
+Il devra pouvoir exposer une API REST qui propose toutes les opérations CRUD (Create, Read, Update, Delete).<br>
+
+On va donc devoir :
+* créer une classe Produit qui représente les caractéristiques d'un produit (nom, prix, etc.).
+* créer un contrôleur qui s'occupera de répondre aux requeêtes CRUD et de faire des opérations nécessaires.
+
+On voudra donc pouvoir appeler le microservice sur les URL suivantes :
+* Requête **GET** à **/produits** : affiche la liste de tous les produits.
+* Requête **GET** à **/produits/{id}** : affiche un produit par son Id.
+* Requête **PUT** à **/produits/{id}** : met à jour un produit par son Id.
+* Requête **POST** à **/produits** : ajoute un produit.
+* Requête **DELETE** à **/produits/{id}** : supprime un produit par son Id.
+
+#### Créer le contrôleur REST
+
+On va créer un contrôleur et le placer dans un package "controller", lui même situé dans un package "web".<br>
+Procéder ainsi :<br> 
+* clic droit sur le package principal : **com.ecommerce.microservice**
+* puis : New > Java Class
+* écrire dans la boîte de dialoque : **web.controller.ProductController**
+
+Quand on clique sur OK, IntelliJ crée un _package web_, puis crée à l'intérieur de celui-ci un package controller.<br>
+La classe ProductController est alors créée à l'intereur de ce dernier package.
+
