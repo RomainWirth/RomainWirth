@@ -560,7 +560,6 @@ public class ProductDaoImplement implements ProductDao{
 
    @Override
    public List<Product> findAll() {
-
        return products;
    }
 
@@ -628,3 +627,86 @@ public class ProductController {
     }
 }
 ```
+
+## Tester son API avec POSTMAN
+
+Ce logiciel permet de tester l'API en envoyant toutes sortes de requêtes et permet de les personnaliser.<br>
+
+### Implémentation de "POST"
+
+On va ajouter la méthode POST au controller :
+
+```java
+    @PostMapping("/products")
+    public void addProduct(@RequestBody Product product) {
+        productDao.save(product);
+    }
+```
+* **@PostMapping** = L'URI indiquée est la même que pour la méthode productsList.<br> 
+Les annotations @PostMapping et @GetMapping permettent à Spring de quel type de requête HTTP la méthode est associée : POST ou GET.<br>
+Si on envoie une requête POST sur "/produits", la méthode annotée avec @PostMapping sera appelée.
+* **@RequestBody** = Cette annotation demande a Spring de convertir le contenu de la party body de la requête HTTP (au format JSON) en objet Java.<br>
+Spring étant autoconfiguré dès le départ, il va aller chercher la librairie capable de faire cette procédure, dans notre cas : Jackson.<br>
+La requête JSON est ainsi convertie, on procède ensuite avec l'appel de la méthode "save" pour ajouter le produit.
+
+### Principe de POSTMAN
+
+Postman est un logiciel qui se focalise sur les tests des API et permet de tester les microservices.<br>
+
+Principales fonctionnalités à connaître :
+* **(1)** = choix du type de requête : GET, POST, PUT, etc.
+* **(2)** = URL de l'API.
+* **(3)** = paramètre à passer avec l'URL. utile quand on a beaucoup de paramètres à organiser.
+* **(4)** = connexions qu'on a créé.
+* **(5)** = tout ce qui constitue la requête HTTP (header, body, etc.), cela permet de créer une requête totalement personnalisée.
+
+![](./postman.png)
+
+Pour tester l'application dans Postman : ajouter l'URL http://localhost:9090/products avec la méthode "GET".<br>
+le résultat sera le suivant : 
+
+![](./postman_get_request.png)
+
+L'onglet Header présente l'en-tête de la réponse HTTP :
+
+![](./postman_get_request_headers.png)
+
+On peut remarquer que Spring a réglé la valeur "Content-Type" sur `application/json;charset=UTF-8` .<br>
+Le code de réponse (en haut à droite) est le code 200 (requête HTTP réussie). (voir la signification des codes <a href="https://openclassrooms.com/fr/courses/6573181-adoptez-les-api-rest-pour-vos-projets-web/7498761-utilisez-postman-pour-formuler-vos-requetes">REST</a><br>
+
+#### Tester la méthode POST
+
+La méthode POST sera associée à l'ajout d'un produit.<br>
+Dans Postman :
+* On sélectionne POST (au lieu de GET) et on ajoute l'URL http://localhost:9090/products
+* On clique sur l'onglet "Body" (qui n'est plus grisé) et on sélectionne _raw_ pour définir manuellement le contenu de la requête HTTP
+* On ajoute le code en exemple ci-dessous dans le corps de la requête :
+```JSON
+{
+"id": 4,
+"name": "Poney en bois cracheur de feu",
+"price": 145
+}
+```
+* on sélectionne à droit **JSON** (à la place de Text) pour indiquer le type de données qu'on envoie
+![](./postman_post_request.png)
+* et on vérifie que le résultat a bien été ajouté en créant un nouvel onglet et en faisant appel à http://localhost:9090/products via GET :
+![](./postman_check_get_request.png)
+
+Et on constate que le nouvel article a été ajouté.
+
+#### Les Collections dans Postman
+
+Sur le panneau de gauche, on peut observer deux onglets qui contiennent "History" et "Collections".
+
+1. **History** : il s'agit de l'historique de toutes les requêtes qu'on a exécutées. On peut ainsi y retourner et réexécuter une requête par exemple.
+2. **collections** : c'est une façon permanente d'organiser et garder des requêtes pour faire des tests.<br>
+Elles vont permettre de regrouper un ensemble de requêtes et de les lancer selon les paramètres et l'ordre de notre choix (pour réaliser un test de scénario par exemple).
+
+Procédure pour créer une collection :
+* On va commencer par créer une nouvelle collection en cliquant sur `+` et en nommant la collection.<br>
+* Puis sur chaque onglet de requête, on va cliquer sur "SAVE" et spécifier la collection dans laquelle on souhaite sauvegarder la requête.<br>
+(N.B. : on peut nommer la requête mais pour plus de lisibilité il est préférable de laisser tel quel)
+* On obtient alors une collection avec 2 requêtes
+* On redémarre le microservice, on réorganise les requêtes pour qu'elles s'exécutent dans l'ordre (POST avant GET) puis on clique sur "Run", et on voit les résultats.
+* Pour plus de détail, on peut voir la console de Postman : "View" > "Show Postman Console".
