@@ -505,7 +505,126 @@ Cela est possible car on a indiqué au début de la classe qu'elle est un contr�
 Spring sait alors que les réponses aux requêtes qu'il passe devront être très probablement au format JSON.
 
 L'autoconfigurateur va alors chercher si on a une dépendance capable de transformer un objet Java en JSON dans notre classpath et inversement.<br>
-Il y a Jackson qui a été importé avec le starter qu'on a utillisé. Le Bean Product qu'on renvoit est donc transformé en JSON, puis servi en réponse.
+Il y a Jackson qui a été importé avec le starter qu'on a utilisé. Le Bean Product qu'on renvoit est donc transformé en JSON, puis servi en réponse.
 
-Voici donc le premier microservice REST dans avoir à manipuler JSON ni a parser les requêtes HTTP.
+Voici donc le premier microservice REST sans avoir à manipuler JSON ni a parser les requêtes HTTP.
 
+### Communiquer avec la Base De Données 
+#### Création du DAO
+
+**DAO = Data Access Object**<br>
+Il s'agit d'une "responsabilité". Elle permet d'accéder au système d'information pour lire ou modifier des données.<br>
+Les classes DAO (qui contiennent le suffixe ...Dao) sont des classes qui contiennent le code qui permet d'échanger des informations avec la base de données.<br>
+
+Pour cela, on va procéder comme suit :
+* création d'un package appelé "dao".
+* dans ce package, on ajoute une interface qu'on appelle "ProductDao". On va y déclarer les opérations qu'on veut implémenter :
+  * _findAll_ = renvoie la liste complète de tous les produits
+  * _findById_ = renvoie un produit par son id
+  * _save_ = ajoute un produit
+
+```java
+package com.ecommerce.micrommerce.web.dao;
+
+import com.ecommerce.micrommerce.web.model.Product;
+
+import java.util.List;
+
+public interface ProductDao {
+  List<Product> findAll();
+  Product findById(int id);
+  Product save(Product product);
+}
+```
+
+A partir de cette interface, on va ajouter une classe pour créer l'implémentation : "ProductDaoImplement".<br>
+Etant donné qu'on ne dispose pas de base de données avec laquelle communiquer, on va simuler son comportement en créant des produits "en dur" :
+```java
+package com.ecommerce.micrommerce.web.dao;
+
+import com.ecommerce.micrommerce.web.model.Product;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class ProductDaoImplement implements ProductDao{
+   public static List<Product> products = new ArrayList<>();
+
+   static {
+       products.add(new Product(1, "Ordinateur portable", 350));
+       products.add(new Product(2, "Aspirateur Robot", 500));
+       products.add(new Product(3, "Table de Ping Pong", 750));
+   }
+
+   @Override
+   public List<Product> findAll() {
+
+       return products;
+   }
+
+   @Override
+   public Product findById(int id) {
+       for (Product product : products){
+           if (product.getId() == id){
+               return product;
+           }
+       }
+       return null;
+   }
+
+   @Override
+   public Product save(Product product) {
+       products.add(product);
+       return product;
+   }
+}
+```
+L'annotation `@Repository` est implémentée afin d'indiquer à Spring qu'il s'agit d'une classe qui gère des données.<br>
+Cela permettra d'utiliser certaines fonctionnalités comme les translations des erreurs.
+
+Un tableau faisant office de BDD est implémenté.<br>
+Les méthodes définies dans l'interface sont ensuite redéfinies pour renvoyer les données du tableau :
+* _findAll_ = renvoie la liste complète de tous les produits.
+* _findById_ = vérifie s'il y a un produit avec l'id donnée dans la liste et renvoie le produit correspondant.
+* _save_ = ajoute un produit reçu à la liste.
+
+#### Intéraction avec les données
+
+Il faut modifier le contrôleur pour qu'il utilise la **couche DAO** pour manipuler les produits :<br>
+On crée d'abord une variable de type ProductDao, définie en **private final** (il s'agit d'une constante accessible uniquement ici).<br>
+On injecte l'instance de ProductDao dans le constructeur afin d'avoir accès aux méthodes définies.<br>
+
+La liste "productsList" contient maintenant une liste de produits définis en dur, et on peut accéder à un produit râce à la méthode displayProduct.
+
+```java
+package com.ecommerce.micrommerce.web.controller;
+
+import com.ecommerce.micrommerce.dao.ProductDao;
+import com.ecommerce.micrommerce.model.Product;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class ProductController {
+    private final ProductDao productDao;
+
+    public ProductController(ProductDao productDao) {
+        this.productDao = productDao;
+    }
+
+    @GetMapping("/products")
+    public List<Product> productsList() {
+        return productDao.findAll();
+    }
+
+    @GetMapping("/products/{id}")
+    public Product displayProduct(@PathVariable int id) {
+        return productDao.findById(id);
+    }
+}
+```
