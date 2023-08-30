@@ -710,3 +710,114 @@ Procédure pour créer une collection :
 * On obtient alors une collection avec 2 requêtes
 * On redémarre le microservice, on réorganise les requêtes pour qu'elles s'exécutent dans l'ordre (POST avant GET) puis on clique sur "Run", et on voit les résultats.
 * Pour plus de détail, on peut voir la console de Postman : "View" > "Show Postman Console".
+
+## Documenter son API avec SWAGGER
+
+Contrairement à la SOA (Service Oriented Architecture), les contrats type WDSL (Web Services Description Language) sont rarement utilisés en archi Microservices.<br>
+Il est donc primordial d'avoir une doc standardisée et de très bonne qualité.
+
+à partir du code, **Swagger** est capable de générer une documentation détaillée au format **JSON** et répondant aux spécifications OpenAPI.<br>
+On peut également visualiser cette doc dans un format HTML élégant.
+
+Pour bénéficier de Swagger, on va procéder en plusieurs étapes : 
+1. importer cette dépendance dans le `pom.xml` :
+```XML
+<dependency>
+<groupId>io.springfox</groupId>
+<artifactId>springfox-boot-starter</artifactId>
+<version>3.0.0</version>
+</dependency>
+```
+```
+Attention ! il faudra importer swagger avec Maven. Dans IntelliJ, une petite icône "Maven" va apparaître en haut à droite,
+il faudra alors cliquer dessus et importer le nécessaire.  
+```
+
+2. Pour générer la doc, on doit remplacer l'annotation `@EnableSwagger2` dans la classe contenant avec la méthode Main.<br>
+Cela va importer automatiquement le package correspondant.<br>
+Dans notre cas, il s'agit de **MicrocommerceApplication**.
+
+```java
+package com.ecommerce.micrommerce;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@SpringBootApplication
+@EnableSwagger2
+public class MicrommerceApplication {
+
+  public static void main(String[] args) {
+     SpringApplication.run(MicrommerceApplication.class, args);
+  }
+
+}
+```
+3. dans le fichier "application.properties" sous le dossier "resources", ajouter la ligne suivante :
+`spring.mvc.pathmatch.matching-strategy=ant_path_matcher`
+4. Redémarrer l'application et se rendre à l'adresse suivante : http://localhost:9090/swagger-ui/ (pour bénéficier de la version HTML de la doc)
+
+Dans cette version HTML de la doc générée par swagger, on retrouve toutes les détails sur :
+* le type de données qu'elle accepte en entrée et qu'elle produit en retour
+* un exemple d'une réponse typique
+* tous les codes d'erreur qu'elle peut générer
+
+#### Configurer Swagger
+
+Dans une application professionnelle, il peut être utile de personnaliser la documentation.<br>
+Pour configurer, on va créer une classe de configuration pour Swagger appelée **SwaggerConfig**.
+Cette classe sera intégrée dans un nouveau package **configuration**.
+Cette classe contiendra le code suivant :
+```java
+SwaggerConfig.java
+
+package com.ecommerce.micrommerce.configuration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@Configuration
+@EnableSwagger2
+public class SwaggerConfig {
+   @Bean
+   public Docket api() {
+       return new Docket(DocumentationType.SWAGGER_2)
+               .select()
+               .apis(RequestHandlerSelectors.any())
+               .paths(PathSelectors.any())
+               .build();
+   }
+}
+```
+
+**Explications :** <br>
+
+**@Configuration** : cette annotation appliquée à la classe permet de remplacer un fichier de configuration classique en XML.<br>
+Elle donne accès à plusieurs méthodes pour la configuration de Swagger, grâce à la **classe Docket** qui gère toutes les configurations.
+
+* On commence alors par initialiser un objet Docket en précisant que nous souhaitons utiliser Swagger 2.
+* **select** permet d'initialiser une classe du nom de ApiSelectorBuilder qui donne accès aux méthodes de personnalisation suivantes.<br> 
+Ne pas s'attarder sur cette méthode, elle n'est d'aucune utilité pour la suite.
+* **apis** est la première méthode importante. Elle permet de filtrer la documentation à exposer selon les contrôleurs.<br> 
+Ainsi, on peut cacher la documentation d'une partie privée ou interne de votre API. Dans ce cas, nous avons utilisé RequestHandlerSelectors.any().
+* **RequestHandlerSelectors** est un prédicat (introduit depuis Java 8) qui permet de retourner TRUE ou FALSE selon la condition utilisée.<br> 
+Dans ce cas, nous avons utilisé any qui retournera toujours TRUE. En d'autres termes, nous indiquons vouloir documenter toutes les classes dans tous les packages.<br> 
+**RequestHandlerSelectors** offre plusieurs autres méthodes, comme annotationPresent qui vous permet de définir une annotation en paramètre.<br> 
+Swagger ne documente alors que les classes qu'il utilise. La plus utilisée est basePackage qui permet de trier selon le Package. 
+* **paths** : cette méthode donne accès à une autre façon de filtrer : selon l'URI des requêtes.<br> 
+Ainsi, on peut par exemple demander à Swagger de ne documenter que les méthodes qui répondent à des requêtes commençant par "/public".
+
+Dans la doc, la première partie ne sert à rien. On va donc l'éliminer en appliquant des filtres :<br>
+On utilisera la méthode "**basepackage("com.ecommerce.microcommerce.web")**" à la place de _any()_ après _RequestHandlerSelectors_.
+
+#### Personnalisation de la doc grâce aux annotations
+
+En utilisant l'annotation `@Api` directement dans les classes, on peut ajouter une description pour chaque API.<br>
+L'annotation `@ApiOperation` permet de définir une description pour chaque opération/méthode.
+
+La documentation complète est disponible <a href="https://springfox.github.io/springfox/docs/current/#docket-spring-java-configuration">ici</a>
