@@ -827,3 +827,57 @@ En utilisant l'annotation `@Api` directement dans les classes, on peut ajouter u
 L'annotation `@ApiOperation` permet de définir une description pour chaque opération/méthode.
 
 La documentation complète est disponible <a href="https://springfox.github.io/springfox/docs/current/#docket-spring-java-configuration">ici</a>
+
+## Consommer une API REST 
+
+<a href="https://youtu.be/i6ipBFb-5YM?si=O5Oa4RYk9cFd0yAh">cours YouTube</a>
+
+* 09 Configuring server port for microservices - Spring Boot Microservices Level 1
+* 10 Coding the third service and discussing communication - Spring Boot Microservices Level 1
+* 11 Using RestTemplate to call an external microservice API - Spring Boot Microservices Level 1
+  * Si problèmes de compréhension, <a href="https://dzone.com/articles/how-to-use-map-filter-collect-of-stream-in-java-8">cliquer ici</a>
+
+Une version très simple et synthétique de consommer un service RESTful (mais sans explication orale) :<br>
+<a href="https://youtu.be/W_PJJVt23I8?si=T0HWlSXUgtKreklj">https://youtu.be/W_PJJVt23I8?si=T0HWlSXUgtKreklj </a>
+
+## Connecter une base de données
+
+voir doc : <a href="https://spring.io/guides/gs/accessing-data-mysql/">ici</a>
+
+### Ajouter une base de données intégrée et générer les tables 
+
+
+
+Pour commencer, on va intégrer au pom.xml les dependencies :
+```
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-jpa</artifactId>
+	</dependency>
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>io.springfox</groupId>
+		<artifactId>springfox-boot-starter</artifactId>
+		<version>3.0.0</version>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>8.0.33</version>
+	</dependency>
+</dependencies>
+```
