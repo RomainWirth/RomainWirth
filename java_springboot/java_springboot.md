@@ -31,7 +31,7 @@ Cela se fait par l'apport ou non de couches d'abstraction spécifiques à des fr
 
 L'inversion de contrôle :
 * La recherche de dépendance consiste pour un objet à interroger le conteneur afin de trouver ses dépendances avec les autres objets. (cas de fonctionnement similaire aux EBJs)
-* L'injection de dépendances peut être effectuées de 3 manières possibles :
+* L'injection de dépendances peut être effectuée de 3 manières possibles :
   1. Via le constructeur
   2. via les modificateurs (setters)
   3. via une interface
@@ -74,10 +74,10 @@ Spring boot est très utile si on veut développer une API REST.<br>
 <a href="https://stacklima.com/difference-entre-spring-et-spring-boot/">source</a>
 
 Pour simplifier la configuration, Spring Boot propose deux fonctionnalités principales :
-1. L'autoconfiguration.
+1. L'auto-configuration.
 2. Les starters.
 
-### L'autoconfiguration 
+### L'auto-configuration 
 
 Il s'agit de la fonctionnalité la plus importante de Spring Boot.<br>
 Elle permet de configurer automatiquement une application à partir des JAR trouvé dans le classpath.<br>
@@ -94,7 +94,7 @@ Spring boot utilisera alors en priorité ces paramètres créés.
 
 ### Les Starters
 
-Les starters viennent compléter l'autoconfiguration et font gagner du temps, particulièrement lorsqu'on commence le développement d'un microservice.<br>
+Les starters viennent compléter l'auto-configuration et font gagner du temps, particulièrement lorsqu'on commence le développement d'un microservice.<br>
 Un starter va apporter à l'ensemble d'un projet un ensemble de dépendances, communément utilisées pour un type de projet donné.<br>
 Cela va permettre de créer un "squelette" prêt à l'emploi, et cela très rapidement.<br>
 
@@ -102,13 +102,13 @@ L'autre énorme avantage est la gestion des versions.<br>
 Plus besoin de chercher quelles sont les versions compatibles puis de les ajouter une à une dans le `pom.xml`.<br>
 Il suffit d'ajouter une simple dépendance au starter choisi. Cette dépendance va alors ajouter les éléments dont elle dépend avec les bonnes versions.<br>
 
-En temps normal, pour créer un microservice, il faut les dépendances suivantes : Sping, Spring MVC, Jackson (pour JSON), Tomcat...<br>
+En temps normal, pour créer un microservice, il faut les dépendances suivantes : Spring, Spring MVC, Jackson (pour JSON), Tomcat...<br>
 Avec Spring Boot, on va tout simplement avoir une seule dépendance dans le `pom.xml`.<br>
 
 ### En résumé 
 
 * Spring Boot est un framework qui permet de démarrer rapidement le développement d'applications ou services, en fournissant les dépendances nécessaires et en autoconfigurant celles-ci.
-* Pour activer l'autoconfiguration, on utilise l'annotation `@EnableAutoConfiguration`. Si vous écrivez vos propres configurations, celles-ci priment sur celles de Spring Boot.
+* Pour activer l'auto-configuration, on utilise l'annotation `@EnableAutoConfiguration`. Si vous écrivez vos propres configurations, celles-ci priment sur celles de Spring Boot.
 * Les starters permettent d'importer un ensemble de dépendances selon la nature de l'application à développer, afin de démarrer rapidement.
 
 ## Créer un microservice grâce à Spring Boot
@@ -209,7 +209,7 @@ Ces configurations se font via des Beans.
 3. **@ComponentScan** : indique qu'il faut scanner les classes de ce package afin de trouver des Beans de configuration.<br>
 
 Pour personnaliser finement le comportement de Spring Boot, on peut remplacer cette annotation : @SpringBootApplication par les 3 annotations vu ci-dessus :
-```java 
+``` 
 ...
 ...
 
@@ -247,8 +247,8 @@ Double-cliquer ensuite sur "Install" sous "LifeCycle".
 
 L'application sera compilée, et on retrouve le JAR sous le nouveau dossier "Target" créé pour l'occasion par Maven.
 
-On peut ensuite exécurer l'application depuis n'importe quel terminal avec la commande :
-```bash
+On peut ensuite exécuter l'application depuis n'importe quel terminal avec la commande :
+```
 java -jar Chemin/vers/microservice/target/microservice-0.0.1-SNAPSHOT.jar
 ```
 **Ou par le bouton "RUN" d'IntelliJ dans le fichier `MicroserviceApplication.java` à la ligne de la classe.**
@@ -280,14 +280,14 @@ Cela indique que l'application tourne et qu'elle est en écoute grâce à Tomcat
 Dans le navigateur, on peut aller à l'adresse : <a href="http://localhost:8080/">http://localhost:8080/ </a> <br>
 Cela affiche une erreur actuellement car on a fourni aucun éléments à afficher.
 
-On peut essayer de personnaliser la personnalisation de l'autoconfiguration de Spring Boot avec **application.properties**.<br>
+On peut essayer de personnaliser la personnalisation de l'auto-configuration de Spring Boot avec **application.properties**.<br>
 par exemple, on peut ajouter dans ce fichier : `server.port=9090` puis rerun l'application à partir du fichier **MicroserviceApplication.java**<br>
 et aller à l'adresse <a href="http://localhost:9090/">http://localhost:9090/ </a> dans le navigateur pour obtenir le même affichage.<br>
 On a simplement modifié le port d'écoute.<br>
 
 ### Créer une API REST
 
-Le microservice qu'on souhaite développer va devoir être RESTful et donc communiquer de cette manière.<br>
+Le microservice qu'on souhaite développer va devoir être "RESTful" et donc communiquer de cette manière.<br>
 
 #### Définition des besoins 
 
@@ -296,7 +296,7 @@ Il devra pouvoir exposer une API REST qui propose toutes les opérations CRUD (C
 
 On va donc devoir :
 * créer une classe Produit qui représente les caractéristiques d'un produit (nom, prix, etc.).
-* créer un contrôleur qui s'occupera de répondre aux requeêtes CRUD et de faire des opérations nécessaires.
+* créer un contrôleur qui s'occupera de répondre aux requêtes CRUD et de faire des opérations nécessaires.
 
 On voudra donc pouvoir appeler le microservice sur les URL suivantes :
 * Requête **GET** à **/produits** : affiche la liste de tous les produits.
@@ -311,13 +311,13 @@ On va créer un contrôleur et le placer dans un package "controller", lui même
 Procéder ainsi :<br> 
 * clic droit sur le package principal : **com.ecommerce.microservice**
 * puis : New > Java Class
-* écrire dans la boîte de dialoque : **web.controller.ProductController**
+* écrire dans la boîte de dialogue : **web.controller.ProductController**
 
 Quand on clique sur OK, IntelliJ crée un _package web_, puis crée à l'intérieur de celui-ci un package controller.<br>
-La classe ProductController est alors créée à l'interieur de ce dernier package.
+La classe ProductController est alors créée à l'intérieur de ce dernier package.
 
 Dans la fichier (la classe) ProductController, on va saisir le code suivant :
-```java 
+```
 package com.ecommerce.microcommerce.web.controller;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -345,7 +345,7 @@ par convention, les conventions de nommage des API REST est ainsi :
 Cette méthode retourne une "String".<br>
 Etant donné qu'on a pas encore de produits, on va simplement retourner une phrase pour tester :
 
-```java
+```
 package com.ecommerce.micrommerce.web.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -363,7 +363,7 @@ public class ProductController {
 ```
 
 Dans les anciennes versions de Spring, on aurait utilisé : `@RequestMapping(value="/products", method=RequestMethod.GET)`.<br>
-Cette méthode prends deux paramètres :
+Cette méthode prend deux paramètres :
 * **value** qui sert à définir l'URL sur laquelle on peut atteindre la méthode.
 * **method** qui définit le verbe HTTP pour interroger l'URL.
 
@@ -379,8 +379,8 @@ C'est la même chose pour **consumes** qui précise les formats acceptés. Dans 
 
 ##### Méthode pour GET /products/{id}
 
-Cette méthode est à ajouter à la suite de la précédent et s'écrit comme ça :
-```java
+Cette méthode est à ajouter à la suite de la précédente et s'écrit comme ça :
+```
     @GetMapping("/products/{id}")
     public String displayProduct(@PathVariable int id) {
         return "You asked for a proudct with the id : " + id;
@@ -398,7 +398,7 @@ Pour commencer, on va créer une classe qui représente un produit. Cette classe
 
 On va donc créer une nouvelle classe "Product" qu'on va place dans un package "model" sous le package "microservice".
 On va ensuite créer les propriétés de base de la classe :
-```java
+```
 package com.ecommerce.micrommerce.model;
 
 public class Product {
@@ -416,7 +416,7 @@ En va générer ensuite le constructeur, les getters et les setters.<br>
 * On ajoutera enfin un constructeur pour obtenir des instances de produits préremplies avec des informations de tests.
 
 Le code obtenu devra ressembler à cela :
-```java
+```
 package com.ecommerce.micrommerce.model;
 
 public class Product {
@@ -467,10 +467,10 @@ public class Product {
     }
 }
 ```
-A chaque fois que quelqu'un appelera l'URL "/products/{od}", on renverra un produit au format JSON qui correspond à la classe Product.<br>
+A chaque fois que quelqu'un appellera l'URL "/products/{od}", on renverra un produit au format JSON qui correspond à la classe Product.<br>
 
 Dans la classe ProductController, on va modifier la méthode displayProduct, le code complet de la classe sera le suivant :
-```java
+```
 package com.ecommerce.micrommerce.web.controller;
 
 import com.ecommerce.micrommerce.model.Product;
@@ -504,7 +504,7 @@ La réponse dans le navigateur sera formatée au format JSON.<br>
 Cela est possible car on a indiqué au début de la classe qu'elle est un contrôleur REST grâce à l'annotation @RestController.<br>
 Spring sait alors que les réponses aux requêtes qu'il passe devront être très probablement au format JSON.
 
-L'autoconfigurateur va alors chercher si on a une dépendance capable de transformer un objet Java en JSON dans notre classpath et inversement.<br>
+L'auto-configurateur va alors chercher si on a une dépendance capable de transformer un objet Java en JSON dans notre classpath et inversement.<br>
 Il y a Jackson qui a été importé avec le starter qu'on a utilisé. Le Bean Product qu'on renvoit est donc transformé en JSON, puis servi en réponse.
 
 Voici donc le premier microservice REST sans avoir à manipuler JSON ni a parser les requêtes HTTP.
@@ -514,7 +514,7 @@ Voici donc le premier microservice REST sans avoir à manipuler JSON ni a parser
 
 **DAO = Data Access Object**<br>
 Il s'agit d'une "responsabilité". Elle permet d'accéder au système d'information pour lire ou modifier des données.<br>
-Les classes DAO (qui contiennent le suffixe ...Dao) sont des classes qui contiennent le code qui permet d'échanger des informations avec la base de données.<br>
+Les classes DAO (qui contiennent le suffixe ... Dao) sont des classes qui contiennent le code qui permet d'échanger des informations avec la base de données.<br>
 
 Pour cela, on va procéder comme suit :
 * création d'un package appelé "dao".
@@ -523,7 +523,7 @@ Pour cela, on va procéder comme suit :
   * _findById_ = renvoie un produit par son id
   * _save_ = ajoute un produit
 
-```java
+```
 package com.ecommerce.micrommerce.web.dao;
 
 import com.ecommerce.micrommerce.web.model.Product;
@@ -537,9 +537,9 @@ public interface ProductDao {
 }
 ```
 
-A partir de cette interface, on va ajouter une classe pour créer l'implémentation : "ProductDaoImplement".<br>
+À partir de cette interface, on va ajouter une classe pour créer l'implémentation : "ProductDaoImplement".<br>
 Etant donné qu'on ne dispose pas de base de données avec laquelle communiquer, on va simuler son comportement en créant des produits "en dur" :
-```java
+```
 package com.ecommerce.micrommerce.web.dao;
 
 import com.ecommerce.micrommerce.web.model.Product;
@@ -597,7 +597,7 @@ On injecte l'instance de ProductDao dans le constructeur afin d'avoir accès aux
 
 La liste "productsList" contient maintenant une liste de produits définis en dur, et on peut accéder à un produit râce à la méthode displayProduct.
 
-```java
+```
 package com.ecommerce.micrommerce.web.controller;
 
 import com.ecommerce.micrommerce.dao.ProductDao;
@@ -636,13 +636,13 @@ Ce logiciel permet de tester l'API en envoyant toutes sortes de requêtes et per
 
 On va ajouter la méthode POST au controller :
 
-```java
+```
     @PostMapping("/products")
     public void addProduct(@RequestBody Product product) {
         productDao.save(product);
     }
 ```
-* **@PostMapping** = L'URI indiquée est la même que pour la méthode productsList.<br> 
+* **@PostMapping** = L'URI indiqué est la même que pour la méthode productsList.<br> 
 Les annotations @PostMapping et @GetMapping permettent à Spring de quel type de requête HTTP la méthode est associée : POST ou GET.<br>
 Si on envoie une requête POST sur "/produits", la méthode annotée avec @PostMapping sera appelée.
 * **@RequestBody** = Cette annotation demande a Spring de convertir le contenu de la party body de la requête HTTP (au format JSON) en objet Java.<br>
@@ -681,16 +681,16 @@ Dans Postman :
 * On sélectionne POST (au lieu de GET) et on ajoute l'URL http://localhost:9090/products
 * On clique sur l'onglet "Body" (qui n'est plus grisé) et on sélectionne _raw_ pour définir manuellement le contenu de la requête HTTP
 * On ajoute le code en exemple ci-dessous dans le corps de la requête :
-```JSON
+```
 {
 "id": 4,
 "name": "Poney en bois cracheur de feu",
 "price": 145
 }
 ```
-* on sélectionne à droit **JSON** (à la place de Text) pour indiquer le type de données qu'on envoie
+* on sélectionne à droite **JSON** (à la place de Text) pour indiquer le type de données qu'on envoie<br>
 ![](./postman_post_request.png)
-* et on vérifie que le résultat a bien été ajouté en créant un nouvel onglet et en faisant appel à http://localhost:9090/products via GET :
+* et on vérifie que le résultat a bien été ajouté en créant un nouvel onglet et en faisant appel à http://localhost:9090/products via GET :<br>
 ![](./postman_check_get_request.png)
 
 Et on constate que le nouvel article a été ajouté.
@@ -699,17 +699,23 @@ Et on constate que le nouvel article a été ajouté.
 
 Sur le panneau de gauche, on peut observer deux onglets qui contiennent "History" et "Collections".
 
-1. **History** : il s'agit de l'historique de toutes les requêtes qu'on a exécutées. On peut ainsi y retourner et réexécuter une requête par exemple.
+1. **History** : il s'agit de l'historique de toutes les requêtes qu'on a exécutées. On peut ainsi y retourner et exécuter de nouveau une requête par exemple.
 2. **collections** : c'est une façon permanente d'organiser et garder des requêtes pour faire des tests.<br>
 Elles vont permettre de regrouper un ensemble de requêtes et de les lancer selon les paramètres et l'ordre de notre choix (pour réaliser un test de scénario par exemple).
 
 Procédure pour créer une collection :
 * On va commencer par créer une nouvelle collection en cliquant sur `+` et en nommant la collection.<br>
 * Puis sur chaque onglet de requête, on va cliquer sur "SAVE" et spécifier la collection dans laquelle on souhaite sauvegarder la requête.<br>
-(N.B. : on peut nommer la requête mais pour plus de lisibilité il est préférable de laisser tel quel)
+(N.B. : on peut nommer la requête, mais pour plus de lisibilité, il est préférable de laisser tel quel)
 * On obtient alors une collection avec 2 requêtes
 * On redémarre le microservice, on réorganise les requêtes pour qu'elles s'exécutent dans l'ordre (POST avant GET) puis on clique sur "Run", et on voit les résultats.
 * Pour plus de détail, on peut voir la console de Postman : "View" > "Show Postman Console".
+
+### Implémenter la méthode PUT
+
+### Implémenter la méthode DELETE
+
+
 
 ## Documenter son API avec SWAGGER
 
@@ -721,7 +727,7 @@ On peut également visualiser cette doc dans un format HTML élégant.
 
 Pour bénéficier de Swagger, on va procéder en plusieurs étapes : 
 1. importer cette dépendance dans le `pom.xml` :
-```XML
+```
 <dependency>
 <groupId>io.springfox</groupId>
 <artifactId>springfox-boot-starter</artifactId>
@@ -737,7 +743,7 @@ il faudra alors cliquer dessus et importer le nécessaire.
 Cela va importer automatiquement le package correspondant.<br>
 Dans notre cas, il s'agit de **MicrocommerceApplication**.
 
-```java
+```
 package com.ecommerce.micrommerce;
 
 import org.springframework.boot.SpringApplication;
@@ -769,7 +775,7 @@ Dans une application professionnelle, il peut être utile de personnaliser la do
 Pour configurer, on va créer une classe de configuration pour Swagger appelée **SwaggerConfig**.
 Cette classe sera intégrée dans un nouveau package **configuration**.
 Cette classe contiendra le code suivant :
-```java
+```
 SwaggerConfig.java
 
 package com.ecommerce.micrommerce.configuration;
