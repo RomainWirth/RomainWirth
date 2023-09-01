@@ -1142,3 +1142,10 @@ On gagne en agilité :
 * On peut plus facilement modifier, mettre à jour et déployer rapidement = déploiement continu.
 
 Pour une explication complète, voir cette <a href="https://www.youtube.com/watch?v=j1gU2oGFayY">vidéo (en anglais)</a>
+
+## Faire communiquer les services grâce à EUREKA
+
+### Qu'est-ce qu'Eureka 
+
+Il s'agit d'une application qui contient l'information à propos de toutes les applications client-service.<br>
+Chaque micro-service va s'enregistrer dans le serveur Eureka et Eureka saura quelle application client run sur quel port et adresse IP.<br>
