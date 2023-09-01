@@ -147,7 +147,7 @@ dans l'arborescence, on retrouve :
 
 #### pom.xml
 
-```xml
+```
 <parent>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-parent</artifactId>
@@ -183,7 +183,7 @@ Dans cette liste on retrouve principalement :
 #### MicroserviceApplication.java
 
 Classe générée automatiquement par Spring Boot, elle est le point de démarrage de l'application :
-```java 
+```
 package com.ecommerce.microservice;
 
 import org.springframework.boot.SpringApplication;
@@ -223,6 +223,8 @@ public class MicroserviceApplication {
 }
 ```
 
+<a href="https://zetcode.com/springboot/annotations/">Annotations basiques de Spring Boot</a>
+
 #### application.properties
 
 Ce fichier va permettre de modifier très simplement un nombre impressionnant de configurations liées à Spring Boot et à ses dépendances.<br>
@@ -235,7 +237,7 @@ Ce fichier permet d'écrire les tests.
 
 ### Exécuter l'application
 
-malgré le fait qu'on ait encore rien ajouté à l'application, on peut déjà l'exécuter.<br>
+Malgré le fait qu'on n'ait encore rien ajouté à l'application, on peut déjà l'exécuter.<br>
 
 ```
 N.B. :
@@ -861,11 +863,39 @@ Une version très simple et synthétique de consommer un service RESTful (mais s
 
 ## Connecter une base de données
 
-voir doc : <a href="https://spring.io/guides/gs/accessing-data-mysql/">ici</a>
+voir doc : 
+<a href="https://spring.io/guides/gs/accessing-data-mysql/">ici</a>
+<a href="https://www.tutorialspoint.com/spring_boot_jpa/spring_boot_jpa_overview.htm">tutos</a>
+
+### Introduction à JPA
+
+JPA = Java Persistence API.<br> 
+Il s'agit d'une collection de classes et méthodes pour stocker de manière persistante une large quantité de données dans une BDD.<br>
+JPA Agit comme une couche intermédiaire entre la base de donnée et l'application Java Spring Boot.<br>
+
+JPA est une spécification qui explique comment on accède, gère et fait persister l'information/data entre des objets Java et une BDD relationnelle.<br>
+Cela apporte une approche standard pour l'ORM (Object Relational Mapping).<br>
+Spring Boot offre une intégration transparente avec JPA.<br>
+
+#### Histoire
+
+Les premières versions d'EJB definissaient une couche persistante combinée avec la couche de logique business en utilisant l'interface javax.ejb.EntityBean  
+* Pendant l'introduction EJB 3.0, la couche persistante a été séparée et spécifiée en tant que JPA 1.0 (Java Persistence API).<br>
+Les spécifications de cette API ont été sorties en même temps que les spécifications de Java EE5 le 11 mai 2006 en utilisant JSR 220.
+* JPA 2.0 a été sorti avec les spécifications de JAVA EE6 le 10 décembre 2009 comme une part du Java Community Process JSR 317.
+* JPA 2.1 a été sorti avec les spé de JAVA EE le 22 avril 2013 en utilisant JSR 338.
+
+JPA est une API Open source. Beaucoup d'entreprises telles qu'Oracle, Redhat, Eclipse, etc. créent de nouveaux produits en y ajoutant la persistance JPA.<br>
+On peut retrouver des produits comme : Hibernate, Eclipselink, Toplink, Spring Data JPA, etc.
+
+```
+N.B. :
+EJB (Enterprises JavaBeans) = architecture de composants logiciels côté serveur pour la plateforme de développement Java
+```
 
 ### Ajouter une base de données intégrée et générer les tables 
 
-
+#### Transformation de la classe Product en entité
 
 Pour commencer, on va intégrer au pom.xml les dependencies :
 ```
@@ -900,3 +930,130 @@ Pour commencer, on va intégrer au pom.xml les dependencies :
 	</dependency>
 </dependencies>
 ```
+ 
+ATTENTION ! Bien penser à "reload" Maven (onglet de droite d'IntelliJ) pour mettre à jour et vérifier que les dépendances ont bien été importées.<br>
+
+On pourra donc ajouter les annotations `@Entity` et `@Id`à notre classe Product :
+```
+package com.ecommerce.micrommerce.web.model;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+//@JsonFilter("monFiltreDynamique")
+@Entity
+public class Product {
+  @Id
+  private int id;
+  private String name;
+  private int price;
+
+  //information que nous ne souhaitons pas exposer
+  private int prixAchat;
+...
+}
+```
+_Explication des annotations :_ 
+* **@Entity** = cette annotation permet à la classe d'être scannée et prise en compte.<br> 
+On aura donc pas besoin de passer par le fichier "persistence.xml".
+* **@Id** = cette annotation permet d'identifier l'attribut sur lequel il est placé en tant qu'entité unique autogénérée.
+* **@GeneratedValue** = Permet d'identifier l'attribut en tant que clé primaire de façon automatique lors de l'insertion en BDD.<br>
+<a href="https://www.axopen.com/blog/2014/02/utilisation-de-lannotation-generatedvalue/">@GeneratedValue</a>
+
+Concrètement, ces annotations permettent à Spring Boot de générer automatiquement les tables de notre base de données SQL.<br>
+Liste et explication des annotations JPA <a href="https://gayerie.dev/epsi-b3-orm/javaee_orm/jpa_entites.html">ici</a>
+
+#### Ajout de la BDD
+
+```
+N.B. : la suite de cette étape n'est pas nécessaire si on crée directement une BDD MySQL
+```
+##### Utilisation d'une BDD H2
+
+Pour les tests, on utilisera une BDD **H2** qui est intégrable dans le microservice.<br>
+H2 est une BDD légère (1Mo). Elle va créer les tables et les données uniquement en mémoire vive.<br>
+Une fois l'application fermée, les données sont perdues. Cette approche est utile dans la phase de développement de microservices.<br>
+On peut ainsi faire et refaire des tests en partant à chaque fois d'une base de données propres.<br>
+Un autre avantage est qu'elle est très simple à mettre en place et qu'elle est complètement autoconfigurée par Spring Boot.<br>
+
+On va donc ajouter au fichier pom.xml les dépendances suivantes :
+```
+<dependencies>
+
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+  </dependency>
+
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+  </dependency>
+
+  <dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+  </dependency>
+
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+  </dependency>
+
+</dependencies>
+```
+Bien penser à actualiser Maven pour importer la dépendance.<br>
+
+On peut maintenant modifier le fichier **application.properties** :<br>
+on demande à Spring d'afficher les requêtes SQL et d'activer l'interface graphique H2 (ce qui permet de visualiser les tables).
+```
+server.port 9090
+
+spring.jpa.show-sql=true
+spring.h2.console.enabled=true
+
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=none
+```
+
+Il faut enfin configurer la table Product qui va être créée pour qu'elle contienne des données par défaut.<br>
+* Créer un dossier "resources" et y insérer un fichier **data.sql** (qui contiendra les mêmes données écrites en dur dans le DAO) :
+```
+INSERT INTO product VALUES(1, 'Ordinateur portable' , 350, 120);
+INSERT INTO product VALUES(2, 'Aspirateur Robot' , 500, 200);
+INSERT INTO product VALUES(3, 'Table de Ping Pong' , 750, 400);
+```
+* On va également créer un fichier **schema.sql** pour définir les tables de la BDD :
+```
+CREATE TABLE product (
+   id INT PRIMARY KEY,
+   nom VARCHAR(255) NOT NULL,
+   prix INT NOT NULL,
+   prix_achat INT NOT NULL
+);
+```
+Le fichier sera récupéré automatiquement puis exécuté dans la BDD une fois que la table sera créée.<br>
+Il suffit de redémarrer l'application et de se rendre sur la console de H2 à l'adresse : http://localhost:9090/h2-console/ <br>
+Dans le champ JDBC URL, il faut saisir : `jdbc:h2:mem:testdb` pour configurer la connexion vers la BDD testdb située en mémoire vive.<br>
+On clique ensuite sur Connect. La console nous propose alors une interface permettant de visualiser la table PRODUCT.<br>
+C'est grâce à l'annotation @Entity que cette table a été créée.
+
+##### Utilisation d'une BDD MySQL
+
+cette partie est faite en suivant le tuto : <a href="https://spring.io/guides/gs/accessing-data-mysql/">Accessing data with MySQL</a>
+
+Il y a plusieurs étapes à réaliser :
+1. Créer la BDD en MySQL
+2. Modifier le fichier `application.properties`
+3. Créer le modèle `@Entity`
+4. Créer le Repository 
+5. Puis le Controller (ou le modifier)
