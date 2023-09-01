@@ -713,9 +713,28 @@ Procédure pour créer une collection :
 
 ### Implémenter la méthode PUT
 
+```
+    @ApiOperation("Méthode pour modifier les infos d'un produit")
+    @PutMapping("/products/{id}")
+    public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
+        Product updateProduct = productDao.findById(id);
+
+        updateProduct.setFirstName(product.getName());
+        updateProduct.setLastName(product.getPrice());
+        
+        return updateProduct;
+    }
+```
+
 ### Implémenter la méthode DELETE
 
-
+``` 
+  @ApiOperation("Méthode pour supprimer un produit")
+    @DeleteMapping("/products/{id}")
+    public Product deleteProduct(@PathVariable int id) {
+        return productDao.delete(id);
+    }
+```
 
 ## Documenter son API avec SWAGGER
 
