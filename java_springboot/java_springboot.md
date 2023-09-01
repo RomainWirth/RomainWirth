@@ -1054,6 +1054,91 @@ cette partie est faite en suivant le tuto : <a href="https://spring.io/guides/gs
 Il y a plusieurs étapes à réaliser :
 1. Créer la BDD en MySQL
 2. Modifier le fichier `application.properties`
-3. Créer le modèle `@Entity`
+3. Créer le modèle `@Entity` (ou le modifier)
 4. Créer le Repository 
 5. Puis le Controller (ou le modifier)
+
+## Les Microservices et l'architecture microservice
+
+### Définition
+
+Au sein d'une application, il s'agit d'un regroupement de différents microservices qui ont chacun leur propre fonctionnalité.<br>
+
+C'est une approche d'architecture logicielle ou une appli est décomposée en plusieurs petits services qui sont chacun spécialisés dans une seule tâche.<br>
+Chaque service est spécialisé dans une seule tâche. On parle de service métier : un groupe de services techniques qui fournissent une fonctionnalité avec un sens métier.<br>
+
+Par exemple, dans un site de vente en ligne, on aura plusieurs microservices pour :
+* la fonctionnalité panier
+* la fonctionnalité page d'accueil
+* la fonctionnalité d'historique 
+* ou encore la fonctionnalité d'inventaire
+* etc.
+
+### But 
+
+L'architecture microservice a été inventée pour répondre à la problématique des applications monolithes.
+
+**Application monolithe :**<br>
+Application qui a pour ambition de traiter toutes les demandes possibles et de répondre à un maximum de cas d'usage.<br>
+
+_Problème_ :<br> 
+avec le temps, les applications ont tendance à grossir de plus en plus, car elles intègrent toujours plus de fonctionnalités, sans supprimer les anciennes.<br>
+Certaines de ces fonctionnalités deviennent inutiles ou obsolètes. Avec le temps, les différentes briques développent des interdépendances entre elles.<br>
+Le code devient de plus en plus complexe et il devient alors impossible d'avoir en tête un modèle global du projet.<br>
+L'application devient ainsi difficile à maîtriser et à faire évoluer.<br>
+Plus un projet est gros, plus il est critique pour l'entreprise, et moins on va prendre de risque pour tester des nouveautés.
+
+Pour une application monolithe, on va préférer la stabilité à l'innovation.<br>
+La réponse de l'architecture microservice à ce problème est simple :<br>
+On découpe l'application en différents modules fonctionnels (microservices), et chaque module exécute une partie spécifique et unique de l'application.<br>
+Ces services peuvent être accessibles par le client via l'API du microservice correspondant.<br>
+
+Le but de ce type d'architecture est de redonner un maximum d'agilité et d'évolutivité à une application.<br>
+
+### Technique
+
+Techniquement, l'architecture microservice est très souvent couplée à la technologie des conteneurs, notamment à Docker.<br>
+voir <a href="https://course.valentinflgt.fr/#/c/2023/docker/1.-introduction#concept-101-%25F0%259F%2593%259A">cours sur Docker</a>
+
+Le principe ici est d'avoir un conteneur par unité de microservice.<br>
+Chaque microservice a son propre environnement d'exécution pour héberger son code.<br>
+Avec les conteneurs, il est très facile d'adapter en fonction du besoin d'adapter le nombre de microservice à la hausse comme à la baisse :<br>
+* Si un service est plus demandé lors du pic de charge, il suffit de créer plus de conteneurs hébergeant ce microservice.<br>
+* Quand la demande de ce service diminue, il suffit de ne garder que le minimum de microservice pour couvrir la demande.
+
+Ainsi, dans l'architecture microservice, il suffit d'adapter le nombre de ce microservice au besoin.<br>
+Alors que dans une application monolithe, il aurait fallu modifier la totalité de l'application à cause des interdépendances.<br>
+
+En étant couplé avec les conteneurs, chaque microservice devient autonome vis-à-vis des autres microservices.<br>
+Cela signifie que dans une appli découpée en microservices, il est plus simple de cibler les différentes parties impactées lors d'une évolution,<br>
+Cela facilite la modification des parties concernées sans prendre de risque pour le reste de l'application non impliqué.<br>
+
+Ainsi, les mises à jour et les nouvelles fonctionnalités peuvent être déployées plus facilement et rapidement, rendant le déploiement continu possible.<br>
+
+Cela permet aussi, pour des projets de grande taille, de limiter à une équipe de quelques personnes une tâche spécifique qui va gérer son organisation et sa base de code.<br>
+Cette équipe est alors libre des choix techniques en fonction de ses propres besoins.
+
+Tout cela permet à une entreprise d'avoir un avantage concurrentiel = un time to market rapide.
+
+Time To Market = délai entre la naissance d'une idée et son lancement sur le marché.<br>
+
+### En résumé :
+
+Approche d'une application par une architecture en microservices vs application monolithe.<br>
+Architecture en microservice :
+* découpage en modules fonctionnels = microservices.
+* chaque module exécute une partie spécifique et unique de l'application.
+* chaque service est accessible par le client via l'API correspondante.
+
+Contrairement à une app monolithe, une app en architecture microservices aura plus d'agilité et une plus grande possibilité d'évolution.<br>
+On a ainsi une application qui se découpe en de plus petites applications (microservices) qui ont chacune une fonction unique, et qui communiquent entre elles via des appels API.<br>
+
+Techniquement : on procède par une approche en conteneurs (comme docker).<br>
+chaque unité de microservice aura son propre conteneur. On pourra augmenter ou baisser le nombre de conteneurs qui hébergent le microservice en question en fonction de la demande.<br>
+Cela rend l'application adaptable selon les besoins.<br>
+
+On gagne en agilité : 
+* Chaque microservice est autonome vis-à-vis des autres.
+* On peut plus facilement modifier, mettre à jour et déployer rapidement = déploiement continu.
+
+Pour une explication complète, voir cette <a href="https://www.youtube.com/watch?v=j1gU2oGFayY">vidéo (en anglais)</a>
