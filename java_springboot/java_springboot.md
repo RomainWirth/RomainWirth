@@ -1134,7 +1134,7 @@ Contrairement à une app monolithe, une app en architecture microservices aura p
 On a ainsi une application qui se découpe en de plus petites applications (microservices) qui ont chacune une fonction unique, et qui communiquent entre elles via des appels API.<br>
 
 Techniquement : on procède par une approche en conteneurs (comme docker).<br>
-chaque unité de microservice aura son propre conteneur. On pourra augmenter ou baisser le nombre de conteneurs qui hébergent le microservice en question en fonction de la demande.<br>
+Chaque unité de microservice aura son propre conteneur. On pourra augmenter ou baisser le nombre d'instances qui hébergent le microservice en question en fonction de la demande.<br>
 Cela rend l'application adaptable selon les besoins.<br>
 
 On gagne en agilité : 
@@ -1148,4 +1148,11 @@ Pour une explication complète, voir cette <a href="https://www.youtube.com/watc
 ### Qu'est-ce qu'Eureka 
 
 Il s'agit d'une application qui contient l'information à propos de toutes les applications client-service.<br>
-Chaque micro-service va s'enregistrer dans le serveur Eureka et Eureka saura quelle application client run sur quel port et adresse IP.<br>
+
+Eureka est un service Netflix. Le registre d'Eureka permet d'y enregistrer les instances des microservices.<br>
+Chaque microservice va s'enregistrer dans le serveur Eureka et Eureka saura quelle application client run sur quel port et adresse IP.<br>
+En d'autres termes, l'appel d'un microservice se fait en allant piocher dans cette liste d'instances qui sont exposées via une API REST par Eureka.<br>
+
+![](./Eureka_explication.png)
+
+Tuto Eureka <a href="https://openclassrooms.com/fr/courses/4668216-optimisez-votre-architecture-microservices/5176625-rendez-vos-microservices-decouvrables-grace-a-eureka">OpenClassrooms</a>
