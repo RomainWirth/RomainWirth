@@ -249,7 +249,7 @@ Phase ascendante :
 #### Définition
 
 Créer, affiner et améliorer un projet de manière itérative.<br>
-Cela passe par une création, test jusqu'à ce que 
+Cela passe par une création, test jusqu'à ce que les équipes soient satisfaites du résultat.
 
 #### Mise en oeuvre
 
@@ -262,7 +262,6 @@ Le Client explique ce qu'il souhaite obtenir
     * Validation
     * Evaluation
 6. Déploiement<br>
-Les livrables qui ont été 
 
 Les étapes 2 à 5 fonctionnent en boucle avant le déploiement
 
