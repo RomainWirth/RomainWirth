@@ -73,9 +73,29 @@ Ces éléments permettent d'avoir une vision sur la mise en oeuvre de la gestion
 
 ## Les 5 étapes clés d'un projet
 
-1. **Avant projet**
+1. **Avant projet**<br>
+    * Définition des besoins du demande
+    * Formaliser les problématiques
+    * Imaginer les solutions possibles
+    * Questions pour comprendre la demande : 
+        * Why, what, when, who, how ? 
+        * Contexte
+
 2. **Lancement**
+    * Etude de faisabilité des slutions dans le contexte du projet
+    * Choix de la solution
+    * Gestion des risques :
+        * identifier les risques :<br> 
+        brainstorming, interroger les experts, expériences collectives, rapports des bilans, analyser les problèmes, équipe dédiée ?
+        * quantifier les risques (= impact du risque) :<br> 
+        gravité, probabilité, criticité (gravité x probabilité)
+        * répondre aux risques (= trouver une solution) :<br> 
+        supprimer, réduire la probabilité ou la gravité, transférer (sous-traitance), partager (co-développement), accepter MAIS avec un plan de substitution
+        * contrôler l'apparition<br>
+![](./src/template-1-risk-matrix.jpg.webp)
 3. **Conception**
+    * Maquettage, échanges avec le client pour étudier en détails la solution choisie
+    * Définir l'organisation de la réalisation (planification, tâches, etc.)
 4. **Réalisation**
 5. **Bilan**
 
