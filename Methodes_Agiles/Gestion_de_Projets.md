@@ -136,3 +136,74 @@ Utilise cette méthode de travail dans la mise en oeuvre de leurs produits
 #### Historique
 
 Développé dans les années 1980, découle de la méthode en cascade
+
+
+### Cycle Itératif
+
+#### Historique
+
+* Mis au point dans les années 1950 : utilisé par la NASA.<br>
+* 1968 : Centre de recherche IBM.<br>
+* années 1970 : utilisé dans l'aérospatiale et la dégense.
+* 
+
+#### Définition
+
+Créer, affiner et améliorer un projet de manière itérative.<br>
+Cela passe par une création, test jusqu'à ce que 
+
+#### Mise en oeuvre
+
+6 étapes dont 4 qui constituent le coeur :
+1. Expression du besoin<br>
+Le Client explique ce qu'il souhaite obtenir
+2. Coeur du processus itératif
+    * Spécification
+    * Développement
+    * Validation
+    * Evaluation
+6. Déploiement<br>
+Les livrables qui ont été 
+
+Les étapes 2 à 5 fonctionnent en boucle avant le déploiement
+
+#### Avantages vs Inconvénients
+
+Avantages :<br>
+* Efficacité accrue
+* Possibilité de travailler sur des tâches connexes en parallèle
+* Risque limité à l'échelle du projet
+* Retour utilisateurs plus fiables
+
+Inconvénients :<br>
+* Risque de dérives de projet = peut donner une portée plus grande que celle prévue initialement
+* délais vagues
+
+### Méthodes Agiles
+
+#### Historique
+
+EVO : première méthode AGILE en 1976.<br>
+SCRUM : utilisé en 1996.<br>
+2001 : Manifeste AGILE.
+
+#### Utilisation
+
+Utilisé principalement dans le domaine de l'informatique, puis dans les entreprises de communication/merkating.<br>
+Facilite la plupart des projets.<br>
+
+Client au centre de cette méthode, il est impliqué
+
+#### Acteurs
+
+* Product Owner
+* Scrum master = s'assure du bon fonctionnement et est force de proposition pour franchir les obstacles
+* Equipe de développement = responsable de la qualité
+
+#### Avantages vs Inconvénients
+
+Avantages :
+* Gain de contrôle sur le produit final
+* Augmente l'efficacité
+* Assure des livraisons de hautes qualités
+* Génère 
