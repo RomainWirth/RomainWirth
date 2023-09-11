@@ -226,4 +226,14 @@ Avantages :
 * Gain de contrôle sur le produit final
 * Augmente l'efficacité
 * Assure des livraisons de hautes qualités
-* Génère 
+* Génère ... 
+
+
+## Méthode SMART(E)
+
+* Spécifique et Simple : concret et facilement compréhensible
+* Mesurable : assorti d'un indicateur et d'une échéance (KPI)
+* Atteignable et Ambitieux : porteur de challenge, stimulant
+* Réaliste : réalisable, sous mon contrôle
+* Temporel : doté de plusieurs échéances
+* Economique et Ecologique : respectueux du système 
