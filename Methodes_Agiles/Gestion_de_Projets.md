@@ -138,6 +138,8 @@ Chaque tâche est matérialisée par une barre horizontale : la poisition et la 
 
 <a href="https://www.gantt.com/fr/">source</a>
 
+<a href="https://youtu.be/iJY4_gjMdQY?si=6nhj2dfOk1lWBm76">réaliser un diagramme de Gantt</a>
+
 * _Diagramme de PERT :_<br>
 
 Il s'agit d'un outil visuel d'ordonnancement et de planification de projet.<br>
@@ -184,6 +186,12 @@ Le repérage et le tracé du chemin critique permettent notamment de :
 * évaluer les scénarios en testant les différentes combinaisons sur une échelle de temps pour analyser les impacts sur la durée du projet en identifiant les marges et chaque chemin critique.
 
 <a href="https://www.manager-go.com/gestion-de-projet/glossaire/chemin-critique">source</a>
+
+**_En résumé :_**<br>
+Pour gérer un projet correctement, il est conseillé de procéder par 3 étapes :
+* Réaliser un diagramme de PERT 
+* Identifier le chemin critique
+* Construire un planning Gantt
 
 5. **Bilan**
 
