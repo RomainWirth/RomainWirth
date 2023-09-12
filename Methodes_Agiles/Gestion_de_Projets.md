@@ -194,8 +194,38 @@ Pour gérer un projet correctement, il est conseillé de procéder par 3 étapes
 * Identifier le chemin critique
 * Construire un planning Gantt
 
+**_Matrice d'Eisenhower_**
+
+C'est une méthode d'organisation qui permet de classer les tâches en fonction de leur degré d'importance et donc de hiérarchiser les priorités.<br>
+Cette méthode a été conceptualisée par le président des USA Dwight D. Eisenhower lors d'un discourds en 1954.<br>
+
+![](./src/inline-leadership-eisenhower-matrix-2-fr-2x.webp)
+
+<a href="https://asana.com/fr/resources/eisenhower-matrix">source</a>
+
 5. **Bilan**
 
+Se fait à la livraison du produit ou a la réalisation des objectifs décidés en amont.<br<>>
+Permet de voir si tout a été atteint, si certaines choses sont à revoir.<br>
+
+_Objectifs :_
+* Libérer les acteurs du projet (des tâches et émotionnellement)
+* Engager de actions d'amélioration
+* Déterminer les éléments à retenir pour de futurs projets pour l'amélioration de leur conduite
+
+_Contenus :_
+* Points positifs
+* Difficultés rencontrées (méthode, contenu, charges de travail)
+* Analyse du point de vue du maître d'ouvrage
+* Analyse de rentabilité
+
+_Participants :_
+* Maître d'ouvrage, chef de projet, équipe de projet et tierce personne extérieure
+* A faire en fin de projet : objectifs atteints vs abandon
+
+## Quel est le plus important dans un projet ?
+
+1. La communication et la perception : il y a un delta entre ce que le client demande et ce qui est livré
 
 ## Les principales méthodes
 
