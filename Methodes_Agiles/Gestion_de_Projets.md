@@ -17,7 +17,7 @@ Il s'agit de sa vision à long terme.
 
 Ce concept permet de prendre du recul sur son business et regarde au-delà de la description pragmatique du produit ou du service qui est vendu.<br>
 
-<a src="https://youtu.be/7dAaWweraQ4?si=ESTbn0prd80SJI0V">Conférence TED Simon Sinek - The golden Circle</a>
+<a href="https://youtu.be/7dAaWweraQ4?si=ESTbn0prd80SJI0V">Conférence TED Simon Sinek - The golden Circle</a>
 
 Il s'agit du message qu'on veut véhiculer :
 * "What" : pourquoi = notre raison d'exister, quel est notre produit
