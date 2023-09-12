@@ -225,7 +225,7 @@ _Participants :_
 
 ## Quel est le plus important dans un projet ?
 
-1. La communication et la perception : il y a un delta entre ce que le client demande et ce qui est livré
+La communication et la perception :
 
 ## Les principales méthodes
 
