@@ -123,18 +123,20 @@ L'un des outils les plus efficaces utilisé couramment en gestion de projet pour
 _Historique :_<br> 
 Le premier diagramme de Gant fut élaboé dans les années 1890 par l'ingénieur Polonais Karol Adamiecki dans le cadre de ses recherches en techniques de gestion et de planification.<br>
 
+Ce diagramme permet de visualiser en un seul coup d'oeil :<br> 
+* les différentes tâches à envisager,<br> 
+* la date de début et fin de chaque tâche,<br> 
+* leur durée,<br> 
+* le chevauchement éventuel des tâches et la durée de chevauchement,<br> 
+* et enfin la date de début et de fin du projet dans son ensemble.
+
 ![](./src/gantt-chart-example.png)
 
 La colonne de gauche du diagramme énumère toutes les tâches à effectuer.<br>
 La ligne d'en-tête représente les unités de temps les plus adaptées au projet (jous, semaine, mois, etc.).<br>
 Chaque tâche est matérialisée par une barre horizontale : la poisition et la longueur représentent la date de début, la durée et la date de fin.<br>
 
-Ce diagramme permet de visualiser en un seul coup d'oeil :<br> 
-les différentes tâches à envisager,<br> 
-la date de début et fin de chaque tâche,<br> 
-leur durée,<br> 
-le chevauchement éventuel des tâches et la durée de chevauchement,<br> 
-et enfin la date de début et de fin du projet dans son ensemble.
+<a href="https://www.gantt.com/fr/">source</a>
 
 * _Diagramme de PERT :_<br>
 
@@ -143,7 +145,45 @@ Son nom vient de l'accronyme : "Program Evaluation and Review Technic".<br>
 Il a pour but d'organiser les tâches sous la forme d'un réseau afin de faciliter la gestion du projet.<br>
 Cette représentation graphique permet d'identifier les connexions entre les différentes tâches, les temps d'exécution et les interdépendances.
 
+Cet outil facilite la maîtrise du projet et permet de :
+* donner une vue réelle de la livraison du projet
+* anticiper l'affectation des ressources humaines et financières, et des moyens techniques
+* identifier lestâches à traiter plus rapidement si l'on souhaite livrer le projet au plus tôt
+* repérer les tâches à traiter simultanément (travail en parallèle) et les tâches antérieures
+* identifier les tâches critiques et le non-critique pour tenir les délais (redéployer les ressources si nécessaire)
+* préparer la construction d'un planning de Gantt
+* affecter des responsabilités
+
 ![](./src/definition-PERT2.png)
+
+Le diagramme s'organise sous forme de réseau. Il possède un début et une fin, des étapes et des tâches.<br>
+Les tâches sont représentées par des flèches encadrées par 2 étapes (noeuds).<br>
+Chaque étape possède une date au plus tôt et une date au plus tard.
+
+Etapes pour créer un PERT :
+* préparer les tâches
+* construire le réseau en reliant les tâches entre elles, via des étapes
+* indiquer les dâtes au plus tôt
+* renseigner les dates au plus tard
+* calculer les marges des tâches (degré de liberté pour les retards)
+* définition du chemin critique
+
+<a href="https://www.manager-go.com/gestion-de-projet/dossiers-methodes/construire-un-reseau-pert">source</a>
+
+**_le Chemin Critique_**<br>
+Lors de la construction d'un diagramme de PERT, le chemin critique représente la séquence de tâches ne disposant d'aucune marge :<br>
+Il n'existe aucune flexibilité entre la tâche précédente et la suivante. Il s'agit du délai incompressible pour réaliser le projet.
+
+![](./src/Chemin-critique.png)
+
+C'est un élément de gestion prévisionnel qui permet de maîtriser les étapes clés et les deadlines.<br>
+Il s'agit d'un outil central pour la mise en oeuvre d'un PERT. L'étape fianle pour le chef est de disposer d'un outil de planification efficace et pertinent.<br>
+Le repérage et le tracé du chemin critique permettent notamment de :
+* identifier les leviers de réduction des délais (tâches prioritaires) pour prendre les mesures nécessaires pour agir.
+* prévenir les dérapages et maîtriser les risques.
+* évaluer les scénarios en testant les différentes combinaisons sur une échelle de temps pour analyser les impacts sur la durée du projet en identifiant les marges et chaque chemin critique.
+
+<a href="https://www.manager-go.com/gestion-de-projet/glossaire/chemin-critique">source</a>
 
 5. **Bilan**
 
