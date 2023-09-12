@@ -93,11 +93,60 @@ Ces éléments permettent d'avoir une vision sur la mise en oeuvre de la gestion
         supprimer, réduire la probabilité ou la gravité, transférer (sous-traitance), partager (co-développement), accepter MAIS avec un plan de substitution
         * contrôler l'apparition<br>
 ![](./src/template-1-risk-matrix.jpg.webp)
+
 3. **Conception**
     * Maquettage, échanges avec le client pour étudier en détails la solution choisie
-    * Définir l'organisation de la réalisation (planification, tâches, etc.)
+    * Définir l'organisation de la réalisation (planification, tâches, etc.)<br>
+    **Méthode SMART(E)**<br>
+    * Spécifique et Simple : concret et facilement compréhensible
+    * Mesurable : assorti d'un indicateur et d'une échéance (KPI)
+    * Atteignable et Ambitieux : porteur de challenge, stimulant
+    * Réaliste : réalisable, sous mon contrôle
+    * Temporel : doté de plusieurs échéances
+    * Economique et Ecologique : respectueux du système 
+
 4. **Réalisation**
+    * Réalisation/**Développement** du projet
+    * Phase de suivi de projet : garder au mieux les idées de bases pour atteindre les objectifs définis
+    * Dérouler l'ensemble des tâches
+    * Conduire les réunions d'avancement 
+    * Prise de décisions aux jalons (étapes clés) intermédiaires
+    * Réaction en cas d'aléas
+    * Gérer les modifications<br>
+    
+**PERT vs GANTT**
+
+* _Diagramme de Gantt :_<br>
+
+L'un des outils les plus efficaces utilisé couramment en gestion de projet pour représenter visuellement l'état d'avancement des différentes activités.<br>
+
+_Historique :_<br> 
+Le premier diagramme de Gant fut élaboé dans les années 1890 par l'ingénieur Polonais Karol Adamiecki dans le cadre de ses recherches en techniques de gestion et de planification.<br>
+
+![](./src/gantt-chart-example.png)
+
+La colonne de gauche du diagramme énumère toutes les tâches à effectuer.<br>
+La ligne d'en-tête représente les unités de temps les plus adaptées au projet (jous, semaine, mois, etc.).<br>
+Chaque tâche est matérialisée par une barre horizontale : la poisition et la longueur représentent la date de début, la durée et la date de fin.<br>
+
+Ce diagramme permet de visualiser en un seul coup d'oeil :<br> 
+les différentes tâches à envisager,<br> 
+la date de début et fin de chaque tâche,<br> 
+leur durée,<br> 
+le chevauchement éventuel des tâches et la durée de chevauchement,<br> 
+et enfin la date de début et de fin du projet dans son ensemble.
+
+* _Diagramme de PERT :_<br>
+
+Il s'agit d'un outil visuel d'ordonnancement et de planification de projet.<br>
+Son nom vient de l'accronyme : "Program Evaluation and Review Technic".<br>
+Il a pour but d'organiser les tâches sous la forme d'un réseau afin de faciliter la gestion du projet.<br>
+Cette représentation graphique permet d'identifier les connexions entre les différentes tâches, les temps d'exécution et les interdépendances.
+
+![](./src/definition-PERT2.png)
+
 5. **Bilan**
+
 
 ## Les principales méthodes
 
@@ -316,11 +365,5 @@ Inconvénients :
 
 <a href="https://blog-gestion-de-projet.com/avantages-et-inconvenients-de-la-methode-agile/">source</a>
 
-## Méthode SMART(E)
 
-* Spécifique et Simple : concret et facilement compréhensible
-* Mesurable : assorti d'un indicateur et d'une échéance (KPI)
-* Atteignable et Ambitieux : porteur de challenge, stimulant
-* Réaliste : réalisable, sous mon contrôle
-* Temporel : doté de plusieurs échéances
-* Economique et Ecologique : respectueux du système 
+
