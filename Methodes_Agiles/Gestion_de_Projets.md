@@ -172,7 +172,8 @@ Etapes pour créer un PERT :
 
 <a href="https://www.manager-go.com/gestion-de-projet/dossiers-methodes/construire-un-reseau-pert">source</a>
 
-**_le Chemin Critique_**<br>
+* _le Chemin Critique :_<br>
+
 Lors de la construction d'un diagramme de PERT, le chemin critique représente la séquence de tâches ne disposant d'aucune marge :<br>
 Il n'existe aucune flexibilité entre la tâche précédente et la suivante. Il s'agit du délai incompressible pour réaliser le projet.
 
