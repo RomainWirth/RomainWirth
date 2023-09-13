@@ -456,3 +456,13 @@ Fait parti des méthodes Agile la plus utilisée. Se déroule comme suit :
     * Rétrospective
 * Livrable en production
 
+Acteurs :
+
+1. SCRUM MASTER :<br>
+Il fait office de chef de projet, il anime les réunions, organise le planning.
+
+2. Product Owner :<br>
+Il est responsable de l'équipe de dev., il donne les indications et directives pour que le produit corresponde aux spécificatons.
+
+3. Equipe technique (dev):<br>
+Experts qui vont coder le produit, estimer les délais et réaliser le produit.
