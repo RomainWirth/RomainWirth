@@ -451,5 +451,8 @@ Fait parti des méthodes Agile la plus utilisée. Se déroule comme suit :
 * Sprint backlog
 * Iération (lancement du projet) :
     * Sprint de 2 à 4 semaines avec des réunions journalières (daily stand up)
+    * Bilan de moitié de sprint
+    * Bilan de fin de spring
+    * Rétrospective
 * Livrable en production
 
