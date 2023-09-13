@@ -314,7 +314,7 @@ Seules quelques réunions de pilotage sont nécessaires lors du passage d’une 
 Inconvénients:  
 * Ne s’adapte pas au changement:<br> 
 Une fois l’étape de définition précise du produit réalisée par l’équipe, le cycle s’enclenche.<br> 
-Cela peut poser problème si  le client change sa demande pour le produit final. 
+Cela peut poser problème si  lto reimburse me client change sa demande pour le produit final. 
 * Temps de développement prolongé:<br> 
 Prends du temps pour achever un projet par rapport aux méthodes plus itératives et flexibles.
 
@@ -444,5 +444,12 @@ Inconvénients :
 
 <a href="https://blog-gestion-de-projet.com/avantages-et-inconvenients-de-la-methode-agile/">source</a>
 
+## Méthode SCRUM
 
+Fait parti des méthodes Agile la plus utilisée. Se déroule comme suit :
+* Production backlog
+* Sprint backlog
+* Iération (lancement du projet) :
+    * Sprint de 2 à 4 semaines avec des réunions journalières (daily stand up)
+* Livrable en production
 
