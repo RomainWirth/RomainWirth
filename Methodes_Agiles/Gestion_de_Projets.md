@@ -225,7 +225,9 @@ _Participants :_
 
 ## Quel est le plus important dans un projet ?
 
-La communication et la perception :
+La communication et la perception :<br>
+Un même projet peut-être perçu de manière différente par les différents acteurs.<br> 
+C'est là qu'entre en jeu la perception afin de clarifier sa vision et de pouvoir comprendre le point de vue de chacun afin d'avancer dans la même direction.<br>
 
 ## Les principales méthodes
 
