@@ -103,7 +103,7 @@ Ces éléments permettent d'avoir une vision sur la mise en oeuvre de la gestion
     * Atteignable et Ambitieux : porteur de challenge, stimulant
     * Réaliste : réalisable, sous mon contrôle
     * Temporel : doté de plusieurs échéances
-    * Economique et Ecologique : respectueux du système 
+    * Ecologique : respectueux du système et employant le moins de ressources possibles
 
 4. **Réalisation**
     * Réalisation/**Développement** du projet
