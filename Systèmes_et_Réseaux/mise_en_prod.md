@@ -58,3 +58,45 @@ Cette configuration profite aussi à SCP et SFTP qui se connectent au même serv
     * vim = c'est un éditeur de texte en ligne de commande
     * nano = autre éditeur de texte en ligne de commande
 
+## Mise en production d'applications sans conteneurisation
+
+### PHP-FPM et NGINX
+
+**PHP-FPM** :<br>
+il s'agit de l'accronyme pour FastCGI Process Manager (= gestionnaire de processus FastCGI).<br>
+C'est une interface SAPI permettant la communication entre un serveur web et PHP, basée sur le protocole FastCGI.<br>
+
+```
+FastCGI est une technique permettant la communication entre un serveur web et un logiciel indépendant, 
+c'est une évolution de Common Gateway Interface (CGI) = Interface passerelle commune.
+
+SAPI (Server Application Programming Interface = interface de programmation des applications serveurs)
+est le terme générique utilisé en informatique pour désigner les modules d'interface d'applications serveur web comme Apache,
+Internet Information Services ou iPlanet.
+```
+
+FPM est une alternative à l'implémentation PHP FastCGI avec des fonctionnalités supplémentaires utiles pour les sites fortement chargés.<br>
+Fonctionnalités inclues :
+* Gestion avancée des processus avec stop/start doux (graceful) ;
+* Pools qui donnent la possibilité de démarrer des travailleurs avec différents uid/gid/chroot/environnement,<br> 
+écoutant sur différents ports et utilisant différents php.ini (remplace le safe_mode) ;
+* Configurable journalisation stdout et stderr ;
+* Redémarrage d'urgence en cas de destruction accidentelle du cache opcode ;
+* Support de l'upload acccéléré ;
+* "slowlog" - journalisation des scripts (pas juste leurs noms, mais leur backtrace PHP également, utilisant ptrace ou équivalent pour lire le processus distant)<br> 
+qui s'éxecutent de manière anormalement lente ;
+* fastcgi_finish_request() - fonction spéciale pour terminer la requête et vider toutes les données tout en continuant d'exécuter une tâche consommatrice<br>
+(conversion vidéo par exemple) ;
+* Naissance de processus fils dynamic/ondemand/static ;
+* Informations d'état de base et étendues (similaire à mod_status d'Apache) avec différents formats supportés comme json, xml et openmetrics ;
+* Fichier de configuration basé sur php.ini ;
+
+**NGINX** :<br>
+il s'agit d'un système asynchrone qui utilise les changements d'état pour gérer plusieurs connexions en même temps.<br>
+Le traitement de chaque requête est découpé en de nombreuses mini-tâches et permet ainsi de réaliser un multiplexage efficace entre connexions.<br>
+Afin de tirer parti des ordinateurs multiprocesseurs, plusieurs processus peuvent être démarrés.<br>
+Ce choix d'architecture entraîne des performances très élevées, ainsi qu'une charge et une consommation de mémoire très inférieures à celles des serveurs HTTP classiques comme Apache.<br>
+
+Un serveur Nginx permet d'utiliser PHP-FPM pour traiter les scripts PHP. 
+
+![](./php-fpm_nginx.png)
