@@ -97,6 +97,8 @@ Le traitement de chaque requête est découpé en de nombreuses mini-tâches et 
 Afin de tirer parti des ordinateurs multiprocesseurs, plusieurs processus peuvent être démarrés.<br>
 Ce choix d'architecture entraîne des performances très élevées, ainsi qu'une charge et une consommation de mémoire très inférieures à celles des serveurs HTTP classiques comme Apache.<br>
 
-Un serveur Nginx permet d'utiliser PHP-FPM pour traiter les scripts PHP. 
+Un serveur Nginx permet d'utiliser PHP-FPM pour traiter les scripts PHP.<br>
+La combinaison NGINX/PHP-FPM permet de servir ses applications PHP en production.<br>
 
 ![](./php-fpm_nginx.png)
+
