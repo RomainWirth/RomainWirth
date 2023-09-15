@@ -17,8 +17,6 @@ et les protocoles <a href="https://en.wikipedia.org/wiki/Berkeley_r-commands">rl
 
 Le protole SSH existe en 2 versions majeures : version 1.0 et version 2.0.<br>
 
-Principe de fonctionnement :<br>
-![](./ssh_handshake.svg)
 
 ## Les différents mode d'utilisation du SSH 
 
@@ -33,3 +31,30 @@ L'utilisation d'un "agent ssh" permet de stocker le mot de passe de la clé priv
 Cette configuration profite aussi à SCP et SFTP qui se connectent au même serveur SSH.
 
 **Pincipe de fonctionnement des clés SSH :**<br>
+![](./ssh_handshake.svg)
+
+<a href="https://doc.ubuntu-fr.org/ssh">tuto ubuntu</a>
+
+## Liste des commandes terminal
+
+1. Navigation et Gestion de Fichiers :
+    * ls = listing : liste le contenu du répertoire courant par ordre alphabétique.
+    * cd = change directory : permet de naviguer d'un répertoire à un autre.
+    * pwd = print working directory : permet d'afficher le chemin d'accès vers le répertoire ou se situe l'utilisateur qui a entré la commande.
+2. Manipulation de fichiers et de répertoires :
+    * cp = copie : permet de copier un fichier ou un groupe de fichiers ou de répertoires.
+    * mkdir = make directory : permet de créer un nouveau répertoire (dossier).
+    * touch = permet de créer un nouveau fichier. Il doit être suivi du nom du fichier et de son extension.
+    * mv = move : permet de déplacer un fichier ou un dossier d'une source vers une autre destination.
+3. Affichage et lecture de contenu de fichier :
+    * cat = concatenate : permet de créer, fusionnet ou imprimer des fichiers dans l'écran de résultat standard ou vers un autre fichier.
+    * less = permet de visualiser un fichier texte page par page (sans le modifier).
+    * find = permet de chercher des fichiers dans un ou plusieurs répertoires selon des critères définis par l'utilisateur
+    * grep = global regular expression print : permet de recherche une chaîne de caractères dans un fichier spécifié.
+4. Transfert et Synchronisation de fichiers :
+    * scp = secure copy : permet de copier en toute sécurité des fichiers depuis notre ordinateur local vers des serveurs distants, et inversement, à l'aide du protocole SSH.
+    * rsync = permet de synchroniser des fichiers localement et à distance. On peut ainsi transférer des fichiers et des répertoires.
+5. Editeur de Texte :
+    * vim = c'est un éditeur de texte en ligne de commande
+    * nano = autre éditeur de texte en ligne de commande
+
