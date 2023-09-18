@@ -174,3 +174,10 @@ Les conteneurs offrent plusieurs avantages : voir cet <a href="https://www.verit
 
 Docker et la conteneurisation ont été la réponse à une série de défis persistants dans le monde de l'informatique.<br>
 Ce procédé (combinaison de reproductibilité, protabilité et efficacité) à offert une solution aux problèmes que les méthodes traditionnelles résolvaient avec difficulté.<br>
+
+Attention, une image docker et un conteneur ne sont pas la même chose :<br>
+* L'image docker contient tous les éléments nécessaires à l'exécution d'un logiciel : le code, un environnement d'exécution (ex JVM), les pilotes, les outils, scripts, bibliothèques, etc.<br>
+Une image n'est pas modifiable. Si on souhaite la modifier, il faut en créer une nouvelle.<br>
+On stockera les images dans le "registry" afin de pouvoir les télécharger.<br>
+* Le conteneur est une sorte de mode d'emploi pour l'utilisation de l'image. Les conteneurs ne sont pas persistants et sont lacés à partir d'images.<br>
+Il s'agit d'une 
