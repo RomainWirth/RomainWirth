@@ -121,8 +121,56 @@ Cela permet de gérer efficacement les volumes de trafic élevés.<br>
 Cela signifie que sans serveur d'application dédié, il ne sera pas possible de traiter le contenu dynamique.<br>
 Ce genre de traitement peut être lourd pour des sites webs de petite envergure.<br>
 
+Concernant le développement, il est nécessaire d'installer chaque composant individuellement : problèmes de cohérence et de reproductivité.<br>
+
 <a href="https://www.ionos.fr/digitalguide/serveur/know-how/nginx-vs-apache/">nginx vs apache</a>
 <a href="https://fr.linux-console.net/?p=5736#gsc.tab=0">apache vs nginx : considérations pratiques</a>
 
 ## Mise en production d'applications avec conteneurisation
 
+### Introduction de Docker et conteneurisation moderne
+
+**Historique**
+
+De manière générale, presque toutes les entreprises utilisent l'environnement cloud (privé ou public) avec des instances exécutant des Virtual Machines<br>
+avec des capacité d'évolutivité et d'équilibrage de charge représentant leur couche de calcul.<br>
+Avec l'évolution des défis, ce genre d'environnements sont devenus inefficaces :
+* _Manque de cohérence des environnements :_ déploiement d'applications et de packages dans des environnements virtuels.
+* _Dépendance du système d'exploitation :_ les applications déployées sont exécutées uniquement sur des systèmes d'exploitation compatibles.
+* _Niveau d'isolement :_ incapacité à fournir un sandbox instantané au dessus du niveau du système d'exploitation.
+* _Granularité de la consommation de calcul :_ impossibilité de déployer plusieurs applications répliquées, alors que l'équilibrage de la charge sur la couche applicative ne se produit qu'au sein d'une seule machine et non au niveau de la couche du système d'exploitation.
+* _Correctifs des images dans les environnements de production :_ Les déploiements canari et bleu-vert ne sont pas flexibles au niveau du cluster et son difficiles à gérer dans plusieurs régions.
+
+Pour répondre à ces problèmes, on a eu recours à la conteneurisation.<br>
+
+**La conteneurisation**
+
+Il s'agit d'une forme de virtualisation du système d'exploitation dans laquelle on exécute des applications dans des espaces utilisateurs isolés appelés conteneurs,<br>
+qui utilisent le même système d'exploitation partagé.<br>
+Un conteneur d'applications est un environnement informatique entièrement regroupé en package et portable :
+* il dispose de tout ce dont une application a besoin pour s'exécuté (y compris ses fichiers binaires, bibliothèrques, dépendances et fichiers de configuration, le tout encapsulé et isolé dans un conteneur).
+* la conteneurisation d'une application permet d'isoler le conteneur du système d'exploitation hôte, avec un accès limité aux ressources sous-jacentes, comme une VM légère.
+* on peut exécuter l'application conteneurisée sur différents types d'infrastructure, tels qu'un serveur bare metal, dans le cloud ou sur des VM, sans avoir à la remanier pour chaque environnement.
+
+La conteneurisation permet de réduire les charges au démarrage et de supprimer la nécessité de configurer des systèmes d'exploitation invités distincts pour chaque application.<br>
+=> Ils partagent tous un seul noyau de système d'exploitation.<br>
+
+**Utilité**
+
+Cela a permis aux développeurs de logiciels de créer et déployer des applications de façon plus rapide et sécurisée.<br>
+
+Docker a permis de rendre la conteneurisation pratique, efficace et populaire.<br>
+Les conteneurs offrent plusieurs avantages : voir cet <a href="https://www.veritas.com/fr/fr/information-center/containerization">article</a>
+* _portabilité_ 
+* _vitesse_ 
+* _évolutivité_
+* _agilité_
+* _efficacité_
+* _isolation_ 
+* _sécurité_
+* _facilité de gestion_
+* _continuité_
+* _facilité d'utilisation pour les développeurs_ 
+
+Docker et la conteneurisation ont été la réponse à une série de défis persistants dans le monde de l'informatique.<br>
+Ce procédé (combinaison de reproductibilité, protabilité et efficacité) à offert une solution aux problèmes que les méthodes traditionnelles résolvaient avec difficulté.<br>
