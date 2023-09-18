@@ -57,6 +57,11 @@ Cette configuration profite aussi à SCP et SFTP qui se connectent au même serv
 5. Editeur de Texte :
     * vim = c'est un éditeur de texte en ligne de commande
     * nano = autre éditeur de texte en ligne de commande
+6. vérifier les ports :
+    * lsof = commande basique native de Linux pour connaître les ports ouverts dans le system.<br>
+    cette commande montre plusieurs informations : nom de l'application (ex: sshd), le douille du programme (adresse IP associée au port) et l'identifiant du processus (PID).<br>
+    `sudo lsof -i -P -n` ou `sudo lsof -i -P -n | grep LISTEN`
+
 
 ## Mise en production d'applications sans conteneurisation
 
@@ -92,6 +97,9 @@ qui s'éxecutent de manière anormalement lente ;
 * Fichier de configuration basé sur php.ini ;
 
 **NGINX** :<br>
+Nginx est un logiciel de serveur distribué en 2004.<br>
+L'objectif du programmeur derrière nginx (Sysoev) était de créer un serveur de haute performance qui peut gérer plusieurs clients web en même temps.<br>
+
 il s'agit d'un système asynchrone qui utilise les changements d'état pour gérer plusieurs connexions en même temps.<br>
 Le traitement de chaque requête est découpé en de nombreuses mini-tâches et permet ainsi de réaliser un multiplexage efficace entre connexions.<br>
 Afin de tirer parti des ordinateurs multiprocesseurs, plusieurs processus peuvent être démarrés.<br>
@@ -101,4 +109,20 @@ Un serveur Nginx permet d'utiliser PHP-FPM pour traiter les scripts PHP.<br>
 La combinaison NGINX/PHP-FPM permet de servir ses applications PHP en production.<br>
 
 ![](./php-fpm_nginx.png)
+
+<a href="https://www.data-transitionnumerique.com/nginx-tutoriel-complet/">nginx tutoriel complet</a>
+
+Nging n'offre aucune possibilité de traiter du contenu Web dynamique en natif ou d'intégrer les interprètes correspondants par module.<br>
+nginx nécessite donc un serveur d'application séparé pour traiter du contenu web dynamique.<br> 
+Le contenu statique est délivré par nginx quand demandé, mais si le client demande du contenu dynamique, l'équilibreur de charge va devoir transmettre la demande à un serveur d'application dédié.<br>
+Ce serveur interprète le langage de programmation, assemble le contenu demandé dans une page web et le renvoie à l'équilibreur de charge qui le livre à son tour au client.<br>
+Cela permet de gérer efficacement les volumes de trafic élevés.<br>
+
+Cela signifie que sans serveur d'application dédié, il ne sera pas possible de traiter le contenu dynamique.<br>
+Ce genre de traitement peut être lourd pour des sites webs de petite envergure.<br>
+
+<a href="https://www.ionos.fr/digitalguide/serveur/know-how/nginx-vs-apache/">nginx vs apache</a>
+<a href="https://fr.linux-console.net/?p=5736#gsc.tab=0">apache vs nginx : considérations pratiques</a>
+
+## Mise en production d'applications avec conteneurisation
 
