@@ -148,9 +148,9 @@ Pour répondre à ces problèmes, on a eu recours à la conteneurisation.<br>
 Il s'agit d'une forme de virtualisation du système d'exploitation dans laquelle on exécute des applications dans des espaces utilisateurs isolés appelés conteneurs,<br>
 qui utilisent le même système d'exploitation partagé.<br>
 Un conteneur d'applications est un environnement informatique entièrement regroupé en package et portable :
-* il dispose de tout ce dont une application a besoin pour s'exécuté (y compris ses fichiers binaires, bibliothèrques, dépendances et fichiers de configuration, le tout encapsulé et isolé dans un conteneur).
+* il dispose de tout ce dont une application a besoin pour s'exécuter (y compris ses fichiers binaires, bibliothèrques, dépendances et fichiers de configuration, le tout encapsulé et isolé dans un conteneur).
 * la conteneurisation d'une application permet d'isoler le conteneur du système d'exploitation hôte, avec un accès limité aux ressources sous-jacentes, comme une VM légère.
-* on peut exécuter l'application conteneurisée sur différents types d'infrastructure, tels qu'un serveur bare metal, dans le cloud ou sur des VM, sans avoir à la remanier pour chaque environnement.
+* on peut exécuter l'application conteneurisée sur différents types d'infrastructure, tels qu'un serveur "bare metal", dans le cloud ou sur des VM, sans avoir à la remanier pour chaque environnement.
 
 La conteneurisation permet de réduire les charges au démarrage et de supprimer la nécessité de configurer des systèmes d'exploitation invités distincts pour chaque application.<br>
 => Ils partagent tous un seul noyau de système d'exploitation.<br>
@@ -175,9 +175,62 @@ Les conteneurs offrent plusieurs avantages : voir cet <a href="https://www.verit
 Docker et la conteneurisation ont été la réponse à une série de défis persistants dans le monde de l'informatique.<br>
 Ce procédé (combinaison de reproductibilité, protabilité et efficacité) à offert une solution aux problèmes que les méthodes traditionnelles résolvaient avec difficulté.<br>
 
-Attention, une image docker et un conteneur ne sont pas la même chose :<br>
+**Concepts clés**
+
+1. _Image_ :<br>
+Une image est l'élément de base d'un conteneur. Il s'agit d'un ensemble de fichiers systèmes et de paramètres d'exécutions.<br>
+Les fichiers peuvent être les suivants : code source, bibliothèques, dépendances, l'environnement d'exécution (ex JVM), les pilotes, outils, scripts + autres fichiers nécessaires à l'exécution de l'application.<br>
+Une image n'a pas d'état et est exécutée par la runtime docker. On peut la voir comme une description d'un conteneur.<br>
+On peut créer une image soit en modifiant un conteneur déjà en marche (sorte de snapshot d'un conteneur), soit en créant un Dockerfile basé sur une image qui existe déjà.
+2. _Conteneur_ :<br>
+Un conteneur est une instance en exécution d'une image. Il s'agit d'une encapsulation légère d'une application et de son environnement d'exécution.<br>
+Le conteneur fonctionne de manière isolée sur le système hôte.
+
+**Attention**, différence entre une image docker et un conteneur (sont pas la même chose) :<br>
 * L'image docker contient tous les éléments nécessaires à l'exécution d'un logiciel : le code, un environnement d'exécution (ex JVM), les pilotes, les outils, scripts, bibliothèques, etc.<br>
 Une image n'est pas modifiable. Si on souhaite la modifier, il faut en créer une nouvelle.<br>
 On stockera les images dans le "registry" afin de pouvoir les télécharger.<br>
 * Le conteneur est une sorte de mode d'emploi pour l'utilisation de l'image. Les conteneurs ne sont pas persistants et sont lacés à partir d'images.<br>
-Il s'agit d'une 
+
+3. _Dockerfile_ :<br>
+Il s'agit d'un fichier texte (ou fichier script) qui décrit une image.<br> 
+Il est constitué d'instructions qui servent à décrire une image Docker et il contient les instructions pour construire une image Docker.<br>
+Le dockerfile permet d'automatiser la "build" (création) d'images.
+4. _Entrypoint_ :<br>
+Le point d'entrée d'un conteneur. Il s'agit d'une commande qui se lance au démarrage du conteneur.<br>
+La plupart des images officielles Docker sont configurées avec un entrypoint /bin/bin ou /bin/bash.
+5. _Registry_ :<br>
+Le registre est une zone de stockage pour les images Docker (public ou privé).<br>
+Docker Hub est un service cloud public pour partager et stocker des images Docker.<br>
+C'est l'équivalent d'un GitHub pour les images Docker.
+6. _Volume_ :<br>
+Le Volume est utilisé pour faire persister les données et partager des fichiers entre le conteneur et l'hôte.<br>
+Les volumes sont essentiels pour éviter la pete de données lorsque les conteneurs sont arrêtés ou supprimés.<br>
+C'est aussi une solution pratique pour l'échange de données entre l'hôte et le conteneur.<br>
+Le volume est hébergé par l'ordinateur hôte, en dehors du véritable conteneur.<br>
+Il faut voir le volume comme un dossier qui est partagé entre le conteneutr et l'ordinateur hôte.<br> 
+Plusieurs conteneurs peuvent aussi se partager un même volume.
+
+```
+Statefull vs Stateless app :
+
+Un processus ou une application stateless est indépendant. Il ne stocke pas de données et ne fait référence à aucune transaction passée.
+Chaque transaction est effectuée à partir de rien, comme si c'était la première fois. Les applications stateless fournissent un service 
+ou une fonction et utilisent un réseau de diffusion de contenu, le web ou des serveurs d'impression pour traiter ces requêtes à court terme.
+
+Les applications et processus stateful, quant à eux, peuvent être réutilisés indéfiniment. 
+Les plateformes bancaires en ligne et les messageries en sont deux exemples. 
+Les transactions précédentes sont prises en compte et peuvent affecter la transaction actuelle. 
+C'est pour cela que les applications stateful utilisent les mêmes serveurs chaque fois qu'elles traitent une requête d'un utilisateur.  
+```
+<a href="https://www.redhat.com/fr/topics/cloud-native-apps/stateful-vs-stateless">statefull et stateless : quelle différence ?</a>
+
+
+7. _Réseau Docker_ :<br>
+Docker possède sa propre gestion du réseau, permettant aux conteneurs de communiquer entre eux et avec des ressources extérieures.<br>
+Il offre plusieurs modes de réseau comme "bridge", "host" et "overlay".
+8. _Docker Compose_ :<br>
+C'est un outil pour définir et gérer des applications multi-conteneurs. par exemple un conteneur pour l'application et un conteneur pour la bdd.<br>
+Grâce à docker compose, on peut définir une application à l'aide de plusieurs conteneurs dans un seul fichier, puis démarrer ces conteneurs simultanément avec une seule commande.<br>
+
+<a href="https://hub.docker.com/search?q=">lien vers le Docker Hub</a>
