@@ -234,3 +234,59 @@ C'est un outil pour définir et gérer des applications multi-conteneurs. par ex
 Grâce à docker compose, on peut définir une application à l'aide de plusieurs conteneurs dans un seul fichier, puis démarrer ces conteneurs simultanément avec une seule commande.<br>
 
 <a href="https://hub.docker.com/search?q=">lien vers le Docker Hub</a>
+
+### Lancer une application multiconteneur
+
+Voici quelques points clés concernant Docker Compose :
+* Fichier docker-compose.yml : Le cœur de Docker Compose est le fichier YAML qui décrit la structure et les paramètres des services, des réseaux et des volumes.
+* Services : Dans Docker Compose, chaque conteneur est décrit comme un "service".<br> 
+Chaque service est une configuration pour un conteneur particulier et son image.
+* Commande up : Avec la commande docker-compose up, vous pouvez démarrer tous les services définis dans le fichier docker-compose.yml.
+* Intégration avec Docker : Docker Compose travaille avec Docker, ce qui signifie que toutes les commandes et fonctionnalités de Docker sont également accessibles.
+
+Pour nous exercer, nous allons donc déployer une application wordpress. Cette application est composée :
+- 1 service Wordpress qui utilise l’image latest
+- 1 service MariaDB qui utilise l’image mariadb:10.6.4-focal
+- Attention à bien paramétrer les variables d’environnement des deux services
+- La base de données ne doit pas être accessible depuis l’extérieur. Autrement dit, il faudra regarder du côté des réseaux Docker.
+- La base de données doit pouvoir persister les données
+
+Pour ce faire, il faut créer un dossier qui contiendra notre application, et y créer un fichier `docker-compose.yml`.
+
+<a href="https://openclassrooms.com/fr/courses/2035766-optimisez-votre-deploiement-en-creant-des-conteneurs-avec-docker/6211677-creez-un-fichier-docker-compose-pour-orchestrer-vos-conteneurs">voir ce tuto</a>
+
+Attention à modifier les éléments selon la configuration qu'on souhaite :
+```
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb:10.6.4-focal
+    ports: 
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+
+  wordpress:
+    depends_on:
+      - mariadb
+    image: wordpress:latest
+    ports:
+     - "80:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+volumes:
+  db_data: {}
+```
+
