@@ -1,6 +1,7 @@
 # LE DESTRUCTURING ET LE SPREAD OPERATOR
 
 <a href="https://www.youtube.com/watch?v=cnjlBdGboYs&t=15s">JavaScript ES6 : Comprendre destructuring et spread operator</a>
+<a href="https://www.devenir-webmaster.com/V2/TUTO/CHAPITRE/JAVASCRIPT/56-destructuring-spread-operator/">Destructuring et Spread Operator</a>
 
 ## Le Principe du Destructuring (ou destructuration) :
 
