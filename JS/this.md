@@ -1,0 +1,64 @@
+# L'OPERATEUR THIS
+
+En JS, le mot-clé this se comporte légèrement différemment des autres langages de programmation.<br>
+Son comportement variera également légèrement selon qu'on utilise le mode strict ou le mode non-strict.<br>
+
+Dans la plupart des cas, la valeur de this sera déterminée à partir de la façon dont une fonction est appelée.<br>
+Il n'est pas possible de lui affecter une valeur lros de l'exécution et sa valeur peut être différente à chaque fois que la fonction est appelée.<br>
+La méthode `bind()` a été introduite avec ECMAScript 5 pour définir la valeur de this pour une fonction, indépendamment de la façon dont elle est appelée.<br>
+ECMAScript 2015 (ES6) a ajouté les fonctions fléchées dans lequelles this correspond à la valeur du contexte englobant.<br>
+
+La valeur de `this` est l'objet JS représentant le contexte dans lequel le code courant est exécuté.<br>
+
+## Dans le contexte global
+
+Dans le contexte global d'exécution (c'est-à-dire celui en dehors de toute fonction), `this` fait référence à l'objet global (qu'on utilise ou non le mode strict).
+
+```Javascript
+// Si l'environnement de script est un navigateur,
+// l'objet window sera l'objet global
+console.log(this === window); // true
+
+this.a = 37;
+console.log(window.a); // 37
+
+this.b = "MDN";
+console.log(window.b); // "MDN"
+console.log(b); // "MDN"
+```
+
+## Dans le contexte d'une fonction
+
+Si this est utilisé dans une fonction, sa valeur dépendra de la façon dont la fonction a été appelée.
+
+Avec un appel simple :
+```Javascript
+function f1() {
+  return this;
+}
+
+// Dans un navigateur
+f1() === window; // true (objet global)
+
+// Côté serveur (ex. Node)
+f1() === global; // true
+```
+
+Dans cet exemple, la valeur de `this` n'est pas définie lors de l'appel.<br>
+Le code n'étant pas en mode strict, `this` doit toujours être un objet et ce sera donc l'objet global (soit window pour un navigareur).<br>
+
+```Javascript
+function f2() {
+  "use strict"; // on utilise le mode strict
+  return this;
+}
+
+f2() === undefined; // true
+```
+Dans cet exemple, `this` vaut `undefined` car `f2` a été appelé sans "base" (ex. : window.f2()).<br>
+S'il n'est pas défini, il reste `undefined`. Cette fonctionnalité ne fut pas correctement implémentée dans certains navigateurs aux début du mode strict,<br>
+en effet, certains renvoyaient alors l'objet `window`.
+
+En mode strict, la valeur de `this` est conservée (il reste le même) entre le moment de sa définition et l'entrée dans le contexte d'exécution.<br>
+S'il n'est pas défini, il reste undefined. Il pourrait être définir avec n'importe quelle autre valeur, telle que `null` ou `42` ou `"je ne suis pas this"`.
+
