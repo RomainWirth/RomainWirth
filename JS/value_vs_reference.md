@@ -36,7 +36,8 @@ Pour ancrer cette idée, nous allons maintenir une image de ce à quoi ces varia
 |y|'abc'|
 |z|null|
 
-Quand on assigne ces variables à d'autres variables en utilisant =, on copie la valeur dans la nouvelle variables :<br> Elles sont copiées par valeur.
+Quand on assigne ces variables à d'autres variables en utilisant "=", on copie la valeur dans la nouvelle variables :<br> 
+Elles sont copiées par valeur.
 
 ```javascript
 let x = 10;
