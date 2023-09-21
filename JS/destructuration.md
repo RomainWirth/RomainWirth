@@ -196,6 +196,8 @@ Ici, après avoir créé l'objet `person1`, on crée `person2` avec l'égalité 
 Attention ! on ne fait que dupliquer les références, pas les objets !<br>
 On a dont deux références qui pointent sur le même objet. Or, l'objectif est de créer deux objets, ce procédé ne va pas.
 
+![](./spread-operator-duplicate-reference.png)
+
 En utilisant le spread operator pour récupérer l'objet `person1`, on pourrait se contenter de le dupliquer.<br>
 Mais on peut faire mieux :
 1. On peut changer la valeur d'une propriété de l'objet qu'on vient de dupliquer
