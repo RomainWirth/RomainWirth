@@ -1,16 +1,32 @@
 # L'OPERATEUR THIS
 
+`this est un opérateur et comme tout opérateur il retourne une valeur.
+1. **D'où vient cette valeur ?**<br> 
+Cette valeur provient d'un contexte d'exécution. Il faut savoir qu'au lancement du script et ensuite à chaque appel d'une fonction un contexte d'exécution est placé en pile d'exécution.
+2. **Qu'est qu'il y a dans un contexte d'exécution ?**<br> 
+Il y a la valeur de `this` ça je viens de le dire et il y a aussi des informations qui vont permettre à la fonction de s'exécuter par exemple les arguments qui lui sont passés. Je ne détaille pas plus. Mais vous pouvez déjà comprendre qu'à chaque appel d'une fonction étant donné que l'on change les arguments et bien on va créer un nouveau contexte. Ce qu'il faut retenir ici c'est l'idée car en fait il y a beaucoup plus d'informations que ça dans un contexte d'exécution.
+3. **Qui gère cette valeur de `this` ? Qui l'affecte ?**<br> 
+Et bien c'est le moteur JavaScript qui le fait et qui le fait pour nous.
+4. **Alors c'est gentil mais à quoi ça va me servir ?**<br> 
+Par exemple quand vous instanciez une classe pour créer un nouvel objet et bien dans la fonction constructeur `this` va désigner ce nouvel objet.<br> 
+Autre exemple : quand vous passez un callback à un gestionnaire d'événement et bien dans ce callback `this` va désigner l'élément du document sur lequel est posé ce gestionnaire.
+5. **Et si la valeur de `this` ne vous convient pas ?**<br>
+il faut que vous sachiez que vous pouvez la changer en utilisant les méthodes `call`, `apply` ou `bind` du constructeur Function.
+6. **Que vaut `this` ?**<br> 
+Pour pouvoir utiliser la valeur de `this` il faut être capable de prévoir ce que va faire le moteur JavaScript.<br>
+Il faut aussi savoir que la valeur de `this` peut dépendre dans un très petit nombre de cas de l'utilisation ou pas du mode strict et aussi de l'environnement d'exécution de JavaScript à savoir le navigateur ou un serveur.
+
 En JS, le mot-clé this se comporte légèrement différemment des autres langages de programmation.<br>
 Son comportement variera également légèrement selon qu'on utilise le mode strict ou le mode non-strict.<br>
 
 Dans la plupart des cas, la valeur de this sera déterminée à partir de la façon dont une fonction est appelée.<br>
-Il n'est pas possible de lui affecter une valeur lros de l'exécution et sa valeur peut être différente à chaque fois que la fonction est appelée.<br>
+Il n'est pas possible de lui affecter une valeur lors de l'exécution et sa valeur peut être différente à chaque fois que la fonction est appelée.<br>
 La méthode `bind()` a été introduite avec ECMAScript 5 pour définir la valeur de this pour une fonction, indépendamment de la façon dont elle est appelée.<br>
 ECMAScript 2015 (ES6) a ajouté les fonctions fléchées dans lequelles this correspond à la valeur du contexte englobant.<br>
 
 La valeur de `this` est l'objet JS représentant le contexte dans lequel le code courant est exécuté.<br>
 
-## Dans le contexte global
+## This avec une fonction classique invoquée dans la portée globale
 
 Dans le contexte global d'exécution (c'est-à-dire celui en dehors de toute fonction), `this` fait référence à l'objet global (qu'on utilise ou non le mode strict).
 
