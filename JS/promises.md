@@ -1,5 +1,8 @@
 # PROMISE (PROMESSE)
 
+<a href="https://fr.javascript.info/promise-basics">promise-basics</a>
+<a href="https://www.pierre-giraud.com/javascript-apprendre-coder-cours/promesse-promise/">promesse-promise</a>
+
 ## QU'EST CE QU'UNE PROMESSE EN JAVASCRIPT ?
 
 Une promesse en JS est un objet qui représente l'état d'une opération asynchrone.<br>
@@ -237,6 +240,58 @@ Comme il y a un terme `finally` dans un `try {...} catch {...}`, il y a des `fin
 L'appel à `.finally(f)` est similaire à `.then(f, f)` dans le sens ou `f` se lance toujours quand la promesse est acquittée :
 qu'elle soit rompue ou non.<br>
 L'idée de `finally` est de configurer un gestionnaire pour effectuer le nettoyage/la finalisation une fois les opérations précédentes terminées.<br>
+
+On peut considérer `finally` comme le nettoyeur de fête. Peu importe que la fête soit bonne ou mauvaise, combien d'amis y participent,<br>
+On doit toujours faire un nettoyage après.<br>
+Le code peut donc ressembler à ceci :
+```javascript
+new Promise((resolve, reject) => {
+  /* faire quelque chose qui prend du temps, puis appeler resolve ou peut-être reject */
+})
+  // se lance quand la promesse est acquittée, peu importe si celle-ci est tenue ou rompue
+  .finally(() => {stop loading indicator})
+  // donc l'indicateur de chargement est toujours arrêté avant de continuer
+  .then(result => show result, err => show error)
+```
+
+Attention ! `finally(f)` n'est pas exactement un alias de `then(f,f)`.<br>
+Il existe des différences importantes :
+1. Un gestionnaire `finally` n'a pas d'arguments. Dans `finally`, on ne sait pas si la promesse est réussie ou non.<br>
+Ce n'est pas grave, car notre tâche consiste généralement à effectuer des procédures de finalisation "générales".<br>
+2. Un gestionnaire "finally" transmet le résultat ou l'erreur au prochain gestionnaire approprié.<br>
+Dans l'exemple ci-dessous, le résultat est passé de `finally` à `then` :
+```javascript
+new promise((resolve, reject) => {
+    setTimeout(() => resolve("value"), 2000);
+})
+    .finally(() => alert("promse ready")) // triggers first
+    .then(result => alert(result)); // <-- .then shows "value"
+```
+Comme on peut le voir, la `value` renvoyée par la première promesse est transmise par `finally` au prochain `then`.<br>
+C'est très pratique, car `finally` n'est pas destiné à traiter un résultat de promesse :<br>
+Il s'agit juste d'un endroit pour faire un nettoyage générique, quel que soit le résultat.<br>
+
+Pour voir comment une erreur est passée de `finally` à `catch`, voici un exemple :
+```javascript
+new Promise((resolve, reject) => {
+    throw new Error("error");
+})
+    .finally(() => alert("Promise ready")) // triggers first
+    .catch(err => alert(err)); // <-- .catch shows the error
+```
+3. Un gestionnaire `finally` ne devrait pas non plus renvoyer quoi que ce soit.<br> 
+Si c'est le cas, la valeur renvoyée est silencieusement ignorée.<br>
+La seule exception à cette règle est lorqu'un gestionnaire `finally` génère une erreur.<br>
+Ensuite, cette erreur passe au gestionnaire suivant, à la place de tout résultat précédent.<br>
+
+**Pour résumer :**<br>
+* Un gestionnaire `finally` n'obtient pas le résultat du gestionnaire précédent (il n'a pas d'arguments).<br>
+Ce résultat est transmis à la place au prochain gestionnaire approprié.
+* Si un gestionnaire `finally` renvoie quelque chose, il est ingoré.
+* Lorsque `finally` génère une erreur, l'exécution passe au gestionnaire d'erreurs le plus proche.
+
+Ces fonctionnalités sont utiles et permettent aux choses de fonctionner correctement sion utilise `finally` comme elles sont censées être utilisées :<br>
+Pour les procédures de nettoyage génériques.
 
 ### LE CHAÎNAGE DES PROMESSES
 
