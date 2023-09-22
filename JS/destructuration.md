@@ -1,9 +1,10 @@
 # LE DESTRUCTURING, LE SPREAD OPERATOR ET LE REST PARAMETER
 
-<a href="https://www.youtube.com/watch?v=cnjlBdGboYs&t=15s">JavaScript ES6 : Comprendre destructuring et spread operator</a>
-<a href="https://www.devenir-webmaster.com/V2/TUTO/CHAPITRE/JAVASCRIPT/56-destructuring-spread-operator/">Destructuring et Spread Operator</a>
-<a href="https://mindsers.blog/fr/post/rest-parameter-et-spread-operator-en-javascript/">rest parameter et spread operator en JS</a>
-<a href="https://mindsers.blog/fr/post/decomposition-et-destructuration-en-javascript/">décomposition et destructuration en JS</a>
+* <a href="https://www.youtube.com/watch?v=cnjlBdGboYs&t=15s">JavaScript ES6 : Comprendre destructuring et spread operator</a>
+* <a href="https://www.devenir-webmaster.com/V2/TUTO/CHAPITRE/JAVASCRIPT/56-destructuring-spread-operator/">Destructuring et Spread Operator</a>
+* <a href="https://mindsers.blog/fr/post/rest-parameter-et-spread-operator-en-javascript/">rest parameter et spread operator en JS</a>
+* <a href="https://mindsers.blog/fr/post/decomposition-et-destructuration-en-javascript/">décomposition et destructuration en JS</a>
+* <a href="https://www.pierre-giraud.com/javascript-apprendre-coder-cours/parametre-reste-operateur-decomposition/">pierre-giraud</a>
 
 ## SPREAD OPERATOR ET REST PARAMETER SUR UN OBJET OU UN TABLEAU
 
