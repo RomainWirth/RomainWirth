@@ -231,3 +231,82 @@ promesse2.catch(alert);
 Utiliser à la fois `then()` et `catch()` plutôt que simplement `then()` va souvent créer un code plus rapide dans son exécution<br>
 et plus clair dans sa syntaxe et va également nous permettre de chaîner efficacement les méthodes.<br>
 
+### Cleanup : finally
+
+Comme il y a un terme `finally` dans un `try {...} catch {...}`, il y a des `finally` dans les promesses.<br>
+L'appel à `.finally(f)` est similaire à `.then(f, f)` dans le sens ou `f` se lance toujours quand la promesse est acquittée :
+qu'elle soit rompue ou non.<br>
+L'idée de `finally` est de configurer un gestionnaire pour effectuer le nettoyage/la finalisation une fois les opérations précédentes terminées.<br>
+
+### LE CHAÎNAGE DES PROMESSES
+
+"Chaîner" des méthodes signifie les exécuter les unes à la suite des autres.<br>
+On va pouvoir utiliser cette technique pour exécuter plusieurs opérations asynchrones à la suite et dans un ordre bien précis.<br>
+
+Cele est possible pour une raison : la méthode `.then()` retourne automatiquement une nouvelle promesse.<br>
+On va donc utiliser une autre méthode `.then()` sur le résultat renvoyé par la première méthode `.then()` et ainsi de suite.<br>
+
+exemple : 
+```javascript
+const loadScript = (src) => {
+    return new Promise((resolve, reject) => {
+        let script = document.createElement('script');
+        script.src = src;
+        document.head.append(script);
+        script.onload = () => resolve('Fichier ' + src + ' bien chargé');
+        script.onerror = () => reject(new Error('Echec de chargement de ' + src));
+    });
+}
+
+const promesse1 = loadScript('boucle.js');
+const promesse2 = promesse1.then(result => alert(result), error => alert(error));
+```
+La deuxième promesse représente l'état de complétion de la première promesse et des fonctions de rappel passées<br>
+qui peuvent être d'autres fonctions asynchrones renvoyant des promesses.
+
+exemple 2 :
+```javascript
+// Fonction utilisées par les fonctions de l'exercice - Ne pas modifier ou appeler directement
+const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Note : les fonctions ci-dessous sont prêtes à l'emploi, vous n'avez pas à les modifier, juste à les appeler.
+// Elles retournent toutes des promesses et peuvent donc être chaînées via la fonction "then".
+const first = () => {
+  return sleep(300).then(() => {console.log('message 1');});
+}
+
+const second = () => {
+  return sleep(100).then(() => {console.log('message 2');});
+}
+
+const third = () => {
+  return sleep(200).then(() => {console.log('message 3');});
+}
+
+const secondWithError = () => {
+  return sleep(100).then(() => {throw new Error("catch me if you can");})
+}
+
+first();
+second();
+third(); 
+
+// renvoie dans la console : 
+// message 2
+// message 3
+// message 1
+
+// Pour que les messages s'affichent dans l'ordre, il faudra chaîner de cette manière :
+first()
+    .then((result) => second(result))
+    .then((newResult) => third(newResult));
+
+// Dans le cas ou la deuxième fonction apporte une erreur, afin de permettre de continuer l'exécution du code,
+// on écrira ainsi :
+first()
+    .then((result) => secondWithError(result)).catch((Error) => console.log(Error))
+    .then((newResult) => third(newResult));
+
+```
