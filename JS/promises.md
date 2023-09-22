@@ -245,7 +245,6 @@ On va pouvoir utiliser cette technique pour exécuter plusieurs opérations asyn
 
 Cele est possible pour une raison : la méthode `.then()` retourne automatiquement une nouvelle promesse.<br>
 On va donc utiliser une autre méthode `.then()` sur le résultat renvoyé par la première méthode `.then()` et ainsi de suite.<br>
-
 exemple : 
 ```javascript
 const loadScript = (src) => {
@@ -262,32 +261,77 @@ const promesse1 = loadScript('boucle.js');
 const promesse2 = promesse1.then(result => alert(result), error => alert(error));
 ```
 La deuxième promesse représente l'état de complétion de la première promesse et des fonctions de rappel passées<br>
-qui peuvent être d'autres fonctions asynchrones renvoyant des promesses.
+qui peuvent être d'autres fonctions asynchrones renvoyant des promesses.<br>
+
+On va donc pouvoir effectuer autant d'opérations asynchrones que l'on souhaite dans un ordre bien précis<br>
+et en contrôlant les résultats de chaque opération très simplement :
+```javascript
+const loadScript = (src) => {
+    return new Promise((resolve, reject) => {
+        let script = document.createElement('script');
+        script.src = src;
+        document.head.append(script);
+        script.onload = () => resolve('Fichier ' + src + ' bien chargé');
+        script.onerror = () => reject(new Error('Echec de chargement de ' + src));
+    });
+}
+
+loadScript('boucle.js')
+    .then(result => loadScript('script2.js', result))
+    .then(result2 => loadScript('script3.js', result2))
+    .catch(alert);
+
+/*Equivalent à 
+loadScript('boucle.js').then(function(result){
+    return loadScript('script2.js', result);
+})
+.then(function(result2){
+    return loadScript('script3.js', result2);
+})
+.catch(alert);
+*/
+```
+Pour que le code ci-dessus fonctionnes, il faut que chaque fonction asynchrone renvoie une promesse.<br>
+On a besoin ici que d'un seule `.catch()` car une chaîne de promesse s'arrête dès qu'une erreur est levée<br>
+et va cherche le premier `.catch()` disponible pour savoir comment gérer l'erreur.
+
+Il est possible de chaîner après un rejet (c'est à dire après une méthode `.catch()`).<br>
+Cela va pouvoir s'avérer très utile pour accomplir de nouvelles actions après qu'une action ait échoué dans la chaîne.<br>
+exemple :
+```javascript
+const loadScript = (src) => {
+    return new Promise((resolve, reject) => {
+        let script = document.createElement('script');
+        script.src = src;
+        document.head.append(script);
+        script.onload = () => resolve('Fichier ' + src + ' bien chargé');
+        script.onerror = () => reject(new Error('Echec de chargement de ' + src));
+    });
+}
+
+loadScript('boucle.js')
+    .then(result => loadScript('script2.js', result))
+    .then(result2 => loadScript('script3.js', result2))
+    .catch(alert)
+    .then(() => alert('Blabla'));//On peut imaginer d\'autres opérations ici
+```
+Cela est possible car la méthode `.catch()` renvoie également une nouvelle promesse<br> 
+dont la valeur de résolution va être celle de la promesse de base dans le cas d'une résolution (succès)<br>
+ou va être égale au résultat du gestionnaire de `.catch()` dans le cas contraire.<br>
+Si un gestionnaire `.catch()` génère une erreur, la nouvelle promesse est également rejetée.
+
 
 exemple 2 :
 ```javascript
 // Fonction utilisées par les fonctions de l'exercice - Ne pas modifier ou appeler directement
-const sleep = (ms) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const sleep = (ms) => { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 // Note : les fonctions ci-dessous sont prêtes à l'emploi, vous n'avez pas à les modifier, juste à les appeler.
 // Elles retournent toutes des promesses et peuvent donc être chaînées via la fonction "then".
-const first = () => {
-  return sleep(300).then(() => {console.log('message 1');});
-}
-
-const second = () => {
-  return sleep(100).then(() => {console.log('message 2');});
-}
-
-const third = () => {
-  return sleep(200).then(() => {console.log('message 3');});
-}
-
-const secondWithError = () => {
-  return sleep(100).then(() => {throw new Error("catch me if you can");})
-}
+const first = () => { return sleep(300).then(() => {console.log('message 1');}); }
+const second = () => { return sleep(100).then(() => {console.log('message 2');}); }
+const third = () => { return sleep(200).then(() => {console.log('message 3');}); }
+const secondWithError = () => { return sleep(100).then(() => {throw new Error("catch me if you can");}) }
 
 first();
 second();
@@ -306,7 +350,8 @@ first()
 // Dans le cas ou la deuxième fonction apporte une erreur, afin de permettre de continuer l'exécution du code,
 // on écrira ainsi :
 first()
-    .then((result) => secondWithError(result)).catch((Error) => console.log(Error))
+    .then((result) => secondWithError(result))
+    .catch((Error) => console.log(Error))
     .then((newResult) => third(newResult));
 
 ```
