@@ -304,11 +304,40 @@ Dans cet exemple, on effectue deux déstructurations :
 
 ### Destructuring d'un objet :
 
-Pour destructurer un objet, on déclare une ou plusieurs variables en les mettant entre accolades de cette manière : `let {x, y, z}`.<br>
+La décomposition des objets est relativement similaire à celle des tableaux, avec quelques spécificités.
+
+Pour décomposer un objet, on déclare une ou plusieurs variables en les mettant entre accolades de cette manière : `let {x, y, z}`.<br>
 Ensuite, on affecte cette déclaration à un objet : `let {x, y, z} = vecteur;`.<br>
 Le moteur JavaScript comprend qu'il doit aller chercher les valeurs des propriétés dans l'objet et les affecter aux variables de même nom.
 
 ![](./destructuring-object.png)
+
+* Dans le cas ou on souhaite récupérer une des clés :
+```javascript
+let objet = {
+  slug: 'test',
+  title: 'Ceci est un test',
+  content: '...',
+  visible: true
+}
+
+let { title } = objet
+```
+Dans cet exemple, on ne souhaite récupérer que le titre. On remarque la différence avec les tableaux ou on utilise les accolades au lieu des crochets.
+
+* Cas d'une valeur par défaut :
+```javascript
+let objet = {
+  slug: 'test',
+  title: 'Ceci est un test',
+  content: '...',
+  visible: true
+}
+
+let { visible = false } = objet
+```
+Ici, on ne veut que la visibilité et que sa valeur par défaut soit `false`.
+
 
 exemple :
 ```javascript
@@ -346,8 +375,39 @@ const {x,y,z} = vecteur;
 ```
 #### Déstructurer en changeant le nom de la variable 
 
-Par défaut, la variable porte le meme nom que la propriété. Si ce comportement ne convient pas, on peut renommer la variable :
+Par défaut, la variable porte le meme nom que la propriété. Si ce comportement ne convient pas, on peut renommer la variable.
 
+* Cas d'utilisation d'un autre nom pour une clé :
+```javascript
+let objet = {
+  slug: 'test',
+  title: 'Ceci est un test',
+  content: '...',
+  visible: true
+}
+
+let { content: article } = objet
+```
+Ici, on récupère uniquement la clé `content` qu'on stocke dans la variable `article`.<br>
+
+La vraie syntaxe de lé décomposition est celle utilisée dans cet exemple.<br>
+Dans les autres exemples, on utilise une astuce de ES2015 qui nous évite d'écrire deux fois la même chose quand c'est possible.<br>
+La seule chose à retenir : `{visible: visible}` est égale à `{visible}`.
+
+* Dans cet exemple, on cumule la valeur par défaut et le changement de nom.<br>
+  On récupère la clé `visible` qu'on stocke dans la variable `isVisible`. Cette variable vaudra par défaut `false`.
+```javascript
+let objet = {
+  slug: 'test'
+  title: 'Ceci est un test'
+  content: '...'
+  visible: true
+}
+
+let { visible: isVisible = false } = objet
+```
+
+exemple :
 ```javascript
 const vecteur = {
 	x : 2,
@@ -365,6 +425,24 @@ console.log(`coordX=${coordX} coordY=${coordY} coordZ=${coordZ}`);
 Il est possible de déstructurer au moment de l'appel à une fonction. C'est logique compte tenu que le passage d'arguments se fait par une affectation.<br>
 C'est pratique dans le cas ou on a un gros objet avec beaucoup de propriétés et que dans la fonction on a besoin que de quelques-unes de ces propriétés.<br>
 En plus ça va améliorer la lisibilité du code puisqu'on précise les propriétés qu'on va utiliser dès la déclaration.<br>
+
+Il s’agit clairement du cas qui pousse le plus à utiliser la décomposition. C’est un gain de temps impressionnant !<br>
+Vous avez surement déjà écrit des fonctions avec un paramètre options qui rassemble toutes vos options dans un objet.<br>
+Pensez au temps que vous avez perdu et au nombre de lignes que vous avez écrit pour tester ce seul paramètre avant même de coder du métier.
+```javascript
+function test(id, { maxLength = 10, current = 0 } = {}) {};
+// const test = (id, { maxLength = 10, current = 0} = {}) => {};
+```
+Comme pour la décomposition de tableaux, le fait d'utiliser la décomposition dans les paramètres d'une fonction est totalement transparent pour l'utilisateur.<br>
+Mais cela change tout pour nous !<br>
+
+`maxLength` et `current` ne seront jamais `undefined`, ils auront toujours une valeur que ce soit celle de l’utilisateur ou la valeur par défaut.<br>
+Et ça allégera votre code vu que vous ne ferez plus `options.maxLength` mais juste `maxLength` comme s’il s’agissait d’un simple paramètre comme id.
+
+Seul les attributs que vous avez déclarés dans la décomposition seront transmit à votre fonction.<br>
+L’utilisateur peut bien ajouter 15 000 autres attributs à `options ils ne seront pas transmis.<br>
+Ce qui ajoute un léger niveau de sécurité à votre fonction.
+
 exemple :
 ```javascript
 const vecteur = {
