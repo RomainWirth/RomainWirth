@@ -129,7 +129,7 @@ Ici, après avoir créé l'objet `person1`, on crée `person2` avec l'égalité 
 Attention ! on ne fait que dupliquer les références, pas les objets !<br>
 On a dont deux références qui pointent sur le même objet. Or, l'objectif est de créer deux objets, ce procédé ne va pas.
 
-![](./spread-operator-duplicate-reference.png)
+![](./assets/spread-operator-duplicate-reference.png)
 
 En utilisant le spread operator pour récupérer l'objet `person1`, on pourrait se contenter de le dupliquer.<br>
 Mais on peut faire mieux :
@@ -205,7 +205,7 @@ Dans les deux cas les variables `type`, `firstEl`, `secondEl` et `thirdEl` sont 
 Pour déstructurer un tableau, la recherche d'information ne peut pas se faire sur la base d'un nom.<br>
 On fera la recherche sur la base de la position de l'information dans le tableau.<br>
 
-![](./destructuring-array.png)
+![](./assets/destructuring-array.png)
 
 ```javascript
 const vecteur = [2,-1,1];
@@ -310,7 +310,7 @@ Pour décomposer un objet, on déclare une ou plusieurs variables en les mettant
 Ensuite, on affecte cette déclaration à un objet : `let {x, y, z} = vecteur;`.<br>
 Le moteur JavaScript comprend qu'il doit aller chercher les valeurs des propriétés dans l'objet et les affecter aux variables de même nom.
 
-![](./destructuring-object.png)
+![](./assets/destructuring-object.png)
 
 * Dans le cas ou on souhaite récupérer une des clés :
 ```javascript

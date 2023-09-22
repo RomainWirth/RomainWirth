@@ -58,7 +58,7 @@ Cette valeur servira de valeur pour la propriété `result` de notre promesse.
 
 L'exécuteur changera la promesse à un de ces états :
 
-![](./promise_state.png)
+![](./assets/promise_state.png)
 
 En pratique, on va créer des fonctions asynchrones qui vont renvoyer des promesses :
 ```javascript
@@ -94,7 +94,7 @@ Ces deux fonctions sont pré-définies par le moteur JS, ainsi, nous n'avons pas
 On doit seulement appeler l'une ou l'autre quand le résultat est prêt.<br>
 Après une seconde de traitement (setTimeout 1000), l'exécuteur appelle `resolve(done)` pour produire le résultat.<br>
 Cela change l'état de l'objet en `promise` :<br>
-![](./promise_fulfilled.png)
+![](./assets/promise_fulfilled.png)
 
 Dans le cas ou un exécuteur romp la promesse avec une erreur :
 ```javascript
@@ -104,7 +104,7 @@ const promise = new Promise((resolve, reject) => {
 });
 ```
 L'appel a `reject(...)` change l'objet promesse à l'état `rejected` :<br>
-![](./promise_rejected.png)
+![](./assets/promise_rejected.png)
 
 Pour résumer, l'exécuteur devrait réaliser une tâche (normalement quelque chose qui prend du temps),<br>
 puis appelle `resolve` (ou `reject`) pour changer l'état de l'objet promesse correspondant.<br>

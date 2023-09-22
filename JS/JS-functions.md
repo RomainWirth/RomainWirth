@@ -37,7 +37,7 @@ function retournerMessageScore(score, numbreQuestions) {
 * **entre accolades** est indiqué le bloc de code qui sera exécuté quand la fonction sera appelée.
   * Le mot clé **return** signifie que la fonction va retourner un résultat.
 
-![](./fctn_js.png)
+![](./assets/fctn_js.png)
 
 ## Les fonctions flechées
 
