@@ -113,3 +113,62 @@ let promise = fetch(url, {
     signal: undefined //ou AbortController pour annuler la requête
 });
 ```
+
+## PREMIER `fetch()` : L'APPLICATION
+
+Exemple avec des données au format JSON sur le site : <a href="https://jsonplaceholder.typicode.com/">https://jsonplaceholder.typicode.com/ </a>.<br>
+Le <a href="https://jsonplaceholder.typicode.com/guide/">guide</a> du site indique qu'on peut avoir des données à cette url :<br>
+<a href="https://jsonplaceholder.typicode.com/posts/1">https://jsonplaceholder.typicode.com/posts/1 </a>
+
+Voici le code avec `fetch()` pour aller récupérer ces données :
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<script>
+		console.log('Début');
+		fetch('https://jsonplaceholder.typicode.com/posts/1')
+		    .then( rep => console.log(rep))
+		console.log('Fin');	
+	</script>
+</body>
+</html>
+```
+En premier lieu, on passe l'URL en argument de `fetch()` en tant que chaîne de caractères.<br>
+`fetch()` nous renvoie un objet constructeur `Promise`, on va pouvoir appliquer `.then()` et y déclarer une callback.<br>
+Cette callback reçoit en premier argument la réponse fournie par `fetch()`.<br>
+Cela correspond au cas de l'appel du `resolve` (voir promises).<br>
+
+Voici l'objet response fourni par fetch :<br>
+![](./assets/first-fetch-1.png)
+
+Dans la réponse fournie par `fetch()`, nous avons :
+1. Un booléen **ok** qui nous indique si la réponse est correcte ou pas. Ok est **true** pour des valeurs de retour de 200 à 299 inclus. 
+2. Une valeur de **status**. Donc ici, on retrouve le fameux code de retour d'une requête réussie qui vaut **200**. 
+3. Un objet **headers**. Si on regarde cet objet, on va voir qu'on a accès aux en-têtes avec de simples méthodes :<br> 
+par exemple la méthode `get()` permet de lire la valeur d'une en-tête.<br> 
+La méthode `has()` permet de savoir si une en-tête est présente dans la réponse HTTP.<br> 
+Tout ça est synchrone. Donc à ce stade, au niveau HTTP, la ligne de statut et les en-têtes sont là. 
+4. Par contre, si on cherche les données, on ne les trouve pas.<br> 
+On va trouver un prototype et dans ce prototype, on a de quoi accéder aux données.<br> 
+Des données qui se trouvent à priori dans le corps de la réponse HTTP.<br> 
+Pour accéder à ces données dans notre exemple, on va utiliser la méthode `json()`.<br>
+Si on examine ça dans la doc, on voit que c'est une opération asynchrone qui renvoie une promesse.<br>
+Cela signifie qu'à priori, on ne peut pas être certain que nos données soient là. 
+5. D'ailleurs dans la doc, il n'y a que des opérations asynchrones pour aller chercher nos données.<br> 
+Par exemple, on a `blob()`. blob en autre ça permet de récupérer une image.<br> 
+On a aussi `text()` pour des données textuelles.<br> 
+On a aussi `formdata()` qui retourne une promesse qui est résolue par un objet de constructeur `formdata`.
+
+**Afin d'aller chercher des ressources avec `fetch`, il faut faire deux opérations asynchrones.**<br>
+**C'est ce qui explique qu'on voit toujours deux `.then()` qui accompagnent chaque `fetch()`.**<br>
+Dans la réalité :<br>
+La première opération asynchrone est faite par l'appel `fetch()`. Cet appel retourne un accès a la ligne status et aux en-têtes de la réponse.<br>
+La deuxième opération asynchrone doit être faite par nous. C'est celle-ci qui nous permet d'accéder aux données.<br>
+
+![](./assets/principe-fetch.png)
+
