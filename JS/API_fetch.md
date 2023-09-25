@@ -172,3 +172,191 @@ La deuxième opération asynchrone doit être faite par nous. C'est celle-ci qui
 
 ![](./assets/principe-fetch.png)
 
+En transformant le code de manière à coder soi-même l'opération asynchrone, on peut non seulement aller chercher les données,<br>
+mais aussi les parser. C'est-à-dire que l'appel à `.json()` fera en plus l'équilvalent d'un `JSON.parse()`.<br>
+On va donc récupérer un objet JavaScript.
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+</head>
+<body>
+	<script>
+		fetch('https://jsonplaceholder.typicode.com/posts/1')
+		.then( rep => 
+			{
+				if (rep.ok === true) 
+					rep.json().then(data => console.log(data));
+			}
+		);
+	</script>
+</body>
+</html>
+```
+
+## TRAITER LES ERREURS
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<script>
+		fetch('https://jsonplaceholder.typicode.com/posts/1')
+			.then(rep => 
+				{
+					if (rep.ok === true) return rep.json();
+					// Ici je traite les erreurs HTTP
+					else return Promise.reject(`Erreur HTTP => ${rep.status}`);
+				}
+			)
+			.then(data => console.log(data))
+			.catch(err => console.log(err))
+	</script>
+</body>
+</html>
+```
+
+Dans cet exemple, on se sert du booléen `ok` pour mettre en place un filtrage HTTP.<br>
+Les erreurs HTTP ('404 Not Found' ou '500 Internal Server Error') sont à différencier des erreurs réseau.<br>
+
+**Les erreurs HTTP peuvent se produire sans qu'il n'y ait le moindre problème réseau ni la moindre instruction JS qui plante.**
+
+Si une erreur HTTP se produit, on se sert d'un appel à `Promise.reject()` pour récupérer une promesse rompue.<br>
+On la retourne dans le `.then()`, ce qui permet d'aller se brancher sur le `.catch()`.
+
+exemple d'une erreur provoquée au niveau de l'url : 
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<script>
+		// Ici je fais volontairement une erreur dans l'Url
+		fetch('https://jsonplaceholder.typicode.com/osts/1')
+			.then(rep => 
+				{
+					if (rep.ok === true) return rep.json();
+					else return Promise.reject(`Erreur HTTP => ${rep.status}`);
+				}
+			)
+			.then(data => console.log(data))
+			.catch(err => console.log(err))
+	</script>
+</body>
+</html>
+```
+
+le retour du `catch` va montrer ceci dans la console :<br>
+![](./assets/fetch-error-url-1.png)
+
+En cliquant dans le navigateur à sur "hide network", on constate qu'il s'agit bien d'une erreur et non pas d'une exception qui n'a pas été traitée :<br>
+![](./assets/fetch-error-url-2.png)
+
+Lorsqu'une erreur se déclenche pour une raison quelconque dans une des méthodes `.then()`, JS considère que<br>
+**le déclenchement d'une exception est équivalent à l'échec d'une promesse** et le script ira au `catch` :<br>
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<script>
+		fetch('https://jsonplaceholder.typicode.com/posts/1')
+			.then(rep => 
+				{
+					throw new Error('Une erreur quelconque ira au catch');
+				}
+			)
+			.then(data => console.log(data))
+			.catch(err => console.log(err))
+	</script>
+</body>
+</html>
+```
+ce qui donne une exception récupérée par le catch :<br>
+![](./assets/fetch-exception.png)
+
+## DEUX FETCH EN CASCADE : UN GET SUIVI D'UN PUT
+
+Dans cet exemple, on va mettre deux `fetch` en cascade : 
+1. le premier avec un accès `GET` (accès par défaut).
+2. le deuxième dans un `PUT`, qui permet de modifier les données reçues.
+
+Pour chaîner les opérations asynchrones, on doit bien comprendre que chaque `.then()` doit retourner une promesse.<br>
+Pour rappel, une promesse est un objet constructeur `Promise` doté des méthodes `.then()` et `.catch()`.<br>
+Si la promesse est tenue, c'est le `.then()` suivant qui s'exécutera.<br>
+Si la promesse est rompue, c'est le `.catch()` qui s'exécutera (le catch commun à tous les then).<br>
+
+![](./assets/chainage-operation-asynchrone.png)
+1. Dans le deuxième `.then()`, je doit faire la copie de la donnée que me renvoie le premier `.fetch()` pour la modifier.<br> 
+C'est réalisé dans `newData` en utilisant le spread operator. 
+2. Ensuite, on modifie les propriétés **title** et **body** de l'objet **newData**. 
+3. On prépare le deuxième argument du deuxième fetch qu'on a appelé myInit.<br> 
+On l'utilisera pour paramétrer la méthode PUT.<br>
+Il faut préciser qu'on fait un PUT dans le champ method. 
+4. Dans le champ body, on met les données, mais il faut les mettre au format dans lequel on va les envoyer.<br> 
+On va donc transformer l'objet JavaScript newData en une chaîne de caractères au format JSON en utilisant JSON.stringify().<br>
+5. Dernière chose à faire : Il faut insérer l'en-tête Content-type pour dire au serveur dans quel format sont les données envoyées.<br> 
+Pour cela, on utilise la propriété headers et on lui donne la valeur d'un objet qui va contenir des en-têtes.<br> 
+Ici, il n'y a que l'en-tête Content-type. 
+6. Ensuite, on fais le deuxième fetch.<br>
+Attention ! Il ne faut pas oublier le return devant le fetch de manière à retourner l'objet Promise retourné par le fetch. 
+7. Ensuite le traitement est identique au premier fetch, il suffit de personnaliser le texte de l'erreur HTTP.
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<script>
+		fetch('https://jsonplaceholder.typicode.com/posts/1')
+			.then(rep => 
+				{
+					if (rep.ok === true) return rep.json();
+					else return Promise.reject(`Erreur HTTP fetch 1 => ${rep.status}`)
+				}
+			)
+			.then(data => 
+				{
+					console.log(data);
+					// Je fais une copie de l'objet avant de le modifier
+					const newData = {...data};
+					newData.title = 'Test du PUT';
+					newData.body = 'Tuto Dev Web : Je fais un deuxième fetch avec un PUT';
+					// Je prépare le deuxième argument du fetch
+					const myInit = {
+						method: 'PUT',
+						body: JSON.stringify(newData),
+						headers: { 'Content-type': 'application/json; charset=UTF-8' }
+					}
+					return fetch('https://jsonplaceholder.typicode.com/posts/1', myInit)
+				}
+			)
+			.then(rep => 
+				{
+					if (rep.ok === true) return rep.json();
+					else return Promise.reject(`Erreur HTTP fetch 2 => ${rep.status}`)
+				}
+			)
+			.then(data => console.log(data))
+			.catch(err => console.log(err))
+	</script>
+</body>
+</html>
+```
+Le site <a href="https://jsonplaceholder.typicode.com/">https://jsonplaceholder.typicode.com/ </a> renvoie la donnée modifiée.<br>
+**Attention ! ce n'est qu'une simulation**.<br>
+![](./assets/fetch-full.png)
