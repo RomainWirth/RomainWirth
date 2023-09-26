@@ -185,10 +185,8 @@ On va donc récupérer un objet JavaScript.
 <body>
 	<script>
 		fetch('https://jsonplaceholder.typicode.com/posts/1')
-		.then( rep => 
-			{
-				if (rep.ok === true) 
-					rep.json().then(data => console.log(data));
+		.then( rep => {
+				if (rep.ok === true) rep.json().then(data => console.log(data));
 			}
 		);
 	</script>
@@ -323,14 +321,12 @@ Attention ! Il ne faut pas oublier le return devant le fetch de manière à reto
 <body>
 	<script>
 		fetch('https://jsonplaceholder.typicode.com/posts/1')
-			.then(rep => 
-				{
+			.then(rep => {
 					if (rep.ok === true) return rep.json();
 					else return Promise.reject(`Erreur HTTP fetch 1 => ${rep.status}`)
 				}
 			)
-			.then(data => 
-				{
+			.then(data => {
 					console.log(data);
 					// Je fais une copie de l'objet avant de le modifier
 					const newData = {...data};
@@ -345,8 +341,7 @@ Attention ! Il ne faut pas oublier le return devant le fetch de manière à reto
 					return fetch('https://jsonplaceholder.typicode.com/posts/1', myInit)
 				}
 			)
-			.then(rep => 
-				{
+			.then(rep => {
 					if (rep.ok === true) return rep.json();
 					else return Promise.reject(`Erreur HTTP fetch 2 => ${rep.status}`)
 				}

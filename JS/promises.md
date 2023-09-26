@@ -375,7 +375,6 @@ dont la valeur de résolution va être celle de la promesse de base dans le cas 
 ou va être égale au résultat du gestionnaire de `.catch()` dans le cas contraire.<br>
 Si un gestionnaire `.catch()` génère une erreur, la nouvelle promesse est également rejetée.
 
-
 exemple 2 :
 ```javascript
 // Fonction utilisées par les fonctions de l'exercice - Ne pas modifier ou appeler directement
@@ -410,3 +409,7 @@ first()
     .then((newResult) => third(newResult));
 
 ```
+
+### Promise.all
+
+... 
