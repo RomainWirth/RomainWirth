@@ -2,7 +2,8 @@
 
 `fetch()` est une fonction JS native qui permet de faire des requêtes Ajax.<br>
 Les requêtes Ajax sont des requêtes HTTP que l'on fait depuis le JS du navigateur vers un serveur.<br>
-Cela signifie que le navigateur va chercher des informations sur un serveur pour rafraîchir la page web qu'il est en train d'afficher, sans la recharger.<br>
+Cela signifie que le navigateur va chercher des informations sur un serveur<br> 
+pour rafraîchir la page web qu'il est en train d'afficher, sans la recharger.<br>
 
 Avant `fetch()`, on utilisait une interface qui s'appelait `XMLHttpRequest` pour faire des requêtes Ajax.<br>
 L'utilité de `fetch()` : cette API **travaille avec des promesses**.<br> 
@@ -34,7 +35,8 @@ L'API `Fetch` va également utiliser la méthode globale `fetch()` qui représen
 Cette méthode permet l'échange de données avec le serveur de manière **asynchrone**.<br>
 
 La méthode `fetch()` prend en unique argument obligatoire le chemin de la ressource qu'on souhaite récupérer.<br>
-On va également lui passer en argument facultatif une liste d'options sous forme d'objet littéral pour préciser la méthode d'envoi, les en-têtes, etc.<br>
+On va également lui passer en argument facultatif une liste d'options sous forme d'objet littéral<br> 
+pour préciser la méthode d'envoi, les en-têtes, etc.<br>
 `fetch()` renvoie une promesse (un objet de type _Promise_) qui va se résoudre avec un objet _Response_.
 `A noter que la promesse va être résolue dès que le serveur renvoie les en-têtes HTTP, c-à-d avant même qu'on ait le corps de la réponse.`
 
