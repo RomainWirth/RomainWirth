@@ -148,3 +148,8 @@ Inconvénients :
 * manque de ressources
 * certaines docs en chinois
 
+## DEBUTER AVEC VITE ET VUE 3
+
+article : <a href="https://blog.ninja-squad.com/2022/02/23/debuter-avec-vite-et-vue/">ninja squad</a>
+doc officielle : <a href="https://vitejs.dev/guide/">vitejs</a>
+vidéo : <a href="https://grafikart.fr/tutoriels/javascript-vite-1351">grafikart</a>
