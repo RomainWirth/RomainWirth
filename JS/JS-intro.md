@@ -149,8 +149,8 @@ De la même manière que pour l'addition et la soustraction, on peut utiliser le
 
 ### Définition
 
-Les objects JS sont écrits en <strong>JSON (JavaScript Object Notation)</strong>.<br> 
-Il s'agit de séries de <strong>paires clés-valeurs</strong>, séparées par des virgules, entre accolades. On peut les enregistrer dans une variable :
+Les objects JS sont écrits en **JSON (JavaScript Object Notation)**.<br> 
+Il s'agit de séries de **paires clés-valeurs**, séparées par des virgules, entre accolades. On peut les enregistrer dans une variable :
 
 ```javascript
 let myObject = {
@@ -161,6 +161,10 @@ let myObject = {
         proprieteA: 'valeurA',
         proprieteB: 'valeurB',
         proprieteC: 5,
+        proprieteD: false
+    }]
+}
+```
 De la même manière que pour l'addition et la soustraction, on peut utiliser les opérateurs *= et /= pour multiplier ou diviser un nombre.
 es valeurs peuvent avoir tout type de données : string, number, boolean, tableau d'objets...
 
