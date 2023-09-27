@@ -1,6 +1,6 @@
 # L'OPERATEUR THIS
 
-`this est un opérateur et comme tout opérateur il retourne une valeur.
+`this` est un opérateur et comme tout opérateur il retourne une valeur.
 1. **D'où vient cette valeur ?**<br> 
 Cette valeur provient d'un contexte d'exécution. Il faut savoir qu'au lancement du script et ensuite à chaque appel d'une fonction un contexte d'exécution est placé en pile d'exécution.
 2. **Qu'est qu'il y a dans un contexte d'exécution ?**<br> 
@@ -25,6 +25,8 @@ La méthode `bind()` a été introduite avec ECMAScript 5 pour définir la valeu
 ECMAScript 2015 (ES6) a ajouté les fonctions fléchées dans lequelles this correspond à la valeur du contexte englobant.<br>
 
 La valeur de `this` est l'objet JS représentant le contexte dans lequel le code courant est exécuté.<br>
+Le mot clé `this` est utilisé avec des méthodes d'un objet pour accéder à des informations stockées dans l'objet.<br>
+Le mot clé `this` va dans ce cas être substitué par l'objet utilisant la méthode lors de l'appel.
 
 ## This avec une fonction classique invoquée dans la portée globale
 
@@ -78,3 +80,66 @@ en effet, certains renvoyaient alors l'objet `window`.
 En mode strict, la valeur de `this` est conservée (il reste le même) entre le moment de sa définition et l'entrée dans le contexte d'exécution.<br>
 S'il n'est pas défini, il reste undefined. Il pourrait être définir avec n'importe quelle autre valeur, telle que `null` ou `42` ou `"je ne suis pas this"`.
 
+## Les fonctions fléchées et le mot clef `this`
+
+Pour rappel, le mot clé `this` est utilisé avec des méthodes d'un objet pour accéder à des informations stockées dans l'objet.<br>
+Le mot clé `this` va dans ce cas être substitué par l'objet utilisant la méthode lors de l'appel.
+
+```javascript
+let feuille = {
+    nom: 'Ciseaux',
+    prenom: 'Pierre',
+    hobbies: ['ams', 'tram', 'gram'],
+
+    getFullName(){
+        console.log(this.prenom + ' ' + this.nom);
+    }
+};
+
+feuille.getFullName();
+
+// retourne : Pierre Ciseaux
+```
+
+En JavaScript, à la différence de la plupart des langages, le mot clef `this` n'est pas lié à un objet en particulier.<br>
+La valeur de `this` va être évaluée au moment de l'appel de la méthode dans laquelle il est présent en JS.
+
+La valeur de `this` ne va donc pas dépendre de l'endroit où la méthode a été déclarée mais de l'objet qui l'appelle.<br>
+Cela permet à une méthode d'être réutilisée par différents objets.
+
+Comme la valeur de `this` ne dépend pas de l'endroit où la méthode a été déclarée,<br> 
+on va en fait pouvoir utiliser ce mot clef dans n'importe quelle fonction.
+
+```javascript
+let pierre = {name: 'Pierre'};
+let mathilde = {name: 'Mathilde'};
+
+function disBonjour() {
+  alert('Bonjour ' + this.name);
+}
+
+pierre.bonjour = disBonjour;
+mathilde.bonjour = disBonjour;
+
+pierre.bonjour(); //Bonjour Pierre
+mathilde.bonjour(); //Bonjour Mathilde
+```
+
+Les fonctions fléchées sont différentes des autres fonctions : elles ne possèdent pas de valeur propre pour `this`.<br>
+Si on utilise ce mot clef dans une fonction fléchée, la valeur utilisée pour celui-ci<br> 
+sera celle du contexte de la fonction fléchée, c'est-à-dire celle de la fonction englobante.
+```javascript
+let feuille = {
+    nom: 'Ciseaux',
+    prenom: 'Pierre',
+    hobbies: ['ams', 'tram', 'gram'],
+
+    disBonjour(){
+        const bonjour = () => console.log('Bonjour ' + this.prenom);
+        bonjour();
+    }
+};
+
+feuille.disBonjour();
+// retourne Bonjour Pierre
+```
