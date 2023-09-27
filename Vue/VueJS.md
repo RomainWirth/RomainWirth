@@ -101,13 +101,13 @@ Les principales caractéristiques des SPA sont :
 
 Comparaison des principaux frameworks :
 
-|                                      | AngularJS                                                                                   | ReactJS            | Vue.js             |
-|--------------------------------------|---------------------------------------------------------------------------------------------|--------------------|--------------------|
-| Site web officiel                    | https://angularjs.org/                                                                      | https://react.dev/ | https://vuejs.org/ |
-| Date de la première version          | 2010                                                                                        | 2013               | 2014               |
-| Communauté                           | ++++                                                                                        | +++++              | ++                 |
-| Entreprise assurant le développement | Google / Wix                                                                                | Facebook / Uber    | GitLab / Alibaba   |
-| License                              | MIT                                                                                         | MIT                | MIT                |
+|                                      | AngularJS                | ReactJS            | Vue.js             |
+|--------------------------------------|--------------------------|--------------------|--------------------|
+| Site web officiel                    | https://angularjs.org/   | https://react.dev/ | https://vuejs.org/ |
+| Date de la première version          | 2010                     | 2013               | 2014               |
+| Communauté                           | ++++                     | +++++              | ++                 |
+| Entreprise assurant le développement | Google / Wix             | Facebook / Uber    | GitLab / Alibaba   |
+| License                              | MIT                      | MIT                | MIT                |
 
 **Angular :**<br>
 Avantages :
@@ -153,3 +153,61 @@ Inconvénients :
 article : <a href="https://blog.ninja-squad.com/2022/02/23/debuter-avec-vite-et-vue/">ninja squad</a>
 doc officielle : <a href="https://vitejs.dev/guide/">vitejs</a>
 vidéo : <a href="https://grafikart.fr/tutoriels/javascript-vite-1351">grafikart</a>
+
+### Découverte de vite
+
+(Dans cette partie, on suit le tuto de grafikart)
+
+Afin d'utiliser vite, il faudra avoir Node.js et NPM :
+DL node : <a href="https://nodejs.org/fr/download">nodejs.org/fr/download</a>
+pour Ubuntu, voir la doc : <a href="https://doc.ubuntu-fr.org/nodejs">doc.ubuntu-fr.org/nodejs</a>
+
+Pour commencer à utiliser vite, il faut se rendre sur la partie "guide" de <a href="https://vitejs.dev/">vitejs.dev</a>, "guetting started".<br>
+On lancera un premier projet avec les commandes : <br>
+avec NPM :
+```bash
+npm create vite@mlatest
+```
+puis suivre les prompts :<br>
+```bash
+Need to install the following packages :
+    create-vite@latest
+Ok to proceed? (y) y
+Package name : #nom du projet
+Select a framework : #framework
+Select a variant : #JavaScript ou TypeScript
+```
+pour terminer la mise en place du projet, on utilisera les commandes suivantes :
+```bash
+npm install
+
+# suivi de 
+
+npm run dev
+```
+`npm install` va permettre de terminer l'installation.<br> 
+`npm run dev` va permettre d'initialiser un serveur de développement.<br>
+Suite à ça on pourra suivre le lien donné pour afficher dans le navigateur le rendu de l'application.
+
+Une fois la phase de développement terminée, on va lancer une commande pour construire le projet :
+```bash
+npm run build
+```
+
+Afin de tester la version build, on lancera la commande 
+```bash
+npm run preview
+```
+Cette commande va lancer un petit serveur html permettant de voir le rendu de la version build.
+
+Ces commandes sont disponibles dans le fichier `package.json`.
+
+Vite permet d'inclure également d'autres fichiers.<br>
+Dans notre fichier JavaScript, on peut inclure d'autres fichiers grâce à l'import :
+```JavaScript
+import image from './image.jpg'
+
+console.log(image)
+// cela va montrer dans la console le chemin du fichier image.jpg
+```
+
