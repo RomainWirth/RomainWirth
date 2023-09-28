@@ -193,6 +193,9 @@ Une fois la phase de développement terminée, on va lancer une commande pour co
 ```bash
 npm run build
 ```
+Cette commande va 'bundler' les fichiers javascript afin de les fusionner et créer un seul.<br>
+Cela va générer un dossier 'dist' qui va contenir la page `html` qui va inclure le chemin du JS une fois qu'il a été compilé,<br>
+ainsi que le dossier assets qui va contenir le JS
 
 Afin de tester la version build, on lancera la commande 
 ```bash
@@ -202,12 +205,73 @@ Cette commande va lancer un petit serveur html permettant de voir le rendu de la
 
 Ces commandes sont disponibles dans le fichier `package.json`.
 
-Vite permet d'inclure également d'autres fichiers.<br>
-Dans notre fichier JavaScript, on peut inclure d'autres fichiers grâce à l'import :
-```JavaScript
-import image from './image.jpg'
+#### Fonctionnalités de base de vite
 
-console.log(image)
-// cela va montrer dans la console le chemin du fichier image.jpg
+1. **vite permet d'accéder à l'écosystème de Node.js pour le frontend :**<br>
+On va pouvoir télécharger des librairies provenant directement de npm.<br>
+exemple avec le package canvas-confetti :
+```bash
+npm install --save canvas-confetti
 ```
+Cette commande permet d'installer le package dans le projet et de l'utiliser via :
+```javascript
+import confetti from 'canvas-confetti'; 
+
+confetti();
+```
+* `import` : indique qu'on souhaite utiliser le package (cela crée une variable qu'on pourra utiliser)
+* `confetti` : désigne le package qu'on utilisera dans le fichier (il s'agit du nom de la variable)
+* `from 'canvas-confetti'` : désigne le package tel que défini lors de l'installation avec npm.
+* `confetti();` : lance la fonction associée au package importé (varie selon les packages => voir la doc).
+
+2. **vite permet d'inclure d'autres types de fichiers :**<br>
+Cela est impossible à faire en JavaScript.
+exemple :
+```javascript
+import background from './image.jpg'
+
+console.log(background)
+```
+Dans notre cas, `console.log(background)` retournera dans la console le chemin vers le fichier importé.
+
+3. **il est également possible d'importer directement du css :**<br>
+```javascript
+import `./style.css`
+```
+De cette manière, il n'est pas nécessaire de stocker cet import dans une variable.<br>
+On a simplement besoin d'indiquer le chemin vers le fichier contenant le css.<br>
+Au niveau de la page web, en mode développement, cela se traduit par l'injection d'une balise `<style>`<br> 
+dans laquelle on retrouve le contenu de notre fichier `style.css`.<br>
+
+Lorsqu'on build (`npm run build`) : on retrouve dans la console l'information comme quoi le css est bien chargé,<br>
+on retrouve le fichier javascript, et on voit que vite a extrait toute la partie CSS dans un fichier séparé.<br>
+Au niveau du `html` (dans le dossier ./dist), on constate que le lien vers le fichier css a été modifié.<br>
+l'avantage de cette méthode : on peut modifier directement le fichier CSS et l'élément sera modifié directement<br> 
+(mise a jour de la partie style mais pas de rechargement de la page complète).<br>
+
+4. **il a également la possibilité de supporter des pré-processeurs :**<br>
+par exemple, si on travaille avec SASS (`style.scss`), on aura simplement à importer le fichier en question :
+```javascript
+import `./style.scss`
+```
+Afin de compiler la syntaxe, on devra ajouter sass au projet :
+```bash
+npm install -D sass
+```
+`-D` indique qu'il s'agit d'une dépendance de développement.<br>
+De cette manière, on pourra utiliser le nesting et toutes les propriétés qu'offre SASS.<br>
+vite va convertir directement `.scss` en `.css` sans avoir besoin de passer par le script :
+`sass --watch...`.
+
+5. **vite supporte aussi l'import de fichiers de manière asynchrone :**<br>
+A partir d'un fichier `counter.js` (qui contient par exemple une fonction JS).<br>
+```javascript
+import('./counter.js').then((module) => {
+    module.setUpCounter(document.querySelector('button'))
+})
+```
+De cette manière, on attend que le fichier `./counter.js` soit chargé pour utiliser le module<br>
+et la fonction associée au fichier qui va dépendre du bouton sélectionné depuis le DOM.<br>
+Ainsi, si on a des fichiers lourds, cela permet de séparer et d'éviter d'avoir un seul fichier JS.<br>
+Le tout sera chargé de manière asynchrone, et c'est supporté nativement par vite.<br>
 
