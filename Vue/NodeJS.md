@@ -46,3 +46,5 @@ Pas besoin d'apprendre un nouveau langage. Cela est très pratique pour devenir 
 <a href="https://grafikart.fr/tutoriels/javascript-server-nodejs-2080#autoplay">grafikart - JavaScript côté serveur</a>
 <a href="https://nodejs.dev/fr/api/v20/documentation/">documentation officielle</a>
 <a href="https://devdocs.io/node~18_lts/">documentation formatée</a>
+
+Pour installer Node via node version manager (nvm) : <a href="https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-22-04">tuto</a>

@@ -275,3 +275,228 @@ et la fonction associée au fichier qui va dépendre du bouton sélectionné dep
 Ainsi, si on a des fichiers lourds, cela permet de séparer et d'éviter d'avoir un seul fichier JS.<br>
 Le tout sera chargé de manière asynchrone, et c'est supporté nativement par vite.<br>
 
+6. **support natif des variables d'environnement :**<br>
+par exemple, en faisant des requêtes avec `fetch()` et on fait appel à une API qui se situe sur un autre domaine.<br>
+On peut donc gérer ce domaine grâce à ces variables d'environnement.<br>
+Pour cela, on va créer un fichier `.env` qui va être utilisé pour stocker ces variables d'environnement.<br>
+Les variables qui vont être exposées à `vite` devront être préfixées par `VITE_`.<br>
+On pourra avoir d'autres variables d'environnement en fonction du mode qui est utilisé par `vite`.
+```javascript
+VITE_API_ENDPOINT=https://local.dev 
+```
+
+On peut également créer un fichier `.env.production` qui contiendra les variables d'environnement dédiées à la production.<br>
+Dans ce cas, on contacter un autre service via la variable :
+```javascript
+VITE_API_ENDPOINT=https://domaine.fr
+```
+Dans le fichier `main.js`, on aura accès à toutes ces variables en faisant :
+```javascript
+console.log(import.meta.env.VITE_API_ENDPOINT)
+```
+Pour accéder à l'un ou à l'autre, on utilisera la commande : `npm run dev` ou `npm run build`.
+
+Si on regarde dans le dossier `./dist/assets/` le fichier `index.js`, on peut constater la modification de ce dernier avec les variables.<br>
+La variable d'environnement a bien été remplacée par le nom de domaine.<br>
+
+On peut ajouter d'autres variables d'environnement qui ne possèdent pas le préfixe `VITE_`.<br>
+exemple :
+```javascript
+DATABASE_URL=wordpress
+```
+Ce procédé protège la variable : si on se sert de cette variable d'environnement pour sauvegarder des informations côté serveur,<br>
+on y aura pas accès : ni en dev ni en production.<br>
+On peut le constater dans le fichier `index.js` du dossier `./dist/assets/`,<br> 
+ainsi que dans la console du navigateur, si on procède à :
+```javascript
+console.log(import.meta.env.DATABASE_URL)
+```
+la console renvoit `undefined`.
+
+Cela signifie que seules les variables d'environnement débutant par `VITE_` seront publiées en clair.<br>
+
+7. **Les plugins :**<br>
+    * Lors de l'installation de vite au démarrage du projet en framework, vite va créer un nouveau fichier : `vite.config.js`.<br>
+    Ce fichier va permettre de définir la configuration de vite.<br>
+    A l'intérieur, il va charger un plugins correspondant à celui du framework utilisé (react, vue, etc.)<br>
+    Ce plugin permettra de faire les transformations liées au framework sur lequel on souhaite créer notre application.<br>
+    * on aura également à la racine du projet le fichier `.eslintrc.cjs` qui est un linter permettant de détecter si des erreurs ont été faites dans le code
+    * on aura enfin un fichier `tsconfig.json` pour la configuration de typescript<br>
+
+La présence de ces fichiers indique à vite qu'il doit utiliser ces fonctionnalités.<br>
+Dans le fichier `package.json`, on constatera que de nouvelles dépendances se sont ajoutées.<br>
+
+Vite est recommandé dès qu'on commence à travailler avec des frameworks : il est parfait pour les solutions de base.<br>
+
+#### Intégration de vite au niveau du backend
+
+On ira voir dans la documentation dans la partie <a href="https://vitejs.dev/guide/backend-integration.html">backend integration</a>
+
+vite est directement intégré en laravel. mais il est possible de l'intégré avec d'autres langages backend.<br>
+N.B.: Ce tuto est basé sur le langage php.<br>
+
+Pour cela, on va commencer par :
+```bash
+npm init
+```
+cette commande va initialiser le fichier `package.json`.<br>
+
+On va ensuite installer vite avec :
+```bash
+npm install -D vite
+```
+cette commande indiquera que vite est une dépendance de développement
+
+Dans le fichier `package.json`, on pourra modifier les scripts :
+```json
+{
+    "name": "server",
+    "version": "1.0.0",
+    "description": "index.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "author": "",
+    "licence": "ISC",
+    "devDependencies": {
+        "vite": "^4.4.9"
+    }
+}
+```
+
+On pourra ajouter un dossier `resources` qui contiendra notre `main.js`, ainsi qu'un `main.css`.<br>
+On va après importer le css dans le `main.js` :
+```javascript
+import './main.css'
+
+document.body.append('Hello world')
+```
+On peut ensuite lancer la commande :
+```bash 
+npm run dev
+```
+Le projet va démarrer sur le port `http://localhost:5173/`
+
+Par la suite, au niveau du dossier `./public/` dans le fichier `index.php`, on ajoutera le code suivant :<br>
+`<script src="http://localhost:5173/@vite/client" type="module"></script>`<br>
+`<script src="http://localhost:5173/resources/main.js" type="module"></script>` <br>
+de cette manière :
+```php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <?php
+    $dev = true;
+    ?>
+    <script src="http://localhost:5173/@vite/client" type="module"></script>
+    <script src="http://localhost:5173/resources/main.js" type="module"></script>
+</head>
+<body>
+    <p>Ceci est mon site php <?php date('d/m/y') ?></p>
+</body>
+</html>
+```
+Les deux scripts devront être chargés pour que l'application fonctionne.<br>
+
+Afin de gérer les images qui sont en chemin relatif (intégrées via le css),<br>
+Il sera nécessaire d'ajouter à la racine du projet le fameux fichier : `vite.config.js`,<br>
+dans lequel on va intégrer :
+```javascript
+import {defineConfig} from "vite"
+
+export default defineConfig({
+    server: {
+        origin: 'http://localhost:5173'
+    }
+    build: {
+        // generate manifest.json in outDir
+        manifest: true,
+        rollupOptions: {
+            // overwrite default .html entry
+            input: 'resources/main.js',
+        },
+    },
+})
+```
+* `defineConfig` est importé depuis 'vite'
+* `manifest` : il s'agit d'un fichier qui va contenir le chemin vers les ressources
+* `rollupOptions` : options qui vont servir au bundler qui est utilisé par vite (rollup),<br>
+on lui spécifie le chemin d'entrée : `'resources/main.js'`
+* pour la partie serveur, on aura la clé `server` qui contiendra `origin`<br> 
+suivi de l'url qui va servir à préfixer tous les chemins absolus.<br>
+On lui spécifie le serveur vite : `http://localhost:5173`.
+
+concernant la partie build : on va devoir changer le `outDir` qui permet de spécifier le dossier dans lequel on souhaite exporter les assets.<br>
+Si on ne souhaite pas rajouter de dossier supplémentaire, on ajoutera l'option : `assetsDir`.<br>
+Le problème avec cette option, c'est que cela changera le chemin relatif des images.<br>
+Pour palier à cela, il faudra ajouter l'option `base` suivi du chemin de base.<br>
+Enfin, l'option `copyPublicDir: false` indiquera de ne pas copier le contenu du dossier `public` dans le répertoire `/assets`.
+
+Le fichier `vite.config.js` ressemblera donc à ceci :
+```javascript
+import {defineConfig} from "vite"
+
+export default defineConfig({
+    server: {
+        origin: 'http://localhost:5173'
+    },
+    base: '/assets',
+    build: {
+        copyPublicDir: false,
+        outDir: 'public/assets',
+        assetsDir: '',
+        manifest: true,
+        rollupOptions: {
+            // overwrite default .html entry
+            input: 'resources/main.js',
+        },
+    },
+})
+```
+
+Dans le cas de notre app en PHP, il faudra intégrer la lecture de ce fichier `manifest.json` ce qui donnera ceci :
+```php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <?php
+    $dev = true;
+    if(!$dev) {
+        $manifest = json_decode(file_get_contents('./assets/manifest.json'), true);
+        ?>
+        <script src="/assets/<?= $manifest['resources/main.js']['file'] ?>" type="module"></script>
+        <link rel="stylesheet" src="/assets/<?= $manifest['resources/main.css']['file'] ?>">
+        <?php
+    } else {
+        ?>
+        <script src="http://localhost:5173/assets/@vite/client" type="module"></script>
+        <script src="http://localhost:5173/assets/resources/main.js" type="module"></script>
+    }
+    ?>
+</head>
+<body>
+    <p>Ceci est mon site php <?php date('d/m/y') ?></p>
+</body>
+</html>
+```
+
+Quel que soit le langage de programmation, la logique reste la meme :<br>
+* Si on est en production : on lit le fichier manifeste et on génère les chemins vers les différentes ressources.
+* Si on est en développement : on peut se baser sur le serveur de développement de vite.
+
+Une petite subtilité si on développe en React : il faudra ajouter quelques scripts (voir la <a href="https://vitejs.dev/guide/backend-integration.html">doc</a>)
+
+En conclusion :<br> 
+L'intérêt de vite est le serveur de développement qui va permettre d'être extrêmement rapide.<br>
+Dans la phase de dev, tous les fichiers vont être importés les uns après les autres.<br>
+Lorsqu'on fait une modification sur un fichier JS, vite n'aura besoin que de compiler ce fichier,<br>
+ce qui permet d'être beaucoup plus rapide par rapport à d'autres systèmes.<br>
+En revanche, dans le cas du bundling, c'est l'outil `rollup` qui prend le relais.<br>
+Il s'agit d'un outil séparé.
