@@ -1,0 +1,53 @@
+<!-- https://play.vuejs.org/#eNqFVQtv0zAQ/ismEi1INGnXbayhGRSYGEgDxBAIqRJK40vj4cTGvrQZU/87l3c7EFSVev7u9dn36J2z0Nrd5OD4ztxGRmg8X2ZQaGWQcYjDXCK7W2aM8RDDR48rkTEDmJusVpSfFKwN1+Cz4SVIqdhXZSQfPmnVGWyvOoseFnYRodgQGIfSQodHMrT2wNImauszNDnUyK782VXqFDBRnMwbMiHnTa5Hj3uCmAjrNixZUB97Vk3QJp2wrxKIfgDfD/CgcmkZs+d1iIopxRsOGdE7QAzw4f2413SNrHvENmh5uTZgJQf1e7QhG+z+7ZcZfedeVzQ6IKRahgh0YmyeTJhf0QmWTvW7dM7v7tpasd1u7iWTxvToT9NrldsRCjRAdke1XaxMWkkki0znyPBWAzkhFLh0GGWPIFGSgyHwgqht4NdIRIJ0m1GqOEjC9x7eaaOtckSVteHqEzm9iKSIfhDSl5V8FjcqRzBzr7aruXkduTkXmzauPidP6lfOUDG6jQR7j3pUFnuligOKbaEJ9CsD4IfoiygJs3Xp37ULEZt7uiHTUtjn8v+0ZakPUzbIfrqqi/qX6xPUSdI1BRRx72tNRIcEUVvf87TMrZtnlkplEzdSqacNpCJPv+tEoRpNTk+Pj58en05m46cnI5I5n8wms+lJ/FwUUqwCsxodu2N3OhCF4MHVdFtc3Sym8euXZ1eXxTZ8Mxuvbifbb1+5jC+Ls/jNl7zUVfLi4fQ1fQdhjiooyxXiIBYYREbpwTY4Gp/OBj+Ds3F/uf4dG2nu7TU5HS3eyrrf3bLIzWhFSirjl2V/1swKjR89TKPeCo6Jz6YnY120BjRJVSjniYM2Ulks1u6NVRktxsqLKqZSLSSYDxqFymhEup1D7Ulbb/uuwso5bSa+qfJf8BtLhfdJ+GjAgilbqtNhaNZA01SqL67fV5PVKalTcknW/1B+AqtkXnKszV7mGSfae3YV27dpueRFtv5sLwqEzLaXahdNvbeWDv07vPrH1Xu6U3fabiZn9xuChAxt -->
+
+<script>
+    export default {
+        data(){
+            return {
+                message: 'Hello World',
+                newMessage: '',
+                isActive: false,
+                class: '',
+                show: true
+            }
+        },
+        methods: {
+            addMessage() {
+                this.message = this.newMessage
+            },
+            isChecked() {
+                !this.isActive ? this.class = '' : this.class = 'red'
+            },
+            isShown(){
+                !this.show ? this.show = false : this.show = true
+            }
+        }
+    }
+</script>
+
+<template>
+    <h1 :class="class">{{ message }}</h1>
+    <h2 :class="class">Sous-titre</h2>
+    <form>
+        <input type="text" placeholder="Ecrivez-ici" v-model="newMessage">
+        <button type="button" @click="addMessage">Ajouter</button>
+    </form>
+    <div>
+        <p>add red to titles <input type="checkbox" v-model="isActive" :checked="isActive" @change="isChecked"></p>
+    </div>
+    <div>
+        <input type="checkbox" v-model="show" :checked="show" @change="isShown">
+        <div>
+            <img v-if="show" src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80">
+        </div>
+    </div>
+</template>
+    
+<style>
+    .red {
+        color: red;
+    }
+    img {
+        width: 350px;
+    }
+</style>
