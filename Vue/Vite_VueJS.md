@@ -1,4 +1,4 @@
-# VUEJS
+# VUEJS et VITE
 
 <a href="https://blog.dyma.fr/vue/">blog.dyma.fr</a>
 
@@ -493,10 +493,42 @@ Quel que soit le langage de programmation, la logique reste la meme :<br>
 
 Une petite subtilité si on développe en React : il faudra ajouter quelques scripts (voir la <a href="https://vitejs.dev/guide/backend-integration.html">doc</a>)
 
-En conclusion :<br> 
+**En conclusion :**<br> 
 L'intérêt de vite est le serveur de développement qui va permettre d'être extrêmement rapide.<br>
 Dans la phase de dev, tous les fichiers vont être importés les uns après les autres.<br>
 Lorsqu'on fait une modification sur un fichier JS, vite n'aura besoin que de compiler ce fichier,<br>
 ce qui permet d'être beaucoup plus rapide par rapport à d'autres systèmes.<br>
-En revanche, dans le cas du bundling, c'est l'outil `rollup` qui prend le relais.<br>
-Il s'agit d'un outil séparé.
+En revanche, dans le cas du bundling, c'est l'outil `rollup` qui prend le relais :<br>
+il s'agit d'un outil séparé qui permet de gérer la partie bundler.<br>
+Enfin, il est possible d'utiliser l'API des plugins qui permet d'intéragir au niveau des plugins de vite<br>
+et d'ajouter des comportement supplémentaires.<br>
+Il existe beaucoup de plugins mais il est possible de développer son propre plugin pour des situation spécifiques.<br>
+
+
+### VueJS
+
+<a href="https://worldline.github.io/vuejs-training/fr/#prerequis">Introduction à Vue</a>
+
+#### Rendu déclaratif
+
+La caractéristique principale de Vue est le rendu déclaratif :<br> 
+à l'aide d'une syntaxe de modèle qui étend le HTML,<br> 
+nous pouvons décrire comment le HTML devrait ressembler en fonction de l'état du JavaScript.<br> 
+Lorsque l'état change, le HTML est automatiquement mis à jour.
+
+
+```html
+<script>
+export default {
+  data() {
+    return {
+        message: "Hello World!"
+    }
+  }
+}
+</script>
+
+<template>
+  <h1>{{ message }}</h1>
+</template>
+```
