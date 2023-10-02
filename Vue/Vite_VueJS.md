@@ -516,7 +516,6 @@ La caractéristique principale de Vue est le rendu déclaratif :<br>
 nous pouvons décrire comment le HTML devrait ressembler en fonction de l'état du JavaScript.<br> 
 Lorsque l'état change, le HTML est automatiquement mis à jour.
 
-
 ```html
 <script>
 export default {
@@ -532,3 +531,47 @@ export default {
   <h1>{{ message }}</h1>
 </template>
 ```
+
+Regarder la doc pour l'utilisation des éléments de vue.
+
+#### Initialiser un projet Vue
+
+```bash
+npm init vue@latest
+Need to install the following packages:
+create-vue@3.7.5
+Ok to proceed? (y) y
+
+Vue.js - The Progressive JavaScript Framework
+
+✔ Project name: … project-meteo
+✔ Add TypeScript? … No / Yes # sélectionner No
+✔ Add JSX Support? … No / Yes # sélectionner No
+✔ Add Vue Router for Single Page Application development? … No / Yes # sélectionner Yes
+✔ Add Pinia for state management? … No / Yes # sélectionner Yes
+✔ Add Vitest for Unit Testing? … No / Yes # sélectionner No
+✔ Add an End-to-End Testing Solution? › No # sélectionner No
+✔ Add ESLint for code quality? … No / Yes # sélectionner No
+
+Scaffolding project in /home/user/Cours/JS-avance/SPA_VueJS-Intro/testProject/project-meteo...
+
+Done. Now run:
+
+  cd project-meteo
+  npm install
+  npm run dev
+
+```
+Lancer les commandes :
+```bash
+npm install
+```
+cela va installer les dépendances nécessaires.<br>
+puis :
+```bash
+npm run dev
+```
+Cela va lancer le projet directement avec VITE (si vie a été installé avant).
+
+
+
