@@ -57,8 +57,9 @@ L'idée principale est d'avoir des composants (Beans) d'une application (en gén
 Ces composants sont définis par l'interface qu'ils implémentent (contrat) et l'instance effective des composants découle de la configuration de l'application.<br>
 Cela permet de facilement changer les composants de l'application (découplage) pour par exemple :<br>
 * avoir une version avec stockage local, une version avec un stockage web dans une base MongoDB.<br>
-* remplacer un composant qui sera disponible en production par un composant "mimant" son fonctionnement et permettre de tester le reste de l'application (principe des "mock/stub" ou "simulacre/bouchon").<br> 
-cf. : <a href"https://www.test-recette.fr/tests-techniques/deployer-tests-unitaires/simulacres-bouchons/">simulacres et bouchons</a>
+* remplacer un composant qui sera disponible en production par un composant "mimant" son fonctionnement<br> 
+et permettre de tester le reste de l'application (principe des "mock/stub" ou "simulacre/bouchon").<br> 
+cf. : <a href="https://www.test-recette.fr/tests-techniques/deployer-tests-unitaires/simulacres-bouchons/">simulacres et bouchons</a>
 
 ## Spring Boot
 
@@ -147,7 +148,7 @@ dans l'arborescence, on retrouve :
 
 #### pom.xml
 
-```
+```xml
 <parent>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-parent</artifactId>
@@ -183,7 +184,7 @@ Dans cette liste on retrouve principalement :
 #### MicroserviceApplication.java
 
 Classe générée automatiquement par Spring Boot, elle est le point de démarrage de l'application :
-```
+```java
 package com.ecommerce.microservice;
 
 import org.springframework.boot.SpringApplication;
@@ -209,7 +210,7 @@ Ces configurations se font via des Beans.
 3. **@ComponentScan** : indique qu'il faut scanner les classes de ce package afin de trouver des Beans de configuration.<br>
 
 Pour personnaliser finement le comportement de Spring Boot, on peut remplacer cette annotation : @SpringBootApplication par les 3 annotations vu ci-dessus :
-``` 
+```java
 ...
 ...
 
@@ -319,7 +320,7 @@ Quand on clique sur OK, IntelliJ crée un _package web_, puis crée à l'intéri
 La classe ProductController est alors créée à l'intérieur de ce dernier package.
 
 Dans la fichier (la classe) ProductController, on va saisir le code suivant :
-```
+```java
 package com.ecommerce.microcommerce.web.controller;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -347,7 +348,7 @@ par convention, les conventions de nommage des API REST est ainsi :
 Cette méthode retourne une "String".<br>
 Etant donné qu'on a pas encore de produits, on va simplement retourner une phrase pour tester :
 
-```
+```java
 package com.ecommerce.micrommerce.web.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -382,7 +383,7 @@ C'est la même chose pour **consumes** qui précise les formats acceptés. Dans 
 ##### Méthode pour GET /products/{id}
 
 Cette méthode est à ajouter à la suite de la précédente et s'écrit comme ça :
-```
+```java
     @GetMapping("/products/{id}")
     public String displayProduct(@PathVariable int id) {
         return "You asked for a proudct with the id : " + id;
@@ -400,7 +401,7 @@ Pour commencer, on va créer une classe qui représente un produit. Cette classe
 
 On va donc créer une nouvelle classe "Product" qu'on va place dans un package "model" sous le package "microservice".
 On va ensuite créer les propriétés de base de la classe :
-```
+```java
 package com.ecommerce.micrommerce.model;
 
 public class Product {
@@ -418,7 +419,7 @@ En va générer ensuite le constructeur, les getters et les setters.<br>
 * On ajoutera enfin un constructeur pour obtenir des instances de produits préremplies avec des informations de tests.
 
 Le code obtenu devra ressembler à cela :
-```
+```java
 package com.ecommerce.micrommerce.model;
 
 public class Product {
@@ -472,7 +473,7 @@ public class Product {
 A chaque fois que quelqu'un appellera l'URL "/products/{od}", on renverra un produit au format JSON qui correspond à la classe Product.<br>
 
 Dans la classe ProductController, on va modifier la méthode displayProduct, le code complet de la classe sera le suivant :
-```
+```java
 package com.ecommerce.micrommerce.web.controller;
 
 import com.ecommerce.micrommerce.model.Product;
@@ -525,7 +526,7 @@ Pour cela, on va procéder comme suit :
   * _findById_ = renvoie un produit par son id
   * _save_ = ajoute un produit
 
-```
+```java
 package com.ecommerce.micrommerce.web.dao;
 
 import com.ecommerce.micrommerce.web.model.Product;
@@ -541,7 +542,7 @@ public interface ProductDao {
 
 À partir de cette interface, on va ajouter une classe pour créer l'implémentation : "ProductDaoImplement".<br>
 Etant donné qu'on ne dispose pas de base de données avec laquelle communiquer, on va simuler son comportement en créant des produits "en dur" :
-```
+```java
 package com.ecommerce.micrommerce.web.dao;
 
 import com.ecommerce.micrommerce.web.model.Product;
@@ -599,7 +600,7 @@ On injecte l'instance de ProductDao dans le constructeur afin d'avoir accès aux
 
 La liste "productsList" contient maintenant une liste de produits définis en dur, et on peut accéder à un produit râce à la méthode displayProduct.
 
-```
+```java
 package com.ecommerce.micrommerce.web.controller;
 
 import com.ecommerce.micrommerce.dao.ProductDao;
@@ -638,7 +639,7 @@ Ce logiciel permet de tester l'API en envoyant toutes sortes de requêtes et per
 
 On va ajouter la méthode POST au controller :
 
-```
+```java
     @PostMapping("/products")
     public void addProduct(@RequestBody Product product) {
         productDao.save(product);
@@ -683,7 +684,7 @@ Dans Postman :
 * On sélectionne POST (au lieu de GET) et on ajoute l'URL http://localhost:9090/products
 * On clique sur l'onglet "Body" (qui n'est plus grisé) et on sélectionne _raw_ pour définir manuellement le contenu de la requête HTTP
 * On ajoute le code en exemple ci-dessous dans le corps de la requête :
-```
+```json
 {
 "id": 4,
 "name": "Poney en bois cracheur de feu",
@@ -715,7 +716,7 @@ Procédure pour créer une collection :
 
 ### Implémenter la méthode PUT
 
-```
+```java
     @ApiOperation("Méthode pour modifier les infos d'un produit")
     @PutMapping("/products/{id}")
     public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
@@ -730,7 +731,7 @@ Procédure pour créer une collection :
 
 ### Implémenter la méthode DELETE
 
-``` 
+```java 
   @ApiOperation("Méthode pour supprimer un produit")
     @DeleteMapping("/products/{id}")
     public Product deleteProduct(@PathVariable int id) {
@@ -748,7 +749,7 @@ On peut également visualiser cette doc dans un format HTML élégant.
 
 Pour bénéficier de Swagger, on va procéder en plusieurs étapes : 
 1. importer cette dépendance dans le `pom.xml` :
-```
+```xml
 <dependency>
 <groupId>io.springfox</groupId>
 <artifactId>springfox-boot-starter</artifactId>
@@ -764,7 +765,7 @@ il faudra alors cliquer dessus et importer le nécessaire.
 Cela va importer automatiquement le package correspondant.<br>
 Dans notre cas, il s'agit de **MicrocommerceApplication**.
 
-```
+```java
 package com.ecommerce.micrommerce;
 
 import org.springframework.boot.SpringApplication;
@@ -796,7 +797,7 @@ Dans une application professionnelle, il peut être utile de personnaliser la do
 Pour configurer, on va créer une classe de configuration pour Swagger appelée **SwaggerConfig**.
 Cette classe sera intégrée dans un nouveau package **configuration**.
 Cette classe contiendra le code suivant :
-```
+```java
 SwaggerConfig.java
 
 package com.ecommerce.micrommerce.configuration;
@@ -898,7 +899,7 @@ EJB (Enterprises JavaBeans) = architecture de composants logiciels côté serveu
 #### Transformation de la classe Product en entité
 
 Pour commencer, on va intégrer au pom.xml les dependencies :
-```
+```xml
 <dependencies>
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -934,7 +935,7 @@ Pour commencer, on va intégrer au pom.xml les dependencies :
 ATTENTION ! Bien penser à "reload" Maven (onglet de droite d'IntelliJ) pour mettre à jour et vérifier que les dépendances ont bien été importées.<br>
 
 On pourra donc ajouter les annotations `@Entity` et `@Id`à notre classe Product :
-```
+```java
 package com.ecommerce.micrommerce.web.model;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -980,7 +981,7 @@ On peut ainsi faire et refaire des tests en partant à chaque fois d'une base de
 Un autre avantage est qu'elle est très simple à mettre en place et qu'elle est complètement autoconfigurée par Spring Boot.<br>
 
 On va donc ajouter au fichier pom.xml les dépendances suivantes :
-```
+```xml
 <dependencies>
 
   <dependency>
@@ -1011,7 +1012,7 @@ Bien penser à actualiser Maven pour importer la dépendance.<br>
 
 On peut maintenant modifier le fichier **application.properties** :<br>
 on demande à Spring d'afficher les requêtes SQL et d'activer l'interface graphique H2 (ce qui permet de visualiser les tables).
-```
+```java
 server.port 9090
 
 spring.jpa.show-sql=true
@@ -1033,7 +1034,7 @@ INSERT INTO product VALUES(2, 'Aspirateur Robot' , 500, 200);
 INSERT INTO product VALUES(3, 'Table de Ping Pong' , 750, 400);
 ```
 * On va également créer un fichier **schema.sql** pour définir les tables de la BDD :
-```
+```sql
 CREATE TABLE product (
    id INT PRIMARY KEY,
    nom VARCHAR(255) NOT NULL,
