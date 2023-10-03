@@ -572,6 +572,3 @@ puis :
 npm run dev
 ```
 Cela va lancer le projet directement avec VITE (si vie a été installé avant).
-
-
-
