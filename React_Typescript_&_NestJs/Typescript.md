@@ -404,3 +404,189 @@ Les génériques permettent aux types d'être plus facilement réutilisables.<br
 Mais cela rend le code plus complexe.<br>
 
 ### Utiliser les génériques proposés par TypeScript
+
+Il existe toute une liste de génériques "natifs" proposés par TypeScript. `Array` en est un.<br>
+En le définissant nous-meme, on pourrait l'écrire ainsi :
+```JavaScript
+type Array<T> = T[];
+```
+En plus de `Array<T>`, TypeScript propose d'autres génériques pour aider à faire des opérations courantes.<br>
+Ces généraiques sont appelés **utility types** ("types utilitaires").<br>
+
+**2 exemples :** `Partial<T>` et `Record<KeyType, ValueType>`.
+
+Le type utilitaire `Partial<T>` prend en paramètre un type représentant un objet, et retourne un type représentant ce même objet,<br>
+à la différence que toutes les propriétés de l'objet sont marquées comme optionnelles.
+```JavaScript
+type Character = {
+    // Toutes les propriétés sont requises (elles n'ont pas le signe "?")
+    name: string;
+    life: number;
+    attack: number;
+    defense: number;
+};
+const myCharacter: Partial<Character> = {
+    // On ne fournit que le nom, pas le reste des propriétés.
+    // On n'a pas d'erreur car "Partial" rend
+    // toutes les propriétés optionnelles.
+    name: 'Mario';
+}
+```
+Le type utilitaire `Record<KeyType, ValueType>` permet de définir des types d'objets.<br>
+On utilisait jusqu'à présent la notation entre accolades `{}`, mais il peut être plus adapté d'utiliser le générique :
+```JavaScript
+// On définit un type représentant un objet dont les clés
+// sont des chaînes de caractères (n'importe lesquelles)
+// et les valeurs sont des nombres
+type CollectionOfNumbers = Record<string, number>;
+const stats: CollectionOfNumbers = {
+    age: 45,
+    life: 100,
+    magic: 10,
+    whateverTheNameItMustContainANumber: 20,
+};
+
+// On peut utiliser une union pour n'autoriser que des clés spécifiques
+type StatisticNames = 'life' | 'attack' | 'defense';
+const stats: Record<StatisticNames, number> = {
+    life: 100,
+    attack: 10,
+    defense: 20,
+};
+```
+
+Pour aller plus loin, voir la <a href="https://www.typescriptlang.org/docs/handbook/utility-types.html">documentation</a>.
+
+## Utiliser un projet JavaScript dans un projet TypeScript
+
+Une grande difficulté avec un projet codé en TypeScript concerne la gestion des librairies externes.<br>
+Si le projet a pour dépendance une librairie codée en JS, TS ne peut pas reconnaître tout seul le typage de cette librairie et de ce qu'elle expose.<br>
+Il faut donc le lui indiquer.
+
+Il suffit de se poser une première question : est-ce que la librairie JS qu'on utilise définit et expose ses types TS ?
+
+### Vérifier si des types TS sont définis pour une librairie JS donnée
+
+Chaque dépendance qu'on installe via npm possède sa propre page sur le site de <a href="https://www.npmjs.com/">cet outil</a>.<br>
+* Il suffit de chercher depuis la barre de recherche le nom de la librairie qu'on souhaite utiliser pour trouver sa page dédiée.<br>
+![](./assets/search_bar_npmjs.png)
+* Une fois sur la page npm de la libraire, on va regarder l'en-tête des informations :<br>
+à droite du nom de la librairie se trouve une icône bleue "TS" si des types TypeScript sont disponibles pour cette libraire :<br>
+![](./assets/TS_type1_npmjs.png)
+* Si à la place de ce symbole on trouve une icône blanche "DT", cela signifie que les déclarations de types peuvent être installées via NPM :<br>
+![](./assets/DT_type1_npmjs.png)
+* S'il n'y a aucun symbole à côté du nom de la libraire, cela signifie qu'aucun type TS n'est disponible et qu'il faudra l'écrire soi-même :<br>
+![](./assets/no_type_npmjs.png)
+
+En résumé, on a 3 cas possibles :
+1. Soit la librairie propose déjà les types TypeScripts
+2. Soit il faut les installer via NPM
+3. Soit on doit les écrire nous-même
+
+### Cas d'usage 
+
+#### Cas n°1 : Le développeur de la librairie a déjà écrit les types de sa libairie JS
+
+Il s'agit d'un cas idéal. S'il n'est pas possible de migrer un projet JS en TS (qu'elle que soit la raison),<br>
+il reste la solution de créer un fichier `index.d.ts` à la racine du projet.<br>
+```
+NB. : Un fichier `.d.ts` est un fichier de définition de types.
+Son but est de contenir uniquement des déclarations de types TypeScript.
+On écrit dans ce fichier le typage du projet
+```
+Lorsque ce genre de fichier est installé à la racine du projet, TypeScript ira le lire automatiquement,<br>
+et sera capable de connaître les types manipulés par la librairie.
+
+#### Cas n°2 : Les types de la librairie JS sont disponibles dans une autre librairie
+
+Il s'agit du cas le plus fréquent : il n'y a pas de fichier `.d.ts` directement dans le projet de librairie JS, mais il existe ailleurs.
+
+Heureusement que la communauté JavaScript/TypeScript est très active.<br>
+Le projet <a href="https://github.com/DefinitelyTyped/DefinitelyTyped">DefinedTyped</a> a pour ambition de fournir les fichiers de déclaration de types d'un maximum de librairies JS.<br>
+Dans ce <a href="https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types">dossier</a>, il y a plus de 8000 librairies déjà typées.<br>
+
+Afin d'inclure ces définitions dans un projet, il est nécessaire de les installer via npm :<br>
+```bash
+npm install @types/NOM_DE_LA_LIBRAIRIE
+```
+par exemple, si on veut utiliser les types de la librairie React, la commande à entrer est :<br>
+```bash
+npm install @types/react
+```
+Une fois installées, TS peut prendre en compte ces nouvelles définitions, sans qu'on ait rien de plus à faire de notre côté.
+
+#### Cas n°3 : les types de la librairie JS ne sont disponibles nulle part
+
+Il s'agit du cas le plus rare : il va falloir créer le fichier de déclaration de types.
+
+La bonne pratique veut qu'on mette ce genre de fichiers dans un dossier `/types`.<br>
+Si on souhaite créer le typage de la librairie `to-no-case`, on va créer le fichier `/type/to-no-case.d.ts`.<br>
+Dans ce fichier, on doit définit le module correspondant à notre librairie.
+
+**Explications :**<br>
+Dans un projet traditionel, les dépendances sont importées sous la forme de modules.<br>
+Par exemple, la librairie `to-no-case` s'utilise ainsi :
+```JavaScript
+import toNoCase from 'to-no-case';
+const str = toNoCase('my-string');
+```
+la première ligne indique qu'on importe un élément du module `'to-no-case'`.<br>
+
+Ce module est défini dans le fichier `/types/to-no-case.d.ts`.<br>
+On va donc y déclarer le module avec les mots-clés `declare module` :
+```TypeScript
+declare module "to-no-case" {
+    // Déclaration des types ici
+}
+```
+à l'usage, le module exporte une fonction.<br>
+Il faut donc décrire la signature de cette fonction.<br>
+Cela signifie qu'on ne va pas écrire le corps logique de la fonction.<br>
+**Rappel : la signature d'une fonction est la combinaison "nom de la fonction + types des paramètres + type de retour".**
+
+On va donc déclarer la signature en deux temps :<br>
+1. Sans prendre en compte les types :<br>
+ici, on utilise `default` pour indiquer que cet export n'est **pas** un export nommé. (voir cette <a href="https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Statements/export">article</a> pour plus d'explications)
+```TypeScript
+declare module "to-no-case" {
+    export default function toNoCase():unknown;
+}
+```
+2. On va ensuite typer correctement la signature.<br>
+selon la <a href="https://www.npmjs.com/package/to-no-case#api">documentation de la librairie</a>, la fonction s'attend à recevoir une `string` en paramètre, et retourne une `string` en réponse.<br>
+```TypeScript
+declare module "to-no-case" {
+    export default function toNoCase(param: string): string;
+}
+```
+Le typage de la librairie est maintenant terminé, il ne reste qu'à dire à TypeScript de s'en servir.<br>
+Pour cela on va simplement importer le fichier qu'on vient d'écrire depuis le fichier se servant de la librairie :
+```TypeScript
+import './types/to-no-case.d.ts';
+import toNoCase from 'to-no-case';
+const str = toNoCase('my-string');
+```
+
+Il existe une solution plus robuste qui consiste à configurer TypeScript via le fichier tsconfig.json.<br>
+Il faut regarder du côté de la clé de configuration <a href="https://www.typescriptlang.org/tsconfig#include">include</a> pour faire en sorte que les fichiers du dossier `./types` soient automatiquement lus par TypeScript.<br>
+
+## POUR ALLER PLUS LOIN
+
+* Pour créer des types plus complets, il est possible d'ajouter des <a href="https://www.typescriptlang.org/docs/handbook/2/conditional-types.html">conditions</a>.
+* L'utilisation de mots-clés tels que <a href="https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#inferring-within-conditional-types">infer</a> permet d'utiliser les gnériques comme de véritables fonctions intelligentes.
+* On peut aussi rendre le code plus robuste grâce au <a href="https://www.typescriptlang.org/docs/handbook/2/narrowing.html">type narrowing</a> (vérification du type des variables en JS pour aider TS à analyser le code).
+
+### Ressources utiles
+
+* <a href="https://www.typescriptlang.org/play">Le bac à sable TypeScript</a><br>
+Il permet d'écrire et tester du code TypeScript en ligne, directement depuis le navigateur. C'est un outil officiel.
+* <a href="https://www.typescriptlang.org/fr/docs/handbook/typescript-from-scratch.html">La documentation officielle de TypeScript</a><br>
+La documentation est la ressource numéro 1 qui permet de répondre aux questions qu'on se pose.
+* <a href="https://ts-error-translator.vercel.app/">Le traduction de message d'erreurs</a> (de TypeScript à l'Anglais)<br>
+Outil de traduction des erreurs remontées par TS en anglais en donnant quelques explications.
+* <a href="https://marketplace.visualstudio.com/items?itemName=mattpocock.ts-error-translator">L'extension Total TypeScript</a><br>
+Extension bien pratique sur VSCode. Elle donne des conseils de syntaxe et incorpore le traducteur des erreurs.
+* <a href="https://grafikart.fr/formations/typescript">La formation TypeScript de Greafikart</a><br>
+Une ressource très complète en français qui propose une autre façon de se former sur TypeScript.
+* <a href="https://twitter.com/mattpocockuk">@mattpocockuk sur twitter</a><br>
+Il s'agit DU compte twitter à suivre à propos de TypeScript. Il y a régulièrement un partage de trucs et astuces sur TS (pour débutants et avancés).

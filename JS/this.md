@@ -128,6 +128,7 @@ mathilde.bonjour(); //Bonjour Mathilde
 Les fonctions fléchées sont différentes des autres fonctions : elles ne possèdent pas de valeur propre pour `this`.<br>
 Si on utilise ce mot clef dans une fonction fléchée, la valeur utilisée pour celui-ci<br> 
 sera celle du contexte de la fonction fléchée, c'est-à-dire celle de la fonction englobante.
+
 ```javascript
 let feuille = {
     nom: 'Ciseaux',
