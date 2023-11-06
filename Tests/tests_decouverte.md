@@ -34,4 +34,6 @@ TDD = "Test-Driden Development"
 C'est une manière de développer en commençant par écrire les tests au préalable.<br>
 Cela permet d'orienter la manière de coder et donc de limiter les erreurs.
 
+
+<a href="https://fr.wikipedia.org/wiki/Test_driven_development#:~:text=Test%2DDriven%20Development%20(TDD),%C3%A0%20r%C3%A9soudre%20sous%20forme%20d">les TDD Wikipédia</a>
 <a href="https://2022.stateofjs.com/fr-FR/libraries/">Librairies JavaScript</a>
