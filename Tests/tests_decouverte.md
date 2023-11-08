@@ -1,5 +1,6 @@
 # LES TESTS
 
+---
 ## INTRODUCTION
 
 ### Qu'est-ce qu'un test ?
@@ -34,10 +35,16 @@ TDD = "Test-Driden Development"
 C'est une manière de développer en commençant par écrire les tests au préalable.<br>
 Cela permet d'orienter la manière de coder et donc de limiter les erreurs.
 
-
+Documentation :
 <a href="https://fr.wikipedia.org/wiki/Test_driven_development#:~:text=Test%2DDriven%20Development%20(TDD),%C3%A0%20r%C3%A9soudre%20sous%20forme%20d">les TDD Wikipédia</a>
 <a href="https://2022.stateofjs.com/fr-FR/libraries/">Librairies JavaScript</a>
 
+---
+## Le Test-Driven Development
+
+
+
+---
 ## Qu'est-ce qu'un test ent-to-end ?
 
 Un test end-to-end, également appelé test E2E, est un type de test de logiciel<br> 
@@ -48,7 +55,7 @@ L'objectif principal de ce type de test est de s'assurer que toutes les composan
 fonctionnent correctement ensemble et qu'elles interagissent de manière cohérente<br> 
 pour fournir la fonctionnalité souhaitée.
 
-**Caractéristiques importantes d'un test end-to-end :**<br>
+### Caractéristiques importantes d'un test end-to-end
 
 1. **Portée globale** :<br> 
 Le test end-to-end évalue l'ensemble du système, de l'interface utilisateur aux bases de données,<br> 
@@ -81,3 +88,9 @@ en s'assurant que toutes ses parties interagissent harmonieusement.<br>
 Ils font partie intégrante du processus de développement logiciel et sont souvent effectués conjointement avec d'autres types de tests,<br> 
 tels que les tests unitaires, les tests d'intégration et les tests de régression,<br> 
 pour assurer la fiabilité et la performance du système dans son ensemble.
+
+### Utilisation de Playwright
+
+Playwright est un outil de test E2E : <a href="https://playwright.dev/">PlayWright</a>
+
+On peut suivre ce <a href="https://grafikart.fr/tutoriels/test-end-to-end-playwright-2020">tuto Grafikart</a> pour apprendre l'utiliser.
