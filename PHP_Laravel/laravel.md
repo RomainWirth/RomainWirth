@@ -3,6 +3,7 @@
 ## Organisation des fichiers dans un projet Laravel
 
 * Dossier 'app' contient la logique des controllers :<br>
+C'est ici qu'on va coder le principal de l'application.<br>
 Les 'controllers' font le lien entre les routes et les 'blade' pour le render.
 
 * Dossier 'routes' contient le rooting de l'application :<br>
