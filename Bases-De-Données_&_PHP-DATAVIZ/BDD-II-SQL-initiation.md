@@ -119,6 +119,14 @@ Afin d'accéder directement aux donées :
 ```SQL
 SELECT * FROM nom_de_la_table;
 ```
+La suppression d'une table (et de ses données) se fait de cette manière :
+```SQL
+DROP TABLE nom_de_la_table;
+
+[on peut ajouter 'IF EXISTS' avant le nom de la table]
+```
+
+<a href="https://waytolearnx.com/2019/09/liste-des-commandes-mysql.html">liste des commandes</a>
 
 ### Commandes pour créer sa base de données :
 
