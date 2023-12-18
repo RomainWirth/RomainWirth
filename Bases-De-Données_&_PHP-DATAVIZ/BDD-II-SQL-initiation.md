@@ -4,6 +4,19 @@ Doc officielle : https://sql.sh/cours <br>
 Source : https://www.youtube.com/watch?v=Cz3WcZLRaWc <br>
 Source : https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7139618-decouvrez-le-systeme-de-gestion-de-base-de-donnees-sgbd <br>
 
+## La base de données
+
+Rôle de la BDD : 
+* Stocker les données/informations
+* Accéder aux données
+* Manipuler les données (M-à-J, Insertion, suppression)
+
+Principe ACID :
+* __A : Atomic__ = Une transaction est traitée dans son intégralité ou pas du toute.<br> Si une transaction échoue, toutes les modifications sont annulées (rollback) pour maintenir la cohérence des données.
+* __C : Cohérence__ = Après l'exécution d'une transaction, la base de données passe d'un état valide à un autre état valide.<br> Cela garantit que toutes les contraintes, règles et relations définies dans la base de données sont respectées à tout moment, même si les données sont stockées sur différentes machines.
+* __I : Isolation__ = Chaque transaction est isolée des autres jusqu'à ce qu'elle soit complète, ce qui signifie que même si plusieurs transactions s'exécutent simultanément, elles ne se perturbent pas mutuellement.<br> L'isolation évite les problèmes de concurrence et garantit que chaque transaction agit comme si elle était la seule en cours d'exécution.
+* __D : Durabilité__ = Une fois qu'une transaction est confirmée (commit), les modifications qu'elle a apportées sont permanentes et persistantes même en cas de panne du système.<br> Cela garantit que les données modifiées restent dans la base de données même en cas de défaillance ultérieure.
+
 ## Choisir son SGBD
 
 ### RAPPEL : SGBD = Système de Gestion de Base de Données
@@ -60,6 +73,8 @@ Composé de deux choses principales :
 ![](./img/base_de_donnees.png)
 
 ## Tuto installation MySQL (Windows, Mac et Linux)
+
+<a href="https://linuxhint.com/installing_mysql_workbench_ubuntu/">installation mysql ubuntu</a>
 
 https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql
 
