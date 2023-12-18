@@ -57,13 +57,20 @@ Composé de deux choses principales :
 * La BDD en elle-même, qui est une collection de Tables qui contiennent chaque la donnée, organisée en colonnes et lignes (similaire à une feuille de calcul excel).<br> 
 * La deuxième composante est le langage SQL, permettant de manipuler et lire la donnée dans la BDD. qui est souvent une variation du 'Structure Query Language' (selon le SGBD utilisé).<br>
 
+![](./img/base_de_donnees.png)
+
 ## Tuto installation MySQL (Windows, Mac et Linux)
 
 https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql
 
 ## Créer sa base de données
 
+![](./img/structure_BDD.png)
+
+La banque de données contient les différentes bases de données.<br>
+Les bases de données sont composées de tables.
 Une table est une sorte de dictionnaire ou une clé représente une colonne dans la BD et la valeur représente un type de donnée qui peut être stocké à cet endroit.<br>
+Les lignes d'enregistrement sont les données stockées dans les tables, organisées par colonnes.<br>
 
 Il existe beaucoup de types de données, et ils peuvent varier selon les différents bases de données SQL.<br>
 Pour la plupart, elles représentent différents types de nombres et chaînes de caractères.<br>
@@ -71,7 +78,8 @@ Pour la plupart, elles représentent différents types de nombres et chaînes de
 Dans MySQL, on retrouve des mots clés qui vont indiquer le type de données qu'on va avoir dans une colonne de notre base de données:<br> 
 **INT** pour integer (des nombres entiers) ou **FLOAT** pour des nombres décimaux (à virgule).<br>
 Pour de petites chaînes de caractères (string), on utilise **VARCHAR**,<br> 
-et pour de plus longues chaînes de caractères on ut
+et pour de plus longues chaînes de caractères on utilise **TEXT**.
+
 ## Le RDBMS = Relational DataBase Management System
 
 Composé de deux choses principales :
@@ -82,6 +90,35 @@ chaque entité sera organisée dans sa plus petite forme normale.
 
 On pourra utiliser l'extension _SQLTools sur VSCode_.<br>
 Cela va permettre de stocker le détail de notre connection, visualiser la BDD et voir l'historique des queries qui ont été employées.
+
+### Commandes pour accéder à sa BDD MySQL :
+
+```bash
+sudo mysql -u root -p
+```
+Cette commande demandera d'entrer le mot de passe de l'utilisateur pour accéder à la banque de données de mysql.<br>
+
+Le terminal permettra maintenant d'utiliser les commandes SQL via mysql.<br>
+Maintenant, on peut afficher toutes les BDD existantes avec la commande :<br>
+```SQL
+SHOW DATABASES;
+```
+Pour accéder à une base de données existante, on utilisera :
+```SQL 
+USE nom_de_la_bdd;
+```
+Afin de voir le contenu de la base de données (les tables), on utilisera la commande :
+```SQL
+SHOW TABLES;
+```
+Pour connaître la structure d'une table :
+```SQL
+DESCRIBE nom_de_la_table;
+```
+Afin d'accéder directement aux donées :
+```SQL
+SELECT * FROM nom_de_la_table;
+```
 
 ### Commandes pour créer sa base de données :
 
@@ -96,7 +133,7 @@ chaque entité sera organisée dans sa plus petite forme normale.
 On pourra utiliser l'extension _SQLTools sur VSCode_.<br>
 Cela va permettre de stocker le détail de notre connection, visualiser la BDD et voir l'historique des queries qui ont éidentificateur. il permet d'identifier le contenu de la BDD, table, etc.
 
-#### Pour créer une BDD, on procédera ainsi :
+#### Pour créer une BDD SQL, on procédera ainsi :
 
 ```SQL
 CREATE DATABASE name; 
@@ -151,7 +188,7 @@ Attention à bien respecter la structure des tables.
 ```SQL
 INSERT INTO Users (email, bio, country)
 VALUES (
-    'hello@world',
+    'hello@world.com',
     'i love strangers !',
     'US' --USA ne peut pas être utilisé car on a spécifié une taille max à 2 caractères
 );
