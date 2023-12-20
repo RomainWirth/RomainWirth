@@ -60,3 +60,19 @@ Traiter des données pour l'analyse et la génération de rapports en temps rée
 
 En résumé, le NoSQL offre une alternative aux bases de données relationnelles en offrant une flexibilité accrue, une scalabilité horizontale et la capacité à gérer différents types de données pour répondre aux besoins diversifiés des applications modernes.
 
+### Le Principe BASE du NoSQL
+
+voir <a href="https://openclassrooms.com/fr/courses/4462426-maitrisez-les-bases-de-donnees-nosql/4462471-maitrisez-le-theoreme-de-cap">Cours OpenClassroom</a>
+
+Comme pour le principe ACID des SGBD, NoSQL a des propriétés pour caractériser ses bases :
+* **B**_asically_ **A**_vailable_ :<br> 
+quelle que soit la charge de la BDD (données/requêtes), le système garantie un taux de disponibilité de la donnée. 
+* **S**_oft-state_ :<br>
+la base peut changer lors des mises à jour ou lors d'ajout/suppression de serveurs.<br>
+La base NoSQL n'a pas à être cohérente à tout instant.
+* **E**_ventually consistent_ :<br>
+A terme, la base atteindre un état cohérent.
+
+### Débuter avec MongoDB sur Ubuntu
+
+suivre le <a href="https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/">tuto</a> sur le site de mongodb.
