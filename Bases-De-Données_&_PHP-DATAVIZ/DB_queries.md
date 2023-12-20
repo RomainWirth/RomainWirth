@@ -205,3 +205,33 @@ HAVING COUNT(DISTINCT m.id) = (
 Elle compare le nombre de films uniques projetés dans chaque cinéma ('COUNT(DISTINCT m.id)')<br> 
 avec le nombre total de films uniques présents dans la table 'movies' ('SELECT COUNT(DISTINCT id) FROM movies').<br>
 Inclus les résultats ou les cinémas qui ont les deux 'COUNT' égaux.
+
+
+# BONUS
+1. Sélectionner les acteurs du film au plus gros budget
+```SQL
+SELECT MAX(budget) FROM movies;
+
+SELECT * FROM actors AS a
+    JOIN actors_movies AS am ON a.id = am.actors_id
+    JOIN movies AS m ON am.movies_id = m.id
+WHERE m.budget = (
+    SELECT MAX(budget) FROM movies
+);
+```
+2. Sélectionner le film avec le plus gros budget pour un acteur
+```SQL
+SELECT a.id AS actor_id, a.lastname, a.firstname, m.id AS movie_id, m.title, m.budget AS budget/*, max_budget.* */, am.role FROM movies AS m
+JOIN actors_movies AS am ON m.id = am.movies_id
+JOIN actors AS a ON am.actors_id = a.id
+JOIN (
+    SELECT MAX(m.budget) AS budget_max, am.actors_id FROM movies AS m
+    JOIN actors_movies AS am ON m.id = am.movies_id
+    GROUP BY actors_id) AS max_budget ON a.id = max_budget.actors_id
+WHERE max_budget.budget_max = budget
+ORDER BY a.id;
+
+SELECT MAX(m.budget), am.actors_id FROM movies AS m
+JOIN actors_movies AS am ON m.id = am.movies_id
+GROUP BY actors_id;
+```
