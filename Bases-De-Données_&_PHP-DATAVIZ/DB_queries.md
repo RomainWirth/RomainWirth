@@ -181,7 +181,6 @@ WHERE m.id NOT IN (
     * `FROM actors_movies AS am JOIN actors AS a ON am.actors_id = a.id`: Effectue une jointure entre les tables actors_movies (alias am) et actors (alias a) en utilisant la clé étrangère actors_id pour les relier.
     * `WHERE a.lastname = 'FORD'`: Filtre les résultats pour ne récupérer que les enregistrements de la table actors où le nom de famille (lastname) est égal à 'FORD'.<br>
 
-
 => Elle sélectionne tous les 'movies_id' de la table 'actors_movies' associés aux acteurs portant le nom de famille 'FORD'.<br>
 En utilisant `m.id NOT IN (...)` dans la requête principale, on sélectionne tous les enregistrements de la table 'movies' dont l'id n'est pas présent dans les résultats de la sous-requête.
 

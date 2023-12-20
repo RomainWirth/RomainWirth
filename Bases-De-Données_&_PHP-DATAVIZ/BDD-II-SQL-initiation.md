@@ -72,6 +72,32 @@ Composé de deux choses principales :
 
 ![](./img/base_de_donnees.png)
 
+## La normalisation des bases de données relationnelles 
+
+La normalisation des bases de données relationnelles est un processus visant à organiser les données de manière optimale pour réduire la redondance, améliorer l'intégrité des données et faciliter la maintenance et la gestion des bases de données. Les formes normales, souvent abrégées de "1NF", "2NF", "3NF", etc., définissent des règles spécifiques pour organiser les données de manière logique et éviter les problèmes de dépendances et de redondances.
+
+Voici les principaux concepts de la normalisation :
+1. Première forme normale (1NF) :<br>
+Chaque table de la base de données doit avoir une structure bien définie, sans éléments répétitifs dans les colonnes.<br>
+Les données doivent être atomiques, c'est-à-dire qu'elles ne doivent pas être subdivisées davantage.
+
+2. Deuxième forme normale (2NF) :<br>
+Toutes les colonnes non clés d'une table doivent dépendre totalement de la clé primaire.<br>
+Si une table possède une clé primaire composée de plusieurs colonnes, chaque colonne doit contribuer à une seule information et ne pas être redondante.
+
+3. Troisième forme normale (3NF) :<br>
+Les données doivent être exemptes de dépendances transitives.<br>
+Les colonnes qui ne sont pas des clés primaires doivent dépendre uniquement des clés primaires et ne pas être dépendantes d'autres colonnes non clés.
+
+4. Forme normale de Boyce-Codd (BCNF) :<br>
+Une extension de la troisième forme normale, plus rigoureuse dans la gestion des dépendances fonctionnelles entre les clés.
+
+5. Quatrième et cinquième formes normales (4NF, 5NF) :<br>
+D'autres formes de normalisation visant à éliminer les anomalies et à réduire davantage les redondances, mais elles sont moins couramment utilisées.
+
+L'objectif principal de la normalisation est de minimiser la redondance des données, d'éviter les anomalies de mise à jour (insertion, modification, suppression) et de rendre les schémas de base de données plus flexibles et plus performants.<br> 
+Chaque forme normale offre un niveau plus élevé d'organisation et de structuration des données, mais toutes ne sont pas toujours nécessaires selon le contexte et la complexité des données.
+
 ## Tuto installation MySQL (Windows, Mac et Linux)
 
 <a href="https://linuxhint.com/installing_mysql_workbench_ubuntu/">installation mysql ubuntu</a>
