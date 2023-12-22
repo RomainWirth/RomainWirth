@@ -73,6 +73,33 @@ La base NoSQL n'a pas à être cohérente à tout instant.
 * **E**_ventually consistent_ :<br>
 A terme, la base atteindre un état cohérent.
 
-### Débuter avec MongoDB sur Ubuntu
+## Débuter avec MongoDB sur Ubuntu
 
 suivre le <a href="https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/">tuto</a> sur le site de mongodb.
+
+### Dénormaliser un Schéma SQL > JSON
+
+* **Des données fréquemment interrogées conjointement :**<br>
+Par exemple, les requêtes demandent fréquemment le lieu d’habitation d’une personne.<br> 
+De fait, la jointure devient coûteuse. Accessoirement, cette information étant peu mise à jour, cela pose peu de problèmes.<br>
+Résultat, l’entité ‘Habitation’ et l’association ‘habite’ sont intégrés à l’entité Personne.<br> 
+Habitation devient un document imbriqué à l’intérieur de Personne, représenté par : “{habite}”
+
+* **Toutes les données d’une entité sont indépendantes :**<br>
+Prenons l’exemple des domaines d’expertise d’une personne, ils sont indépendants des domaines d’une autre personne.<br> 
+De fait, rapatrier les données de cette entité n’impacte aucune autre instance de Personne.<br> 
+Ainsi, la liste des domaines est importé dans Personne et représenté par : “[domaines]”
+
+* **Une association avec des relations 1-n des deux côtés :**<br>
+Cette fois-ci, c’est plus délicat pour l’entité Etablissement.<br> 
+Une personne peut avoir plusieurs emplois et un employeur, plusieurs employés.<br> 
+De fait, une imbrication de l’employeur dans Personne peut avoir de gros impacts sur les mises à jour (tous les employés à mettre à jour !).<br> 
+Il est donc peu recommandé d’effectuer une fusion complète.<br> 
+Pour cela, seule l’association est imbriquée sous forme d’une liste de documents,<br> 
+intégrant les attributs (qualité et date), ainsi qu’une référence vers l’employeur.<br> 
+Ainsi : “[{emploie+ref}]”
+
+* **Même taux de mises à jour :**<br>
+Dans le cas des emplois d’une personne, là également nous pourrions effectuer une fusion de l’association “emploie”.<br> 
+En effet, le taux de mises à jour des emplois est équivalent à celui de la Personne, de fait, sans incidence sur les problèmes de cohérence de données.
+

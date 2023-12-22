@@ -69,57 +69,49 @@ SELECT DISTINCT SUM(m.budget), YEAR(m.year) FROM movies AS m GROUP BY YEAR(m.yea
 III. INSERTION, MISE A JOUR ET SUPPRESSION
 1. Créer un film avec au moins trois projections pour le mois prochain
 ```SQL 
+START TRANSACTION;
+
 INSERT INTO `movies` (`title`, `genre`, `year`, `budget`, `length_in_min`)
 VALUES ('Le Seigneur des Anneaux, la communauté de l\'Anneau', 'aventure', '2001-12-19', '93000000', '178');
-```
-```SQL 
+
 INSERT INTO `actors` (`lastname`, `firstname`, `birthdate`, `nationality`)
 VALUES ('WOOD', 'Elijah', '1981-01-28', 'US'),
 ('MCKELLEN', 'Ian', '1939-05-25', 'GB'),
 ('MORTENSEN', 'Viggo', '1958-10-20', 'US'),
 ('ASTIN', 'Sean', '1971-02-25', 'US');
-```
 
-```SQL 
 INSERT INTO `actors_specialty` (`specialty_id`, `actors_id`)
 SELECT s.id AS specialty_id, (SELECT a.id FROM actors AS a WHERE a.lastname = 'WOOD') AS actor_id  FROM specialty AS s WHERE s.name IN ('acteur', 'producteur');
-```
-```SQL 
+
 INSERT INTO `actors_specialty` (`specialty_id`, `actors_id`)
 SELECT s.id AS specialty_id, (SELECT a.id FROM actors AS a WHERE a.lastname = 'MCKELLEN') AS actor_id  FROM specialty AS s WHERE s.name IN ('acteur');
-```
-```SQL 
+
 INSERT INTO `actors_specialty` (`specialty_id`, `actors_id`)
 SELECT s.id AS specialty_id, (SELECT a.id FROM actors AS a WHERE a.lastname = 'MORTENSEN') AS actor_id  FROM specialty AS s WHERE s.name IN ('acteur', 'realisateur', 'producteur');
-```
-```SQL 
+
 INSERT INTO `actors_specialty` (`specialty_id`, `actors_id`)
 SELECT s.id AS specialty_id, (SELECT a.id FROM actors AS a WHERE a.lastname = 'ASTIN') AS actor_id  FROM specialty AS s WHERE s.name IN ('acteur', 'realisateur', 'producteur');
-```
 
-```SQL 
 INSERT INTO `actors_movies` (`actors_id`, `movies_id`, `role`)
 SELECT (SELECT a.id AS actors_id FROM actors AS a WHERE a.lastname = 'WOOD') AS actors_id, m.id AS movies_id, 'Frodon Sacquet' AS role FROM movies AS m WHERE m.title = 'Le Seigneur des Anneaux, la communauté de l\'Anneau';
-```
-```SQL 
+
 INSERT INTO `actors_movies` (`actors_id`, `movies_id`, `role`)
 SELECT (SELECT a.id AS actors_id FROM actors AS a WHERE a.lastname = 'MCKELLEN') AS actors_id, m.id AS movies_id, 'Gandalf' AS role FROM movies AS m WHERE m.title = 'Le Seigneur des Anneaux, la communauté de l\'Anneau';
-```
-```SQL 
+
 INSERT INTO `actors_movies` (`actors_id`, `movies_id`, `role`)
 SELECT (SELECT a.id AS actors_id FROM actors AS a WHERE a.lastname = 'MORTENSEN') AS actors_id, m.id AS movies_id, 'Aragorn' AS role FROM movies AS m WHERE m.title = 'Le Seigneur des Anneaux, la communauté de l\'Anneau';
-```
-```SQL 
+
 INSERT INTO `actors_movies` (`actors_id`, `movies_id`, `role`)
 SELECT (SELECT a.id AS actors_id FROM actors AS a WHERE a.lastname = 'ASTIN') AS actors_id, m.id AS movies_id, 'Samsagace Gamegie' AS role FROM movies AS m WHERE m.title = 'Le Seigneur des Anneaux, la communauté de l\'Anneau';
-```
 
-```SQL 
 SET @FILM_ID = (SELECT m.id AS movie_id FROM movies AS m WHERE m.title = 'Le Seigneur des Anneaux, la communauté de l\'Anneau');
 INSERT INTO `show` (`movie_id`, `movie-room_id`, `date`)
 VALUES (@FILM_ID, 2, '2024-01-10 20:00:00'),
        (@FILM_ID, 1, '2024-01-15 19:00:00'),
        (@FILM_ID, 5, '2024-01-20 21:00:00');
+
+COMMIT; 
+-- ou ROLLBACK; pour annuler toutes les transactions
 ```
 2. Ajouter un cinéma et ses salles
 ```SQL 
