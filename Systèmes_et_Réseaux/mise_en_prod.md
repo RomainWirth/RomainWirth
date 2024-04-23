@@ -362,7 +362,7 @@ Il est particulièrement utile pour garantir que PHP-FPM reste actif, redémarra
 
 On commencera par créer le fichier `Dockerfile` à la racine du dossier du backend.<br>
 Il aura cette structure : 
-```
+```bash
 # Use Alpine Linux as the base image
 FROM php:8.1-fpm-alpine
 
@@ -405,7 +405,7 @@ Pour compléter, il faudra créer les fichiers `default.conf` et `supervisord.co
 Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
 
 le fichier `default.conf` :
-```
+```bash
 server {
     listen       80;
     listen  [::]:80;
@@ -452,7 +452,7 @@ server {
 }
 ```
 et le fichier `supervisord.conf` :
-```
+```bash
 # configurs Supervisor daemon
 [supervisord]
 nodaemon=true
