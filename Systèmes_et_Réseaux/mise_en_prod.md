@@ -290,7 +290,104 @@ volumes:
   db_data: {}
 ```
 
-Le fichier `docker-compose.yml` se situe à la racine de l'app (dossier contenant l'application Frontend, l'application Backend (API) et la base de données).<br>
-On ajoutera également un fichier `Dockerfile` qui contient d'éléments décrivant l'image Docker et d'instructions servant à construire l'image Docker.<br>
-Ce fichier sera utilisé pour automatiser le build de l'image Docker.
+## Cas pratique : Application fullstack
 
+Dans le cas d'une application FullStack (Application Front-end couplée avec une application Back-end (API) et d'une base de données), on emploiera plusieurs conteneurs.<br>
+On aura un dossier contenant le frontend, un dossier contenant le backend, et un dossier englobant le tout.<br>
+
+### Structure 
+
+Le fichier `docker-compose.yml` se situe à la racine de l'app (dossier contenant l'application Front-end, l'application Back-end (API) et la base de données).<br>
+
+On aura plusieurs fichiers `Dockerfile` qui contiennent chacun une série d'éléments décrivant l'image Docker et d'instructions servant à construire l'image Docker.<br>
+Ces fichiers seront utilisés pour automatiser le build des images Docker.
+
+### I. Conteneurisation de la base de données
+
+On va commencer par conteneuriser la base de données : ici une base de données Postgresql.<br>
+On va donc créer le fichier `docker-compose.yml` pour paramétrer le conteneur.<br> 
+
+**N.B. : Ce fichier va évoluer au fur et à mesure qu'on avancesera dans la conteneurisation entière de l'app.**
+
+```yml
+version: '3.9'
+
+services:
+    db:
+        image: postgres:latest
+        ports:
+            - "5432:5432"
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        environment:
+            POSTGRES_DB: db_crafted_by
+            POSTGRES_USER: romainw
+            POSTGRES_PASSWORD: R0main89labs!
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+
+volumes:
+    pg-data: {}
+```
+Le service DB permet de paramétrer le conteneur pour la base de données.<br>
+On utilise une image officielle postgres. <a href="https://hub.docker.com/_/postgres">https://hub.docker.com/_/postgres</a><br>
+volumes indique la manière dont on fera persister les données de la base de données.
+
+Pour tester, on utilisera la commande `docker compose up`.
+
+### II. Conteneurisation du backend
+
+Au tour du backend : dans notre cas, il s'agit d'une API Laravel 10.<br>
+Pour fonctionner correctement dans un environnement de production, l'application nécessite deux services essentiels : **nginx** et **php-fpm**.<br>.
+Pour intégrer ces services dans un seul conteneur, on utilisera également un troisième service : **supervisor**
+
+```
+N.B. :
+Nginx est un serveur web de haute performance, reconnu pour sa stabilité, sa richesse fonctionnelle, sa configuration simple et sa faible consommation de ressources.
+Il est couramment utilisé pour servir des pages web statiques ainsi que comme reverse proxy pour des applications web.
+
+PHP-FPM (FastCGI Process Manager) est une alternative efficace pour gérer les processus PHP, permettant au serveur web de traiter les requêtes PHP de manière efficiente.
+L’interaction entre Nginx et PHP-FPM se fait via le protocole FastCGI, où Nginx redirige les requêtes nécessitant une interprétation PHP vers PHP-FPM.
+Après l’exécution du script PHP, PHP-FPM renvoie le résultat à Nginx, qui le transmet au client. Cette séparation des tâches optimise la gestion des ressources et les performances des applications web.
+
+Supervisor est un système de contrôle et de supervision de processus pour Unix, veillant à ce que les processus spécifiés fonctionnent sans interruption.
+Il est particulièrement utile pour garantir que PHP-FPM reste actif, redémarrant le processus automatiquement en cas d’échec.
+```
+
+On commencera par créer le fichier `Dockerfile` à la racine du dossier du backend.<br>
+Il aura cette structure : 
+```
+# Use Alpine Linux as the base image
+FROM php:8.1-fpm-alpine
+
+# Install necessary packages nginx & supervisor
+RUN apk update && \
+    apk add --no-cache nginx supervisor
+
+# Create necessary directories for Laravel APP
+# Create directory where nginx logs will be stored
+# Create directory where php-fpm logs will be stored
+RUN mkdir -p /var/www/html/public \
+    && mkdir -p /var/log/nginx \
+    && mkdir -p /var/log/php-fpm
+
+# Copy the Laravel application files to the container
+COPY . /var/www/html
+
+# Set the working directory inside the container
+WORKDIR /var/www/html
+
+# Set up nginx
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Set up Supervisor
+COPY supervisor.conf /etc/supervisor/conf.d/supevisord.conf
+
+# Export ports : default port for HTTP traffic
+EXPOSE 80
+
+# Start Supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+```
+Ici, on récupère
