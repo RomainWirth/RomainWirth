@@ -339,7 +339,7 @@ Pour tester, on utilisera la commande `docker compose up`.
 ### II. Conteneurisation du backend
 
 Au tour du backend : dans notre cas, il s'agit d'une API Laravel 10.<br>
-Pour fonctionner correctement dans un environnement de production, l'application nécessite deux services essentiels : **nginx** et **php-fpm**.<br>.
+Pour fonctionner correctement dans un environnement de production, l'application nécessite deux services essentiels : **nginx** et **php-fpm**.<br>
 Pour intégrer ces services dans un seul conteneur, on utilisera également un troisième service : **supervisor**
 
 ```
