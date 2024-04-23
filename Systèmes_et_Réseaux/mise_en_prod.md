@@ -395,4 +395,9 @@ EXPOSE 80
 # Start Supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 ```
-Ici, on récupère
+Ici, on part d'une image officielle Docker php-fpm. La version Alpine est plus légère qu'une image standard.<br>
+On installe ensuite les pckages nginx et supervisor, puis on crée les dossier qui vont contenir : la totalité de l'application laravel, les dossier qui vont contenir les logs nginx et php-fpm.<br>
+On copie ensuite les fichiers de l'application dans le conteneur, puis on initialise le répertoire de travail dans le conteneur.<br>
+On initilise ensuite les fichiers de configuration de nginx et de supervisor.<br>
+On indique ensuite le port par défaut pour le traffic HTTP, et enfin, on démarre Supervisor.
+
