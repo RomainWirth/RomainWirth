@@ -344,14 +344,19 @@ Pour intégrer ces services dans un seul conteneur, on utilisera également un t
 
 ```
 N.B. :
-Nginx est un serveur web de haute performance, reconnu pour sa stabilité, sa richesse fonctionnelle, sa configuration simple et sa faible consommation de ressources.
+Nginx est un serveur web de haute performance, reconnu pour sa stabilité, sa richesse fonctionnelle,
+sa configuration simple et sa faible consommation de ressources.
 Il est couramment utilisé pour servir des pages web statiques ainsi que comme reverse proxy pour des applications web.
 
-PHP-FPM (FastCGI Process Manager) est une alternative efficace pour gérer les processus PHP, permettant au serveur web de traiter les requêtes PHP de manière efficiente.
-L’interaction entre Nginx et PHP-FPM se fait via le protocole FastCGI, où Nginx redirige les requêtes nécessitant une interprétation PHP vers PHP-FPM.
-Après l’exécution du script PHP, PHP-FPM renvoie le résultat à Nginx, qui le transmet au client. Cette séparation des tâches optimise la gestion des ressources et les performances des applications web.
+PHP-FPM (FastCGI Process Manager) est une alternative efficace pour gérer les processus PHP,
+permettant au serveur web de traiter les requêtes PHP de manière efficiente.
+L’interaction entre Nginx et PHP-FPM se fait via le protocole FastCGI,
+où Nginx redirige les requêtes nécessitant une interprétation PHP vers PHP-FPM.
+Après l’exécution du script PHP, PHP-FPM renvoie le résultat à Nginx, qui le transmet au client.
+Cette séparation des tâches optimise la gestion des ressources et les performances des applications web.
 
-Supervisor est un système de contrôle et de supervision de processus pour Unix, veillant à ce que les processus spécifiés fonctionnent sans interruption.
+Supervisor est un système de contrôle et de supervision de processus pour Unix,
+veillant à ce que les processus spécifiés fonctionnent sans interruption.
 Il est particulièrement utile pour garantir que PHP-FPM reste actif, redémarrant le processus automatiquement en cas d’échec.
 ```
 
