@@ -370,11 +370,9 @@ FROM php:8.1-fpm-alpine
 RUN apk update && \
     apk add --no-cache nginx supervisor
 
-# Create necessary directories for Laravel APP
 # Create directory where nginx logs will be stored
 # Create directory where php-fpm logs will be stored
-RUN mkdir -p /var/www/html/public \
-    && mkdir -p /var/log/nginx \
+RUN mkdir -p /var/log/nginx \
     && mkdir -p /var/log/php-fpm
 
 # Copy the Laravel application files to the container
