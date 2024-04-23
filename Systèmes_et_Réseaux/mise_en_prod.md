@@ -401,3 +401,82 @@ On copie ensuite les fichiers de l'application dans le conteneur, puis on initia
 On initilise ensuite les fichiers de configuration de nginx et de supervisor.<br>
 On indique ensuite le port par défaut pour le traffic HTTP, et enfin, on démarre Supervisor.
 
+Pour compléter, il faudra créer les fichiers `default.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
+Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
+
+le fichier `default.conf` :
+```
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    location ~ \.php$ {
+        root           html;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+```
+et le fichier `supervisord.conf` :
+```
+# configurs Supervisor daemon
+[supervisord]
+nodaemon=true
+
+# defines configuration for nginx process
+[program:nginx]
+# specify command to start nginx
+command=/usr/sbin/nginx -g "daemon off;"
+# Instruction to start and restart nginx if crash
+autostart=true
+autorestart=true
+# Specify the log files for Nginx error and access logs
+stderr_logfile=/var/log/nginx/error.log
+stdout_logfile=/var/log/nginx/access.log
+
+# Configuration for PHP-FPM process
+[program:php-fpm]
+# Specify command to start PHP-FPM process
+command=/usr/local/sbin/php-fpm -F
+# Inctruction to automatically start and restart PHP-FPM if crash
+autostart=true
+autorestart=true
+# Specify the log files for PHP-FPM error and access logs
+stderr_logfile=/var/log/php-fpm/error.log
+stdout_logfile=/var/log/php-fpm/access.log
+
+```
