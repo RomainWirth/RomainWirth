@@ -186,7 +186,7 @@ On peut créer une image soit en modifiant un conteneur déjà en marche (sorte 
 Un conteneur est une instance en exécution d'une image. Il s'agit d'une encapsulation légère d'une application et de son environnement d'exécution.<br>
 Le conteneur fonctionne de manière isolée sur le système hôte.
 
-**Attention**, différence entre une image docker et un conteneur (sont pas la même chose) :<br>
+**Attention**, différence entre une image docker et un conteneur (ne sont pas la même chose) :<br>
 * L'image docker contient tous les éléments nécessaires à l'exécution d'un logiciel : le code, un environnement d'exécution (ex JVM), les pilotes, les outils, scripts, bibliothèques, etc.<br>
 Une image n'est pas modifiable. Si on souhaite la modifier, il faut en créer une nouvelle.<br>
 On stockera les images dans le "registry" afin de pouvoir les télécharger.<br>
@@ -251,11 +251,11 @@ Pour nous exercer, nous allons donc déployer une application wordpress. Cette a
 - La base de données ne doit pas être accessible depuis l’extérieur. Autrement dit, il faudra regarder du côté des réseaux Docker.
 - La base de données doit pouvoir persister les données
 
-Pour ce faire, il faut créer un dossier qui contiendra notre application, et y créer un fichier `docker-compose.yml`.
+Pour ce faire, il faut créer un dossier qui contiendra notre application, et y créer un fichier `docker-compose.yml`.<br>
 
 <a href="https://openclassrooms.com/fr/courses/2035766-optimisez-votre-deploiement-en-creant-des-conteneurs-avec-docker/6211677-creez-un-fichier-docker-compose-pour-orchestrer-vos-conteneurs">voir ce tuto</a>
 
-Attention à modifier les éléments selon la configuration qu'on souhaite :
+Exemple d'un fichier Docker-compose.yml, la structure est sensiblement la même dans chaque fichier :
 ```
 version: '3'
 
@@ -289,4 +289,8 @@ services:
 volumes:
   db_data: {}
 ```
+
+Le fichier `docker-compose.yml` se situe à la racine de l'app (dossier contenant l'application Frontend, l'application Backend (API) et la base de données).<br>
+On ajoutera également un fichier `Dockerfile` qui contient d'éléments décrivant l'image Docker et d'instructions servant à construire l'image Docker.<br>
+Ce fichier sera utilisé pour automatiser le build de l'image Docker.
 
