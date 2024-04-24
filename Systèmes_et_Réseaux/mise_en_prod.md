@@ -339,8 +339,8 @@ Pour tester, on utilisera la commande `docker compose up`.
 ### II. Conteneurisation du backend
 
 Au tour du backend : dans notre cas, il s'agit d'une API Laravel 10.<br>
-Pour fonctionner correctement dans un environnement de production, l'application nécessite deux services essentiels : **nginx** et **php-fpm**.<br>
-Pour intégrer ces services dans un seul conteneur, on utilisera également un troisième service : **supervisor**
+Pour fonctionner correctement dans un environnement de production, l'application nécessite deux services essentiels qui seront configurés pour fonctionner ensemble : **nginx** et **php-fpm**.<br>
+Pour intégrer ces services dans un seul conteneur et les gérer, on utilisera également un troisième service : **supervisor**
 
 ```
 N.B. :
@@ -424,8 +424,144 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 13. **EXPOSE 80:** Cette instruction expose le port 80, le port par défaut pour le trafic HTTP, du conteneur Docker.
 14. **CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]:** Cette instruction définit la commande par défaut à exécuter lorsque le conteneur démarre. Elle lance Supervisor en utilisant le fichier de configuration spécifié (supervisord.conf), ce qui permet à Supervisor de démarrer les services Nginx et PHP-FPM dans le conteneur.
 
-Pour compléter, il faudra créer les fichiers `default.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
+Pour compléter, il faudra créer les fichiers `nginx.conf`, `default.conf`, `zz-docker.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
 Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
+
+Le fichier `nginx.conf` :<br> 
+Il est le fichier de configuration principal de Nginx.<br> 
+Il contrôle le comportement global du serveur Nginx et définit la configuration par défaut pour les serveurs virtuels,<br> 
+les connexions, les journaux, les protocoles SSL/TLS, la compression gzip, etc. 
+```
+# /etc/nginx/nginx.conf
+
+# Dans ce cas précis, on modifie l'utilisateur pour qu'il corresponde 
+user root;
+
+# Set number of worker processes automatically based on number of CPU cores.
+worker_processes auto;
+
+# Enables the use of JIT for regular expressions to speed-up their processing.
+pcre_jit on;
+
+# Configures default error logger.
+error_log /var/log/nginx/error.log warn;
+
+# Includes files with directives to load dynamic modules.
+include /etc/nginx/modules/*.conf;
+
+# Include files with config snippets into the root context.
+include /etc/nginx/conf.d/*.conf;
+
+events {
+	# The maximum number of simultaneous connections that can be opened by
+	# a worker process.
+	worker_connections 1024;
+}
+
+http {
+	# Includes mapping of file name extensions to MIME types of responses
+	# and defines the default type.
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	# Name servers used to resolve names of upstream servers into addresses.
+	# It's also needed when using tcpsocket and udpsocket in Lua modules.
+	#resolver 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001;
+
+	# Don't tell nginx version to the clients. Default is 'on'.
+	server_tokens off;
+
+	# Specifies the maximum accepted body size of a client request, as
+	# indicated by the request header Content-Length. If the stated content
+	# length is greater than this size, then the client receives the HTTP
+	# error code 413. Set to 0 to disable. Default is '1m'.
+	client_max_body_size 1m;
+
+	# Sendfile copies data between one FD and other from within the kernel,
+	# which is more efficient than read() + write(). Default is off.
+	sendfile on;
+
+	# Causes nginx to attempt to send its HTTP response head in one packet,
+	# instead of using partial frames. Default is 'off'.
+	tcp_nopush on;
+
+
+	# Enables the specified protocols. Default is TLSv1 TLSv1.1 TLSv1.2.
+	# TIP: If you're not obligated to support ancient clients, remove TLSv1.1.
+	ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+
+	# Path of the file with Diffie-Hellman parameters for EDH ciphers.
+	# TIP: Generate with: `openssl dhparam -out /etc/ssl/nginx/dh2048.pem 2048`
+	#ssl_dhparam /etc/ssl/nginx/dh2048.pem;
+
+	# Specifies that our cipher suits should be preferred over client ciphers.
+	# Default is 'off'.
+	ssl_prefer_server_ciphers on;
+
+	# Enables a shared SSL cache with size that can hold around 8000 sessions.
+	# Default is 'none'.
+	ssl_session_cache shared:SSL:2m;
+
+	# Specifies a time during which a client may reuse the session parameters.
+	# Default is '5m'.
+	ssl_session_timeout 1h;
+
+	# Disable TLS session tickets (they are insecure). Default is 'on'.
+	ssl_session_tickets off;
+
+
+	# Enable gzipping of responses.
+	#gzip on;
+
+	# Set the Vary HTTP header as defined in the RFC 2616. Default is 'off'.
+	gzip_vary on;
+
+
+	# Helper variable for proxying websockets.
+	map $http_upgrade $connection_upgrade {
+		default upgrade;
+		'' close;
+	}
+
+
+	# Specifies the main log format.
+	log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+			'$status $body_bytes_sent "$http_referer" '
+			'"$http_user_agent" "$http_x_forwarded_for"';
+
+	# Sets the path, format, and configuration for a buffered log write.
+	access_log /var/log/nginx/access.log main;
+
+
+	# Includes virtual hosts configs.
+	include /etc/nginx/http.d/*.conf;
+}
+
+```
+explications :
+1. **user root;:** Définit l'utilisateur sous lequel les processus Nginx seront exécutés.
+2. **worker_processes auto;:** Définit le nombre de processus Nginx qui seront créés pour gérer les connexions des clients. Le paramètre auto permet à Nginx de choisir automatiquement le nombre de processus en fonction du nombre de cœurs CPU disponibles.
+3. **pcre_jit on;:** Active la compilation juste-à-temps (JIT) pour les expressions régulières PCRE, ce qui accélère leur traitement.
+4. **error_log /var/log/nginx/error.log warn;:** Définit le fichier de journalisation des erreurs pour Nginx.
+5. **include /etc/nginx/modules/*.conf;:** Inclut les fichiers de configuration des modules dynamiques de Nginx.
+6. **include /etc/nginx/conf.d/*.conf;:** Inclut les fichiers de configuration supplémentaires du serveur Nginx. Cette ligne est utilisée pour inclure des fichiers de configuration spécifiques à chaque site web ou application.
+7. **events { ... }:** Définit les paramètres globaux pour les événements Nginx, tels que le nombre maximal de connexions simultanées.
+8. **http { ... }:** Définit les paramètres globaux pour le protocole HTTP, y compris les types MIME, les paramètres de sécurité, la journalisation, etc.
+   - **include /etc/nginx/mime.types;:*** Inclut les types MIME prédéfinis par Nginx.
+   - **default_type application/octet-stream;:** Définit le type MIME par défaut pour les réponses du serveur.
+   - **server_tokens off;:** Masque la version de Nginx des en-têtes de réponse envoyés aux clients.
+   - **client_max_body_size 1m;:** Définit la taille maximale autorisée du corps d'une requête client.
+   - **sendfile on;:** Active l'utilisation de la fonctionnalité de transfert de fichiers optimisée du système d'exploitation.
+   - **tcp_nopush on;:** Active l'envoi des en-têtes de réponse HTTP en une seule fois.
+   - **ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;:** Active les protocoles SSL/TLS pris en charge.
+   - **log_format main ...:** Définit le format des journaux d'accès principaux.
+   - **access_log /var/log/nginx/access.log main;:** Définit le fichier de journalisation des accès pour Nginx.
+
+_Notez que certains paramètres liés à la sécurité SSL/TLS sont commentés par défaut. Ils peuvent être décommentés et configurés selon les besoins spécifiques de votre environnement._
+
+9. **map $http_upgrade $connection_upgrade { ... }:** Définit une variable d'aide pour la mise à niveau de la connexion lors de l'utilisation de websockets.
+10. **include /etc/nginx/http.d/*.conf;:** Inclut les fichiers de configuration des hôtes virtuels HTTP. Cette ligne est utilisée pour inclure les configurations spécifiques de chaque site web ou application.
+
 
 le fichier `default.conf` :
 ```bash
