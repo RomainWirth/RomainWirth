@@ -1039,3 +1039,59 @@ volumes:
 docker compose up
 ```
 
+### IV. Publication d'une image docker sur le docker-hub
+
+Pour push une image sur le dockerhub, vous pouvez suivre ce <a href="https://www.it-connect.fr/comment-publier-une-image-dockerfile-sur-le-referentiel-docker-hub/">tuto</a>
+
+Pour publier une image, on va commencer par se rendre sur <a href="https://hub.docker.com/">dockerhub</a><br>
+l'idée ici est de créer un repository, puis ensuite se rendre dans notre terminal pour push l'image souhaitée.<br>
+
+On va se connecter sur notre hôte Docker et exécuter les commandes suivantes :
+```bash
+docker login
+<entrez votre identifiant docker>
+<entrez votre mot de passe docker>
+```
+
+D'abord lister les images :
+```bash
+docker images
+```
+
+puis assigner un label à notre image grâce à la commande docker tag :
+```bash
+docker tag <nom_de_l_image> <username/repository:tag>
+```
+
+enfin, charger l'image sur le repository docker hub username/repository avec la commande :
+```bash
+docker push <username/repository:tag>
+```
+
+On peut enfin vérifer les images docker :
+```bash
+docker images
+```
+
+Dans notre cas pour le frontend :
+```bash 
+docker images
+
+docker tag crafted_by_frontend <username>/crafted_by_frontend:latest
+
+docker push <username>/crafted_by_frontend:latest
+```
+pour le backend :
+```bash 
+docker images
+
+docker tag crafted_by_api <username>/crafted_by_api:latest
+
+docker push <username>/crafted_by_api:latest
+```
+
+On pourra enfin lancer les instanciations des conteneurs depuis l'imafe envoyée précédemment sur Docker Hub :
+```bash
+docker run -d -p port:port <username>/crafted_by_api
+docker run -d -p port:port <username>/crafted_by_frontend
+```
