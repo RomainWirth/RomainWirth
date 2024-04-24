@@ -322,8 +322,8 @@ services:
         shm_size: 128mb
         environment:
             POSTGRES_DB: db_crafted_by
-            POSTGRES_USER: romainw
-            POSTGRES_PASSWORD: R0main89labs!
+            POSTGRES_USER: <user>
+            POSTGRES_PASSWORD: <password>
         volumes:
             - pg-data:/var/lib/postgresql/data
 
@@ -364,11 +364,19 @@ On commencera par créer le fichier `Dockerfile` à la racine du dossier du back
 Il aura cette structure : 
 ```bash
 # Use Alpine Linux as the base image
-FROM php:8.1-fpm-alpine
+FROM php:8.2-fpm-alpine
 
 # Install necessary packages nginx & supervisor
-RUN apk update && \
-    apk add --no-cache nginx supervisor
+RUN apk update && apk add \
+    nginx \
+    supervisor \
+    htop \
+    libpq-dev
+
+RUN docker-php-ext-install pdo pdo_pgsql
+
+# Installing composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Create directory where nginx logs will be stored
 # Create directory where php-fpm logs will be stored
@@ -376,28 +384,45 @@ RUN mkdir -p /var/log/nginx \
     && mkdir -p /var/log/php-fpm
 
 # Copy the Laravel application files to the container
-COPY . /var/www/html
+COPY --chown=www-data:www-data . /var/www/html
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
 
+# RUN composer install --no-interaction
+RUN composer install --no-interaction
+
 # Set up nginx
-COPY default.conf /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/http.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf 
+
+# Set up php-fpm
+COPY zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # Set up Supervisor
-COPY supervisor.conf /etc/supervisor/conf.d/supevisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Export ports : default port for HTTP traffic
 EXPOSE 80
 
 # Start Supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
 ```
-Ici, on part d'une image officielle Docker php-fpm. La version Alpine est plus légère qu'une image standard.<br>
-On installe ensuite les pckages nginx et supervisor, puis on crée les dossier qui vont contenir : la totalité de l'application laravel, les dossier qui vont contenir les logs nginx et php-fpm.<br>
-On copie ensuite les fichiers de l'application dans le conteneur, puis on initialise le répertoire de travail dans le conteneur.<br>
-On initilise ensuite les fichiers de configuration de nginx et de supervisor.<br>
-On indique ensuite le port par défaut pour le traffic HTTP, et enfin, on démarre Supervisor.
+1. **FROM php:8.2-fpm-alpine:** Cette ligne définit l'image de base à utiliser, dans ce cas, Alpine Linux avec PHP-FPM version 8.2.
+2. RUN apk update && apk add nginx supervisor htop libpq-dev: Ces commandes mettent à jour les index des packages Alpine (apk update) et installent les packages nécessaires (nginx, supervisor, htop, libpq-dev).
+3. **RUN docker-php-ext-install pdo pdo_pgsql:** Cette commande installe les extensions PHP nécessaires pour la connexion à PostgreSQL en utilisant PDO.
+4. **COPY --from=composer:latest /usr/bin/composer /usr/bin/composer:** Cette commande copie l'exécutable Composer depuis l'image Composer officielle vers l'emplacement approprié dans l'image en cours de construction.
+5. **RUN mkdir -p /var/log/nginx && mkdir -p /var/log/php-fpm:** Ces commandes créent les répertoires où les logs de Nginx et PHP-FPM seront stockés.
+6. **COPY --chown=www-data:www-data . /var/www/html:** Cette commande copie les fichiers de l'application Laravel depuis le répertoire local vers le répertoire /var/www/html du conteneur, tout en définissant les propriétaires et les groupes appropriés.
+7. **WORKDIR /var/www/html:** Cette instruction définit le répertoire de travail à l'intérieur du conteneur où toutes les commandes suivantes seront exécutées.
+8. **RUN composer install --no-interaction:** Cette commande exécute l'installation des dépendances de l'application Laravel en utilisant Composer.
+9. **COPY default.conf /etc/nginx/http.d/default.conf:** Cette commande copie le fichier de configuration Nginx spécifique à l'application depuis le répertoire local vers le répertoire /etc/nginx/http.d/ du conteneur.
+10. **COPY nginx.conf /etc/nginx/nginx.conf:** Cette commande copie le fichier de configuration principal de Nginx depuis le répertoire local vers le répertoire /etc/nginx/ du conteneur.
+11. **COPY zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf:** Cette commande copie un fichier de configuration spécifique pour PHP-FPM depuis le répertoire local vers le répertoire /usr/local/etc/php-fpm.d/ du conteneur.
+12. **COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf:** Cette commande copie le fichier de configuration Supervisor depuis le répertoire local vers le répertoire /etc/supervisor/conf.d/ du conteneur.
+13. **EXPOSE 80:** Cette instruction expose le port 80, le port par défaut pour le trafic HTTP, du conteneur Docker.
+14. **CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]:** Cette instruction définit la commande par défaut à exécuter lorsque le conteneur démarre. Elle lance Supervisor en utilisant le fichier de configuration spécifié (supervisord.conf), ce qui permet à Supervisor de démarrer les services Nginx et PHP-FPM dans le conteneur.
 
 Pour compléter, il faudra créer les fichiers `default.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
 Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
