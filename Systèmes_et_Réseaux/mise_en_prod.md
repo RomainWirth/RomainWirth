@@ -361,7 +361,10 @@ Il est particulièrement utile pour garantir que PHP-FPM reste actif, redémarra
 ```
 
 On commencera par créer le fichier `Dockerfile` à la racine du dossier du backend.<br>
-Il aura cette structure : 
+Pour compléter, il faudra créer les fichiers `nginx.conf`, `default.conf`, `zz-docker.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
+Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
+
+Le Dockerfile aura cette structure : 
 ```bash
 # Use Alpine Linux as the base image
 FROM php:8.2-fpm-alpine
@@ -410,7 +413,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 ```
 1. **FROM php:8.2-fpm-alpine:** Cette ligne définit l'image de base à utiliser, dans ce cas, Alpine Linux avec PHP-FPM version 8.2.
-2. RUN apk update && apk add nginx supervisor htop libpq-dev: Ces commandes mettent à jour les index des packages Alpine (apk update) et installent les packages nécessaires (nginx, supervisor, htop, libpq-dev).
+2. **RUN apk update && apk add nginx supervisor htop libpq-dev:** Ces commandes mettent à jour les index des packages Alpine (apk update) et installent les packages nécessaires (nginx, supervisor, htop, libpq-dev).
 3. **RUN docker-php-ext-install pdo pdo_pgsql:** Cette commande installe les extensions PHP nécessaires pour la connexion à PostgreSQL en utilisant PDO.
 4. **COPY --from=composer:latest /usr/bin/composer /usr/bin/composer:** Cette commande copie l'exécutable Composer depuis l'image Composer officielle vers l'emplacement approprié dans l'image en cours de construction.
 5. **RUN mkdir -p /var/log/nginx && mkdir -p /var/log/php-fpm:** Ces commandes créent les répertoires où les logs de Nginx et PHP-FPM seront stockés.
@@ -424,11 +427,8 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 13. **EXPOSE 80:** Cette instruction expose le port 80, le port par défaut pour le trafic HTTP, du conteneur Docker.
 14. **CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]:** Cette instruction définit la commande par défaut à exécuter lorsque le conteneur démarre. Elle lance Supervisor en utilisant le fichier de configuration spécifié (supervisord.conf), ce qui permet à Supervisor de démarrer les services Nginx et PHP-FPM dans le conteneur.
 
-Pour compléter, il faudra créer les fichiers `nginx.conf`, `default.conf`, `zz-docker.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
-Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
-
 Le fichier `nginx.conf` :<br> 
-Il est le fichier de configuration principal de Nginx.<br> 
+C'est le fichier de configuration principal de Nginx.<br> 
 Il contrôle le comportement global du serveur Nginx et définit la configuration par défaut pour les serveurs virtuels,<br> 
 les connexions, les journaux, les protocoles SSL/TLS, la compression gzip, etc. 
 ```
@@ -562,43 +562,40 @@ _Notez que certains paramètres liés à la sécurité SSL/TLS sont commentés p
 9. **map $http_upgrade $connection_upgrade { ... }:** Définit une variable d'aide pour la mise à niveau de la connexion lors de l'utilisation de websockets.
 10. **include /etc/nginx/http.d/*.conf;:** Inclut les fichiers de configuration des hôtes virtuels HTTP. Cette ligne est utilisée pour inclure les configurations spécifiques de chaque site web ou application.
 
-
-le fichier `default.conf` :
+le fichier `default.conf` :<br>
+C'est une configuration Nginx spécifique pour le serveur virtuel par défaut.<br> 
+Il définit comment Nginx doit gérer les requêtes HTTP reçues sur le port 80. 
 ```bash
 server {
-    listen       80;
-    listen  [::]:80;
-    server_name  localhost;
+    listen       80 default_server;
 
     #access_log  /var/log/nginx/host.access.log  main;
 
+    root   /var/www/html/public;
+        
+    index  index.php index.htm index.html;
+  
     location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
+        try_files $uri $uri/ /index.php?$query_string;
+        # Il faudra utiliser app.php si vous utilisez symfony
     }
-
     #error_page  404              /404.html;
 
     # redirect server error pages to the static page /50x.html
     #
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   /usr/share/nginx/html;
-    }
 
     # proxy the PHP scripts to Apache listening on 127.0.0.1:80
     #
     #location ~ \.php$ {
     #    proxy_pass   http://127.0.0.1;
-    #}
-
+    #}"/var/www/html/public/api/items"
+    
     # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
     #
     location ~ \.php$ {
-        root           html;
-        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_pass   unix:/var/run/php-fpm.sock;
         fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include        fastcgi_params;
     }
 
@@ -610,7 +607,63 @@ server {
     #}
 }
 ```
-et le fichier `supervisord.conf` :
+1. **server { ... }:** Définit un bloc de configuration pour un serveur virtuel Nginx.
+2. **listen 80 default_server;:** Spécifie que ce serveur virtuel écoute sur le port 80 par défaut pour toutes les requêtes entrantes.
+3. **root /var/www/html/public;:** Définit le répertoire racine où se trouvent les fichiers de l'application web. Dans ce cas, il est configuré pour un répertoire public à l'intérieur du répertoire /var/www/html.
+4. **index index.php index.htm index.html;:** Définit les fichiers d'index pris en charge par le serveur. Si un nom de fichier n'est pas spécifié dans l'URL, le serveur cherchera ces fichiers dans l'ordre indiqué.
+5. **location / { ... }:** Définit la configuration pour le traitement des requêtes pour les URI racines de l'application. Cette directive try_files tente de servir le fichier demandé, puis redirige vers index.php en passant les paramètres de la requête si le fichier n'existe pas. C'est une configuration typique pour les applications basées sur des frameworks PHP comme Laravel.
+6. **location ~ \.php$ { ... }:** Définit la configuration pour le traitement des fichiers PHP. Cette directive fastcgi_pass spécifie que les requêtes PHP doivent être transmises à _PHP-FPM via un socket Unix_. Les autres directives fastcgi_index, fastcgi_param, et include sont utilisées pour configurer les paramètres FastCGI pour le serveur PHP.
+
+En résumé, ce fichier default.conf définit un serveur virtuel Nginx de base pour servir une application web PHP.<br> 
+Il utilise PHP-FPM pour exécuter les scripts PHP et redirige toutes les requêtes vers index.php pour le traitement par l'application.<br> 
+Cette configuration est adaptée aux applications web basées sur des frameworks PHP comme Laravel.
+
+Le fichier `zz-docker.conf` :<br>
+C'est une configuration spécifique pour PHP-FPM dans un environnement Docker.<br> 
+Il définit les paramètres globaux et spécifiques au pool de processus PHP-FPM. 
+```
+[global]
+pid = /var/run/php-fpm.pid
+error_log = /var/log/php-fpm/error.log
+daemonize = no
+
+[www]
+listen = /var/run/php-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0660
+user = www-data
+group = www-data
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+chdir = /
+```
+1. **[global]:** Cette section contient des paramètres globaux pour PHP-FPM.
+	- **pid = /var/run/php-fpm.pid:** Spécifie le chemin du fichier PID pour le processus PHP-FPM.
+        - **error_log = /var/log/php-fpm/error.log:** Spécifie le chemin du fichier journal des erreurs de PHP-FPM.
+        - **daemonize = no:** Indique à PHP-FPM de ne pas s'exécuter en arrière-plan.
+
+2. **[www]:** Cette section contient des paramètres spécifiques pour le pool de processus PHP-FPM nommé "www".
+        - **listen = /var/run/php-fpm.sock:** Spécifie le chemin du socket Unix sur lequel PHP-FPM écoute les connexions.
+        - **listen.owner = www-data et listen.group = www-data:** Définit le propriétaire et le groupe du socket Unix pour correspondre à l'utilisateur et au groupe Nginx.
+        - **listen.mode = 0660:** Définit les permissions du socket Unix.
+        - **user = www-data et group = www-data:** Définit l'utilisateur et le groupe sous lesquels les processus PHP-FPM seront exécutés.
+        - **pm = dynamic:** Définit le mode de gestion des processus PHP-FPM en tant que dynamique.
+        - **pm.max_children = 5:** Définit le nombre maximal de processus enfants.
+        - **pm.start_servers = 2:** Définit le nombre de processus enfants à démarrer au lancement de PHP-FPM.
+        - **pm.min_spare_servers = 1:** Définit le nombre minimal de processus enfants inactifs à conserver.
+        - **pm.max_spare_servers = 3:** Définit le nombre maximal de processus enfants inactifs à conserver.
+        - **chdir = /:** Définit le répertoire de travail pour les processus PHP-FPM. Dans ce cas, il est défini à la racine du système de fichiers.
+
+Ce fichier est nommé zz-docker.conf avec le préfixe zz pour s'assurer qu'il est chargé après les fichiers de configuration par défaut de PHP-FPM.<br> 
+Il est conçu pour être utilisé dans un environnement Docker où les permissions et les chemins des fichiers sont configurés différemment de l'environnement de production habituel.<br> 
+Les paramètres spécifiques tels que listen.owner, listen.group et listen.mode sont configurés pour permettre à Nginx d'accéder au socket Unix PHP-FPM dans le conteneur Docker.
+
+Et enfin le fichier `supervisord.conf` :<br>
+Le fichier supervisord.conf est une configuration pour Supervisor, un système de gestion de processus utilisé pour contrôler et superviser les processus dans un environnement Docker.
 ```bash
 # configurs Supervisor daemon
 [supervisord]
@@ -637,5 +690,28 @@ autorestart=true
 # Specify the log files for PHP-FPM error and access logs
 stderr_logfile=/var/log/php-fpm/error.log
 stdout_logfile=/var/log/php-fpm/access.log
-
 ```
+1. **[supervisord]:** Cette section définit la configuration globale pour le démon Supervisor.
+        - **nodaemon=true:** Indique à Supervisor de ne pas s'exécuter en mode démon.
+        - **user=root:** Définit l'utilisateur sous lequel le démon Supervisor sera exécuté.
+
+2. **[program:nginx]:** Cette section définit la configuration pour le processus Nginx.
+        - **command=/usr/sbin/nginx -g "daemon off;":** Spécifie la commande pour démarrer Nginx. L'option -g "daemon off;" indique à Nginx de ne pas s'exécuter en arrière-plan.
+        - **autostart=true:** Indique à Supervisor de démarrer automatiquement le processus Nginx au démarrage.
+        - **autorestart=true:** Indique à Supervisor de redémarrer automatiquement le processus Nginx en cas de crash.
+        - **stderr_logfile=/var/log/nginx/error.log:** Spécifie le chemin du fichier journal des erreurs de Nginx.
+        - **stdout_logfile=/var/log/nginx/access.log:** Spécifie le chemin du fichier journal d'accès de Nginx.
+
+3. **[program:php-fpm]:** Cette section définit la configuration pour le processus PHP-FPM.
+        - **command=/usr/local/sbin/php-fpm -F:** Spécifie la commande pour démarrer le processus PHP-FPM. L'option -F indique à PHP-FPM de rester en avant-plan et d'écouter les demandes.
+        - **autostart=true:** Indique à Supervisor de démarrer automatiquement le processus PHP-FPM au démarrage.
+        - **autorestart=true:** Indique à Supervisor de redémarrer automatiquement le processus PHP-FPM en cas de crash.
+        - **stderr_logfile=/var/log/php-fpm/error.log:** Spécifie le chemin du fichier journal des erreurs de PHP-FPM.
+        - **stdout_logfile=/var/log/php-fpm/access.log:** Spécifie le chemin du fichier journal d'accès de PHP-FPM.
+
+Ce fichier supervisord.conf définit la configuration pour Supervisor afin de gérer les processus Nginx et PHP-FPM dans un environnement Docker.<br> 
+Il assure que ces processus sont démarrés automatiquement, surveillés et redémarrés en cas de problème, tout en journalisant les erreurs et les accès pour chaque processus.
+
+
+
+
