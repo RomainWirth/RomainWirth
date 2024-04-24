@@ -62,7 +62,6 @@ Cette configuration profite aussi à SCP et SFTP qui se connectent au même serv
     cette commande montre plusieurs informations : nom de l'application (ex: sshd), le douille du programme (adresse IP associée au port) et l'identifiant du processus (PID).<br>
     `sudo lsof -i -P -n` ou `sudo lsof -i -P -n | grep LISTEN`
 
-
 ## Mise en production d'applications sans conteneurisation
 
 ### PHP-FPM et NGINX
@@ -302,6 +301,51 @@ Le fichier `docker-compose.yml` se situe à la racine de l'app (dossier contenan
 On aura plusieurs fichiers `Dockerfile` qui contiennent chacun une série d'éléments décrivant l'image Docker et d'instructions servant à construire l'image Docker.<br>
 Ces fichiers seront utilisés pour automatiser le build des images Docker.
 
+Commandes utiles : 
+```bash
+# pour lister les conteneurs sur la machine
+docker ps -a
+# ou
+docker container ls -a
+
+# supprimer un conteneur
+docker container rm <id>
+
+# pour lister les images docker
+docker images
+
+# pour supprimer une image docker 
+docker rmi <id>
+docker rm <id>
+
+# pour build une image docker
+docker build -t <nom_de_l_image> .
+
+# pour lancer un conteneur docker
+docker run --name <nom_du_conteneur> <nom_de_l_image>
+
+# Pour lancer un container en mode débug (avec accès à la console)
+docker run -it --rm --name=<nom> -p <port>:<port>
+
+# Pour construire et lancer une application complète
+docker-compose up -d
+
+# Pour arrêter toutes les applications
+docker-compose down
+
+# pour build une image docker
+docker-compose build <service>
+
+# pour afficher les logs d'un service
+docker-logs -f <service>
+
+# pour accéder à l'application conteneurisée (sh est utilisé à la place de bash car on utilise une image alpine)
+docker exec -it <nom_du_conteneur> sh
+
+# quitter l'espace 
+exit
+```
+
 ### I. Conteneurisation de la base de données
 
 On va commencer par conteneuriser la base de données : ici une base de données Postgresql.<br>
@@ -312,6 +356,7 @@ Il décrit les services à exécuter, les paramètres de configuration, les dép
 
 **N.B. : Ce fichier va évoluer au fur et à mesure qu'on avancesera dans la conteneurisation entière de l'app.**
 
+#### Le fichier `docker-compose.yml` :
 ```yml
 version: '3.9'
 
@@ -383,7 +428,7 @@ On commencera par créer le fichier `Dockerfile` à la racine du dossier du back
 Pour compléter, il faudra créer les fichiers `nginx.conf`, `default.conf`, `zz-docker.conf` et `supervisord.conf` qui contiendront les configurations nécessaire au bon fonctionnement.<br>
 Ces fichiers doivent être situés au même niveau que le `Dockerfile` pour être copiés dans les bons répertoires grâce aux commandes indiquées dans ce dernier.
 
-Le Dockerfile aura cette structure : 
+#### Le Dockerfile aura cette structure : 
 ```bash
 # Use Alpine Linux as the base image
 FROM php:8.2-fpm-alpine
@@ -446,7 +491,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 13. **EXPOSE 80:** Cette instruction expose le port 80, le port par défaut pour le trafic HTTP, du conteneur Docker.
 14. **CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]:** Cette instruction définit la commande par défaut à exécuter lorsque le conteneur démarre. Elle lance Supervisor en utilisant le fichier de configuration spécifié (supervisord.conf), ce qui permet à Supervisor de démarrer les services Nginx et PHP-FPM dans le conteneur.
 
-Le fichier `nginx.conf` :<br> 
+#### Le fichier `nginx.conf` :<br> 
 C'est le fichier de configuration principal de Nginx.<br> 
 Il contrôle le comportement global du serveur Nginx et définit la configuration par défaut pour les serveurs virtuels,<br> 
 les connexions, les journaux, les protocoles SSL/TLS, la compression gzip, etc. 
@@ -581,7 +626,7 @@ _Notez que certains paramètres liés à la sécurité SSL/TLS sont commentés p
 9. **map $http_upgrade $connection_upgrade { ... }:** Définit une variable d'aide pour la mise à niveau de la connexion lors de l'utilisation de websockets.
 10. **include /etc/nginx/http.d/*.conf;:** Inclut les fichiers de configuration des hôtes virtuels HTTP. Cette ligne est utilisée pour inclure les configurations spécifiques de chaque site web ou application.
 
-le fichier `default.conf` :<br>
+#### le fichier `default.conf` :<br>
 C'est une configuration Nginx spécifique pour le serveur virtuel par défaut.<br> 
 Il définit comment Nginx doit gérer les requêtes HTTP reçues sur le port 80. 
 ```bash
@@ -637,10 +682,10 @@ En résumé, ce fichier default.conf définit un serveur virtuel Nginx de base p
 Il utilise PHP-FPM pour exécuter les scripts PHP et redirige toutes les requêtes vers index.php pour le traitement par l'application.<br> 
 Cette configuration est adaptée aux applications web basées sur des frameworks PHP comme Laravel.
 
-Le fichier `zz-docker.conf` :<br>
+#### Le fichier `zz-docker.conf` :<br>
 C'est une configuration spécifique pour PHP-FPM dans un environnement Docker.<br> 
 Il définit les paramètres globaux et spécifiques au pool de processus PHP-FPM. 
-```
+```bash
 [global]
 pid = /var/run/php-fpm.pid
 error_log = /var/log/php-fpm/error.log
@@ -681,7 +726,7 @@ Ce fichier est nommé zz-docker.conf avec le préfixe zz pour s'assurer qu'il es
 Il est conçu pour être utilisé dans un environnement Docker où les permissions et les chemins des fichiers sont configurés différemment de l'environnement de production habituel.<br> 
 Les paramètres spécifiques tels que listen.owner, listen.group et listen.mode sont configurés pour permettre à Nginx d'accéder au socket Unix PHP-FPM dans le conteneur Docker.
 
-Et enfin le fichier `supervisord.conf` :<br>
+#### Et enfin le fichier `supervisord.conf` :<br>
 Le fichier supervisord.conf est une configuration pour Supervisor, un système de gestion de processus utilisé pour contrôler et superviser les processus dans un environnement Docker.
 ```bash
 # configurs Supervisor daemon
@@ -731,7 +776,7 @@ stdout_logfile=/var/log/php-fpm/access.log
 Ce fichier supervisord.conf définit la configuration pour Supervisor afin de gérer les processus Nginx et PHP-FPM dans un environnement Docker.<br> 
 Il assure que ces processus sont démarrés automatiquement, surveillés et redémarrés en cas de problème, tout en journalisant les erreurs et les accès pour chaque processus.
 
-Une fois ces fichiers écrits, on pourra builder notre image docker grâce à la commande :
+#### Une fois ces fichiers écrits, on pourra builder notre image docker grâce à la commande :
 ```bash
 docker build --no-cache  -t <nom_de_l_api>:latest .
 ```
@@ -745,4 +790,252 @@ Explications de la commande :
 
 Cette commande construit une image Docker en utilisant un Dockerfile trouvé dans le répertoire actuel, en ignorant le cache pour s'assurer que l'image est construite à partir de zéro, et en taggant l'image résultante avec le nom crafted_by_api et l'étiquette latest.
 
-Après avoir build
+Après avoir build notre image, on mettra à jour le fichier `docker-compose.yml` :
+```yml
+version: '3.9'
+
+services:
+    # nom du service de la base de données
+    db:
+        container_name: db_crafted_by
+        # image docker de postgres
+        image: postgres:latest
+        # ports exposés
+        ports:
+            - "5432:5432"
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        environment:
+            POSTGRES_DB: db_crafted_by
+            POSTGRES_USER: romainw
+            POSTGRES_PASSWORD: R0main89labs!
+        # volumes de persistance des données
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+
+    # nom du service backend
+    laravel-api:
+        container_name: api_crafted_by
+        image: crafted_by_api:latest
+        # ports exposés
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+        environment:
+            DB_HOST: db
+
+volumes:
+    pg-data: {}
+
+```
+_**N.B. :** La première partie du fichier n'a pas été modifiée par rapport à la conteneurisation de la BDD, on va simplement regarder en détail la partie du service backend._
+
+- **laravel-api:** C'est le nom du service backend Laravel API.
+- **container_name: api_crafted_by:** Définit le nom du conteneur Docker pour le service backend Laravel API.
+- **image: crafted_by_api:latest:** Spécifie l'image Docker à utiliser pour ce service. Il est supposé qu'une image nommée crafted_by_api avec l'étiquette latest est disponible.
+- **ports:** Définit les ports à exposer sur l'hôte Docker et à mapper sur le conteneur. Dans ce cas, le port 80 du conteneur Laravel API est exposé sur le port 8080 de l'hôte Docker.
+- **depends_on:** Définit les dépendances de ce service. Dans ce cas, le service Laravel API dépend du service de la base de données PostgreSQL pour démarrer correctement.
+- **environment:** Définit les variables d'environnement nécessaires pour le service Laravel API. Dans ce cas, il spécifie l'hôte de la base de données comme DB_HOST.
+
+#### Il ne reste maintenant plus qu'à lancer la commande pour lancer les conteneurs : 
+```bash
+docker compose up
+```
+
+### III. Conteneurisation du frontend
+
+Concernant le front : dans notre cas, il s'agit d'une Application VueJS 3.<br>
+Pour fonctionner correctement dans un environnement de production, l'application nécessite le service **nginx**.<br>
+La mise en production d’une application Vue.js implique un processus de build qui optimise le code source.<br> 
+Ce processus réduit la taille du code en éliminant les éléments superflus (minification) et le compile en fichiers statiques (HTML, CSS, JS), optimisés pour un chargement rapide et une efficacité accrue.<br> 
+**Nginx**, un serveur web de haute performance, est ensuite utilisé pour servir ces fichiers statiques aux visiteurs de votre site.<br> 
+Il est spécialement configuré pour traiter et distribuer ces fichiers de manière efficace, assurant une expérience utilisateur fluide tout en optimisant la consommation de ressources serveur.
+
+#### Dockerfile frontend
+
+Ce Dockerfile a été créé selon la doc VueJS qu'on peut trouver sur ce <a href="https://v2.fr.vuejs.org/v2/cookbook/dockerize-vuejs-app.html">lien</a>
+
+```bash
+# Utilisez une image de Node.js comme base
+FROM node:lts-alpine AS build-stage
+
+# Définir le répertoire de travail dans le conteneur
+WORKDIR /app
+
+# Copiez les fichiers package.json et package-lock.json dans le conteneur
+COPY package*.json ./
+
+# installe les dépendances du projet
+RUN npm install
+
+# Copiez le reste des fichiers de l'application dans le conteneur
+COPY . .
+
+# Compilez l'application Vue.js
+RUN npm run build
+
+# Créez une nouvelle image légère pour servir l'application
+FROM nginx:alpine
+
+# Copier le fichier de configuration NGINX
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Copiez les fichiers de l'application compilée depuis le premier conteneur dans le répertoire approprié de l'image NGINX
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Exposez le port 80 pour que l'application soit accessible depuis l'extérieur du conteneur
+EXPOSE 80
+
+# Commande pour démarrer NGINX et servir l'application
+CMD ["nginx", "-g", "daemon off;"]
+
+```
+1. **FROM node:lts-alpine AS build-stage :** Utilise l'image de Node.js basée sur Alpine Linux comme base pour la construction. Cette image est étiquetée lts-alpine, ce qui signifie qu'elle utilise la version LTS (Long-Term Support) de Node.js et est basée sur Alpine Linux.
+
+2. **WORKDIR /app :** Définit le répertoire de travail dans le conteneur comme /app. Toutes les instructions suivantes seront exécutées dans ce répertoire.
+
+3. **COPY package*.json ./ :** Copie les fichiers package.json et package-lock.json depuis le répertoire local (où se trouve le Dockerfile) dans le répertoire de travail /app du conteneur.
+
+4. **RUN npm install :** Installe les dépendances du projet en exécutant la commande npm install. Cela utilise les fichiers package.json et package-lock.json copiés précédemment pour installer les packages Node.js nécessaires au projet.
+
+5. **COPY . . :** Copie tous les autres fichiers de l'application (le code source de l'application Vue.js) depuis le répertoire local dans le répertoire de travail /app du conteneur.
+
+6. **RUN npm run build :** Compile l'application Vue.js en exécutant la commande npm run build. Cette commande est généralement utilisée pour créer une version de production de l'application.
+
+7. **FROM nginx:alpine :** Utilise une autre image, cette fois-ci NGINX basée sur Alpine Linux, comme base pour la nouvelle étape de construction. Cela signifie que nous créons une image finale basée sur NGINX pour servir l'application Vue.js.
+
+8. **COPY default.conf /etc/nginx/conf.d/default.conf :** Copie le fichier de configuration NGINX depuis le répertoire local (où se trouve le Dockerfile) dans le répertoire /etc/nginx/conf.d/ de l'image NGINX. Ce fichier contient la configuration par défaut de NGINX pour servir l'application Vue.js.
+
+9. **COPY --from=build-stage /app/dist /usr/share/nginx/html :** Copie les fichiers de l'application compilée (générés à partir de l'étape de construction précédente) depuis le répertoire /app/dist du premier conteneur (étiqueté build-stage) dans le répertoire /usr/share/nginx/html de l'image NGINX. C'est là que NGINX servira les fichiers de l'application.
+
+10. **EXPOSE 80 :** Expose le port 80 sur le conteneur. Cela permettra à NGINX de recevoir des connexions HTTP sur le port 80.
+
+11. **CMD ["nginx", "-g", "daemon off;"] :** Définit la commande à exécuter lorsque le conteneur démarre. Dans ce cas, il démarre NGINX avec l'option -g "daemon off;", qui empêche NGINX de s'exécuter en arrière-plan. Cela permet au conteneur Docker de rester actif tant que NGINX est en cours d'exécution.
+
+#### Ajout du fichier de configuration de nginx: `default.conf`
+
+```bash
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+Ce fichier `default.conf` est une configuration NGINX qui définit le comportement du serveur NGINX lorsqu'il reçoit des requêtes HTTP sur le port 80.<br>
+
+1. **server { ... } :** C'est le bloc de configuration principal pour un serveur NGINX. Il contient toutes les directives de configuration pour ce serveur.
+
+2. **listen 80; :** Cette directive spécifie le port sur lequel le serveur NGINX écoute les connexions entrantes. Dans ce cas, le serveur écoute sur le port 80, qui est le port par défaut pour les connexions HTTP.
+
+3. **server_name localhost; :** Cette directive spécifie le nom du serveur. Dans ce cas, le serveur répondra aux requêtes HTTP adressées à localhost. Cela signifie que ce bloc de configuration sera appliqué lorsque le serveur reçoit des requêtes avec localhost dans l'en-tête Host.
+
+4. **location / { ... } :** C'est une directive de bloc qui spécifie comment NGINX doit gérer les requêtes pour la racine du serveur (c'est-à-dire les requêtes pour /).
+
+5. **root /usr/share/nginx/html; :** Cette directive spécifie le répertoire racine où NGINX cherchera les fichiers à servir. Dans ce cas, le répertoire racine est /usr/share/nginx/html, ce qui est généralement l'emplacement par défaut pour les fichiers statiques servis par NGINX.
+
+6. **index index.html; :** Cette directive spécifie les noms de fichiers à rechercher lorsqu'une demande est faite pour un répertoire. Dans ce cas, NGINX cherche un fichier index.html dans le répertoire racine spécifié.
+
+7. **try_files $uri $uri/ /index.html; :** Cette directive définit l'ordre dans lequel NGINX doit essayer de répondre aux requêtes. Il vérifie d'abord si le fichier demandé existe ($uri), puis s'il existe un répertoire correspondant ($uri/), et enfin il redirige toutes les autres requêtes vers index.html si elles n'ont pas été satisfaites auparavant. Cela est souvent utilisé dans les applications client-serveur où le routage est géré côté client, comme dans une application Vue.js ou React.js.
+
+En résumé, ce fichier de configuration NGINX définit un serveur qui écoute sur le port 80,<br> 
+répond aux requêtes adressées à localhost, sert les fichiers statiques à partir du répertoire /usr/share/nginx/html,<br> 
+et redirige toutes les autres requêtes vers index.html. C'est une configuration courante pour servir des applications Vue.js ou similaires.
+
+#### On ajoutera aussi un fichier `.dockerignore` :
+```bash
+node_modules
+```
+
+`.dockerignore` est utilisé pour spécifier les fichiers et répertoires à exclure lors de la construction de l'image Docker.<br> 
+Dans ce cas, le fichier .dockerignore contient uniquement une entrée node_modules.<br> 
+Voici pourquoi cela est fait :
+
+1. **Réduction de la taille de l'image :** Le répertoire node_modules contient généralement de nombreuses dépendances Node.js installées via npm ou yarn. Ces dépendances peuvent être assez volumineuses et ne sont pas nécessaires pour la construction de l'image Docker car les dépendances seront installées à nouveau lors de l'exécution du conteneur. En excluant le répertoire node_modules, nous réduisons la taille de l'image Docker.
+
+3. **Éviter les conflits de dépendances :** Les dépendances Node.js peuvent varier en fonction de la plateforme de développement et du système d'exploitation. En excluant le répertoire node_modules, nous nous assurons que les dépendances sont installées proprement dans l'environnement Docker, évitant ainsi les éventuels conflits de dépendances entre l'hôte et le conteneur.
+
+4. **Amélioration de la vitesse de construction :** En excluant le répertoire node_modules, Docker n'aura pas besoin de le copier dans l'image pendant le processus de construction, ce qui peut accélérer la vitesse de construction de l'image Docker.
+
+En résumé, en ajoutant node_modules au fichier `.dockerignore`, nous améliorons l'efficacité de la construction de l'image Docker en réduisant sa taille, en évitant les conflits de dépendances et en accélérant le processus de construction.
+
+#### Build de l'image Docker :
+```bash
+docker build -t crafted_by_frontend:latest .
+```
+
+#### Modification du fichier `docker-compose.yml`
+
+Ce fichier `docker-compose.yml` permet de déployer rapidement et facilement un ensemble d'applications comprenant : 
+- une base de données PostgreSQL
+- un service backend Laravel API 
+- un service frontend Vue.js. 
+
+Il définit les paramètres de configuration, les dépendances et les volumes nécessaires pour chaque service.
+
+```bash
+version: '3.9'
+
+services:
+    # nom du service de la base de données
+    db:
+        container_name: db_crafted_by
+        # image docker de postgres
+        image: postgres:latest
+        # ports exposés
+        ports:
+            - "5432:5432"
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        environment:
+            POSTGRES_DB: db_crafted_by
+            POSTGRES_USER: romainw
+            POSTGRES_PASSWORD: R0main89labs!
+        # volumes de persistance des données
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+
+    # nom du service backend
+    laravel-api:
+        container_name: api_crafted_by
+        image: crafted_by_api:latest
+        # ports exposés
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+        environment:
+            DB_HOST: db
+
+    # nom du service frontend
+    vuejs-app:
+        container_name: frontend_crafted_by
+        image: crafted_by_frontend:latest
+        # ports exposés
+        ports:
+            - "5173:80"
+        depends_on:
+            - laravel-api
+
+volumes:
+    pg-data: {}
+
+```
+- **vuejs-app :** Nom du service frontend pour une application Vue.js.
+- **container_name: frontend_crafted_by :** Définit le nom du conteneur Docker pour le service frontend de l'application Vue.js.
+- **image: crafted_by_frontend:latest :** Spécifie l'image Docker à utiliser pour ce service. Il est supposé qu'une image nommée crafted_by_frontend avec l'étiquette latest est disponible.
+- **ports: - "5173:80" :** Définit le mappage de port pour exposer le port 80 du conteneur frontend Vue.js sur le port 5173 de l'hôte Docker.
+- **depends_on: - laravel-api :** Définit la dépendance de ce service à l'égard du service backend Laravel API. Docker démarrera d'abord le service backend Laravel API avant de démarrer ce service.
+
+#### commande de lancement de docker compose :
+```bash
+docker compose up
+```
+
