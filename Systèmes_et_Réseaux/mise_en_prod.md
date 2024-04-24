@@ -385,14 +385,14 @@ volumes indique la manière dont on fera persister les données de la base de do
 1. **version: '3.9':** Cette ligne spécifie la version de la syntaxe Docker Compose utilisée dans ce fichier. Dans ce cas, il s'agit de la version 3.9.
 2. **services:** Cette section définit les services à exécuter dans l'environnement Docker.
 3. **db:** C'est le nom du service PostgreSQL.
-	- **image: postgres:latest:** Spécifie l'image Docker à utiliser pour ce service. Dans ce cas, il utilise l'image PostgreSQL la plus récente disponible sur Docker Hub.
+	  - **image: postgres:latest:** Spécifie l'image Docker à utiliser pour ce service. Dans ce cas, il utilise l'image PostgreSQL la plus récente disponible sur Docker Hub.
    	- **ports:** Définit les ports à exposer sur l'hôte Docker et à mapper sur le conteneur. Dans ce cas, le port 5432 du conteneur PostgreSQL est exposé sur le port 5432 de l'hôte Docker.
-      	- **restart: always:** Indique à Docker de redémarrer toujours ce conteneur en cas d'arrêt inattendu.
-      	- **shm_size: 128mb:** Définit la taille de la mémoire partagée (SHM) pour ce conteneur. Dans ce cas, il est défini sur 128 Mo.
-      	- **environment:** Définit les variables d'environnement nécessaires pour le conteneur PostgreSQL. Cela inclut le nom de la base de données, le nom d'utilisateur et le mot de passe.
-      	- **volumes:** Montre un volume nommé pg-data dans le conteneur PostgreSQL, qui est utilisé pour stocker les données de la base de données.
+    - **restart: always:** Indique à Docker de redémarrer toujours ce conteneur en cas d'arrêt inattendu.
+    - **shm_size: 128mb:** Définit la taille de la mémoire partagée (SHM) pour ce conteneur. Dans ce cas, il est défini sur 128 Mo.
+    - **environment:** Définit les variables d'environnement nécessaires pour le conteneur PostgreSQL. Cela inclut le nom de la base de données, le nom d'utilisateur et le mot de passe.
+  	- **volumes:** Montre un volume nommé pg-data dans le conteneur PostgreSQL, qui est utilisé pour stocker les données de la base de données.
 4. **volumes:** Cette section définit les volumes Docker utilisés par les services.
-	- **pg-data: {}:** Définit un volume nommé pg-data qui sera utilisé pour stocker les données de la base de données PostgreSQL. Les accolades vides signifient que Docker va créer automatiquement ce volume s'il n'existe pas déjà.
+	  - **pg-data: {}:** Définit un volume nommé pg-data qui sera utilisé pour stocker les données de la base de données PostgreSQL. Les accolades vides signifient que Docker va créer automatiquement ce volume s'il n'existe pas déjà.
 
 En résumé, ce fichier docker-compose.yml définit un service PostgreSQL avec une configuration de base,<br> 
 y compris le nom de la base de données, le nom d'utilisateur, le mot de passe, les ports exposés et les volumes de données associés.<br> 
@@ -706,21 +706,21 @@ pm.max_spare_servers = 3
 chdir = /
 ```
 1. **[global]:** Cette section contient des paramètres globaux pour PHP-FPM.
-	- **pid = /var/run/php-fpm.pid:** Spécifie le chemin du fichier PID pour le processus PHP-FPM.
-        - **error_log = /var/log/php-fpm/error.log:** Spécifie le chemin du fichier journal des erreurs de PHP-FPM.
-        - **daemonize = no:** Indique à PHP-FPM de ne pas s'exécuter en arrière-plan.
+	  - **pid = /var/run/php-fpm.pid:** Spécifie le chemin du fichier PID pour le processus PHP-FPM.
+    - **error_log = /var/log/php-fpm/error.log:** Spécifie le chemin du fichier journal des erreurs de PHP-FPM.
+    - **daemonize = no:** Indique à PHP-FPM de ne pas s'exécuter en arrière-plan.
 
 2. **[www]:** Cette section contient des paramètres spécifiques pour le pool de processus PHP-FPM nommé "www".
-        - **listen = /var/run/php-fpm.sock:** Spécifie le chemin du socket Unix sur lequel PHP-FPM écoute les connexions.
-        - **listen.owner = www-data et listen.group = www-data:** Définit le propriétaire et le groupe du socket Unix pour correspondre à l'utilisateur et au groupe Nginx.
-        - **listen.mode = 0660:** Définit les permissions du socket Unix.
-        - **user = www-data et group = www-data:** Définit l'utilisateur et le groupe sous lesquels les processus PHP-FPM seront exécutés.
-        - **pm = dynamic:** Définit le mode de gestion des processus PHP-FPM en tant que dynamique.
-        - **pm.max_children = 5:** Définit le nombre maximal de processus enfants.
-        - **pm.start_servers = 2:** Définit le nombre de processus enfants à démarrer au lancement de PHP-FPM.
-        - **pm.min_spare_servers = 1:** Définit le nombre minimal de processus enfants inactifs à conserver.
-        - **pm.max_spare_servers = 3:** Définit le nombre maximal de processus enfants inactifs à conserver.
-        - **chdir = /:** Définit le répertoire de travail pour les processus PHP-FPM. Dans ce cas, il est défini à la racine du système de fichiers.
+    - **listen = /var/run/php-fpm.sock:** Spécifie le chemin du socket Unix sur lequel PHP-FPM écoute les connexions.
+    - **listen.owner = www-data et listen.group = www-data:** Définit le propriétaire et le groupe du socket Unix pour correspondre à l'utilisateur et au groupe Nginx.
+    - **listen.mode = 0660:** Définit les permissions du socket Unix.
+    - **user = www-data et group = www-data:** Définit l'utilisateur et le groupe sous lesquels les processus PHP-FPM seront exécutés.
+    - **pm = dynamic:** Définit le mode de gestion des processus PHP-FPM en tant que dynamique.
+    - **pm.max_children = 5:** Définit le nombre maximal de processus enfants.
+    - **pm.start_servers = 2:** Définit le nombre de processus enfants à démarrer au lancement de PHP-FPM.
+    - **pm.min_spare_servers = 1:** Définit le nombre minimal de processus enfants inactifs à conserver.
+    - **pm.max_spare_servers = 3:** Définit le nombre maximal de processus enfants inactifs à conserver.
+    - **chdir = /:** Définit le répertoire de travail pour les processus PHP-FPM. Dans ce cas, il est défini à la racine du système de fichiers.
 
 Ce fichier est nommé zz-docker.conf avec le préfixe zz pour s'assurer qu'il est chargé après les fichiers de configuration par défaut de PHP-FPM.<br> 
 Il est conçu pour être utilisé dans un environnement Docker où les permissions et les chemins des fichiers sont configurés différemment de l'environnement de production habituel.<br> 
@@ -756,22 +756,22 @@ stderr_logfile=/var/log/php-fpm/error.log
 stdout_logfile=/var/log/php-fpm/access.log
 ```
 1. **[supervisord]:** Cette section définit la configuration globale pour le démon Supervisor.
-        - **nodaemon=true:** Indique à Supervisor de ne pas s'exécuter en mode démon.
-        - **user=root:** Définit l'utilisateur sous lequel le démon Supervisor sera exécuté.
+    - **nodaemon=true:** Indique à Supervisor de ne pas s'exécuter en mode démon.
+    - **user=root:** Définit l'utilisateur sous lequel le démon Supervisor sera exécuté.
 
 2. **[program:nginx]:** Cette section définit la configuration pour le processus Nginx.
-        - **command=/usr/sbin/nginx -g "daemon off;":** Spécifie la commande pour démarrer Nginx. L'option -g "daemon off;" indique à Nginx de ne pas s'exécuter en arrière-plan.
-        - **autostart=true:** Indique à Supervisor de démarrer automatiquement le processus Nginx au démarrage.
-        - **autorestart=true:** Indique à Supervisor de redémarrer automatiquement le processus Nginx en cas de crash.
-        - **stderr_logfile=/var/log/nginx/error.log:** Spécifie le chemin du fichier journal des erreurs de Nginx.
-        - **stdout_logfile=/var/log/nginx/access.log:** Spécifie le chemin du fichier journal d'accès de Nginx.
+    - **command=/usr/sbin/nginx -g "daemon off;":** Spécifie la commande pour démarrer Nginx. L'option -g "daemon off;" indique à Nginx de ne pas s'exécuter en arrière-plan.
+    - **autostart=true:** Indique à Supervisor de démarrer automatiquement le processus Nginx au démarrage.
+    - **autorestart=true:** Indique à Supervisor de redémarrer automatiquement le processus Nginx en cas de crash.
+    - **stderr_logfile=/var/log/nginx/error.log:** Spécifie le chemin du fichier journal des erreurs de Nginx.
+    - **stdout_logfile=/var/log/nginx/access.log:** Spécifie le chemin du fichier journal d'accès de Nginx.
 
 3. **[program:php-fpm]:** Cette section définit la configuration pour le processus PHP-FPM.
-        - **command=/usr/local/sbin/php-fpm -F:** Spécifie la commande pour démarrer le processus PHP-FPM. L'option -F indique à PHP-FPM de rester en avant-plan et d'écouter les demandes.
-        - **autostart=true:** Indique à Supervisor de démarrer automatiquement le processus PHP-FPM au démarrage.
-        - **autorestart=true:** Indique à Supervisor de redémarrer automatiquement le processus PHP-FPM en cas de crash.
-        - **stderr_logfile=/var/log/php-fpm/error.log:** Spécifie le chemin du fichier journal des erreurs de PHP-FPM.
-        - **stdout_logfile=/var/log/php-fpm/access.log:** Spécifie le chemin du fichier journal d'accès de PHP-FPM.
+    - **command=/usr/local/sbin/php-fpm -F:** Spécifie la commande pour démarrer le processus PHP-FPM. L'option -F indique à PHP-FPM de rester en avant-plan et d'écouter les demandes.
+    - **autostart=true:** Indique à Supervisor de démarrer automatiquement le processus PHP-FPM au démarrage.
+    - **autorestart=true:** Indique à Supervisor de redémarrer automatiquement le processus PHP-FPM en cas de crash.
+    - **stderr_logfile=/var/log/php-fpm/error.log:** Spécifie le chemin du fichier journal des erreurs de PHP-FPM.
+    - **stdout_logfile=/var/log/php-fpm/access.log:** Spécifie le chemin du fichier journal d'accès de PHP-FPM.
 
 Ce fichier supervisord.conf définit la configuration pour Supervisor afin de gérer les processus Nginx et PHP-FPM dans un environnement Docker.<br> 
 Il assure que ces processus sont démarrés automatiquement, surveillés et redémarrés en cas de problème, tout en journalisant les erreurs et les accès pour chaque processus.
@@ -786,7 +786,7 @@ Explications de la commande :
 - **docker build:** C'est la commande principale pour construire des images Docker.
 - **--no-cache:** Cette option indique à Docker de ne pas utiliser le cache lors de la construction de l'image. En d'autres termes, cela force Docker à reconstruire toutes les couches de l'image à partir de zéro, sans utiliser de cache. Cela peut être utile pour s'assurer que l'image est construite à partir des dernières versions de toutes les dépendances.
 - **-t crafted_by_api:latest:** L'option -t ou --tag permet de tagger l'image résultante avec un nom et une étiquette. Dans ce cas, l'image sera taggée avec le nom crafted_by_api et l'étiquette latest. Cela signifie que l'image sera référencée sous le nom crafted_by_api avec la version latest.
-- **.:** C'est le chemin vers le répertoire contenant le Dockerfile à utiliser pour construire l'image. Dans ce cas, le Dockerfile se trouve dans le répertoire actuel (représenté par .).
+- **. :** C'est le chemin vers le répertoire contenant le Dockerfile à utiliser pour construire l'image. Dans ce cas, le Dockerfile se trouve dans le répertoire actuel (représenté par .).
 
 Cette commande construit une image Docker en utilisant un Dockerfile trouvé dans le répertoire actuel, en ignorant le cache pour s'assurer que l'image est construite à partir de zéro, et en taggant l'image résultante avec le nom crafted_by_api et l'étiquette latest.
 
@@ -1095,3 +1095,39 @@ On pourra enfin lancer les instanciations des conteneurs depuis l'imafe envoyée
 docker run -d -p port:port <username>/crafted_by_api
 docker run -d -p port:port <username>/crafted_by_frontend
 ```
+
+## PARAMETRAGEDE L'ENVIRONNEMENT DE PRODUCTION ET premier
+
+### PARAMETRAGE DU SERVEUR DE PRODUCTION
+
+protocole ssh de connexion
+
+serveur de connexion : 
+```
+<username>@<ip_du_serveur>
+user : <username>
+password : <password>
+```
+
+Une fois connecté, on va créer une paire de clés ssh afin de se connecter directement avec le protocole ssh au serveur distant.<br>
+Après cette étape, sur un terminal local, on entrera cette commande :
+```bash 
+ssh-copy-id -i ~/.ssh/id_rsa.pub <username>@<ip_du_serveur>
+```
+Elle permet de copier notre clé ssh au serveur distant pour se connecter sans mot de passe.
+
+On pourra ensuite se reconnecter  à distance avec la commande :
+```bash
+ssh '<username>n@<ip_du_serveur>'
+```
+
+On va ensuite installer et configurer Docker sur le serveur en suivant les instructions d'installation de Docker :<br> 
+<a href="https://docs.docker.com/engine/install/ubuntu/">https://docs.docker.com/engine/install/ubuntu/</a>
+
+Pour vérifier, on pourra récupérer une image nginx et lancer la commande suivante :
+```bash
+sudo docker run --name my_nginx_container -d -p 8080:80 nginx
+```
+
+Cette commande va permettre de lancer le container nginx, et on ira vérifier s'il fonctionne en se rendant dans notre navigteur à l'adresse IP du serveur : `<adresse_ip>:8080`
+
