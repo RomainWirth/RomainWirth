@@ -307,6 +307,9 @@ Ces fichiers seront utilisés pour automatiser le build des images Docker.
 On va commencer par conteneuriser la base de données : ici une base de données Postgresql.<br>
 On va donc créer le fichier `docker-compose.yml` pour paramétrer le conteneur.<br> 
 
+Le fichier docker-compose.yml est utilisé pour définir et gérer les services Docker à l'aide de Docker Compose.<br> 
+Il décrit les services à exécuter, les paramètres de configuration, les dépendances et les volumes nécessaires.
+
 **N.B. : Ce fichier va évoluer au fur et à mesure qu'on avancesera dans la conteneurisation entière de l'app.**
 
 ```yml
@@ -333,6 +336,22 @@ volumes:
 Le service DB permet de paramétrer le conteneur pour la base de données.<br>
 On utilise une image officielle postgres. <a href="https://hub.docker.com/_/postgres">https://hub.docker.com/_/postgres</a><br>
 volumes indique la manière dont on fera persister les données de la base de données.
+
+1. **version: '3.9':** Cette ligne spécifie la version de la syntaxe Docker Compose utilisée dans ce fichier. Dans ce cas, il s'agit de la version 3.9.
+2. **services:** Cette section définit les services à exécuter dans l'environnement Docker.
+3. **db:** C'est le nom du service PostgreSQL.
+	- **image: postgres:latest:** Spécifie l'image Docker à utiliser pour ce service. Dans ce cas, il utilise l'image PostgreSQL la plus récente disponible sur Docker Hub.
+   	- **ports:** Définit les ports à exposer sur l'hôte Docker et à mapper sur le conteneur. Dans ce cas, le port 5432 du conteneur PostgreSQL est exposé sur le port 5432 de l'hôte Docker.
+      	- **restart: always:** Indique à Docker de redémarrer toujours ce conteneur en cas d'arrêt inattendu.
+      	- **shm_size: 128mb:** Définit la taille de la mémoire partagée (SHM) pour ce conteneur. Dans ce cas, il est défini sur 128 Mo.
+      	- **environment:** Définit les variables d'environnement nécessaires pour le conteneur PostgreSQL. Cela inclut le nom de la base de données, le nom d'utilisateur et le mot de passe.
+      	- **volumes:** Montre un volume nommé pg-data dans le conteneur PostgreSQL, qui est utilisé pour stocker les données de la base de données.
+4. **volumes:** Cette section définit les volumes Docker utilisés par les services.
+	- **pg-data: {}:** Définit un volume nommé pg-data qui sera utilisé pour stocker les données de la base de données PostgreSQL. Les accolades vides signifient que Docker va créer automatiquement ce volume s'il n'existe pas déjà.
+
+En résumé, ce fichier docker-compose.yml définit un service PostgreSQL avec une configuration de base,<br> 
+y compris le nom de la base de données, le nom d'utilisateur, le mot de passe, les ports exposés et les volumes de données associés.<br> 
+Il permet de déployer rapidement et facilement un conteneur PostgreSQL avec les configurations spécifiées.
 
 Pour tester, on utilisera la commande `docker compose up`.
 
@@ -712,6 +731,18 @@ stdout_logfile=/var/log/php-fpm/access.log
 Ce fichier supervisord.conf définit la configuration pour Supervisor afin de gérer les processus Nginx et PHP-FPM dans un environnement Docker.<br> 
 Il assure que ces processus sont démarrés automatiquement, surveillés et redémarrés en cas de problème, tout en journalisant les erreurs et les accès pour chaque processus.
 
+Une fois ces fichiers écrits, on pourra builder notre image docker grâce à la commande :
+```bash
+docker build --no-cache  -t <nom_de_l_api>:latest .
+```
+_**N.B. :** ATTENTION, il est nécessaire de se trouver à la racine ou se situe le Dockerfile pour exécuter cette commande._<br>
 
+Explications de la commande :
+- **docker build:** C'est la commande principale pour construire des images Docker.
+- **--no-cache:** Cette option indique à Docker de ne pas utiliser le cache lors de la construction de l'image. En d'autres termes, cela force Docker à reconstruire toutes les couches de l'image à partir de zéro, sans utiliser de cache. Cela peut être utile pour s'assurer que l'image est construite à partir des dernières versions de toutes les dépendances.
+- **-t crafted_by_api:latest:** L'option -t ou --tag permet de tagger l'image résultante avec un nom et une étiquette. Dans ce cas, l'image sera taggée avec le nom crafted_by_api et l'étiquette latest. Cela signifie que l'image sera référencée sous le nom crafted_by_api avec la version latest.
+- **.:** C'est le chemin vers le répertoire contenant le Dockerfile à utiliser pour construire l'image. Dans ce cas, le Dockerfile se trouve dans le répertoire actuel (représenté par .).
 
+Cette commande construit une image Docker en utilisant un Dockerfile trouvé dans le répertoire actuel, en ignorant le cache pour s'assurer que l'image est construite à partir de zéro, et en taggant l'image résultante avec le nom crafted_by_api et l'étiquette latest.
 
+Après avoir build
