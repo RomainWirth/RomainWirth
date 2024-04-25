@@ -1416,5 +1416,31 @@ sudo docker logs -f <nom_du_conteneur>
 ```
 #### Configuration de nginx :
 
-Une fois Traefik correctement configuré et que le dashboard est accessible, vous devrez écrire une un fichier `docker-compose.yml` avec une configuration spécifique pour lancer un conteneur Nginx et qu’il soit accessible en HTTPS à l’adresse `https://nginx.<nom_de_domaine>`
+Une fois Traefik correctement configuré et que le dashboard est accessible, vous devrez écrire une un fichier `docker-compose.yml` avec une configuration spécifique pour lancer un conteneur Nginx et qu’il soit accessible en HTTPS à l’adresse `https://nginx.<nom_de_domaine>`.
 
+```yml
+services:
+    nginx:
+        image: nginx:latest
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.nginx.rule=Host(`nginx<nom_de_domaine>`)"
+            - "traefik.http.routers.nginx.entrypoints=http"
+
+            - "traefik.docker.network=traefik-public"
+
+            - "traefik.http.routers.nginx.middlewares=https-redirect@docker"
+            - "traefik.http.routers.nginx-secure.rule=Host(`nginx.<nom_de_domaine>`)"
+            - "traefik.http.routers.nginx-secure.entrypoints=https"
+            - "traefik.http.routers.nginx-secure.tls=true"
+            - "traefik.http.routers.nginx-secure.tls.certresolver=le"
+            - "traefik.http.routers.nginx-secure.service=nginx"
+
+            - "traefik.http.services.nginx.loadbalancer.server.port=80"
+        networks:
+            - traefik-public
+
+networks:
+    traefik-public:
+        external: true
+```
