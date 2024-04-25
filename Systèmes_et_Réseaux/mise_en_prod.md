@@ -1096,11 +1096,16 @@ docker run -d -p port:port <username>/crafted_by_api
 docker run -d -p port:port <username>/crafted_by_frontend
 ```
 
-## PARAMETRAGEDE L'ENVIRONNEMENT DE PRODUCTION ET premier
+## PARAMETRAGEDE L'ENVIRONNEMENT DE PRODUCTION
+
+Nous utiliserons VPS de modèle DEV1-L, hébergé sur Scaleway (<a href="https://www.scaleway.com/en/">https://www.scaleway.com/en/</a>).<br>
+Le système d’exploitation du VPS est Ubuntu 22.04 LTS Jammy Jellyfish.<br>
+
+Scaleway est un hébergeur internet français actif dans les secteurs de la fourniture de serveurs dédiés physiques et virtuels. 
+
+<a href="https://fr.wikipedia.org/wiki/Scaleway">wiki Scaleway</a>
 
 ### PARAMETRAGE DU SERVEUR DE PRODUCTION
-
-protocole ssh de connexion
 
 serveur de connexion : 
 ```
@@ -1108,8 +1113,17 @@ serveur de connexion :
 user : <username>
 password : <password>
 ```
+Une fois connecté, on va paramétrer le protocole ssh afin de sécuriser et simplifier la connection au serveur.
 
-Une fois connecté, on va créer une paire de clés ssh afin de se connecter directement avec le protocole ssh au serveur distant.<br>
+#### protocole ssh de connexion :
+
+On va créer une paire de clés ssh (si ce n'est pas déjà fait) afin de se connecter directement avec le protocole ssh au serveur distant.<br>
+Pour générer une clé SSH sur votre serveur Linux, on va exécuter la commande : 
+```bash
+ssh-keygen
+```
+Chemin pour trouver la clé publique ssh : `~/home/.ssh/id_rsa.pub`.<br>
+
 Après cette étape, sur un terminal local, on entrera cette commande :
 ```bash 
 ssh-copy-id -i ~/.ssh/id_rsa.pub <username>@<ip_du_serveur>
@@ -1118,7 +1132,7 @@ Elle permet de copier notre clé ssh au serveur distant pour se connecter sans m
 
 On pourra ensuite se reconnecter  à distance avec la commande :
 ```bash
-ssh '<username>n@<ip_du_serveur>'
+ssh <username>n@<ip_du_serveur>
 ```
 
 On va ensuite installer et configurer Docker sur le serveur en suivant les instructions d'installation de Docker :<br> 
@@ -1131,3 +1145,164 @@ sudo docker run --name my_nginx_container -d -p 8080:80 nginx
 
 Cette commande va permettre de lancer le container nginx, et on ira vérifier s'il fonctionne en se rendant dans notre navigteur à l'adresse IP du serveur : `<adresse_ip>:8080`
 
+#### Paramétrage du DNS
+
+Premièrerement, il faut définir et acheter le nom de domaine qu'on va utiliser.<br>
+
+Ensuite, nous allons utiliser Cloudflare (<a href="https://www.cloudflare.com/fr-fr/">https://www.cloudflare.com/fr-fr/</a>) pour paramétrer les records DNS associés au nom de domaine.<br>
+
+Les serveurs DNS de Cloudflare sont utilisés pour rediriger le nom de domaine enregistré vers l'adresse IP du serveur.
+
+**Avantages de l'utilisation des services Cloudflare :**<br>
+- **Performance :** Le réseau mondial de Cloudflare améliore les performances des sites web en mettant en cache le contenu plus près des utilisateurs finaux.
+- **Sécurité :** Cloudflare fournit une protection contre les attaques DDoS et des fonctionnalités de sécurité pour protéger les sites web contre les attaques.
+- **Fiabilité :** L'architecture réseau Anycast améliore la fiabilité et la redondance pour la disponibilité des sites web.
+- **Analytique :** Cloudflare offre des informations sur le trafic du site web, les performances et les événements de sécurité.
+
+**Services Cloudflare :**<br>
+- **Firewall d'Application Web (WAF = Web Application Firewall) :** Protège les sites web contre les vulnérabilités des applications web.
+- **Réseau de Diffusion de Contenu (CDN = Content Delivery Network) :** Améliore les performances en mettant en cache et en distribuant le contenu à l'échelle mondiale.
+- **Chiffrement SSL/TLS (SSL/TLS Encryption):** Sécurise les communications avec le chiffrement SSL/TLS.
+- **Équilibrage de Charge (Load Balancing) :** Répartit le trafic entre les serveurs pour la scalabilité et la disponibilité.
+- **Gestion DNS (DNS Management) :** Fournit des fonctionnalités avancées de gestion DNS pour l'optimisation des performances et de la sécurité.
+
+<a href="https://fr.wikipedia.org/wiki/Cloudflare">wiki Cloudflare</a><br> 
+<a href="https://www.cloudflare.com/fr-fr/learning/what-is-cloudflare/">Qu'est ce que Cloudflare</a>
+
+Une fois sur le site Cloudflare, nous allons créer un compte et se rendre sur l'option : ajouter un site. <a href="https://developers.cloudflare.com/fundamentals/setup/manage-domains/add-site/">Documentation</a>
+
+Avant de paramétrer les enrgistrements DNS, il sera nécessaire de mettre à jour les serveurs DNS du nom de domaine dans Scaleway afin que les configurations qui vont être effectuées sur Cloudflare soient effectives.
+
+Pour paramétrer les enregistrements DNS sur votre serveur Linux hébergé en ligne, vous devez généralement accéder à votre tableau de bord de gestion de domaine chez votre fournisseur de services DNS (comme GoDaddy, Cloudflare, Namecheap, etc.).<br> 
+Voici comment procéder pour configurer un enregistrement DNS racine (root record) et un enregistrement DNS wildcard :
+
+1. Accédez au tableau de bord de votre fournisseur de services DNS :
+    - Connectez-vous à votre compte sur le site Web du fournisseur de services DNS.
+    - Trouvez la section de gestion des DNS ou des enregistrements DNS pour votre domaine.
+
+2. Ajoutez un enregistrement DNS racine (root record) :
+    - Recherchez l'option pour ajouter un nouvel enregistrement DNS.
+    - Sélectionnez le type d'enregistrement comme "A" (pour IPv4) ou "AAAA" (pour IPv6) selon vos besoins.
+    - Dans le champ "Host" ou "Name", laissez-le vide ou utilisez "@" pour indiquer le domaine racine.
+    - Dans le champ "Value" ou "Points to", entrez l'adresse IP de votre VPS.
+
+3. Ajoutez un enregistrement DNS wildcard :
+    - Pour créer un enregistrement DNS wildcard, utilisez "*" dans le champ "Host" ou "Name". Cela signifie que n'importe quel sous-domaine pointera vers la même adresse IP.
+    - Configurez également cet enregistrement comme un enregistrement "A" ou "AAAA", selon vos besoins.
+    - Entrez l'adresse IP de votre VPS dans le champ "Value" ou "Points to".
+
+4. Validez et sauvegardez les modifications :
+    - Après avoir ajouté ces enregistrements DNS, assurez-vous de sauvegarder vos modifications ou de les publier, selon l'interface de votre fournisseur DNS.
+    - Les modifications peuvent prendre un certain temps pour se propager à travers les serveurs DNS, donc soyez patient. Cela peut prendre quelques minutes à quelques heures.
+
+Une fois ces étapes terminées, votre domaine devrait être configuré pour pointer vers l'adresse IP de votre VPS, et le record wildcard permettra à tous les sous-domaines de résoudre également vers cette adresse IP.
+
+Si HTTP : port par défaut = 80<br>
+Si  HTTPS : port par défault = 443
+
+Pour contrôler que tout fonctionne bien, on va utiliser notre terminal avec la commande : 
+```bash
+$ dig <nom_de_domaine.com>
+```
+Qui doit nous retourner une réponse comme suit :
+```bash
+; <<>> DiG 9.18.18-0ubuntu0.22.04.2-Ubuntu <<>> <url_/_nom_de_domaine>
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 14318
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;<url_/_nom_de_domaine>.			IN	A
+
+;; ANSWER SECTION:
+<url_/_nom_de_domaine>.		300	IN	A	<adresse_ip_du_serveur>
+
+;; Query time: 12 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)
+;; WHEN: Thu Apr 25 08:58:15 UTC 2024
+;; MSG SIZE  rcvd: 57
+
+```
+
+Puis on va relancer le conteneur nginx du serveur :
+```bash
+sudo docker run -d -p 80:80 nginx
+```
+Ici, on indique que le port d'écoute du conteneur nginx à l'adresse IP du serveur est le suivant : `http://<adress_ip_du_serveur>:80`<br>
+Si on se rend à cette adresse, on pourra retrouver notre page d'accueil du serveur nginx.<br>
+Traduit avec l'url, on aura simplement à se rendre à l'adresse paramétrée du DNS. `http://url_du_site`
+
+#### Mise en place de Traefik
+
+Le monde du déploiement d’applications web modernes est complexe et en constante évolution.<br> 
+L’architecture des applications s’est déplacée des monolithes vers des microservices, et avec cette évolution, la nécessité d’outils de gestion plus sophistiqués s’est accrue.<br> 
+C’est ici qu’interviennent les concepts de Reverse Proxy et d’outils comme Traefik.
+
+Un reverse proxy est un serveur qui se trouve entre les clients et les serveurs web.<br> 
+<a href="https://fr.wikipedia.org/wiki/Proxy_inverse">Wikipedia Proxy Inverse</a><br>
+Il reçoit toutes les requêtes client et décide à quel serveur back-end les transmettre.<br> 
+Les avantages sont :
+- **Équilibrage de charge :** Distribue les requêtes entrantes entre plusieurs serveurs.
+- **Cache :** Stocke du contenu souvent demandé pour réduire la charge sur les serveurs.
+- **Sécurité :** Masque la structure et les détails du réseau interne.
+- **Compression :** Réduit la taille des réponses pour accélérer les temps de chargement.
+- **SSL/TLS Termination :** Décharge les serveurs back-end du coût de la gestion du trafic crypté.
+
+**Qu'est ce que Traefik ?**
+
+Traefik est un reverse proxy moderne conçu pour les architectures basées sur des conteneurs comme Docker, Kubernetes, etc.<br> 
+Il est spécialement conçu pour s’adapter à des environnements dynamiques.<br>
+<a href="https://doc.traefik.io/traefik/">https://doc.traefik.io/traefik/</a>
+
+
+De ce fait, il est un bon outil dans notre cas car la configuration et l’ajout de nouveaux services / conteneurs ne nécessitent pas le redémarrage de celui-ci.
+
+Pour cela, on va devoir paramétrer Traefik pour qu’il puisse :
+1. Générer les certificats TLS (pour le HTTPS) à la volé en utilisant l’ACME provider Let’s Encrypt avec le DNS challenge de Cloudflare
+2. Ecouter sur le port 80 et 443 de votre VPS
+3. Mettre à disposition le Dashboard Traefik, qui sera accessible via l’url https://traefik.. Pour pouvoir accéder à ce dashboard, il faudra configurer un middleware de type basicauth afin de pouvoir s’authentifier
+
+##### GUIDE ETAPE PAR ETAPE :
+
+Deux options s'offrent à nous : installer manuellement sur le serveur ou se servir d'une image officielle docker et d'un fichier `docker-compose.yml`.
+
+Option 1 : installation manuelle :
+
+1. **Installation de Traefik :**
+Assurez-vous d'avoir Traefik installé sur votre serveur Linux. Vous pouvez le faire en suivant les instructions spécifiques à votre système d'exploitation disponibles sur le site officiel de Traefik.
+
+2. **Configuration de Traefik :**
+Créez un fichier de configuration Traefik (par exemple, traefik.toml) et configurez-le pour utiliser Let's Encrypt comme provider ACME. Assurez-vous d'avoir les sections suivantes dans votre fichier de configuration : 
+```toml
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+  [entryPoints.https]
+  address = ":443"
+
+[api]
+
+[acme]
+  email = "votre@email.com"
+  storage = "acme.json"
+  entryPoint = "https"
+  onHostRule = true
+  [acme.dnsChallenge]
+    provider = "cloudflare"
+    delayBeforeCheck = 0
+```
+3. **Configuration des informations d'authentification Cloudflare :**
+Vous devez fournir les informations d'authentification Cloudflare à Traefik pour qu'il puisse effectuer le DNS challenge. Pour ce faire, définissez les variables d'environnement suivantes (ou utilisez les valeurs dans votre fichier de configuration) :
+```bash
+export CLOUDFLARE_EMAIL="votre@email.com"
+export CLOUDFLARE_API_KEY="votre_clé_api_cloudflare"
+```
+5. **Vérification et gestion des certificats :**
+Traefik doit maintenant être en mesure de contacter l'API Cloudflare pour créer et renouveler automatiquement les certificats TLS via le DNS challenge. Vous pouvez vérifier l'état des certificats dans l'interface d'administration Traefik ou en consultant les journaux.
+
+Option 2 : 
+
+Une fois Traefik correctement configuré et que le dashboard est accessible, vous devrez écrire une un fichier docker-compose.yml avec une configuration spécifique pour lancer un conteneur Nginx et qu’il soit accessible en HTTPS à l’adresse https://nginx..
