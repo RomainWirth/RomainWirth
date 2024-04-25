@@ -1257,6 +1257,30 @@ Traefik est un reverse proxy moderne conçu pour les architectures basées sur d
 Il est spécialement conçu pour s’adapter à des environnements dynamiques.<br>
 <a href="https://doc.traefik.io/traefik/">https://doc.traefik.io/traefik/</a>
 
+**Comment est-ce que Traefik fonctionne concrètement ?**
+
+Traefik est composer des différents composants suivant : 
+- **Entrypoint :** 
+Les "Entrypoints" sont les points d'entrée du réseau vers Traefik. Ils définissent sur quelles adresses et ports le reverse proxy doit écouter pour les connexions entrantes.<br> 
+Importance : 
+  - Permet d'établir les ports sur lesquels Traefik écoute. 
+  - Vous pouvez définir plusieurs entrypoints, par exemple, un pour HTTP et un autre pour HTTPS. 
+
+- **Router :** Les "Routers" prennent les décisions de routage. Ils reçoivent les requêtes des entrypoints et les acheminent vers les services internes en fonction des règles de routage configurées.<br> 
+Importance : 
+  - C’est dans ce composant qu’on définit les règles de routage (si l’entrypoint reçoit une requête avec le host “www.test.com”), alors c’est toi qui prend la requête et qui va l’acheminer vers le service associé. 
+  - Permettent l'application de middleware pour des fonctionnalités comme la redirection, le taux de requêtes, etc. 
+
+- **Service :** Les "Services" sont les points de terminaison auxquels les routeurs de Traefik acheminent le trafic. Un service peut être un conteneur Docker, un pod Kubernetes, une machine virtuelle, etc.<br>
+Importance : 
+  - Fournissent des algorithmes d'équilibrage de charge pour distribuer efficacement le trafic. 
+  - Sont découverts dynamiquement dans des environnements comme Docker et Kubernetes. 
+
+- **Middleware :** Les "Middlewares" sont des composants qui peuvent manipuler les requêtes et/ou les réponses pour ajouter des fonctionnalités comme la redirection, la limitation du taux, l'authentification, etc.<br>
+Importance : 
+  - Ajoutent une couche de fonctionnalités supplémentaires entre le routeur et le service. 
+  - Sont extrêmement flexibles et peuvent être chaînés pour des fonctionnalités complexes.
+
 
 De ce fait, il est un bon outil dans notre cas car la configuration et l’ajout de nouveaux services / conteneurs ne nécessitent pas le redémarrage de celui-ci.
 
@@ -1267,42 +1291,130 @@ Pour cela, on va devoir paramétrer Traefik pour qu’il puisse :
 
 ##### GUIDE ETAPE PAR ETAPE :
 
-Deux options s'offrent à nous : installer manuellement sur le serveur ou se servir d'une image officielle docker et d'un fichier `docker-compose.yml`.
+Pour configurer Traefik pour générer des certificats TLS à la volée en utilisant Let's Encrypt avec le DNS challenge de Cloudflare dans un environnement Docker à l'aide d'un fichier `docker-compose.yml`.<br>
+<a href="https://hub.docker.com/_/traefik">Official Docker Image</a>
 
-Option 1 : installation manuelle :
+Créer ensuite un fichier `docker-compose.yml` :<br> 
+On s'inspire de ce <a href="https://www.alexandre-hublau.com/fr/posts/it/creer-environnement-docker-traefik/">tuto</a><br>
+(N.B. : bien penser à modifier `<nom_de_domaine>` et `<votre@email.com>`)
+```yaml
+services:
+    traefik:
+        image: traefik:latest
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
+        command:
+            - --api.insecure=true
+            - --api.dashboard=true
+            - --api.debug=true
+            - --log.level=DEBUG
 
-1. **Installation de Traefik :**
-Assurez-vous d'avoir Traefik installé sur votre serveur Linux. Vous pouvez le faire en suivant les instructions spécifiques à votre système d'exploitation disponibles sur le site officiel de Traefik.
+            - --providers.docker
+            - --providers.docker.exposedbydefault=false
+            - --providers.docker.network=traefik-public
 
-2. **Configuration de Traefik :**
-Créez un fichier de configuration Traefik (par exemple, traefik.toml) et configurez-le pour utiliser Let's Encrypt comme provider ACME. Assurez-vous d'avoir les sections suivantes dans votre fichier de configuration : 
-```toml
-[entryPoints]
-  [entryPoints.http]
-  address = ":80"
-  [entryPoints.https]
-  address = ":443"
+            - --entrypoints.http.address=:80
+            - --entrypoints.https.address=:443
 
-[api]
+            - --certificatesresolvers.le.acme.tlschallenge=true
+            - --certificatesresolvers.le.acme.email=<votre@email.com>
+            - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+        labels:
+            - "traefik.enable=true"
 
-[acme]
-  email = "votre@email.com"
-  storage = "acme.json"
-  entryPoint = "https"
-  onHostRule = true
-  [acme.dnsChallenge]
-    provider = "cloudflare"
-    delayBeforeCheck = 0
+            - "traefik.docker.network=traefik-public"
+
+            - "traefik.http.middlewares.http_to_https.redirectscheme.scheme=https"
+            # - "traefik.http.middlewares.http_to_https.redirectscheme.permanent=true"
+
+            - "traefik.http.middlewares.auth.basicauth.users=user:$$2y$$05$$TglxTe1egPQ5cmPRTzbOtOUWyUHzmAoU9Pt4TeuNEC.68BZRjugHm"
+
+            - "traefik.http.routers.dashboard.rule=Host(`dashboard.<nom_de_domaine>`)"
+            - "traefik.http.routers.dashboard.entrypoints=http"
+            - "traefik.http.routers.dashboard.middlewares=http_to_https@docker"
+
+            - "traefik.http.routers.dashboard-secured.rule=Host(`dashboard.<nom_de_domaine>`)"
+            - "traefik.http.routers.dashboard-secured.service=api@internal"
+            - "traefik.http.routers.dashboard-secured.entrypoints=http,https"
+            - "traefik.http.routers.dashboard-secured.tls.certresolver=tls"
+            - "traefik.http.routers.dashboard-secured.middlewares=auth@docker"
+
+        volumes:
+            - ./letsencrypt:/letsencrypt
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - traefik-public
+        environment: 
+            - CLOUDFLARE_EMAIL=<votre@email.com>
+            - CLOUDFLARE_API_KEY=11e61f9ff478dc9d03f5394e1e16a87e971e7
+
+
+volumes:
+    traefik-public-certificates:
+
+networks:
+    traefik-public:
+        external: true
 ```
-3. **Configuration des informations d'authentification Cloudflare :**
-Vous devez fournir les informations d'authentification Cloudflare à Traefik pour qu'il puisse effectuer le DNS challenge. Pour ce faire, définissez les variables d'environnement suivantes (ou utilisez les valeurs dans votre fichier de configuration) :
+**Pour BasicAuth, générer un nom d'utilisateur et mot de passe :**<br>
+On utilisera pour cela dans le terminal local la commande :
+```bash
+echo $(htpasswd -nB user) | sed -e s/\\$/\\$\\$/g
+```
+le résultat de cette commande sera ceci : 
+```bash
+New password: 
+Re-type new password: 
+user:$$2y$$05$$TglxTe1egPQ5cmPRTzbOtOUWyUHzmAoU9Pt4TeuNEC.68BZRjugHm
+```
+On nous demande un nouveau mot de passe ainsi que la confirmation du premier mot de passe.<br>
+Le retour est un hashage correspondant à l'utilisateur "user".
+
+**Configuration des informations d'authentification Cloudflare :**
+Vous devez fournir les informations d'authentification Cloudflare à Traefik pour qu'il puisse effectuer le DNS challenge.<br> 
+Pour ce faire, définissez les variables d'environnement suivantes (ou utilisez les valeurs dans votre fichier de configuration) :
 ```bash
 export CLOUDFLARE_EMAIL="votre@email.com"
 export CLOUDFLARE_API_KEY="votre_clé_api_cloudflare"
 ```
+Pour trouver votre clé API Cloudflare, suivez ces étapes :
+- **Connectez-vous à votre compte Cloudflare :** <br>
+Rendez-vous sur le site web de Cloudflare et connectez-vous à votre compte en utilisant vos identifiants.
+- **Accédez à la page des paramètres de votre compte :**<br> 
+Une fois connecté, cliquez sur votre nom d'utilisateur dans le coin supérieur droit de la page pour accéder au menu déroulant. Ensuite, sélectionnez "Mon profil".
+- **Accédez à la section "API Tokens" :**<br> 
+Dans votre profil, recherchez et cliquez sur l'onglet "API Tokens" ou "Clés API".
+- **Générez une nouvelle clé API :**<br> 
+Si vous n'avez pas encore créé de clé API, vous devrez en générer une nouvelle.<br> 
+Pour cela, cliquez sur le bouton "Créer Token" ou "Create API Key".
+- **Configurez les autorisations de la clé API :**<br> 
+Cloudflare vous demandera de configurer les autorisations de la clé API.<br> 
+Assurez-vous de donner les autorisations appropriées en fonction de ce que vous prévoyez de faire avec cette clé.<br> 
+Pour l'utilisation du DNS challenge dans Traefik, vous aurez besoin d'autorisations pour modifier les enregistrements DNS.
+- **Copiez votre clé API :**<br> 
+Une fois que vous avez configuré les autorisations, Cloudflare vous fournira une clé API générée.<br> 
+Copiez cette clé et conservez-la en lieu sûr. Cette clé sera utilisée dans la configuration de Traefik pour permettre le DNS challenge avec Cloudflare.
+
+Une fois ces étapes réalisées, on va pouvoir entrer la commande :
+```bash
+docker compose up -d
+```
+Cela va lancer le conteneur Docker avec toutes les dépendances.<br>
+
 5. **Vérification et gestion des certificats :**
-Traefik doit maintenant être en mesure de contacter l'API Cloudflare pour créer et renouveler automatiquement les certificats TLS via le DNS challenge. Vous pouvez vérifier l'état des certificats dans l'interface d'administration Traefik ou en consultant les journaux.
+Traefik doit maintenant être en mesure de contacter l'API Cloudflare pour créer et renouveler automatiquement les certificats TLS via le DNS challenge.<br> 
+Vous pouvez vérifier l'état des certificats dans l'interface d'administration Traefik ou en consultant les journaux. 
 
-Option 2 : 
+On pourra donc se rendre à l'adresse : `http://dashboard.<nom_de_domaine>` pour accéder au dashboard.<br>
+N.B. : La configuration de Traefik qu'on a effectuée ci dessus été faite telle qu'une requête vers http redirige vers https.<br>
+Ou se rendre sur les logs en entrant la commande suivante :
+```bash
+sudo docker logs -f <nom_du_conteneur>
+```
+#### Configuration de nginx :
 
-Une fois Traefik correctement configuré et que le dashboard est accessible, vous devrez écrire une un fichier docker-compose.yml avec une configuration spécifique pour lancer un conteneur Nginx et qu’il soit accessible en HTTPS à l’adresse https://nginx..
+Une fois Traefik correctement configuré et que le dashboard est accessible, vous devrez écrire une un fichier `docker-compose.yml` avec une configuration spécifique pour lancer un conteneur Nginx et qu’il soit accessible en HTTPS à l’adresse `https://nginx.<nom_de_domaine>`
+
