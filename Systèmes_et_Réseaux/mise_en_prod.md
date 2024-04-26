@@ -927,6 +927,7 @@ server {
         try_files $uri $uri/ /index.html;
     }
 }
+
 ```
 Ce fichier `default.conf` est une configuration NGINX qui définit le comportement du serveur NGINX lorsqu'il reçoit des requêtes HTTP sur le port 80.<br>
 
@@ -1235,6 +1236,18 @@ Ici, on indique que le port d'écoute du conteneur nginx à l'adresse IP du serv
 Si on se rend à cette adresse, on pourra retrouver notre page d'accueil du serveur nginx.<br>
 Traduit avec l'url, on aura simplement à se rendre à l'adresse paramétrée du DNS. `http://url_du_site`
 
+
+N.B. : Nous allons d'abord configurer traefik et configurer nginx pouvoir le lancer.
+Après cette configuration, la structure finale sur le serveur sera la suivante : 
+```
+home
+| /traefik
+| | docker-compose.yml
+| /nginx
+| | docker-compose.yml
+```
+
+
 #### Mise en place de Traefik
 
 Le monde du déploiement d’applications web modernes est complexe et en constante évolution.<br> 
@@ -1319,16 +1332,15 @@ services:
             - --entrypoints.http.address=:80
             - --entrypoints.https.address=:443
 
-            - --certificatesresolvers.le.acme.tlschallenge=true
-            - --certificatesresolvers.le.acme.email=<votre@email.com>
-            - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+            - --certificatesresolvers.tls.acme.tlschallenge=true
+            - --certificatesresolvers.tls.acme.email=<votre@email.com>
+            - --certificatesresolvers.tls.acme.storage=/letsencrypt/acme.json
         labels:
             - "traefik.enable=true"
 
             - "traefik.docker.network=traefik-public"
 
             - "traefik.http.middlewares.http_to_https.redirectscheme.scheme=https"
-            # - "traefik.http.middlewares.http_to_https.redirectscheme.permanent=true"
 
             - "traefik.http.middlewares.auth.basicauth.users=user:$$2y$$05$$TglxTe1egPQ5cmPRTzbOtOUWyUHzmAoU9Pt4TeuNEC.68BZRjugHm"
 
@@ -1338,7 +1350,7 @@ services:
 
             - "traefik.http.routers.dashboard-secured.rule=Host(`dashboard.<nom_de_domaine>`)"
             - "traefik.http.routers.dashboard-secured.service=api@internal"
-            - "traefik.http.routers.dashboard-secured.entrypoints=http,https"
+            - "traefik.http.routers.dashboard-secured.entrypoints=https"
             - "traefik.http.routers.dashboard-secured.tls.certresolver=tls"
             - "traefik.http.routers.dashboard-secured.middlewares=auth@docker"
 
@@ -1418,23 +1430,25 @@ sudo docker logs -f <nom_du_conteneur>
 
 Une fois Traefik correctement configuré et que le dashboard est accessible, vous devrez écrire une un fichier `docker-compose.yml` avec une configuration spécifique pour lancer un conteneur Nginx et qu’il soit accessible en HTTPS à l’adresse `https://nginx.<nom_de_domaine>`.
 
+
 ```yml
 services:
     nginx:
         image: nginx:latest
+        restart: always
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.nginx.rule=Host(`nginx<nom_de_domaine>`)"
-            - "traefik.http.routers.nginx.entrypoints=http"
 
             - "traefik.docker.network=traefik-public"
 
-            - "traefik.http.routers.nginx.middlewares=https-redirect@docker"
+            - "traefik.http.routers.nginx.rule=Host(`nginx.<nom_de_domaine>`)"
+            - "traefik.http.routers.nginx.entrypoints=http"
+
+            - "traefik.http.routers.nginx.middlewares=http_to_https@docker"
+
             - "traefik.http.routers.nginx-secure.rule=Host(`nginx.<nom_de_domaine>`)"
             - "traefik.http.routers.nginx-secure.entrypoints=https"
-            - "traefik.http.routers.nginx-secure.tls=true"
-            - "traefik.http.routers.nginx-secure.tls.certresolver=le"
-            - "traefik.http.routers.nginx-secure.service=nginx"
+            - "traefik.http.routers.nginx-secure.tls.certresolver=tls"
 
             - "traefik.http.services.nginx.loadbalancer.server.port=80"
         networks:
@@ -1444,3 +1458,185 @@ networks:
     traefik-public:
         external: true
 ```
+
+Bien penser à entrer la commande :
+```bash 
+docker compose up -d
+```
+
+Une fois que les deux conteneurs tournent sur notre serveur, on va pouvoir se rendre à l'adresse : `https://dashboard.<nom_de_domaine>` pour voir le dashboard de Traefik (en entrant les credentials), ainsi qu'à l'adresse `https://nginx.<nom_de_domaine>`.
+
+### DEPLOIEMENT MANUEL DE L'APPLICATION
+
+Pré-requis : 
+* Paramétrer le VPS
+* Paramétrer les records DNS
+* Paramétrer le reverse proxy Traefik
+* Avoir une application fullstack qui tourne correctement en local
+
+#### Modification de l'image Docker du Frontend
+
+Pour la partie Frontend, il faudra faire une modification de la partie build de l'image Docker.<br>
+En l'état, le Frontend va build l'application en utilisant la variable d'environnement VITE_API_ENDPOINT.<br>
+Cette variable n'est pas "overidable" au runtime.<br> 
+Ce qui implique que même si on passe une variable d'environnement dans le fichier docker compose, cela n'aura aucun effet.<br>
+
+On va employer une astuce qui consiste à remplacer la variable au runtime de l'application en utilisant un script bash entrypoint.<br>
+Plus d'information disponible ici : <a href="https://moreillon.medium.com/environment-variables-for-containerized-vue-js-applications-f0aa943cb962">Environment variables for containerized Vue.js applications and how to set them at runtime</a><br>
+
+Voici les manipulations à faire avant de re-build notre image docker et de la push sur le docker-hub :
+Dans notre repertory to frontend, on va modifier notre fichier `.env` :
+```bash
+# Variable d'environnement pour définir le préfix des routes : ici variable dynamique
+VITE_BASE_API_URL="VITE_API_ENDPOINT_PLACEHOLDER"
+```
+
+Puis modifier notre Dockerfile et y ajouter :
+```bash
+# Script pour remplacer les variables d'environnement
+COPY ./substitute_env_var.sh /docker-entrypoint.d/substitute_env_var.sh
+RUN chmod +x /docker-entrypoint.d/substitute_env_var.sh
+```
+
+Il faudra enfin ajouter un fichier script qui permettra de changer les variables d'environnement.<br>
+Ce fichier s'appellera `substitute_env_var.sh` et aura cette structure :
+```sh
+#!/bin/sh
+ROOT_DIR=./dist
+# Replace env vars in files served by NGINX
+for file in $ROOT_DIR/js/*.js* $ROOT_DIR/index.html $ROOT_DIR/precache-manifest*.js;
+
+do  
+sed -i 's|VITE_API_ENDPOINT_PLACEHOLDER|'${VITE_BASE_API_URL}'|g' $file
+# Your other variables here...
+done
+
+# Let container exectution proceed
+exec "$@"
+```
+
+On va ensuite build notre image, puis la push sur le docker-hub.
+
+#### Déploiement sur le serveur de production
+
+Structure du serveur :
+```
+home
+| /traefik
+| | docker-compose.yml
+| /nginx
+| | docker-compose.yml
+| /app
+| docker-compose.yml
+
+```
+Avant de récupérer les images Docker depuis le docker-hub, on va rectifier les CORS au niveau du backend.<br>
+
+**Ce processus sera long et douloureux, car il faudra probablement le refaire plusieurs fois jusqu'à ce que tout fonctionne.**<br>
+
+Ainsi, il faudra enchaîner les rectifications, puis les build des images, compose-up, les push puis ensuite sur le docker-hub.
+
+On va ensuite pouvoir récupérer les images Docker depuis notre repository sur notre serveur :
+```sh
+docker image pull <username>/crafted_by_frontend:latest
+docker image pull <username>/crafted_by_api:latest
+docker pull postgres
+```
+
+On va ensuite créer un fichier `docker-compose.yml` dans `/home :<br>
+N.B. : pour "db", bien mettre les même credentials qu'en local
+```yml
+version: '3.9'
+
+services:
+    # nom du service de la base de données
+    db:
+        container_name: db_crafted_by
+        # image docker de postgres
+        image: postgres:latest
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        environment:
+            POSTGRES_DB: db_crafted_by
+            POSTGRES_USER: <user>
+            POSTGRES_PASSWORD: <password>
+        # volumes de persistance des données
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+        networks:
+            - common_network
+
+    # nom du service backend
+    backend:
+        container_name: backend_crafted_by
+        image: <username>/crafted_by_api:latest
+        restart: always
+        labels:
+            - "traefik.enable=true"
+
+            - "traefik.http.routers.backend.rule=Host(`backend.<nom_de_domaine>`)"
+            - "traefik.http.routers.backend.entrypoints=https"
+            - "traefik.http.routers.backend.tls.certresolver=tls"
+
+            - "traefik.http.services.backend.loadbalancer.server.port=80"
+        depends_on:
+            - db
+        environment:
+            DB_HOST: db
+        networks:
+            - common_network
+            - traefik-public
+
+    # nom du service frontend
+    frontend:
+        container_name: frontend_crafted_by
+        image: <username>/crafted_by_frontend:latest
+        restart: always
+        labels:
+            - "traefik.enable=true"
+
+            - "traefik.http.routers.frontend.rule=Host(`<nom_de_domaine>`)"
+            - "traefik.http.routers.frontend.entrypoints=https"
+            - "traefik.http.routers.frontend.tls.certresolver=tls"
+
+            - "traefik.http.services.frontend.loadbalancer.server.port=80"
+        environment:
+            - VITE_BASE_API_URL=https://backend.<nom_de_domaine>/api
+        depends_on:
+            - backend
+        networks:
+            - common_network
+            - traefik-public
+
+networks:
+    common_network:
+    traefik-public:
+        external: true
+
+volumes:
+    pg-data: {}
+
+```
+
+Une fois cette étape réalisée : 
+```bash
+docker compose up -d
+```
+
+Ensuite, se logger dans le conteneur du backend : 
+```bash
+sudo docker exec -it <id_du_conteneur> sh
+```
+et exécuter les commandes pour migrer et seeder la bdd :
+```bash
+php artisan migrate
+
+php artisan db:seed
+```
+
+On peut controller que tout fonctionne correctement en se rendant sur les url de l'app :
+- `https://dashboard.<nom_de_domaine>` 
+- `https://nginx.<nom_de_domaine>` 
+- `https://<nom_de_domaine>` 
+- `https://backend.<nom_de_domaine>/api` 
