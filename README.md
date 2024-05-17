@@ -7,6 +7,10 @@
     </a>
 </p>
 
+- 🔭 I’m currently working on [staays.com](https://www.staays.com/)
+
+- 🌱 I’m currently learning **NextJS**
+
 - 📫 How to reach me **wirth.romain@gmail.com**
 
 - ⚡ Facts about me :<br> 
@@ -31,7 +35,7 @@
 # Languages and Tools:
 <p align="left">
 
-## Front-End
+## Front-End Development
 <p>
     <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> 
         <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> 
@@ -56,7 +60,7 @@
     </a>
 </p>
 
-## Back-End
+## Back-End Development
 <p>
     <a href="https://nodejs.org" target="_blank" rel="noreferrer"> 
         <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> 
