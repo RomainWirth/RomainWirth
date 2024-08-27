@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.7">
   <diagram name="Page-1" id="nX15-fNpdfxrBtTrRgOM">
-    <mxGraphModel dx="2868" dy="1572" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1912" dy="1048" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -432,6 +432,123 @@
         </mxCell>
         <mxCell id="P4SaNg6TSZGGmR-cx8DI-48" value="Name" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="730" y="1056" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-50" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;MPD Gas Station&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="20" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-51" value="Période de Fermeture" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="870" y="80" width="231" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-52" value="Début - DATE" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-51">
+          <mxGeometry x="11" y="60" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-53" value="Fin - DATE" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-51">
+          <mxGeometry x="10" y="90" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-54" value="Type (temp ou définitive) - BOOLEAN" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-51">
+          <mxGeometry x="11" y="120" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-55" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Id &lt;/b&gt;- INT&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-51">
+          <mxGeometry x="11" y="30" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-56" value="&lt;b&gt;Pdv_Id &lt;/b&gt;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-51">
+          <mxGeometry x="11" y="150" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-57" value="Point de Vente" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="80" width="240" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-58" value="&lt;div align=&quot;left&quot;&gt;Latitude - FLOAT&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="11" y="60" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-59" value="Longitude - FLOAT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="10" y="90" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-60" value="Postal_Code - VARCHAR(5)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="11" y="120" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-61" value="Address - VARCHAR(250)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="11" y="150" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-62" value="City - VARCHAR(250)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="10" y="180" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-63" value="Automate 24/7 - BOOLEAN" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="10" y="210" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-64" value="&lt;div&gt;Type = Autoroute / Route - BOOLEAN&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="10" y="240" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-65" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Id &lt;/b&gt;- INT&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-57">
+          <mxGeometry x="11" y="30" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-66" value="Horaires" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1419" y="80" width="211" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-67" value="Jour - VARCHAR(3)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-66">
+          <mxGeometry x="11" y="60" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-68" value="Horaire_ouverture - VARCHAR(5)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-66">
+          <mxGeometry x="10" y="90" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-69" value="Horaire_fermeture&amp;nbsp;- VARCHAR(5)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-66">
+          <mxGeometry x="11" y="120" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-70" value="Ferme - BOOLEAN" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-66">
+          <mxGeometry x="11" y="150" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-71" value="&lt;b&gt;Id &lt;/b&gt;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-66">
+          <mxGeometry x="10" y="30" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-72" value="&lt;b&gt;Pdv_Id&lt;/b&gt;&amp;nbsp;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-66">
+          <mxGeometry x="11" y="180" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-73" value="Service" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1470" y="400" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-74" value="&lt;b&gt;Id &lt;/b&gt;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-73">
+          <mxGeometry x="10" y="30" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-89" value="name - VARCHAR(250)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-73">
+          <mxGeometry x="10" y="58" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-75" value="Prix" style="swimlane;whiteSpace=wrap;html=1;rounded=0;startSize=23;" vertex="1" parent="1">
+          <mxGeometry x="920" y="400" width="140" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-76" value="Date - DATE" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-75">
+          <mxGeometry x="10" y="58" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-77" value="Valeur - INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-75">
+          <mxGeometry x="10" y="28" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-78" value="&lt;b&gt;Pdv_Id &lt;/b&gt;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-75">
+          <mxGeometry x="10" y="88" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-79" value="&lt;b&gt;Carburant_Id &lt;/b&gt;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-75">
+          <mxGeometry x="10" y="118" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-80" value="Rupture" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1101" y="400" width="140" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-81" value="&lt;b&gt;Carburant_Id &lt;/b&gt;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-80">
+          <mxGeometry x="10" y="120" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-82" value="Début - DATE" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-80">
+          <mxGeometry x="11" y="30" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-83" value="Fin - DATE" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-80">
+          <mxGeometry x="10" y="60" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-84" value="&lt;div style=&quot;&quot;&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;Pdv_Id &lt;/b&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- INT&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-80">
+          <mxGeometry x="10" y="90" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-85" value="Carburant" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="400" width="161" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-86" value="&lt;b&gt;Id&lt;/b&gt;&amp;nbsp;- INT" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-85">
+          <mxGeometry x="11" y="30" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="P4SaNg6TSZGGmR-cx8DI-88" value="name - VARCHAR(250)" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="P4SaNg6TSZGGmR-cx8DI-85">
+          <mxGeometry x="11" y="58" width="150" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
