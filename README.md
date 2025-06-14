@@ -133,7 +133,7 @@
 ## Frameworks
 <p>
     <a href="https://laravel.com/" target="_blank" rel="noreferrer">
-        <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/laravel/laravel-plain-wordmark.svg" alt="laravel" width="40" height="40"/> 
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Laravel.svg" alt="laravel" width="40" height="40"/> 
     </a>
     <span>  </span>
     <a href="https://symfony.com" target="_blank" rel="noreferrer">
