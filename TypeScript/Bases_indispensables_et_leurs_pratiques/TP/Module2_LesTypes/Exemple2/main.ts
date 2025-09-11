@@ -1,0 +1,40 @@
+// déclaration de variables :
+let firstName: string = "Mario";
+let age: number = 30;
+let sex: boolean = true; // true = homme, false = femme
+let occupation: string = "Plumber";
+const sport: Array<string> | string[] = ["Tenis", "Karting"];
+const address: {
+  street: string; 
+  city: string; 
+  zip: number
+} = {
+  street: "123 rue des champs",
+  city: "Paris",
+  zip: 75000
+};
+
+const displayCharacter = (
+  _firstName: string, 
+  _age: number, 
+  _sex: boolean, 
+  _occupation: string, 
+  _sports: Array<string> | string[], 
+  _address: {
+    street: string; 
+    city: string; 
+    zip: number
+}) => {
+  console.log(`
+    It's me ${_firstName},
+    I am ${_age} years old ${(_sex ? "man" : "woman")}.
+    My job is ${_occupation}.
+    I like ${_sports[0]} and ${_sports[1]}.
+    I live at :
+    ${_address.street},
+    ${_address.zip}
+    ${_address.city}
+  `);
+}
+
+displayCharacter(firstName, age, sex, occupation, sport, address);
