@@ -4,9 +4,9 @@ A. Les Variables et les Types : ES5 à TS
 B. TypeScript et les types
 C. Les fonctions et callback
 D. Le type "any"
-E. Les Tableaux
-F. L'Union
-G. Surcharge de fonction
+E. L'Union
+F. Surcharge de fonction
+G. Les Tableaux
 H. Les types prédéfinis
 I. Les Objets et les interfaces
 J. L'union et les objets
@@ -265,6 +265,13 @@ On peut également voir que la fonction compilée est une fonction flechée.
 
 ### Les fonctions de rappel : les callbacks
 
+_**Rappel** : Une callback est juste une fonction passée en paramètre à une autre fonction, qui sera appelée plus tard, souvent pour gérer une suite d’opérations ou une réponse._
+
+Une **fonction callback** (fonction de rappel) est une fonction que l'on passe en argument à une autre fonction. Elle sera **appelée (exécutée) plus tard** par cette fonction.
+
+Les fonctions callbacks sont utilisées quand une action prend du temps (ex: chargement d'un fichier, attente d'une réponse, etc.).  
+Elles permettent de dire " quand tu as fini, exécute cette fonction".
+
 #### Le Type "Function"
 
 Il est possible de déclarer des variables ayant un type "Function".
@@ -343,9 +350,78 @@ Cette fonction prends en `paramètre` une `variable` de type `number` et retourn
 Ainsi, on peut appeler n'importe quelle fonction qui correspond à cette signature : `myCallback` et `myOtherCallback`.
 
 ## D. LE TYPE "ANY"
-## E. LES TABLEAUX
-## F. L'UNION
-## G. SURCHARGE DE FONCTION
+
+Le type `any` veut dire "n'importe quoi". Cela signifie qu'il peut être utilisé pour obtenir une variable pouvant "changer" de type.  
+
+L'utilisation de ce type est **vivement déconseillé** afin d'éviter de perdre les avantages et l'intérêt du langage TypeScript.  
+
+exemple : 
+```TypeScript
+let varAny: any;
+varAny = "Mario";
+console.log(typeof varAny); // output => string
+varAny = 10;
+console.log(typeof varAny); // output => number
+```
+
+Les paramètres non typés d'une fonction sont également de type "any" par défaut. 
+
+Parfois, il sera intéressant de l'utilisater, notamment avec des tableaux.
+exemple : 
+```TypeScript
+let firstName = "Mario";
+let age = 32;
+let sex = true;
+const sports = ["tennis", "karting"];
+const address = {
+  street: "10 rue des lilas",
+  city: "Paris",
+  zipCode: 75000,
+};
+
+const character = [firstName, age, sex];
+
+function displayCharacter(character: any[]): void {
+  for (let value of character) {
+    console.log(value);
+  }
+}
+```
+
+## E. L'UNION (PIPE `|`)
+
+Une variable peut être définie comme pouvant contenir des valeurs de types différents à l'aide du symbole de l'union (pipe : `|`).
+
+exemple : 
+```TypeScript
+let varUnion: string | number = 10;
+console.log(varUnion); // output 10
+varUnion = "Mario";
+console.log(varUnion); // ouput Mario
+```
+
+Une fonction peut également retourner des valeurs de type différent.
+On pourra spécifier les types retournés de la même manière que pour la variable.
+
+exmple : 
+```TypeScript
+const test = (_input: number | boolean): number | string => {
+  if (typeof _input === "number") {
+    return _input;
+  } else if (typeof _input === "boolean") {
+    return _input ? "Homme" : "Femme";
+  }
+}
+
+console.log(test(33)); // output = 33
+console.log(test(false)); // output = Femme
+```
+
+## F. SURCHARGE DE FONCTION
+
+
+
+## G. LES TABLEAUX
 ## H. LES TYPES PRÉDÉFINIS
 ## I. LES OBJETS ET LES INTERFACES
 ## J. L'UNION ET LES OBJETS
