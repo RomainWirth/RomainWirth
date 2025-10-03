@@ -535,4 +535,31 @@ On préférera utiliser des outils qui sont bien maintenus, mis à jour et toujo
 
 L'alternative recommandée est `Vite`.
 
+## Initialisation d'un projet React via  "Vite"
+
+[`Pourquoi utiliser vite`](https://vite.dev/guide/why.html).  
+Vite est un outil de développement rapide conçu pour développer des applications web modernes pour différentes librairies (disponibles sur la [`documentation`](https://vite.dev/guide/))
+
+Pour initialiser un projet vite de React, on va utiliser la commande suivante : `npm create vite@latest`.  
+On va indiquer le nom du projet, le framework utilisé (ici, React), le langage souhaité (ici, javascript).
+
+`npm run dev` permettra de lancer le projet et de le visualiser dans le navigateur.
+
+En comparaison avec la méthode CRA, les noms et emplacements des fichiers vont être en partis différents.  
+On aura aussi un fichier `vite.config.js`.
+
+L'application telle quel contient une petite interface qui contient un bouton 'compteur'.
+
+## Différences entre CRA et VITE
+
+| Create React App | VITE | 
+| --- | --- |
+| CRA nécessite Babel et Webpack. Sur les gros projets, Webpack peut créer des ralentissements | Vite utilise Rollup pour effectuer le bundle. Il exploite les modules ES native du navigateur. Rollup est un module bundler de JavaScript |
+| index.html se situe sous le dossier `/public` | index.html est situé à la racine du projet | 
+| index.js (ou .jsx) se retrouve dans le dossier `/src` | index.js est appelé main.jsx et se situe au même endroit sous `/src` |
+| index.js contient la fonction reportWebVitals() pour contrôler la performance | - |
+| logo est contenu sous `/src` | le logo est situé sous `/src/assets`. Le dossier assets contiendra les images du projet |
+| concernant les tests, tout est préconfiguré avec RTL / Jest | Vite nécessite de configurer cela manuellement |
+| - | .eslintrc.cjs = fichier de configuration ESLint, fourni au niveau de Vite. On peut désactiver les notifications d'erreur de ESLint dans ce fichier en ajoutant `'react/prop-types': 'off',` dans les rules |
+| http://localhost:3000/ par défaut | http://localhost:5173/ pour le port 3000, il faut changer la configuration sous `vite.config.js` en ajoutant `server: { port: 3000 },` |
 
