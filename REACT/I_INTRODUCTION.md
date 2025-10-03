@@ -516,3 +516,23 @@ Ce dossier va contenir :
 ```
 NB: Ceci est totalement pour la culture générale, puisque le package `Vite` permet d'automatiser tout ça.
 ```
+
+## Créer une application React via CRA (create-react-app)
+
+Il s'agit de l'utilisation d'une version simplifiée pour créer une application, via une seule ligne de commande que l'on peut retrouver sur la documentation [`create-a-new-react-app`](https://fr.legacy.reactjs.org/docs/create-a-new-react-app.html).
+
+Il faudra bien entendu au préalable avoir installé la dernière version de [`nodejs`](https://nodejs.org/fr).
+
+On utilisera la commande suivante : 
+```bash
+npx create-react-app mon-app
+cd mon-app
+npm start
+```
+Attention, cette méthode était l'outil recommandé par react depuis son lancement, mais il commence à être délaissé. 
+Si create-react-app n'est pas maintenu, cela risque d'induire des failles et des problématiques si on travaille sur un 'vrai' projet.  
+On préférera utiliser des outils qui sont bien maintenus, mis à jour et toujours apprécié par les développeurs.
+
+L'alternative recommandée est `Vite`.
+
+
