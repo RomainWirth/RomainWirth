@@ -1,30 +1,39 @@
 import React from 'react';
 import { Car } from './Car';
+import Welcome from './Welcome';
 
 class Mycars extends React.Component {
   state = {
     cars: [
       {
         brand: 'Audi', 
-        year: 2010,
+        year: 2025,
         color: 'black',
       }, 
       {
         brand: 'BMW',
-        year: 2012,
+        year: 2024,
         color: 'dark blue',
       }, 
       {
         brand: 'Mercedes',
-        year: 2020,
+        year: 2022,
         color: 'grey',
       },
     ],
   }
 
-  age = (year) => {
+  getAge = (year) => {
     const currentYear = new Date().getFullYear();
-    return currentYear - year;
+    const age = currentYear - year;
+
+    if (age > 1) {
+      return `${age} ans.`;
+    }
+    if (age === 1) {
+      return `${age} an.`;
+    }
+    return '';
   }
 
   addTenYears = () => {
@@ -35,16 +44,15 @@ class Mycars extends React.Component {
   }
 
   render() {
-    const currentYear = new Date().getFullYear();
-
     return (
       <div className='flex column justify-center items-center gap-20'>
         <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
         <div className='flex justify-center items-center gap-20'>
-          {this.state.cars.map((car, index) => (
-            <Car key={index} brand={car.brand} age={currentYear - car.year} color={car.color} />
+          {this.state.cars.map(({brand, year, color}, index) => (
+            <Car key={index} brand={brand} ageString={this.getAge(year)} color={color} />
           ))}
         </div>
+        <Welcome />
       </div>
     );
   }

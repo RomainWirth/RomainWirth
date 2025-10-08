@@ -744,8 +744,212 @@ N.B. :`constructor(props)` est une méthode qui n'est plus obligatoire depuis Re
 
 ## Desctructuring array 
 
+Le destructuring permet de créer des alias pour un objet. 
 
+exemple 1 : 
+```JS
+import React from 'react';
+import { Car } from './Car';
 
-## Callback function
+class Mycars extends React.Component {
+  state = {
+    cars: [
+      {
+        brand: 'Audi', 
+        year: 2010,
+        color: 'black',
+      }, 
+      {
+        brand: 'BMW',
+        year: 2012,
+        color: 'dark blue',
+      }, 
+      {
+        brand: 'Mercedes',
+        year: 2020,
+        color: 'grey',
+      },
+    ],
+  }
 
-## Invoquer une méthode dans les props
+  render() {
+    // ici on destructure le tableau cars en donnant des alias à chaque objet
+    const [ audi, bmw, mercedes ] = this.state.cars; 
+
+    return (
+      <div className='flex column justify-center items-center gap-20'>
+        <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
+        <div className='flex justify-center items-center gap-20'>
+          <Car 
+            brand={audi.brand} 
+            year={audi.year} 
+            color={audi.color} 
+          />
+          <Car 
+            brand={bmw.brand} 
+            year={bmw.year} 
+            color={bmw.color} 
+          />
+          <Car 
+            brand={mercedes.brand} 
+            year={mercedes.year} 
+            color={mercedes.color} 
+          />
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Mycars;
+```
+
+exemple 2 :  
+on va destructurer l'objet passé en paramètre de la méthode `.map()` appelée dans la méthode `render()`.  
+Au lieu de mettre `car` en premier argument, on va mettre : `{ brand, year, color }`.  
+Ceci va permettre d'éviter d'appeler `car.brand`, `car.color` ...
+```JS
+import React from 'react';
+import { Car } from './Car';
+
+class Mycars extends React.Component {
+  state = {
+    cars: [
+      {
+        brand: 'Audi', 
+        year: 2010,
+        color: 'black',
+      }, 
+      {
+        brand: 'BMW',
+        year: 2012,
+        color: 'dark blue',
+      }, 
+      {
+        brand: 'Mercedes',
+        year: 2020,
+        color: 'grey',
+      },
+    ],
+  }
+
+  age = (year) => {
+    const currentYear = new Date().getFullYear();
+    return currentYear - year;
+  }
+
+  addTenYears = () => {
+    const updateState = this.state.cars.map(car => {
+      return car.year -= 10;
+    });
+    this.setState({ updateState });
+  }
+
+  render() {
+    const currentYear = new Date().getFullYear();
+
+    return (
+      <div className='flex column justify-center items-center gap-20'>
+        <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
+        <div className='flex justify-center items-center gap-20'>
+          {/* ici on destructure le paramètre car en nommant les 3 clés de l'objet */}
+          {this.state.cars.map(({ brand, year, color }, index) => (
+            <Car key={index} brand={brand} age={currentYear - year} color={color} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Mycars;
+```
+
+## Callback function et invocation d'une méthode dans les props
+
+RAPPEL : Qu'est-ce qu'une callback ?  
+Une [`callback`](https://developer.mozilla.org/fr/docs/Glossary/Callback_function) (fonction de rappel) est une fonction passée dans une autre fonction en tant qu'argument.  
+Elle est ensuite inviquée à l'intérieur de la fonction externe pour accomplir une sorte de routine ou d'action. 
+
+exemple : 
+```JS
+const greetings = (name) => {
+  alert("Hello " + name);
+}
+
+const processUserInput = (callback) => {
+  const name = prompt("Enter your name.");
+  callback(name);
+}
+
+processUserInput(greetings);
+```
+
+On va créer une fonction 'getAge' qui prendra en paramètre 'year'.  
+Cette fonction devra calculer l'age de la voiture et retourner une chaîne de caractère à afficher :  
+'x an' si 0 ou 1 an, 'x ans' si plus de 1 an.
+
+```JS
+import React from 'react';
+import { Car } from './Car';
+
+class Mycars extends React.Component {
+  state = {
+    cars: [
+      {
+        brand: 'Audi', 
+        year: 2010,
+        color: 'black',
+      }, 
+      {
+        brand: 'BMW',
+        year: 2012,
+        color: 'dark blue',
+      }, 
+      {
+        brand: 'Mercedes',
+        year: 2020,
+        color: 'grey',
+      },
+    ],
+  }
+
+  getAge = (year) => {
+    const currentYear = new Date().getFullYear();
+    const age = currentYear - year;
+
+    if (age > 1) {
+      return `${age} ans.`;
+    }
+    if (age === 1) {
+      return `${age} an.`;
+    }
+    return '';
+  }
+
+  addTenYears = () => {
+    const updateState = this.state.cars.map(car => {
+      return car.year -= 10;
+    });
+    this.setState({ updateState });
+  }
+
+  render() {
+    return (
+      <div className='flex column justify-center items-center gap-20'>
+        <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
+        <div className='flex justify-center items-center gap-20'>
+          {this.state.cars.map(({brand, year, color}, index) => (
+            <Car key={index} brand={brand} age={this.getAge(year)} color={color} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Mycars;
+```
+
+## Passer une fonction dans une prop
+
