@@ -20,12 +20,28 @@ class Mycars extends React.Component {
     ],
   }
 
+  noCopy = () => {
+    alert("Copier c'est voler !");
+  }
+
+  addStyle = (e) => {
+    if (e.target.classList.contains('styled')) {
+      e.target.classList.remove('styled');
+      return;
+    }
+    e.target.classList.add('styled');
+    return;
+  }
+
   render() {
     const { title, colorTitle } = this.props;
+    console.log(colorTitle);
 
     return (
       <div>
-        <Header title={title} colorTitle={colorTitle} />
+        <h1 onMouseOver={this.addStyle}>{title}</h1>
+        {/* <Header title={title} colorTitle={colorTitle} /> */}
+        <p onCopy={this.noCopy}>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
         <div style={{ display: 'flex' }}>
           {this.state.cars.map((car, index) => (
             <Car key={index} color={car.color}>{car.brand}</Car>

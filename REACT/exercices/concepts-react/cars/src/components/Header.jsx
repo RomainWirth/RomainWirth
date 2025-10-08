@@ -1,7 +1,7 @@
 const Header = ({ title, colorTitle }) => {
   return (
     <div>
-      <h1 style={{ color: colorTitle }}>{title}</h1>
+      <h1 style={{ color: colorTitle }} onMouseOver={this.addStyle}>{title}</h1>
     </div>
   );
 }

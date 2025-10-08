@@ -138,7 +138,7 @@ export default Car;
 ### Props 
 
 Le composant Car.js pourra contenir des props.  
-Une `prop` est une propriété que l'on souhaite pouvoir modifier à l'appel d'un composant. 
+Une `prop` est une propriété que l'on souhaite pouvoir modifier à l'appel d'un composant.  
 Il existe deux types de props (ceci est valable en typescript): 
 * children qui est un 'node' (un noeud) et qui pourra contenir du jsx.
 * prop qui est une propriété définie qu'on va appliquer directement.
@@ -193,6 +193,74 @@ class Mycars extends React.Component {
 
 export default Mycars;
 ```
+
+**ATTENTION**  
+Dans React, les props sont immuables. Il ne faut pas les modifier à l'intérieur du composant.  
+La prop est un élément qui est maléable, c'est à dire que c'est le parent qui va envoyer la data au composant via la prop.  
+Le composant ne doit faire qu'afficher la data ou procéder à une action précise.  
+Il ne doit en aucun cas modifier la valeur passée, faut via une fonction pour un traitement spécifique.
+
+exemple :  
+Mycars.js fait appel au composant `Car`
+```JS
+import React from 'react';
+import { Car } from './Car';
+import Header from './Header';
+
+class Mycars extends React.Component {
+  state = {
+    cars: [
+      {
+        brand: 'Audi', 
+        color: 'black',
+      }, 
+      {
+        brand: 'BMW',
+        color: 'dark blue',
+      }, 
+      {
+        brand: 'Mercedes',
+        color: 'grey',
+      },
+    ],
+  }
+
+  render() {
+    const { title, colorTitle } = this.props;
+
+    return (
+      <div>
+        <Header title={title} colorTitle={colorTitle} />
+        <div style={{ display: 'flex' }}>
+          {this.state.cars.map((car, index) => (
+            <Car key={index} color={car.color}>{car.brand}</Car>
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Mycars;
+```
+Car.js
+```JS
+import { Wrapper } from './Wrapper';
+
+export const Car = ({ children, color }) => {
+
+  children = 'toto'; // => CECI EST À BANNIR !
+
+  return children && (
+    <Wrapper>
+      <p>Marque : {children}</p>
+      <p>Couleur : {color ? color : 'inconnue'}</p>
+    </Wrapper>
+  );
+}
+```
+Modifier `children` de cette manière est possible mais proscrit. 
+
 ### State
 
 Les composants State pourront contenir un objet state, qu'on pourra modifier. 
@@ -367,3 +435,317 @@ exmple :
 `export class Mycars extends Component` (ou `export const Mycars ...`) peut être importé uniquement de cette manière : 
 * `import { Mycars } from './components/Mycars'`
 
+### Bonnes pratiques
+
+De manière générale, chaque composant doit avoir son fichier propre. C'est une bonne pratique.
+
+Il est toutefois possible d'avoir deux composants dans un même fichier :  
+composant Mycars.js
+```JS
+import React from 'react';
+import Header from './Header';
+
+import { Wrapper } from './Wrapper';
+
+const Car = ({ children, color }) => {
+  return children && (
+    <Wrapper>
+      <p>Marque : {children}</p>
+      <p>Couleur : {color ? color : 'inconnue'}</p>
+    </Wrapper>
+  );
+}
+
+class Mycars extends React.Component {
+  state = {
+    cars: [
+      {
+        brand: 'Audi', 
+        color: 'black',
+      }, 
+      {
+        brand: 'BMW',
+        color: 'dark blue',
+      }, 
+      {
+        brand: 'Mercedes',
+        color: 'grey',
+      },
+    ],
+  }
+
+  render() {
+    const { title, colorTitle } = this.props;
+
+    return (
+      <div>
+        <Header title={title} colorTitle={colorTitle} />
+        <div style={{ display: 'flex' }}>
+          {this.state.cars.map((car, index) => (
+            <Car key={index} color={car.color}>{car.brand}</Car>
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Mycars;
+```
+
+Dans ce cas, le composant `Car` est uniquement utilisé et ne pourra être utilisé que dans le composant `Mycars`.
+
+## Les Événements React
+
+Les événements ([Events](https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Scripting/Events)) sont des changements, des actions qui se produisent dans un système que l'on programme et auxquels ont peut répondre d'une manière ou d'une autre. 
+exemple : `onClick`, `onChange`, etc. 
+
+exemple :  
+On va créer une fonction `noCopy` qui doit alerter l'utlisateur lorsqu'un élément est copié. 
+Cette fonction va être appelée à l'événement `onCopy` que l'on peut associer à n'importe quelle balise html.  
+```JS
+import React from 'react';
+import { Car } from './Car';
+import Header from './Header';
+
+class Mycars extends React.Component {
+  state = {
+    cars: [
+      {
+        brand: 'Audi', 
+        color: 'black',
+      }, 
+      {
+        brand: 'BMW',
+        color: 'dark blue',
+      }, 
+      {
+        brand: 'Mercedes',
+        color: 'grey',
+      },
+    ],
+  }
+
+  // Fonction noCopy qui déclenche une alerte dans le DOM
+  noCopy = () => {
+    alert("Copier c'est voler !");
+  }
+
+  render() {
+    const { title, colorTitle } = this.props;
+
+    return (
+      <div>
+        <Header title={title} colorTitle={colorTitle} />
+        {/* paragraphe avec un event onCopy */}
+        <p onCopy={this.noCopy}>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+        <div style={{ display: 'flex' }}>
+          {this.state.cars.map((car, index) => (
+            <Car key={index} color={car.color}>{car.brand}</Car>
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Mycars;
+```
+ATTENTION : lors de l'appel de la fonction, on a pas ajouté de parenthèses après son appel : `this.noCopy()`.  
+L'ajout de parenthèses provoque un déclenchement de la fonction au chargement de la page.  
+Pour éviter ceci, il faudra appeler la fonction dans une fonction anonyme : `() => {this.noCopy()}`
+
+
+### Les événements et le changement de state
+
+La modification direct d'un state dans une fonction n'est pas possible et est strictement interdit en react :  
+```JS
+import { Component } from 'react'
+import './App.css'
+
+import Mycars from './components/Mycars'
+
+class App extends Component {
+  state = {
+    title: 'Mon catalogue voitures',
+  }
+
+  changeTitle = (e) => {
+    this.state = "TRUC"; // INTERDIT
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <Mycars title={this.state.title} />
+        <button onClick={this.changeTitle}>Changer le nom en dur</button>
+      </div>
+    )
+  }
+}
+
+export default App
+
+```
+
+React a besoin via le DOM virtuel ce qui a été modifié et apporté au composant afin de détecter la différence entre le DOM virtuel et le DOM actuel (sur le navigateur)  
+et de mettre à jour seulement l'information nouvelle apportée au composant. 
+En utilisant this.state, React ne pourra pas détecter une quelconque modification.
+
+React a également besoin de surveiller les mutations du "state" pour pouvoir gérer le cycle de vie du composant.  
+(Voir chapitre sur le cycle de vie d'un composant React)
+
+Pour palier à ce problème, React contient une logique de modification du state avec `setState()` :
+```JS
+...
+  changeTitle = (e) => {
+    this.setState({
+      title: "Mon nouveau titre"
+    }); 
+  }
+
+  changeWithParam = (title) => {
+    this.setState({
+      title
+    })
+  }
+
+
+  render() {
+    return (
+      <div className="App">
+        <Mycars title={this.state.title} />
+        <button onClick={this.changeTitle}>Changer le nom en dur</button>
+        <button onClick={() => this.changeWithParam('Titre via paramètre')}>Changer le nom avec paramètre</button>
+      </div>
+    )
+  }
+...
+```
+La mutation du state est systématiquement détectée par React qui se chargera d'enclencher le rechargement du composant et de mettre à jour le DOM.  
+La méthode `render()` va donc se lancer. (plus de détails dans le chapitre sur le cycle de vie d'un composant React)
+
+#### Modification du state via un Bind
+
+Le `bind()` est une méthode qui est utilisée pour passer de la data en argument à une fonction d'une composant class.
+
+Syntaxe : `this.function.bind(this,[arg1...]);`
+
+```JS
+...
+  changeWithBind = (param) => {
+    this.setState({
+      title: param
+    })
+  }
+
+
+  render() {
+    return (
+      <div className="App">
+        <Mycars title={this.state.title} colorTitle={this.state.colorTitle} />
+        <button onClick={this.changeWithBind.bind(this, 'Titre via bind')}>Changer le nom avec Bind</button>
+      </div>
+    )
+  }
+...
+```
+
+#### Modification dynamique avec input text
+
+L'objectif ici est de capter le changement d'un élément input text (formulaire) pour modifier un autre élément du DOM. 
+```JS
+...
+  changeWithInput = (e) => {
+    this.setState({
+      title: e.target.value
+    })
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <Mycars title={this.state.title} colorTitle={this.state.colorTitle} />
+        <input type="text" onChange={(e) => this.changeWithInput(e)} value={this.state.title}/>
+      </div>
+    )
+  }
+...
+```
+`changeInput` est une fonction qui modifie l'état de l'élément qui contient title.  
+`onChange` va contenir l'appel de la fonction `changeInput`.  
+`value` est un paramètre qui affiche le contenu dans l'input.
+
+### Différence entre JS Vanilla et React : 
+
+React utilisera toujours le camelCase pour l'ajout de propriété à une balise.
+
+* Vanilla : on fait `oncopy`, `onclick`, `onchange`, etc.  
+```JS
+<p oncopy="myFunction()">Hello world !</p>
+<button onclick="myFunction()">mon bouton</button>
+<input type="text" onchange="myFunction()" />
+```
+* React : on fait `onCopy`, `onClick`, `onChange`, etc. (camel case)  
+```JS
+<p onCopy={myFunction()}>Hello world !</p>
+<button onClick={myFunction()}>mon bouton</button>
+<input type="text" onChange={myFunction()} />
+```
+
+### Note sur le constructor, la mutation et les mauvaises pratiques à éviter
+
+Si on initialise pas d'état local et qu'on ne lie pas de méthode, il n'est pas nécessaire d'implémenter son propre constructeur pour un composant réact.  
+On définit directement le state sans le constructor, sans le `this`.
+
+Comme vu plus haut : "il ne faut jamais modifier le state directement, on doit toujours passer par la méthode setState()".  
+Il s'agit de la procédure courante à l'extérieur du constructor.  
+Mais si on a besoin d'initialiser l'état local d'un composant en affectant un objet à `this.state`,  
+ou si on souhaite lier des méthodes gestionnaires d'événements à l'instance, il faudra implémenter le constructeur.  
+La procédure dans ce cas est un peu différente. 
+
+Exemple 1 :  
+On a besoin d'initialiser l’état local d'un composant en affectant le state (l'objet `this.state`).  
+Dans ce cas, on ne doit **SURTOUT PAS** appeler `setState()` dans le `constructor()`!  
+Au lieu de ça, on affecte directement l’état initial à `this.state` dans le constructeur.
+```JS
+constructor(props) {
+  super(props);
+  
+  // Ne pas appeler `this.setState()` ici !
+  this.state = { counter: 0 };
+}
+```
+
+Exemple 2 :  
+Si on souhaite lier des méthodes gestionnaires d’événements à l’instance, on va donc devoir implémenter le constructeur.
+```JS
+constructor(props) {
+   super(props);
+   this.handleClick = this.handleClick.bind(this);
+}
+```
+Le constructeur est le seul endroit où on doit affecter directement une valeur à `this.state` sans passer par la méthode `setState()` car cette dernière est strictement interdite dans le constructor().
+
+Une autre erreur courante chez les débutants en React consiste à copier les props dans l’état local.  
+Ne jamais faire ça !
+
+Exemple :
+```JS
+constructor(props) {
+  super(props);
+   
+  // Ne jamais faire ça !
+  this.state = { color: props.color };
+}
+```
+
+N.B. :`constructor(props)` est une méthode qui n'est plus obligatoire depuis React 16.  
+
+## Desctructuring array 
+
+
+
+## Callback function
+
+## Invoquer une méthode dans les props
