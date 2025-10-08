@@ -66,3 +66,47 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.flex {
+  display: flex;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.gap-20 {
+  gap: 20px;
+}
+
+.bordered {
+  border: 1px solid #ccc;
+}
+
+.p-10 {
+  padding: 10px;
+}
+
+.m-10 {
+  margin: 10px;
+}

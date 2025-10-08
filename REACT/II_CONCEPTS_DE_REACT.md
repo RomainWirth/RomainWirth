@@ -953,3 +953,211 @@ export default Mycars;
 
 ## Passer une fonction dans une prop
 
+Le composant enfant va attendre une fonction à déclancher.  
+Cette fonction est dans un premier temps inconnue, c'est le composant parent qui va déterminer quelle sera la fonction à passer.  
+En général, il s'agit d'une fonction qui va modifier l'état d'une donnée qui est affichée par le composant enfant.
+
+composant parent : 
+```JS
+import { Component } from 'react';
+import Child from './Child';
+
+class Parent extends Component {
+  state = {
+    messageParent: null,
+    messageChild: null,
+  }
+
+  orderParent = () => {
+    this.setState({ messageParent: "Range ta chambre" })
+  }
+
+  answerChild = () => {
+    this.setState({ messageChild: "Oui, Papa" })
+  }
+
+  render() {
+    return (
+      <div className='flex column justify-center items-center gap-20'>
+        <h2>Parent</h2>
+        <button onClick={this.orderParent}>Parent order</button>
+        <p>{this.state.messageParent}</p>
+        <hr />
+        <Child name="Toto" updatedState={this.state} childAnswer={this.answerChild} />
+      </div>
+    );
+  }
+}
+
+export default Parent;
+```
+
+Composant enfant : 
+```JS
+const Child = (props) => {
+  const { name, updatedState, childAnswer } = props;
+
+  const btn = updatedState.messageParent !== null 
+    ? <button onClick={() => childAnswer()}>Answer</button> 
+    : <button disabled>Answer</button>;
+
+  return (
+    <div>
+      <h2>{name}</h2>
+      {btn}
+      <p>{updatedState.messageChild}</p>
+    </div>
+  )
+}
+
+export default Child;
+```
+
+### Exercice Maman/Toto
+
+composant Parent : 
+```JS
+import { Component } from 'react';
+import Toto from './Toto';
+
+class Maman extends Component {
+    state = {
+        messageMaman: null,
+        messageToto: null,
+        disabled: true
+    }
+
+    // Compléter le code de la méthode ordreMaman.
+    ordreMaman = () => 
+    reponseToto = msg => this.setState({ messageToto: msg });
+
+    render() {
+        return (
+            <div>
+                <h1>Maman</h1>
+                <button 
+                    onClick={() => this.ordreMaman("Va ranger ta chambre")}
+                >Order de la mère</button>
+
+                <p>{this.state.messageMaman}</p>
+
+                <hr />
+                
+                <Toto 
+                    name="Toto"
+                    reponseTotoProps={this.reponseToto}
+                    leState={this.state}
+                />
+            </div>
+        )
+    }
+}
+
+export default Maman;
+```
+
+composant enfant : 
+```JS
+const Toto = props => {
+  return (
+    <div>
+        <h2>{props.name}</h2>
+        <button 
+          // compléter
+        >Réponse</button>
+
+        <p>{props.leState.messageToto}</p>
+    </div>
+  )
+}
+
+export default Toto
+```
+
+<details>
+<summary>Correction</summary>
+
+composant Parent : 
+```JS
+import { Component } from 'react';
+import Toto from './Toto';
+
+class Maman extends Component {
+    state = {
+        messageMaman: null,
+        messageToto: null,
+        disabled: true
+    }
+
+    ordreMaman = msg => this.setState({ messageMaman: msg, disabled: false });
+    reponseToto = msg => this.setState({ messageToto: msg });
+
+    render() {
+        return (
+            <div>
+                <h1>Maman</h1>
+                <button 
+                    onClick={() => this.ordreMaman("Va ranger ta chambre")}
+                >Order de la mère</button>
+
+                <p>{this.state.messageMaman}</p>
+
+                <hr />
+                
+                <Toto 
+                    name="Toto"
+                    reponseTotoProps={this.reponseToto}
+                    leState={this.state}
+                />
+            </div>
+        )
+    }
+}
+
+export default Maman;
+```
+
+composant Enfant : 
+```JS
+const Toto = props => {
+  return (
+    <div>
+        <h2>{props.name}</h2>
+        <button 
+          onClick={() => props.reponseTotoProps("Non, je veux regarder la télé")}
+          disabled={props.leState.disabled}
+        >Réponse</button>
+
+        <p>{props.leState.messageToto}</p>
+    </div>
+  )
+}
+
+export default Toto
+```
+</details>
+
+
+## React Fragment
+
+Rappel : au sein d'un composant, le return renvoit du JSX.  
+
+Pour fonctionner, les éléments qui sont dans le jsx doivent tous être enveloppés par une balise (souvent une div).  
+Parfois, lorsqu'on invoque un composant, l'élément parent de ce composant étant une div, cette div deviendra l'enfant d'une autre élément.  
+Cela peut se produire sur des balises html telle que des listes (ul>li), ou des tableaux (tr>td).  
+Une div qui se glisse au milieu de ces éléments n'empêche pas le code de fonctionner, mais elle va provoquer des problèmes de syntaxe qui ne passent pas au W3C validator.
+
+Pour éviter des divs intempestives et régler cette problématique, React propose le Fragment JSX : `<>...</>`.  
+
+Le fragment va avoir pour effet de supprimer la div dans la compilation du code.
+
+NB: le fragment peut s'importer : `import { Fragment } from 'react'`  
+et être utilisé de cette manière : 
+```JS
+<Fragment>
+  ...
+</Fragment>
+```
+Cette syntaxe n'est pas nécessaire et on va privilégier `<>...</>`.
+
+ATTENTION : si on doit utiliser la propriété `key={index}`, on devra obligatoirement utiliser `Fragment`. 
