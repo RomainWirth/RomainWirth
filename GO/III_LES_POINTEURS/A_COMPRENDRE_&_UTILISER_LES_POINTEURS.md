@@ -47,7 +47,7 @@ Vu qu'on a deux fois la même valeur, on occupe deux fois l'espace dans la mémo
 
 Lorsqu'on passe un pointeurs en argument d'une fonction, on ne crée par une copie de la valeur.  
 Au lieu de cela, la fonction va recevoir l'adresse mémoire  
-et peut utiliser cette adresse pour rechercher la valeur qui est stockée à cette adresse.
+et peut utiliser cette adresse pour rechercher la valeur qui est stockée à cette adresse.  
 Cela va permettre de travailler avec la valeur qui est stockée là.
 
 *_garbage collector = processus qui s'exécute automatiquement en arrière plan et qui se débarrasse des valeurs inutilisées_ 
