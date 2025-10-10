@@ -1546,3 +1546,73 @@ export default Form;
 et évite ainsi de perdre les données après un clic par exemple.
 
 ## Intégrer du CSS dans React
+
+### Inline CSS
+
+Pour déclarer du CSS inline, on va se servir de la balise `style` qui est directement intégrée dans la balise html.  
+
+En html classique, cela ressemble à :  
+`<p style="font-size: 24px; color: red">paragraphe</p>`
+
+En JSX, on va utiliser les accolades et y intégrer un objet :  
+`<p style={{fontSize: '24px', color: 'red'}}>paragraphe</p>`
+
+Étant donné qu'il s'agit d'un objet, on peut l'intégrer à une variable :  
+```JSX
+import './App.css'
+
+import Form from './components/Form'
+
+function App() {
+  const paragrapheStyle = {
+    fontSize: '20px',
+    color: 'red',
+  }
+
+  return (
+    <>
+      <h1 style={{fontSize: '50px', color: 'blue'}}>Hello World !</h1>
+      <p style={paragrapheStyle}>paragraphe</p>
+    </>
+  )
+}
+
+export default App
+```
+Bien entendu, il n'est pas du tout recommandé de procéder de cette manière pour intégrer le CSS.  
+On va plutôt utiliser une feuille de style : un fichier `.css`.
+
+### Externale style sheet + Modules
+
+On va donc créer un fichier `styles.css`.
+style.css
+```CSS
+.blue {
+  color: blue;
+}
+
+.red {
+  color: red;
+}
+```
+On va ensuite importer le fichier dans notre fichier JSX,
+et on va utiliser la propriété `className` directement dans les balises html du JSX :  
+```JS
+import './App.css'
+import './styles.css'
+
+import Form from './components/Form'
+
+function App() {
+  return (
+    <>
+      <h1 className="blue">Hello World !</h1>
+      <p className="red">paragraphe</p>
+    </>
+  )
+}
+
+export default App
+```
+
+### CSS Frameworks
