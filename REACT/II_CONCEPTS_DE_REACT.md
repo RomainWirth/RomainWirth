@@ -1314,5 +1314,101 @@ export default SingerClass;
 ## Les conditions dans React
 
 Les conditions dans React sont les mêmes que dans JavaScript.  
+Les exemples suivant montrent quelques cas de figure intéressants.  
 
-Voici quelques cas de figure intéressants :  
+* `if ... else ...` :
+```JS
+import { Component } from 'react';
+
+class Game extends Component {
+  state = {
+    name: 'Link',
+    winner: true,
+  }
+
+  render() {
+    if (this.state.winner) {  
+      return (
+        <div className="flex column align-center gap-10 bordered p-20 m-20">
+          <h2>Game Component</h2>
+          <p>Bravo {this.state.name}</p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex column align-center gap-10 bordered p-20 m-20">
+          <h2>Game Component</h2>
+          <p>Dommage {this.state.name}</p>
+        </div>
+      );
+    }
+  }
+}
+
+export default Game;
+```
+Cette syntaxe n'est pas très pratique, et est lourde.  
+Avec un `if ... else ...`, il n'est pas possible d'afficher directement une condition dans le JSX.  
+
+```JS
+import { Component } from 'react';
+
+class Game extends Component {
+  state = {
+    name: 'Link',
+    winner: true,
+  }
+
+  render() {
+    let result;
+    if (this.state.winner) {
+      result = <p>Bravo {this.state.name}</p>;
+    } else {
+      result = <p>Dommage {this.state.name}</p>;
+    }
+
+    return (
+      <div className="flex column align-center gap-10 bordered p-20 m-20">
+        <h2>Game Component</h2>
+        {result}
+      </div>
+    );
+  }
+}
+
+export default Game;
+```
+
+Afin d'éviter la lourdeur de la syntaxe `if ... else ...`, on va utiliser les opérateurs ternaires : `condition ? result if condition true : result if condition  false`
+```JS
+import { Component } from 'react';
+
+class Game extends Component {
+  state = {
+    name: 'Link',
+    winner: true,
+  }
+
+  render() {
+    return (
+      <div className="flex column align-center gap-10 bordered p-20 m-20">
+        <h2>Game Component</h2>
+        <p>
+          {this.state.winner 
+            ? `Bravo ${this.state.name}` 
+            : `Dommage ${this.state.name}`}
+        </p>
+      </div>
+    )
+  }
+}
+
+export default Game;
+```
+
+Si on ne souhaite rien retourner si la condition n'est pas remplie, on peut utiliser l'opérateur `&&` :  
+`condition && result if condition true` équivaut à `condition ? result if condition true : result if condition false`  
+result if condition false sera `null`.
+
+## Les images dans React
+
