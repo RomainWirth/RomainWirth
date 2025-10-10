@@ -1161,3 +1161,158 @@ et être utilisé de cette manière :
 Cette syntaxe n'est pas nécessaire et on va privilégier `<>...</>`.
 
 ATTENTION : si on doit utiliser la propriété `key={index}`, on devra obligatoirement utiliser `Fragment`. 
+
+## Approfondir avec le destructuring
+
+Le destructuring permet un affichage plus concis et plus "propre".
+
+### Le destructuring avec un tableau
+
+```JS
+const array = ["riri", "fifi", "loulou"];
+console.log(array); // output : ["riri", "fifi", "loulou"]
+
+const userOne = array[0];
+const userTwo = array[1];
+const userThree = array[2];
+console.log(userOne, userTwo, userThree); // ouput : riri fifi loulou
+
+const [userOne, userTwo, userThree] = array;
+console.log(userOne, userTwo, userThree); // ouput : riri fifi loulou
+```
+`const [userOne, userTwo, userThree] = array` permet d'assigner à chaque donnée du tableau une variable :  
+_userOne_ pour riri, _userTwo_ pour fifi, et _userThree_ pour loulou.  
+
+Cette syntaxe équivaut à : `const [userOne, userTwo, userThree] = ["riri", "fifi", "loulou"];`
+
+Imaginons maintenant que l'on ne souhaite afficher qu'une seule variable, on pourrait utiliser le `spread operator` de cette manière :  
+```JS
+const [userOne, ...rest] = array;
+console.log(rest); // output : ["fifi", "loulou"]
+```
+
+### Le destructuring avec un objet
+
+```JS
+const members = {
+  userOne: "riri",
+  userTwo: "fifi",
+  userThree: "loulou"
+}
+console.log(members); // output : {userOne: "riri", userTwo: "fifi", userThree: "loulou"}
+
+const memberOne = members.userOne;
+const memberTwo = members.userTwo;
+const memberThree = members.userThree;
+console.log(userOne, userTwo, userThree); // ouput : riri fifi loulou
+
+const {userOne, userTwo, userThree} = members;
+console.log(userOne, userTwo, userThree); // ouput : riri fifi loulou
+```
+En utilisant le spread operator, voici ce qu'il se passerait : 
+```JS
+const {userOne, ...rest} = array;
+console.log(rest); // output : {userTwo: "fifi", userThree: "loulou"}
+```
+
+Si on souhaite associer une autre `key` aux éléments de l'objet, on va procéder ainsi : 
+```JS
+const members = {
+  userOne: "riri",
+  userTwo: "fifi",
+  userThree: "loulou"
+}
+
+const {userOne: hulk, userTwo: spiderMan, userThree: superMan} = members;
+consolelog(hulk, spiderMan, superMan); // ouput : riri fifi loulou
+```
+
+### Le destructuring dans React
+
+Le destructuring est très utile pour récupérer des variables passées en props d'un composant à un autre.   
+Composant Display :
+```JS
+import { Component } from 'react';
+
+import SingerFunction from './SingerFunction';
+import SingerClass from './SingerClass';
+
+class Display extends Component {
+  render() {
+    return (
+      <div className='flex column items-center justify-center gap-10'>
+        <h2>Chanteurs</h2>
+        <div className="flex gap-20">
+          <SingerFunction name="Eric Clapton" age="74" />
+          <SingerFunction name="Jimi Hendrix" age="27" />
+          <SingerClass name="David Gilmor" age="73" />
+          <SingerClass name="Carlos Santana" age="71" />
+        </div>
+      </div>
+    )
+  } 
+};
+
+export default Display;
+```
+Composant SingerFunction : 
+```JS
+const SingerFunction = (props) => {
+  const { name, age } = props;
+  
+  return (
+    <div className="flex column items-center justify-center gap-10 bordered p-10">
+      <h2>Chanteur :</h2>
+      <p>Nom : {name}</p>
+      <p>Age : {age} ans</p>
+    </div>
+  );
+};
+
+export default Singer;
+```
+
+Il est également possible de destructurer directement au niveau des paramètres de la fonction : 
+```JS
+const SingerFunction = ({ name, age }) => {
+  return (
+    <div className="flex column items-center justify-center gap-10 bordered p-10">
+      <h2>Chanteur :</h2>
+      <p>Nom : {name}</p>
+      <p>Age : {age} ans</p>
+    </div>
+  );
+};
+
+export default Singer;
+```
+Le code est ainsi plus concis et plus clair.
+
+**N.B. : Ceci fonctionne bien avec les composants de type fonction.**
+
+Avec un composant de type class, Cela va se passer différemment, il faudra impérativement utiliser le destructuring dans la méthode `render()` en accédant aux propriétés via `this.props` :  
+Composant SingerClass :
+```JS
+import { Component } from 'react';
+
+class SingerClass extends Component {
+  render() {
+    const { name, age } = this.props;
+    return (
+      <div className='flex column items-center justify-center gap-10 bordered p-10'>
+        <h3>Chanteur :</h3>
+        <p>Nom : {name}</p>
+        <p>Age : {age} ans</p>
+      </div>
+    )
+  }
+}
+
+export default SingerClass;
+```
+
+## Les conditions dans React
+
+Les conditions dans React sont les mêmes que dans JavaScript.  
+
+Voici quelques cas de figure intéressants :  
