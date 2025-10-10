@@ -1410,5 +1410,139 @@ Si on ne souhaite rien retourner si la condition n'est pas remplie, on peut util
 `condition && result if condition true` équivaut à `condition ? result if condition true : result if condition false`  
 result if condition false sera `null`.
 
-## Les images dans React
+## Les images et les formulaires dans React
 
+### Les images
+
+* Pour afficher une image PNG, on va créer un composant qui va contenir la balise `<img />`. src va contenir le nom de l'image qu'on aura importée au préalable : 
+```JS
+import romain from '../assets/Romain.png'
+
+const Romain = () => {
+  return <img src={romain} alt="" />
+};
+
+export default Romain;
+```
+* Pour une image svg, on va procéder un peu différemment.  
+On va créer un composant et copier les balises qui définissent le svg.  
+On va ainsi pouvoir modifier certaines données comme la `height`, `width`, et la couleur avec `fill` via les props.  
+On peut également ajouter une propriété `className` : 
+```JS
+const IconCircleUser = ({width, height, color, className}) => {
+  return (
+    <svg 
+      viewBox="0 0 512 512" 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={width} 
+      height={height} 
+      fill={color}
+      className={className}
+    >
+      <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 128c39.77 0 72 32.24 72 72S295.8 272 256 272c-39.76 0-72-32.24-72-72S216.2 128 256 128zM256 448c-52.93 0-100.9-21.53-135.7-56.29C136.5 349.9 176.5 320 224 320h64c47.54 0 87.54 29.88 103.7 71.71C356.9 426.5 308.9 448 256 448z"/>
+    </svg>
+  )
+}
+
+export default IconCircleUser;
+```
+### Les formulaires
+
+Le formulaire permet à l'utilisateur d'interragir avec le DOM, pour éventuellement modifier certains éléments :
+
+```JS
+import { Component } from 'react';
+
+import Romain from './Romain';
+import IconCircleUser from './IconCircleUser';
+
+class Form extends Component {
+
+  state = {
+    username: '',
+    color: '',
+    colors: ['', 'green', 'blue', 'red', 'yellow', 'black', 'white'],
+    comment: '',
+  }
+
+  handlePseudo = (e) => {
+    this.setState({
+      username: e.target.value
+    })
+  }
+
+  handleColor = (e) => {
+    this.setState({
+      color: e.target.value
+    })
+  }
+
+  handleComments = (e) => {
+    this.setState({
+      comment: e.target.value
+    })
+  }
+
+  handleSubmitForm = (e) => {
+    e.preventDefault();
+    alert(`Pseudo : ${this.state.username} \nCommentaire : ${this.state.comment}`);
+  }
+
+  render() {
+    return (
+      <div className="flex column justify-center items-center gap-10 bordered p-20 m-10">
+        <div className="flex column gap-10">
+          <Romain />
+        </div>
+        <h2>User</h2>
+        <div className="flex gap-20 items-start">
+          <IconCircleUser width="100" height="100" color={this.state.color} />
+          <p className='flex column gap-10'>
+            <span>
+              utilisateur : 
+            </span>
+            <span>
+              {this.state.username}
+            </span>
+          </p>
+          <p className='flex column gap-10'>
+            <span>
+              Commentaire : 
+            </span>
+            <span>
+              {this.state.comment}
+            </span>
+          </p>
+        </div>
+        <form className="flex gap-20" onSubmuit={this.handleSubmitForm}>
+          <div className="flex column items-start gap-5 m-20">
+            <label>Pseudo</label>
+            <input type="text" value={this.state.username} onChange={this.handlePseudo} />
+          </div>
+          <div className="flex column items-start gap-5 m-20">
+            <label>Couleur</label>
+            <select onChange={this.handleColor}>
+              {this.state.colors.map((color, index) => (
+                <option key={index} value={color}>{color}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex column items-start gap-5 m-20">
+            <label>Message</label>
+            <textarea onChange={this.handleComments}></textarea>
+          </div>
+          <button>Valider</button>
+        </form>
+      </div>
+    )
+  }
+}
+
+export default Form;
+```
+* `onChange` appelle les fonctions qui gèrent les changements d'états des variables.
+
+* `e.preventDefault()` est une méthode qui interdit le rechargement de la page  
+et évite ainsi de perdre les données après un clic par exemple.
+
+## Intégrer du CSS dans React
