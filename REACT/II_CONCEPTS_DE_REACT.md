@@ -1715,4 +1715,69 @@ export default App
 Dans la propriété `className`, on va aller chercher la classe CSS green en utilisant `styles.green`.  
 Afin d'utiliser la class green, il sera obligatoirement nécessaire d'importer une variable depuis le fichier `.module.css`. 
 
-### CSS Frameworks : Bootstrap
+### CSS Frameworks et librairies : 
+
+#### Bootstrap
+
+Pour intégrer Bootstrap à une application, on utilisera la ligne de commande : `npm install bootstrap`.  
+Si on souhaite une version précise, on ajoutera `@4.3.1` (pour la version 4.3.1) : `npm install bootstrap@4.3.1`.  
+
+Le fichier package.json sera modifié et incluera la dépendance de bootstrap.
+
+Enfin, dans notre fichier `index.js` (ou `main.jsx` si projet initialisé avec vite), on importera bootstrap : `import 'bootstrap/dist/css/bootstrap.min.css';`.
+
+Une fois ces étapes faites, on peut déjà observer des changements dans le DOM.
+
+Pour appliquer les classes bootstrap, il suffit de se référer à la [documentation](https://getbootstrap.com/docs/5.3/getting-started/introduction/) et de les utiliser directement dans les propriétés `className` du JSX.
+
+L'inconvénient de ce procédé est qu'on va charger l'intégralité de bootstrap sur chacune des pages, qu'on l'utilise ou non. 
+
+#### Styled components 
+
+La librairie [styled-components](https://styled-components.com/) permet de styliser les composants de manière très ciblée.  
+Son avantage face a bootstrap est qu'on va charger les styles uniquement lorsqu'on y fait appel. 
+
+Styled components permet de coder du CSS dynamique. 
+
+Pour l'utiliser, il faudra également installer la dépendance avec npm : `npm install styled-components`.  
+Il faudra ensuite importer styled component dans chaque fichier ou l'on souhaite l'utiliser et coder du CSS directement dans le fichier.  
+On va créer une constante qui fera office de composant et qui appliquera directement le style écrit : 
+```JS
+import { Component } from "react";
+import styled from 'styled-components';
+
+const Title = styled.h2`
+  color: purple;
+  font-size: 24px;
+`;
+
+const Button = styled.button`
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darkred;
+  }
+`;
+
+class Form extends Component {
+  render() {
+    return (
+      <div>
+        <Title>Formulaire</Title>
+        <Button>Valider</Button>
+      </div>
+    )
+  };
+};
+
+export default Form;
+```
+On pourra remarquer lors de l'inspection de l'élément h2 dans le DOM qu'une classe CSS "bizarre" a été ajouté. Par exemple : `class="sc-bRKDuR bWJJIR"`.
+
+Enfin, pour s'aider lors de l'écriture du CSS, on va ajouter une extension vs code afin d'appliquer une coloration syntaxique entre les bactics `` `vscode-styled-components` (de Julien Possonnier).
+
