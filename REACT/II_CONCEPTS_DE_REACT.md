@@ -1608,11 +1608,111 @@ function App() {
     <>
       <h1 className="blue">Hello World !</h1>
       <p className="red">paragraphe</p>
+      <Form />
     </>
   )
 }
 
 export default App
 ```
+Il est possible de gérer la CSS depuis l'élément parent via les props : 
+```JS
+import './App.css'
+import './styles.css'
 
-### CSS Frameworks
+import Form from './components/Form'
+
+function App() {
+  const paragrapheStyle = {
+    fontSize: '20px',
+    color: 'red',
+  }
+
+  return (
+    <>
+      <h1 style={{fontSize: '50px', color: 'blue'}}>Hello World !</h1>
+      <p style={paragrapheStyle}>paragraphe</p>
+      <p className="blue">paragraphe</p>
+      <Form head={true} />
+    </>
+  )
+}
+
+export default App
+```
+composant : 
+```JS
+import { Component } from "react";
+
+class Form extends Component {
+  render() {
+
+    const myClass = this.props.head ? "blue" : "red";
+
+    return (
+      <div>
+        <h2>Formulaire</h2>
+        <p className={myClass}>je suis rouge ou bleu</p>
+        <button>Valider</button>
+      </div>
+    )
+  };
+};
+
+export default Form;
+```
+Ici, on accède à la prop `head` via `this.props.head`.  
+Dans notre cas, head est un bouléen (true ou false).  
+Le résultat de head va activer la constante `myClass` qui est directement injectée dans en paramètre à la propriété `className` de l'élément p.  
+Si head est true, on applique la classe CSS `"blue"`, sinon, ce sera `"red"`.
+
+Dans le cas d'un composant fonction, on va directement déclarer la props au début du composant et l'intégrer au JSX.  
+Lors de l'appel du composant, il faudra passer la prop attendue :  
+composant :
+```JS
+const Header = ({className}) => {
+  return <h1 className={className}>Bienvenue sur le site</h1>;
+}
+
+export default Header;
+```
+Composant parent : 
+```JS
+...
+  <>
+    <Header className="bigFont blue"/>
+  </>
+...
+```
+
+En ce qui concerne les modules :  
+Il faut en premier lieu créer un fichier `style.module.css`.  
+Ce fichier va contenir du code CSS classique : 
+```CSS
+.green {
+  color: green;
+}
+```
+En revanche, pour y accéder, il faudra appliquer une autre syntaxe : 
+```JS
+import './App.css'
+import './styles.css'
+import styles from './style.module.css'
+
+import Header from './components/Header'
+
+function App() {
+  return (
+    <>
+      <Header className="bigFont blue"/>
+      <p className={styles.green}>premier paragraphe</p>
+    </>
+  )
+}
+
+export default App
+```
+Dans la propriété `className`, on va aller chercher la classe CSS green en utilisant `styles.green`.  
+Afin d'utiliser la class green, il sera obligatoirement nécessaire d'importer une variable depuis le fichier `.module.css`. 
+
+### CSS Frameworks : Bootstrap
