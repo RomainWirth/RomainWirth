@@ -1781,3 +1781,61 @@ On pourra remarquer lors de l'inspection de l'élément h2 dans le DOM qu'une cl
 
 Enfin, pour s'aider lors de l'écriture du CSS, on va ajouter une extension vs code afin d'appliquer une coloration syntaxique entre les bactics `` `vscode-styled-components` (de Julien Possonnier).
 
+### Le package React-Bootstrap
+
+L'idée avec ce package est de travailler avec des composant Bootstrap.  
+Pour installer la dépendance, on va se rendre sur [react-bootstrap](https://react-bootstrap.github.io/docs/getting-started/introduction).  
+Il faudra copier la ligne de commande `npm install react-bootstrap bootstrap` et l'ajouter à notre projet.
+
+On pourra ensuite utiliser bootstrap partout dans le projet
+
+Pour fonctionner correctement, il faudra importer les packages dans les fichiers JS ou JSX.  
+Avec vite, dans `main.jsx`, il faut ajouter :  
+* `import '../node_modules/bootstrap/dist/css/bootstrap.min.css';`  
+OU
+* `import 'bootstrap/dist/css/bootstrap.min.css';`
+
+On peut ensuite intégrer les composant react-bootstrap directement dans les composants :  
+```JS
+import { Container } from 'react-bootstrap';
+
+const Welcome = () => {
+  return (
+    <Container>
+      <p>Welcome !</p>
+    </Container>
+  )
+}
+
+export default Welcome;
+```
+
+### Différence entre bootstrap et react-bootstrap
+
+La différence entre les deux packages sera la syntaxe.  
+Avec bootstrap classique, pour créer un container, on va procéder ainsi :  
+```JS
+...
+const Welcome = () => {
+  return (
+    <div className='container'>
+      <p>Welcome !</p>
+    </div>
+  )
+}
+...
+```
+alors qu'avec react-bootstrap on va utiliser directement le composant grâce à l'import : 
+```JS
+import { Container } from 'react-bootstrap';
+
+const Welcome = () => {
+  return (
+    <Container>
+      <p>Welcome !</p>
+    </Container>
+  )
+}
+...
+```
+
