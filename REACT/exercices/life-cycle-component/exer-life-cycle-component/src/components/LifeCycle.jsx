@@ -33,6 +33,10 @@ class LifeCycle extends Component {
     }
   }
 
+  componentWillUnmount() {
+    console.log(`step [${this.state.step}] - dans le componentWillUnmount`);
+  }
+  
   render() {
     console.log(`step [${this.state.step}] - dans le render`);
     return (

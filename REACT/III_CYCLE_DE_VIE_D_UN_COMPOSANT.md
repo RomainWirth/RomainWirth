@@ -197,3 +197,128 @@ L'affichage dans la console du navigateur sera le suivant :
 
 Une fois que les étapes 1 sont passées, on va passer aux étapes 2.  
 On peut noter qu'on ne repasser pas par le constructor qui n'est appelé qu'une seule fois lors de la création du composant à sont appel.
+
+## Phase de démontage
+
+Dans la documentation, il est spécifié que `componentWillUnmount()` est appelée immédiatement avant qu'un composant soit démonté ou détruit.  
+Cette méthode permet d'effectuer des nettoyages tels que : 
+* invalidation des minuteurs
+* annulation des requêtes réseau
+* résiliation d'abonnements
+* etc.
+
+Attention, il ne faut **EN AUCUN CAS** appeler la méthode `setState()` dans `componentWillUnmount()`, car le composant ne sera jamais ré-affiché.  
+Une fois l'instance du composant démontée, elle ne sera plus jamais re-montée.  
+
+Dans notre composant, on va ajouter la méthode : 
+```JS
+componentWillUnmount() {
+  console.log(`step [${this.state.step}] - dans le componentWillUnmount`);
+}
+``` 
+et ajouter dans le composant parent un bouton qui va gérer l'affichage du composant : 
+```JS
+state = {
+    display: true,
+  }
+
+  toggleDisplay = () => {
+    console.log('bouton cliqué')
+    this.setState({ display: !this.state.display })
+  }
+
+  render() {
+    const showComponent = this.state.display ? (<LifeCycle />) : null;
+
+    return (
+      <>
+        <div>Hello world !</div>
+        {showComponent}
+        <button onClick={this.toggleDisplay}>
+          click here
+        </button>
+      </>
+    );
+  }
+```
+La fonction `toggleDisplay()` qui gère l'état du composant `<LifeCycle />` permet de l'afficher ou non.
+
+Le fait de cliquer pour ne pas afficher le composant va automatiquement appeler la méthode `componentWillUnmount` et mettre fin au cycle de vie du composant. 
+
+L'affichage dans la console du navigateur va ajouter : 
+* bouton cliqué
+* step [3] - dans le componentWillUnmount
+
+## Les autres méthodes couramment utilisées du cycle de vie de React :
+
+### La méthode getDerivedStateFromProps
+
+Cette méthode peut-être appelée lors des phases de montage et de mise à jour du composant.
+
+Cette méthode se lance avant la méthode `render()`.
+
+on va la déclarer comme ceci : 
+```JS
+static getDerivedStateFromProps(props, state) {
+  console.log('getDerivedStateFromProps lancé');
+}
+```
+Mais elle nécessite l'initialisation des state avant son appel dans le composant :
+```JS
+constructor(props) {
+  super(props)
+
+  this.state = {
+    name: 'Toto'
+  }
+}
+
+static getDerivedStateFromProps(props, state) {
+  console.log('getDerivedStateFromProps lancé');
+
+  console.log(props);
+  console.log(state);
+
+  return null
+}
+
+render () {
+  return (
+    <div>
+      <p>Nom: {this.state.name}</p>
+      <p>Age: {this.props.age}</p>
+    </div>
+  )
+}
+```
+la méthode `getDerivedStateFromProps` doit retourner un state object valide (ou null). 
+
+N.B. : Props nécessite que le composant reçoive des props.
+
+À chaque fois que je fais une modification : 
+* via `componentDidUpdate()`
+* ou la modification d'une props
+* ou encore d'un state via `setState()`  
+
+On va pouvoir récupérer ces objets via `getDerivedStateFromProps` : la méthode va se relancer à chaque fois qu'une modification est effecutée.
+
+On pourra ainsi analyser les éléments via `shouldComponentUpdate` qui est automatiquement appelée après une modification. 
+
+Cas spécifique avec `forceUpdate()` : cette méthode empêche l'appel de `shouldComponentUpdate`.
+```JS
+forceChange = () => {
+  this.forceUpdate(() => {
+    console.log('Je force le changement');
+  })
+}
+```
+De cette manière, on entre directement dans le render sans passer par la méthode `shouldComponentUpdate`.  
+On va entrer directement dans le `render()` qui sera appelé avant la callBack function contenue dans `this.forceUpdate()`.
+
+### La méthode shouldComponentUpdate
+
+Cette méthode est présente lors de la phase de mise à jour mais est rarement utilisée.  
+Elle n'existe qu'en tant qu'optimisation de performance. Elle n'est pas faite pour "empêcher" un refraîchissement qui pourrait causer des bugs et effets de bord.
+
+Pour cela, on va employer la classe de base prédéfinie **`PureComponent`**.
+

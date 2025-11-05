@@ -1839,3 +1839,5 @@ const Welcome = () => {
 ...
 ```
 
+## La Méthode PureComponent
+
