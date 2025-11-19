@@ -1892,3 +1892,154 @@ export default memo(FunctionComp);
 
 ## Création d'une modal : les portails
 
+Un portail est un solution qui permet de créer un composant enfant qui sera en dehors de la hiérarchie du DOM du composant parent.
+
+Pour créer un portail, on va créer un composant`Modal`, qui sera injecté dans le DOM via une fonction qui manipule le state.  
+
+Dans App.jsx :
+```JS
+import './App.css'
+
+import { Component } from 'react'
+
+import ModalComponent from './components/ModalComponent.jsx'
+
+class App extends Component {
+
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      showModal: false,
+    }
+  }
+
+  handleOpenModal = () => {
+    this.setState({ showModal: true })
+  }
+  
+  handleCloseModal = () => {
+    this.setState({ showModal: false })
+  }
+
+  render () {
+
+    const modal = this.state.showModal ? <ModalComponent close={this.handleCloseModal} /> : null
+
+    return (
+      <div className="App relative">
+        <h1>React Modal</h1>
+        <button onClick={this.handleOpenModal}>Display modal</button>
+        {modal}
+      </div>
+    )
+  }
+}
+
+export default App
+
+```
+avec le CSS associé : 
+```CSS
+.App {
+  height: 100svh; // prends la totalité de la hauteur de l\'écran
+  width: 100svw; // prends la totalité de la largeur de l\'écran
+  background-color: #213547;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+}
+
+.relative {
+  position: relative; // pour l'exemple, un position relative est nécessaire. voir la doc MJS
+}
+```
+* On intègre une variable qui va contenir le comoposant `ModalComponent` et qui va afficher la modal selon si showModal est au state true ou false.
+* Le composant App contient deux fonctions qui vont gérer l'ouverture et la fermeture de la modale.
+* un bouton va gérer l'affichage de la modal en appelant `handleOpenModal` au clic.
+* Le composant `ModalComponent` va prendre une prop `close` qui contient elle-même la fonction `handleCloseModal` à déclencher lors d'un autre clic.
+
+Le composant ModalComponent.jsx : 
+```JS
+import { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+class ModalComponent extends Component {
+  constructor(props) {
+    super(props);
+
+    this.popUpContainer = document.createElement('div');
+
+    document.body.appendChild(this.popUpContainer);
+  }
+
+  componentWillUnmount() {
+    document.body.removeChild(this.popUpContainer);
+  }
+
+  render () {
+    return ReactDOM.createPortal(
+      <div className="modal" onClick={this.props.close}>
+        <div className="modal-content">
+          <p>
+            Je suis dans le modal !
+          </p>
+          <button>Fermer</button>    
+        </div>
+      </div>,
+      this.popUpContainer
+    )
+  }
+}
+
+export default ModalComponent;
+```
+avec le CSS associé : 
+```CSS
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(26, 26, 26, 0.5);
+  width: 100svw;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.modal-content {
+  background-color: #1a1a1a;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 50%;
+  height: 50%;
+}
+```
+
+Le composant `MocalComponent` contient le contenu de la modal.  
+Le CSS associé indique que le composant est en `absolute`, cela signifie qu'il sera placé d'une certaine manière par rapport au composant parent.  
+On va donc devoir spécifier quel est l'élément parent par rapport auquel il va devoir se positionner.
+La structure du composant se compose ainsi : 
+* la méthode `constructor()` va intégrer la création d'un élément `div` dans le DOM qui sera le parent du composant. 
+* la méthode `componentWillUnmount()` va permettre de supprimer l'élément créé juste au dessus.  
+Sans cela, la div créée restera dans le DOM et sera vide.(voir cycle de vie du composant)
+* dans la méthode `render()`, on retourne `ReactDOM.createPortal()`.  
+ReactDOM doit être importé pour être utilisé.  
+`createPortal()` prends en paramètres deux éléments : 
+  * 1er paramètre: le JSX qui contient le contenu à afficher.
+  * 2ème paramètre: le conteneur parent.
+* on peut noter que la fonction `onClick` est appelée sur la totalité de l'élément, et pas seulement sur le bouton.  
+on se sert ici de la propagation d'événement :  
+si on clique sur le bouton et qu'il ne possède pas d'événement, alors on va aller se référer à l'événement le plus proche au niveau des éléments parents.  
+De cette manière, peut importe ou on va cliquer, le DOM va capturer l'événement `clic` et appliquer la fonction associée. 
+
+## Les Refs
+
+l'attribut `ref` dans react est un moyen pour faire référence à un élément dans le DOM.  
+Cet attribut permet d'éviter d'accéder à un élément du DOM via son id.  
