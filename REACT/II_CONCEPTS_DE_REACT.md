@@ -1839,5 +1839,56 @@ const Welcome = () => {
 ...
 ```
 
-## La Méthode PureComponent
+## Note sur le componant PureComponent
+
+Cette composant class de base prédéfinie doit être utilisée à la place de `shouldComponentUpdate()` dans un composant de class standard.  
+Il s'agit d'un composant qui hérite de la class `PureComponent`.  
+
+```JS
+import { PureComponent } from 'react'
+
+class PureComp extends PureComponent {
+  render () {
+    <div>
+      <p>Hello Pure component</p>
+    </div>
+  }
+}
+```
+Le Pure Component prendra sur lui de se rafraîchir du moment qu'un state ou une props est modifiée.  
+Le composant PureComponent contient sa propre méthode `shouldComponentUpdate` qu'on ne peut en aucun cas modifier.  
+Si une props ou un state est appelé pour être modifié mais que sa data ne change pas, alors le Pure Component ne se render pas de nouveau.
+
+## React Memo
+
+React Memo est un utilitaire qui permet de 'mémoriser' les informations. 
+
+memo permet d'éviter de recharger un composant sauf si le contenu des props à changé :  
+memo va comparer le contenu des variables passées en props, et refaire le render uniquement si celles-ci ont changé.
+
+un composant avec memo se déclare ainsi :
+* import de memo depuis react.
+* export du composant encapsulé dans la fonction memo.
+
+```JS
+import { memo } from 'react';
+
+const FunctionComp = (props) => {
+  return (
+    <div>
+      <h2>Function Component</h2>
+      <p>
+        <span className="purple">
+          Function component paragraph for name :
+        </span>
+        {props.name}
+      </p>
+    </div>
+  );
+};
+
+export default memo(FunctionComp);
+```
+
+## Création d'une modal : les portails
 
