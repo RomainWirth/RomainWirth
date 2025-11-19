@@ -2041,5 +2041,62 @@ De cette manière, peut importe ou on va cliquer, le DOM va capturer l'événeme
 
 ## Les Refs
 
-l'attribut `ref` dans react est un moyen pour faire référence à un élément dans le DOM.  
+L'attribut `ref` dans react est un moyen pour faire référence à un élément dans le DOM.  
 Cet attribut permet d'éviter d'accéder à un élément du DOM via son id.  
+La manipulation du DOM via `document.get...` n'est pas du tout recommandé avec react :
+* React procède à la mise à jour du DOM en effectuant une comparaison avec le DOM virtuel.  
+* De cette manière, il procède au rafraîchissement des seuls éléments ayant changé.
+
+Une ref dans un composant class va se déclarer ainsi : 
+```JS
+import React, { Component } from 'react'
+
+class RefComponent extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      value: ''
+    }
+
+    this.myTitle = React.createRef();
+    this.myInput = React.createRef();
+  }
+
+  update = (e) => {
+    this.setState({ value: e.target.value })
+  }
+
+  componentDidMount() {
+    this.myInput.current.focus();
+  }
+
+  componentDidUpdate() {
+    this.myTitle.current.style.color = 'red';
+  }
+
+  render () {
+    return (
+      <div>
+        <h2 ref={this.myTitle}>Valeur : {this.state.value}</h2>
+        <input 
+          ref={this.myInput}
+          type="text" 
+          id="" 
+          name="" 
+          value={this.state.value} 
+          onChange={e => this.setState({ value: e.target.value })} />
+      </div>
+    )
+  }
+}
+
+export default RefComponent
+```
+
+* Au niveau de la méthode `constructor()`, on va déclarer une variable avec le mot clef `this`, et lui attribuer la méthode `React.createRef()`.  
+* Ensuite, dans le JSX, on va ajouter la propriété `ref` qui va contenir la variable.  
+* On va ensuite pouvoir manipuler le DOM grâce en faisant référence aux variables `ref`. 
+
+## ForwardRef 
+
