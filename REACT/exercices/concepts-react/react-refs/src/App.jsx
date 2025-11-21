@@ -12,15 +12,17 @@ class App extends Component {
   }
 
   handleClick = () => {
-    this.refComp.current.addFocus();
+    console.log(this.refComp.current);
+    this.refComp.current.focus();
   }
 
   render() {
+    console.log(this.refComp);
     return (
       <div className="container">
         <h1>React Refs</h1>
         {/* <RefComponent /> */}
-        <MyRef ref={this.refComp} />
+        <MyRef ref={this.refComp} name="Toto" />
         <button onClick={this.handleClick}>Valider</button>
       </div>
     )

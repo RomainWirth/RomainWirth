@@ -2100,3 +2100,62 @@ export default RefComponent
 
 ## ForwardRef 
 
+Le forward ref permet de passer une référence d'un composant parent à un composant enfant. 
+
+Le forward ref ne s'utilise que dans un composant de type fonction : 
+```JS
+import { forwardRef } from 'react';
+
+const MyRef = forwardRef((props, ref) => {
+
+  console.log(props.name);
+
+  return (
+    <div>
+      <input ref={ref} type="text" />
+    </div>
+  );
+});
+
+export default MyRef;
+```
+
+Et au niveau du composant parent : 
+```JS
+import './App.css'
+
+import React, { Component } from 'react'
+
+import MyRef from './components/MyRef.jsx'
+
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.refComp = React.createRef();
+  }
+
+  handleClick = () => {
+    console.log(this.refComp.current);
+    this.refComp.current.focus();
+  }
+
+  render() {
+    console.log(this.refComp);
+    return (
+      <div className="container">
+        <h1>React Refs</h1>
+        <MyRef ref={this.refComp} name="Toto" />
+        <button onClick={this.handleClick}>Valider</button>
+      </div>
+    )
+  }
+}
+
+export default App
+```
+
+
+## Les composants d'ordre suppérieur
+
+Un composant d'ordre suppérieur est une fonction qui accepte un composant et renvoie un nouveau composant.
+
