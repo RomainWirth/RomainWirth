@@ -2157,5 +2157,62 @@ export default App
 
 ## Les composants d'ordre suppérieur
 
-Un composant d'ordre suppérieur est une fonction qui accepte un composant et renvoie un nouveau composant.
+Un composant d'ordre suppérieur (Higher Order Component = HOC) est une fonction qui accepte un composant et renvoie un nouveau composant.
+
+Principe de base : 
+```JS
+const newComponent = HOC(OriginalComponent);
+```
+
+Exemple : 
+```JS
+const countHits = (WrappedComponent, hitGenerator) => {
+  class CountHists extends Component {
+    state = { hits: 0, lastHit: 0 }
+    
+    addHit = () => {
+      const newHit = hitGenerator();
+      this.setState({ hits: this.state.hits + 1, lastHit: newHit });
+    }
+    
+    render() {
+      return (
+        <WrappedComponent 
+          addOneHit={this.addHit} 
+          hocState={this.state} 
+          {...this.props} 
+        />
+      )
+    }
+  }
+  return CountHists;
+}
+```
+Utilisation : 
+```JS
+export default countHits(Vegeta, () => Randbetween(5, 15));
+export default countHits(Goku, () => Randbetween(7, 17));
+```
+
+Avantage des HOC : 
+| Avantage             | Description |
+|-|-|
+| Réutilisabilité                | La logique de comptage est écrite une seule fois |
+| Séparation des responsabilités | Le composant `Vegeta` gère l'affichage, le HOC gère la logique |
+|Composition                     | On peut combiner plusieurs HOC |
+
+En résumé, `countHits` : 
+1. `Reçoit`: un composant (`Vegeta` ou `Goku`) + une fonction génératrice de hits
+2. `Ajoute`: un state (`hits`, `lastHit`) et une méthode (addHit)
+3. `Retourne`: le composant original avec des props supplémentaires (addOneHit, hocState)
+
+C'est un pattern de `composition` qui permet de partager une logique commune entre plusieurs composants sans dupliquer le code.
+
+Avec l'arrivée des Hooks (React 16.8+), la plupart des cas d'usage des HOC peuvent être remplacés par des Custom Hooks : 
+| Approche | Syntaxe | Utilisation |
+|-|-|-|
+| Hoc (ancienne) | `export default countHits(Vegeta)` | Composants class |
+| Custom Hook (moderne) | `const { hits, addHit } = useCountHits()` | Composants fonction |
+
+## La Gestion des Erreurs dans React
 
