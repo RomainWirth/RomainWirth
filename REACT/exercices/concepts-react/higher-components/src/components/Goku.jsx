@@ -3,11 +3,11 @@ import countHits from './countHits.jsx'
 
 import { Randbetween } from '../utils/randbetween.js'
 
-import vegetaImage from '../assets/vegeta-arc.jpg'
+import GokuImage from '../assets/goku.jpg'
 
-const hitGenerator = () => Randbetween(5, 15);
+const hitGenerator = () => Randbetween(7, 17);
 
-class Vegeta extends Component {
+class Goku extends Component {
   render() {
     const { name, addOneHit, hocState, healthPoint, isMyTurn } = this.props;
 
@@ -20,7 +20,7 @@ class Vegeta extends Component {
             </span>
           </td>
         );
-
+        
     const canPlay = isMyTurn && healthPoint > 0;
 
     const button = canPlay
@@ -43,14 +43,14 @@ class Vegeta extends Component {
 
     return (
       <div className="col">
-        <h2>Vegeta</h2>
-        <div 
+        <h2>Goku</h2>
+        <div  
           style={{ height: '300px' }} 
           className="d-flex justify-content-center align-items-end"
         >
           <img
-            src={vegetaImage}
-            alt="Vegeta"
+            src={GokuImage}
+            alt="Goku"
             width="200"
           />
         </div>
@@ -78,4 +78,4 @@ class Vegeta extends Component {
   }
 }
 
-export default countHits(Vegeta, hitGenerator);
+export default countHits(Goku, hitGenerator);
