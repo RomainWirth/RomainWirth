@@ -2216,3 +2216,14 @@ Avec l'arrivée des Hooks (React 16.8+), la plupart des cas d'usage des HOC peuv
 
 ## La Gestion des Erreurs dans React
 
+Selon la [documentation](https://fr.legacy.reactjs.org/docs/error-boundaries.html)
+
+```
+Une erreur JavaScript au sein d’une partie de l’interface utilisateur (UI) ne devrait pas casser l’ensemble de l’application. 
+Pour résoudre ce problème, React 16 a introduit un nouveau concept appelé « Périmètres d’erreurs » (Error Boundaries, NdT).
+```
+
+Les périmètres d’erreurs sont des composants React qui `interceptent les erreurs JavaScript n’importe où au sein de leur arbre de composants enfants, enregistrent ces erreurs, et affichent une UI de repli` à la place de l’arbre de composants qui a planté.  
+ Les périmètres d’erreurs interceptent les erreurs survenant au rendu, dans les méthodes de cycle de vie, ainsi que dans les constructeurs de tous les éléments de leur arborescence.
+
+ 

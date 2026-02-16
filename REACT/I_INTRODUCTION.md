@@ -540,7 +540,8 @@ L'alternative recommandée est `Vite`.
 [`Pourquoi utiliser vite`](https://vite.dev/guide/why.html).  
 Vite est un outil de développement rapide conçu pour développer des applications web modernes pour différentes librairies (disponibles sur la [`documentation`](https://vite.dev/guide/))
 
-Pour initialiser un projet vite de React, on va utiliser la commande suivante : `npm create vite@latest`.  
+Pour initialiser un projet vite de React, on va utiliser la commande suivante :  
+`npm create vite@latest`.  
 On va indiquer le nom du projet, le framework utilisé (ici, React), le langage souhaité (ici, javascript).
 
 `npm run dev` permettra de lancer le projet et de le visualiser dans le navigateur.
