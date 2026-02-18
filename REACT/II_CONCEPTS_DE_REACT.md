@@ -1,28 +1,59 @@
 # II. LES CONCEPTS DE REACT 
 
 ## Les Composants React
+### Introduction
 
-Il existe 2 types de composants dans React : `State Component`vs `UI Component`.
+Il existe 2 types de composants dans React : `State Component` vs `UI Component`.
 
-Le **State Component** était sous format de Class. Avec l'évolution de React (à partir de la version 16.8), React a intégré les Hooks, sans se débarasser des classes.  
-Les Hooks permettent, entre autres, d'avoir un state dans un composant fonction.  
-Avant l'arrivée des Hooks, on devait partir sur un composant Class pour avoir un état local à notre composant
-Rappel : le state est une manière d'enregistrer des datas localement dans un composant. 
+| Type | Description | Gestion du state |
+|------|-------------|------------------|
+| **State Component** | Composant qui gère des données locales | Via `this.state` (class) ou `useState` (fonction) |
+| **UI Component** | Composant de présentation (affichage uniquement) | Aucun state, reçoit des props |
 
-Le **UI Component** est un composant de présentation. Dans les anciennes versions de React, il contiendra uniquement les gabaris de blocs, par exmple html. Il ne contiendra pas de data ni de state. 
-À partir de la version 16 de React, on tend à unifier les deux types de composant, et la gestion de state se fait directement dans le composant fonction (UI Component) via les Hooks.
+**Évolution historique :**
 
-On va d'abord aborder la logique des class avant de passer à la logique des Hooks.
+| Version | State Component | UI Component |
+|---------|-----------------|--------------|
+| Avant React 16.8 | Composant Class uniquement | Composant Fonction |
+| Depuis React 16.8 | Class ou Fonction (avec Hooks) | Class ou Fonction |
 
-Dans un projet, nous aurons le fichier `App.js` sous src. Ce fichier contiendra le code suivant qui va évoluer par la suite :
-```JS
+Avec l'arrivée des Hooks, la distinction entre State Component et UI Component s'estompe.  
+On tend désormais à unifier les deux types via les composants fonction.
+
+### Structure d'un composant Class
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    COMPOSANT CLASS                      │
+├─────────────────────────────────────────────────────────┤
+│  import { Component } from 'react'                      │
+│                                                         │
+│  class MonComposant extends Component {                 │
+│    state = { ... }           ← État local               │
+│                                                         │
+│    maMethode = () => { ... } ← Méthodes personnalisées  │
+│                                                         │
+│    render() {                ← Méthode obligatoire      │
+│      return (                                           │
+│        <div>JSX</div>        ← Retourne du JSX          │
+│      )                                                  │
+│    }                                                    │
+│  }                                                      │
+│                                                         │
+│  export default MonComposant                            │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Création d'un composant Class
+
+**Fichier `App.jsx` (composant principal) :**
+
+```jsx
 import { Component } from 'react'
 import './App.css'
 
 class App extends Component {
-
   render() {
-
     return (
       <div className="App">
         <h1>Hello World!</h1>
@@ -34,8 +65,9 @@ class App extends Component {
 export default App
 ```
 
-Nous allons ensuite créer un nouveau composant class : `Mycars.js`
-```JS
+**Fichier `Mycars.jsx` (composant enfant) :**
+
+```jsx
 import React from 'react';
 
 class Mycars extends React.Component {
@@ -52,22 +84,24 @@ class Mycars extends React.Component {
 export default Mycars;
 ```
 
-Pour afficher le composant Mycars, on va devoir l'importer et l'utiliser dans le jsx de App.js : 
-```JS
+### Utilisation d'un composant
+
+Pour afficher un composant enfant, il faut :
+1. **Importer** le composant
+2. **Utiliser** le composant dans le JSX
+
+```jsx
 import { Component } from 'react'
 import './App.css'
 
-import Mycars from './components/Mycars' // import du composant
+import Mycars from './components/Mycars' // 1. Import du composant
 
 class App extends Component {
-
   render() {
-
     return (
       <div className="App">
         <h1>Hello World!</h1>
-        {/* utilisation du composant Mycars */}
-        <Mycars /> 
+        <Mycars /> {/* 2. Utilisation du composant */}
       </div>
     )
   }
@@ -75,20 +109,31 @@ class App extends Component {
 
 export default App
 ```
-On va ensuite modifier le tout et ajouter un composant fonction `Car` qui ne contiendra pas de state.  
-Ce composant contiendra deux paragraphes : Marque et Couleur.  
-Après avoir modifié les composants parent, notre projet contiendra ceci :  
-App.js
-```JS
+
+### Combinaison State Component et UI Component
+
+On peut combiner un composant Class (avec state) et un composant Fonction (sans state) :
+
+**Structure du projet :**
+
+```
+src/
+├── components/
+│   ├── Mycars.jsx    ← State Component (Class)
+│   └── Car.jsx       ← UI Component (Fonction)
+└── App.jsx
+```
+
+**App.jsx :**
+
+```jsx
 import { Component } from 'react'
 import './App.css'
 
 import Mycars from './components/Mycars'
 
 class App extends Component {
-
   render() {
-
     return (
       <div className="App">
         <Mycars />
@@ -100,17 +145,32 @@ class App extends Component {
 export default App
 ```
 
-./components/Mycars.js
-```JS
+**Mycars.jsx (State Component) :**
+
+```jsx
 import React from 'react';
-import Cars from './Cars';
+import Car from './Car';
 
 class Mycars extends React.Component {
+  state = {
+    cars: [
+      { brand: 'Audi', color: 'black' },
+      { brand: 'BMW', color: 'dark blue' },
+      { brand: 'Mercedes', color: 'grey' },
+    ],
+  }
+
   render() {
     return (
       <div>
         <h1>My Cars</h1>
-        <Cars />
+        <div style={{ display: 'flex' }}>
+          {this.state.cars.map((car, index) => (
+            <Car key={index} color={car.color}>
+              {car.brand}
+            </Car>
+          ))}
+        </div>
       </div>
     );
   }
@@ -119,18 +179,64 @@ class Mycars extends React.Component {
 export default Mycars;
 ```
 
-./components/Car.js
-```JS
-const Car = () => {
+**Car.jsx (UI Component) :**
+
+```jsx
+const Car = ({ children, color }) => {
   return (
-    <div>
-      <p>Marque : </p>
-      <p>Couleur : </p>
+    <div style={{ border: '1px solid black', margin: '10px', padding: '10px' }}>
+      <p>Marque : {children}</p>
+      <p>Couleur : {color ? color : 'inconnue'}</p>
     </div>
   );
 }
 
 export default Car;
+```
+
+### Différences entre les deux syntaxes d'import
+
+| Syntaxe | Utilisation |
+|---------|-------------|
+| `import { Component } from 'react'` | Import nommé, permet d'utiliser `Component` directement |
+| `import React from 'react'` | Import par défaut, nécessite `React.Component` |
+
+```jsx
+// Syntaxe 1 : Import nommé
+import { Component } from 'react';
+class App extends Component { ... }
+
+// Syntaxe 2 : Import par défaut
+import React from 'react';
+class App extends React.Component { ... }
+```
+
+Les deux syntaxes sont équivalentes.
+
+### Récapitulatif
+
+| Aspect | State Component (Class) | UI Component (Fonction) |
+|--------|-------------------------|-------------------------|
+| **Syntaxe** | `class X extends Component` | `const X = () => {}` |
+| **State** | `this.state` + `this.setState()` | `useState()` (Hook) |
+| **Props** | `this.props` | Paramètre de la fonction |
+| **Méthode render** | Obligatoire | Pas de méthode render |
+| **Cycle de vie** | Méthodes dédiées | `useEffect()` (Hook) |
+| **Utilisation** | Code legacy, Error Boundaries | ✅ Recommandé |
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Un composant = un fichier | Plusieurs composants dans un fichier (sauf cas spécifiques) |
+| Nommer en PascalCase | Nommer en camelCase ou snake_case |
+| Séparer logique et présentation | Tout mettre dans un seul composant |
+| Utiliser les composants fonction | Créer des classes pour tout |
+| Décomposer en petits composants | Créer des composants monolithiques |
+
+```
+💡 Note : Sur les nouveaux projets, on privilégie les composants fonction avec les Hooks.
+Les classes restent valides mais pourraient ne plus être maintenues dans le futur.
 ```
 
 ## Props et State
