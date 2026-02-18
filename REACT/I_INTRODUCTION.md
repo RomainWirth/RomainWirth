@@ -1370,66 +1370,92 @@ const App = () => {
 
 [Créer une nouvelle appli React](https://fr.legacy.reactjs.org/docs/create-a-new-react-app.html)
 
+Il existe plusieurs façons de créer une application React :
+
+| Méthode | Complexité | Recommandation |
+|---------|------------|----------------|
+| **Vite** | Simple | ✅ Recommandé |
+| **Create React App (CRA)** | Simple | ⚠️ Déprécié |
+| **Configuration manuelle** | Avancée | Pour comprendre le fonctionnement |
+
 Historiquement, pour créer simplement une application React, on utilisera le terminal et la ligne de commande :  
 `npx create-react-app app-name`
 
 Sur la nouvelle [documentation](https://fr.react.dev/learn/start-a-new-react-project), on va pouvoir créer une application React via `Vite`.  
 Vite permet de créer de A à Z sans avoir à tout paramétrer.
 
-Voici la manière 'manuelle' de procéder pour configurer un projet React : 
-* on aura besoin d'un compilateur pour permettre aux navigateurs d'interprêter le langage JSX : `Babel`.
-* on aura aussi besoin d'un bundler : [`webpack`](https://webpack.js.org/).  
-webpack permet d'organiser tous les fichiers, modules et dépendances, quels que soient leur extension vers des assets statiques.  
-la configuration du bundle se fera dans le fichier `webpack.config.js`:
-```JS
-const path = require('path');
+### Configuration manuelle (culture générale)
 
-module.exports = {
-  entry: './src/index.js',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
-  },
-};
+Cette section explique comment configurer manuellement un projet React avec Webpack et Babel.  
+C'est utile pour comprendre le fonctionnement interne, mais **Vite automatise tout cela**.
+
+
+#### Outils nécessaires
+
+| Outil | Rôle |
+|-------|------|
+| **Babel** | Compilateur qui transforme le JSX en JavaScript compréhensible par les navigateurs |
+| **Webpack** | Bundler qui regroupe tous les fichiers, modules et dépendances en assets statiques |
+
+#### Installation des dépendances
+
+**Avec npm :**
+
+```bash
+# Initialiser le projet
+npm init -y
+
+# Dépendances de production
+npm install react@latest react-dom@latest
+
+# Dépendances de développement
+npm install -D webpack webpack-cli webpack-dev-server
+npm install -D @babel/core babel-loader @babel/preset-react @babel/preset-env
+npm install -D html-webpack-plugin
 ```
-Entry = point de départ où le bundler commence à traiter le code source de l'application. (Un ou plusieurs fichiers, dans notre cas, le fichier entryu sera sous ce path : `'./src/index.js'`).  
-Output = endroit où le bundler génère le ou les fichiers résultants après avoir traité le code source. Ces fichiers peuvent être regroupés (bundled), minifiés et prêts à être servis par le navigateur.  
-Le bundle sera créé sous le dossier `'dist'`, qui contiendra le fichier `'bundle.js'`.
 
-### Configuration manuelle depuis le terminal : 
+**Avec Yarn :**
 
-Voici les commandes à utiliser : 
-* `npm init` pour initialiser un projet avec un fichier `package.json` qui référencera toutes les dépendances.
-* `npm install react@[version]` (version = latest or previous ex: 18.2.0)
-* `npm install react-dom@[version]` (version = même version que react !)
-* `npm install webpack --save-dev` (ou -D au lieu de --save-dev = pour les dépendances dev)
-* `npm install webpack-cli --save-dev` cli = command line interface = permet d'accéder à certaines commandes pour initialiser un projet webpack, écouter les fichiers, modifier, etc.
-* `npm install webpack-dev-server --save-dev` permet d'avoir un 'hot reload' = mise à jour instantannée du DOM
-* `npm install @babel/core --save-dev` pour compiler le code pour le navigateur
-* `npm install babel-loader --save-dev` package 'loader' de babel, qui permet de gérer entre autre l'ordre de chargement des fichiers CSS, etc.
-* `npm install @babel/preset-react --save-dev` plugin babel de react
-* `npm install @babel/preset-env --save-dev` package lié au preset (config prédéfinie) indispensable pour utiliser les versions récentes de JS dans le projet.
-* `npm install html-webpack-plugin --save-dev` plugin html de webpack pour lui permettre d'injecter le code dans le html
+```bash
+# Initialiser le projet
+yarn init -y
 
-### Création des fichiers du projet : 
+# Dépendances de production
+yarn add react@latest react-dom@latest
 
-À la racine du projet, nous avons actuellement : 
-* dossier `node_modules`
-* fichier `package.json`
-* fichier `package-lock.json`
+# Dépendances de développement
+yarn add -D webpack webpack-cli webpack-dev-server
+yarn add -D @babel/core babel-loader @babel/preset-react @babel/preset-env
+yarn add -D html-webpack-plugin
+```
 
-On va ajouter un dossier `src` qui va contenir l'essentiel de notre application.  
-On ajoutera dans ce dossier un dossier `components` qui va contenir tous les composants qui vont peupler l'application.  
-On va enfin ajouter un fichier `App.js` dans le dossier components.
-Le fichier App.js contiendra ceci : 
-```JS
+#### Structure du projet
+
+```
+mon-projet/
+├── node_modules/
+├── src/
+│   ├── components/
+│   │   └── App.js
+│   ├── index.html
+│   └── index.js
+├── package.json
+├── package-lock.json (ou yarn.lock)
+└── webpack.config.js
+```
+
+#### Création des fichiers
+
+**src/components/App.js :**
+
+```jsx
 import React from 'react';
 
 class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>Hello World !</h1>  
+        <h1>Hello World !</h1>
       </div>
     );
   }
@@ -1437,19 +1463,17 @@ class App extends React.Component {
 
 export default App;
 ```
-On va enfin ajouter dans le dossier src le fichier `index.html`, et un fichier `index.js`.
-```
-NB: si on crée un app avec vite, index.js sera remplacé par main.jsx
-```
-Dans notre fichier index.html
-```HTML
+
+**src/index.html :**
+
+```html
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ma première app react</title>
+  <title>Ma première app React</title>
 </head>
 
 <body>
@@ -1458,8 +1482,10 @@ Dans notre fichier index.html
 
 </html>
 ```
-Dans notre fichier index.js
-```JS
+
+**src/index.js :**
+
+```jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -1468,32 +1494,40 @@ import App from './components/App';
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
-
-// Ceci est équivalent :
-// ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 ```
-Enfin, on va créer à la racine du projet le fichier `webpack.config.js` qui contiendra la configuration de l'app :
-```JS
+
+**webpack.config.js (à la racine) :**
+
+```js
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  // Mode de compilation
   mode: 'development',
+  
+  // Point d'entrée
   entry: './src/index.js',
+  
+  // Point de sortie
   output: {
     path: path.join(__dirname, '/dist'),
     filename: 'bundle.js',
   },
+  
+  // Plugins
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
     }),
   ],
+  
+  // Règles de compilation
   module: {
     rules: [
       {
-        test: /.js$/,
-        exclude: /node_modules/,
+        test: /\.js$/,              // Fichiers .js
+        exclude: /node_modules/,    // Exclure node_modules
         use: {
           loader: 'babel-loader',
           options: {
@@ -1505,69 +1539,31 @@ module.exports = {
   }
 };
 ```
-Explications :  
-Début de la configuration installée dans le fichier :  
-`entry: './src/index.js',`  
-`output: {
-    path: path.join(__dirname, '/dist'),  
-    filename: 'bundle.js',  
-  },`
-Ces deux lignes indiquent le point d'entrée et de sortie du bundle. 
-'join' st l'équivalent de 'resolve' en simplifié.
-```JS
-const path = require('path');
 
-module.exports = {
-  mode: 'development',
-  entry: './src/index.js',
-  output: {
-    path: path.join(__dirname, '/dist'),
-    filename: 'bundle.js',
-  },
-};
-```
-Ensuite, on va ajouter le plugin HTML : 
-```JS
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-//...
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-    }),
-  ],
-//...
-```
-Puis ajouter les modules : 
-```JS
-//...
-  module: {
-    rules: [
-      test: /.js$/, // indique qu'on va compiler les fichiers en .js
-        exclude: /node_modules/, // exclusion des node_modules
-        use: {
-          loader: 'babel-loader', // le loader
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'] // les presets
-          }
-        },
-    ]
-  }
-//...
-```
-Pour finir, on va modifier les `scripts` dans le fichier `package.json` : 
-```JSON
+**Explication de la configuration :**
+
+| Propriété | Description |
+|-----------|-------------|
+| `mode` | `development` ou `production` |
+| `entry` | Point d'entrée de l'application |
+| `output.path` | Dossier de destination du bundle |
+| `output.filename` | Nom du fichier bundle généré |
+| `plugins` | Liste des plugins Webpack |
+| `module.rules` | Règles de transformation des fichiers |
+
+
+#### Configuration des scripts
+
+**package.json :**
+
+```json
 {
-  "name": "react_manual_config",
+  "name": "mon-projet-react",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --mode development --open --hot"
+    "start": "webpack-dev-server --mode development --open --hot",
+    "build": "webpack --mode production"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -1584,75 +1580,274 @@ Pour finir, on va modifier les `scripts` dans le fichier `package.json` :
   }
 }
 ```
-la ligne : `"start": "webpack-dev-server --mode development --open --hot"`
-* `"start"` = commande qui sera lancée dans le terminal => `npm start`
 
-Elle aura pour effet de lancer la commande complète qui suit : `webpack-dev-server --mode development --open --hot`
+**Explication des scripts :**
 
-* `webpack-dev-server` = dépendance de webpack pour lancer le serveur de développement
-* `--mode development` = indique qu'on est en mode local
-* `--open` = inidique qu'on ouvre dans un nouvel ongler
-* `--hot` = indique qu'on active le 'hot reload'
+| Script | Commande | Description |
+|--------|----------|-------------|
+| `start` | `npm start` / `yarn start` | Lance le serveur de développement |
+| `build` | `npm run build` / `yarn build` | Génère le bundle de production |
 
-Au niveau du terminal, on peut enfin lancer au niveau de la racine du projet la commande : `npm start`, et l'application va s'ouvrir automatiquement dans le navigateur. 
+**Options du script start :**
 
-Pour terminer la configuration, on va ajouter la commande `build` dans le fichier package.json en dessous de la commande `start` :  
-`"build": "webpack --mode production"`
+| Option | Description |
+|--------|-------------|
+| `webpack-dev-server` | Lance le serveur de développement |
+| `--mode development` | Mode développement |
+| `--open` | Ouvre automatiquement le navigateur |
+| `--hot` | Active le Hot Module Replacement |
 
-En lançant `npm run build` dans le terminal à la racine du projet, le bundle va se générer et un dossier `dist` sera créé automatiquement dans le projet.  
-Ce dossier va contenir : 
-* le fichier `bundle.js`, = contient le code minifié par webpack
-* un fichier `index.html`, 
-* et un fichier `bundle.js.LICENCE.txt`
+#### Lancement du projet
 
+**Avec npm :**
+
+```bash
+# Lancer le serveur de développement
+npm start
+
+# Générer le build de production
+npm run build
 ```
-NB: Ceci est totalement pour la culture générale, puisque le package `Vite` permet d'automatiser tout ça.
+
+**Avec Yarn :**
+
+```bash
+# Lancer le serveur de développement
+yarn start
+
+# Générer le build de production
+yarn build
 ```
 
-## Créer une application React via CRA (create-react-app)
+Le dossier `dist` généré contiendra :
+- `bundle.js` : Code minifié
+- `index.html` : Page HTML avec le bundle injecté
+- `bundle.js.LICENSE.txt` : Licences des dépendances
 
-Il s'agit de l'utilisation d'une version simplifiée pour créer une application, via une seule ligne de commande que l'on peut retrouver sur la documentation [`create-a-new-react-app`](https://fr.legacy.reactjs.org/docs/create-a-new-react-app.html).
+### Créer une application via CRA (Create React App)
 
-Il faudra bien entendu au préalable avoir installé la dernière version de [`nodejs`](https://nodejs.org/fr).
+**⚠️ Attention : CRA n'est plus maintenu activement. Privilégiez Vite.**
 
-On utilisera la commande suivante : 
+**Avec npm :**
+
 ```bash
 npx create-react-app mon-app
 cd mon-app
 npm start
 ```
-Attention, cette méthode était l'outil recommandé par react depuis son lancement, mais il commence à être délaissé. 
-Si create-react-app n'est pas maintenu, cela risque d'induire des failles et des problématiques si on travaille sur un 'vrai' projet.  
-On préférera utiliser des outils qui sont bien maintenus, mis à jour et toujours apprécié par les développeurs.
 
-L'alternative recommandée est `Vite`.
+**Avec Yarn :**
 
-## Initialisation d'un projet React via  "Vite"
+```bash
+yarn create react-app mon-app
+cd mon-app
+yarn start
+```
 
-[`Pourquoi utiliser vite`](https://vite.dev/guide/why.html).  
-Vite est un outil de développement rapide conçu pour développer des applications web modernes pour différentes librairies (disponibles sur la [`documentation`](https://vite.dev/guide/))
+**Inconvénients de CRA :**
 
-Pour initialiser un projet vite de React, on va utiliser la commande suivante :  
-`npm create vite@latest`.  
-On va indiquer le nom du projet, le framework utilisé (ici, React), le langage souhaité (ici, javascript).
+| Problème | Description |
+|----------|-------------|
+| Maintenance | Plus activement maintenu |
+| Performance | Utilise Webpack (plus lent que Vite) |
+| Configuration | Difficile à personnaliser (eject nécessaire) |
+| Taille | Bundle plus volumineux |
 
-`npm run dev` permettra de lancer le projet et de le visualiser dans le navigateur.
+### Initialiser un projet via Vite (recommandé)
 
-En comparaison avec la méthode CRA, les noms et emplacements des fichiers vont être en partis différents.  
-On aura aussi un fichier `vite.config.js`.
+[Documentation Vite](https://vite.dev/guide/)
 
-L'application telle quel contient une petite interface qui contient un bouton 'compteur'.
+**Avec npm :**
 
-## Différences entre CRA et VITE
+```bash
+npm create vite@latest mon-app
+cd mon-app
+npm install
+npm run dev
+```
 
-| Create React App | VITE | 
-| --- | --- |
-| CRA nécessite Babel et Webpack. Sur les gros projets, Webpack peut créer des ralentissements | Vite utilise Rollup pour effectuer le bundle. Il exploite les modules ES native du navigateur. Rollup est un module bundler de JavaScript |
-| index.html se situe sous le dossier `/public` | index.html est situé à la racine du projet | 
-| index.js (ou .jsx) se retrouve dans le dossier `/src` | index.js est appelé main.jsx et se situe au même endroit sous `/src` |
-| index.js contient la fonction reportWebVitals() pour contrôler la performance | - |
-| logo est contenu sous `/src` | le logo est situé sous `/src/assets`. Le dossier assets contiendra les images du projet |
-| concernant les tests, tout est préconfiguré avec RTL / Jest | Vite nécessite de configurer cela manuellement |
-| - | .eslintrc.cjs = fichier de configuration ESLint, fourni au niveau de Vite. On peut désactiver les notifications d'erreur de ESLint dans ce fichier en ajoutant `'react/prop-types': 'off',` dans les rules |
-| http://localhost:3000/ par défaut | http://localhost:5173/ pour le port 3000, il faut changer la configuration sous `vite.config.js` en ajoutant `server: { port: 3000 },` |
+**Avec Yarn :**
 
+```bash
+yarn create vite mon-app
+cd mon-app
+yarn
+yarn dev
+```
+
+Lors de l'initialisation, sélectionner :
+1. **Framework** : React
+2. **Variant** : JavaScript (ou TypeScript)
+
+**Scripts disponibles :**
+
+| Action | npm | Yarn |
+|--------|-----|------|
+| Développement | `npm run dev` | `yarn dev` |
+| Build production | `npm run build` | `yarn build` |
+| Prévisualisation | `npm run preview` | `yarn preview` |
+| Linting | `npm run lint` | `yarn lint` |
+
+### Différences entre CRA et Vite
+
+| Aspect | Create React App | Vite |
+|--------|------------------|------|
+| **Bundler** | Webpack | Rollup + ESBuild |
+| **Vitesse de démarrage** | Lent (rebuild complet) | Instantané (modules ES natifs) |
+| **Hot Reload** | Lent | Très rapide |
+| **Emplacement index.html** | `/public` | Racine du projet |
+| **Point d'entrée** | `src/index.js` | `src/main.jsx` |
+| **Dossier assets** | `/src` | `/src/assets` |
+| **Tests préconfigurés** | Oui (Jest + RTL) | Non (configuration manuelle) |
+| **ESLint** | Intégré | Fichier `.eslintrc.cjs` fourni |
+| **Port par défaut** | 3000 | 5173 |
+| **Maintenance** | ⚠️ Ralentie | ✅ Active |
+
+**Changer le port dans Vite :**
+
+```js
+// filepath: vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000
+  }
+})
+```
+
+**Désactiver les warnings prop-types dans ESLint :**
+
+```js
+// filepath: eslint.config.js (ou .eslintrc.cjs)
+module.exports = {
+  // ...existing config...
+  rules: {
+    'react/prop-types': 'off',
+  }
+}
+```
+
+### Récapitulatif des commandes
+
+| Action | npm | Yarn |
+|--------|-----|------|
+| Initialiser package.json | `npm init -y` | `yarn init -y` |
+| Créer projet Vite | `npm create vite@latest` | `yarn create vite` |
+| Créer projet CRA | `npx create-react-app app` | `yarn create react-app app` |
+| Installer les dépendances | `npm install` | `yarn` |
+| Ajouter un package | `npm install package` | `yarn add package` |
+| Ajouter en dev | `npm install -D package` | `yarn add -D package` |
+| Lancer dev server | `npm run dev` | `yarn dev` |
+| Build production | `npm run build` | `yarn build` |
+
+
+## Résumé - Introduction à React
+
+### Qu'est-ce que React ?
+
+| Caractéristique | Description |
+|-----------------|-------------|
+| **Type** | Bibliothèque JavaScript open source |
+| **Créateur** | Facebook (2013) |
+| **Usage** | Applications web monopages (SPA) et mobiles (React Native) |
+
+### Concepts clés
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    REACT                                │
+├─────────────────────────────────────────────────────────┤
+│  🧩 Composants    → Blocs réutilisables et indépendants │
+│  🔄 Virtual DOM   → Optimisation des performances       │
+│  📝 JSX           → HTML dans JavaScript                │
+│  ➡️  Unidirectionnel → Flux parent → enfant             │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Types de composants
+
+| Type | Syntaxe | Recommandation |
+|------|---------|----------------|
+| **Classe** | `class App extends Component` | Ancienne méthode |
+| **Fonction** | `const App = () => {}` | ✅ Moderne |
+
+```jsx
+// Composant Classe
+class App extends Component {
+  render() {
+    return <h1>Hello World !</h1>;
+  }
+}
+
+// Composant Fonction (recommandé)
+const App = () => {
+  return <h1>Hello World !</h1>;
+};
+```
+
+### Environnement de travail
+
+| Outil | Rôle |
+|-------|------|
+| **Node.js + npm** | Environnement d'exécution et gestionnaire de paquets |
+| **Vite** | ✅ Outil de build recommandé |
+| **Yarn** | Alternative à npm |
+| **VS Code** | Éditeur de code |
+| **React DevTools** | Extension de débogage |
+
+### Commandes essentielles
+
+| Action | npm | Yarn |
+|--------|-----|------|
+| Créer un projet | `npm create vite@latest` | `yarn create vite` |
+| Installer les dépendances | `npm install` | `yarn` |
+| Ajouter un package | `npm install package` | `yarn add package` |
+| Lancer le serveur | `npm run dev` | `yarn dev` |
+| Build production | `npm run build` | `yarn build` |
+
+### Structure d'un projet Vite
+
+```
+mon-app/
+├── node_modules/
+├── public/
+├── src/
+│   ├── assets/           # Images, fonts, etc.
+│   ├── components/       # Composants React
+│   ├── App.jsx           # Composant principal
+│   ├── main.jsx          # Point d'entrée
+│   └── index.css         # Styles globaux
+├── index.html            # Page HTML principale
+├── package.json          # Dépendances et scripts
+└── vite.config.js        # Configuration Vite
+```
+
+### Props vs State
+
+| Caractéristique | Props | State |
+|-----------------|-------|-------|
+| **Origine** | Passées par le parent | Définies dans le composant |
+| **Modification** | Immuables | Modifiables via `setState` / `setX` |
+| **Flux de données** | Parent → Enfant | Interne au composant |
+
+### Points à retenir
+
+| ✅ À privilégier | ⚠️ À éviter |
+|------------------|-------------|
+| Composants fonction + Hooks | Composants classe (sauf legacy) |
+| Vite pour les nouveaux projets | Create React App (déprécié) |
+| Un seul gestionnaire de paquets | Mélanger npm et Yarn |
+| Petits composants réutilisables | Composants monolithiques |
+| Nommage en PascalCase | camelCase ou snake_case pour les composants |
+
+### Ressources
+
+| Ressource | Lien |
+|-----------|------|
+| Documentation moderne | [fr.react.dev](https://fr.react.dev/) |
+| Documentation legacy | [fr.legacy.reactjs.org](https://fr.legacy.reactjs.org/) |
+| Vite | [vite.dev](https://vite.dev/) |
+| React DevTools | [Extension navigateur](https://react.dev/learn/react-developer-tools) |
