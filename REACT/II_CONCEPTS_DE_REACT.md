@@ -65,12 +65,12 @@ class App extends Component {
 export default App
 ```
 
-**Fichier `Mycars.jsx` (composant enfant) :**
+**Fichier `MyCars.jsx` (composant enfant) :**
 
 ```jsx
 import React from 'react';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   render() {
     return (
       <div>
@@ -81,7 +81,7 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
 ### Utilisation d'un composant
@@ -94,14 +94,14 @@ Pour afficher un composant enfant, il faut :
 import { Component } from 'react'
 import './App.css'
 
-import Mycars from './components/Mycars' // 1. Import du composant
+import MyCars from './components/MyCars' // 1. Import du composant
 
 class App extends Component {
   render() {
     return (
       <div className="App">
         <h1>Hello World!</h1>
-        <Mycars /> {/* 2. Utilisation du composant */}
+        <MyCars /> {/* 2. Utilisation du composant */}
       </div>
     )
   }
@@ -119,7 +119,7 @@ On peut combiner un composant Class (avec state) et un composant Fonction (sans 
 ```
 src/
 ├── components/
-│   ├── Mycars.jsx    ← State Component (Class)
+│   ├── MyCars.jsx    ← State Component (Class)
 │   └── Car.jsx       ← UI Component (Fonction)
 └── App.jsx
 ```
@@ -130,13 +130,13 @@ src/
 import { Component } from 'react'
 import './App.css'
 
-import Mycars from './components/Mycars'
+import MyCars from './components/MyCars'
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <Mycars />
+        <MyCars />
       </div>
     )
   }
@@ -145,13 +145,13 @@ class App extends Component {
 export default App
 ```
 
-**Mycars.jsx (State Component) :**
+**MyCars.jsx (State Component) :**
 
 ```jsx
 import React from 'react';
 import Car from './Car';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
       { brand: 'Audi', color: 'black' },
@@ -176,7 +176,7 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
 **Car.jsx (UI Component) :**
@@ -241,21 +241,61 @@ Les classes restent valides mais pourraient ne plus être maintenues dans le fut
 
 ## Props et State
 
-### Props 
+### Introduction
 
-Le composant Car.js pourra contenir des props.  
-Une `prop` est une propriété que l'on souhaite pouvoir modifier à l'appel d'un composant.  
-Il existe deux types de props (ceci est valable en typescript): 
-* children qui est un 'node' (un noeud) et qui pourra contenir du jsx.
-* prop qui est une propriété définie qu'on va appliquer directement.
+Dans React, les données circulent de deux manières principales :
+- **Props** : données transmises d'un composant parent vers un composant enfant
+- **State** : données locales gérées à l'intérieur d'un composant
+
 ```
-NB : pour simplifier, j'ai utilisé du CSS inline, ceci n'est pas une bonne pratique. Il faut toujours utiliser des class dans un fichier CSS dédié !
+┌─────────────────────────────────────────────────────────┐
+│                    FLUX DE DONNÉES                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   ┌─────────────┐                                       │
+│   │   PARENT    │                                       │
+│   │   (state)   │                                       │
+│   └──────┬──────┘                                       │
+│          │                                              │
+│          │ props (lecture seule)                        │
+│          ▼                                              │
+│   ┌─────────────┐                                       │
+│   │   ENFANT    │                                       │
+│   │  (props)    │                                       │
+│   └─────────────┘                                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
 ```
 
-Car.js
-```JS
+| Caractéristique | Props | State |
+|-----------------|-------|-------|
+| **Origine** | Passées par le parent | Définies dans le composant |
+| **Modification** | Immuables (lecture seule) | Modifiables via `setState()` |
+| **Flux** | Parent → Enfant | Interne au composant |
+| **Re-render** | Oui, si les props changent | Oui, si le state change |
+
+---
+
+### Props
+
+#### Définition
+
+Une `prop` (propriété) est une donnée que l'on souhaite pouvoir passer lors de l'appel d'un composant.  
+Les props permettent de rendre les composants dynamiques et réutilisables.
+
+#### Types de props
+
+| Type | Description | Exemple |
+|------|-------------|---------|
+| **children** | Contenu JSX placé entre les balises du composant | `<Car>Audi</Car>` |
+| **prop standard** | Attribut défini explicitement | `<Car color="red" />` |
+
+#### Exemple basique
+
+**Car.jsx (composant enfant) :**
+
+```jsx
 const Car = ({ children, color }) => {
-
   const colorInfo = color ? `Couleur : ${color}` : 'Couleur : inconnue';
 
   return (
@@ -268,15 +308,14 @@ const Car = ({ children, color }) => {
 
 export default Car;
 ```
-children pourra contenir des éléments jsx tel qu'une `span`.  
-On ajoute une variable `colorInfo` qui va tester si la prop `color` existe bien et appliquer un bloc de code ou un autre dans un cas ou l'autre.
 
-Lors de l'appel de Car dans Mycars.js, on pourra procéder ainsi : 
-```JS
+**MyCars.jsx (composant parent) :**
+
+```jsx
 import React from 'react';
 import Car from './Car';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   render() {
     return (
       <div>
@@ -297,169 +336,15 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
-**ATTENTION**  
-Dans React, les props sont immuables. Il ne faut pas les modifier à l'intérieur du composant.  
-La prop est un élément qui est maléable, c'est à dire que c'est le parent qui va envoyer la data au composant via la prop.  
-Le composant ne doit faire qu'afficher la data ou procéder à une action précise.  
-Il ne doit en aucun cas modifier la valeur passée, faut via une fonction pour un traitement spécifique.
+#### Passage de props avec le state
 
-exemple :  
-Mycars.js fait appel au composant `Car`
-```JS
-import React from 'react';
-import { Car } from './Car';
-import Header from './Header';
-
-class Mycars extends React.Component {
-  state = {
-    cars: [
-      {
-        brand: 'Audi', 
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        color: 'grey',
-      },
-    ],
-  }
-
-  render() {
-    const { title, colorTitle } = this.props;
-
-    return (
-      <div>
-        <Header title={title} colorTitle={colorTitle} />
-        <div style={{ display: 'flex' }}>
-          {this.state.cars.map((car, index) => (
-            <Car key={index} color={car.color}>{car.brand}</Car>
-          ))}
-        </div>
-      </div>
-    );
-  }
-}
-
-export default Mycars;
-```
-Car.js
-```JS
-import { Wrapper } from './Wrapper';
-
-export const Car = ({ children, color }) => {
-
-  children = 'toto'; // => CECI EST À BANNIR !
-
-  return children && (
-    <Wrapper>
-      <p>Marque : {children}</p>
-      <p>Couleur : {color ? color : 'inconnue'}</p>
-    </Wrapper>
-  );
-}
-```
-Modifier `children` de cette manière est possible mais proscrit. 
-
-### State
-
-Les composants State pourront contenir un objet state, qu'on pourra modifier. 
-
-App.js
-```JS
+```jsx
+// App.jsx (parent)
 import { Component } from 'react'
-import './App.css'
-
-import Mycars from './components/Mycars'
-
-class App extends Component {
-  state = {
-    title: 'Mon catalogue voitures',
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <Mycars title={this.state.title} />
-      </div>
-    )
-  }
-}
-
-export default App
-
-```
-
-On accédera à la prop au niveau du composant `Mycars.js` grâce au mot clé `this` : `this.props.title`.
-
-```JS
-import React from 'react';
-import Car from './Car';
-
-class Mycars extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>{this.props.title}</h1>
-        <div style={{ display: 'flex' }}>
-          <Car color="noir">
-            <span>Audi</span>
-          </Car>
-          <Car color="bleu foncé">
-            <span>BMW</span>
-          </Car>
-          <Car>
-            <span>Mercedes</span>
-          </Car>
-        </div>
-      </div>
-    );
-  }
-}
-
-export default Mycars;
-```
-
-Cela permettra, lors de la modification du state, de modifier dynamiquement le contenu de la prop.
-```
-NB: Dans les nouvelles version de React, on utilise les Hooks pour ce genre de choses. 
-```
-
-Exercice :  
-1. Modifier le composant Car pour inscrire le conditionnement dans le jsx.
-2. Ajouter une propriété au state dans App pour modifier la couleur du texte de h1 dans le composant Mycars.
-3. Essayer d'optimiser le code en utilisant le state et un tableau d'éléments pour les voitures.  
-Le tableau doit contenir des objets avec deux clés : brand et color, qui contiennent des strings.  
-Créer une boucle pour afficher les voitures.
-
-<details>
-<summary style="font-weight:bold">Correction</summary>
-
-Car.js
-```JS
-const Car = ({ children, color }) => {
-  return children && (
-    <div style={{ border: '1px solid black', margin: '10px', padding: '10px', width: '150px' }}>
-      <p>Marque : {children}</p>
-      <p>Couleur : {color ? color : 'inconnue'}</p>
-    </div>
-  );
-}
-
-export default Car;
-```
-App.js
-```JS
-import { Component } from 'react'
-import './App.css'
-
-import Mycars from './components/Mycars'
+import MyCars from './components/MyCars'
 
 class App extends Component {
   state = {
@@ -470,7 +355,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Mycars title={this.state.title} colorTitle={this.state.colorTitle} />
+        <MyCars title={this.state.title} colorTitle={this.state.colorTitle} />
       </div>
     )
   }
@@ -478,31 +363,23 @@ class App extends Component {
 
 export default App
 ```
-Mycars.js
-```JS
+
+```jsx
+// MyCars.jsx (enfant)
 import React from 'react';
 import Car from './Car';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
-      {
-        brand: 'Audi', 
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        color: 'grey',
-      },
+      { brand: 'Audi', color: 'black' },
+      { brand: 'BMW', color: 'dark blue' },
+      { brand: 'Mercedes', color: 'grey' },
     ],
   }
 
   render() {
-    const { title, colorTitle } = this.props;
+    const { title, colorTitle } = this.props; // Destructuration des props
 
     return (
       <div>
@@ -517,9 +394,342 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
-</details>
+
+#### ⚠️ Règle fondamentale : l'immutabilité des props
+
+**Les props sont immuables. Il ne faut JAMAIS les modifier à l'intérieur du composant.**
+
+La prop est un élément "maléable" côté parent : c'est le parent qui envoie la data au composant via la prop.  
+Le composant enfant ne doit faire qu'**afficher** la data ou **déclencher une action**.  
+Il ne doit en aucun cas modifier la valeur passée.
+
+```jsx
+// ❌ INTERDIT : Ne jamais faire ceci !
+const Car = ({ children, color }) => {
+  children = 'toto'; // MODIFICATION INTERDITE !
+
+  return (
+    <div>
+      <p>Marque : {children}</p>
+    </div>
+  );
+}
+
+// ✅ CORRECT : Utiliser les props en lecture seule
+const Car = ({ children, color }) => {
+  return (
+    <div>
+      <p>Marque : {children}</p>
+      <p>Couleur : {color ? color : 'inconnue'}</p>
+    </div>
+  );
+}
+```
+
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Lire les props | Modifier les props directement |
+| Utiliser les props pour l'affichage | Réassigner une valeur à une prop |
+| Appeler une fonction passée en prop | Muter un objet ou tableau reçu en prop |
+
+---
+
+### State
+
+#### Définition
+
+Le `state` est un objet qui contient les données locales d'un composant.  
+Ces données peuvent changer au fil du temps et déclenchent un re-render du composant.
+
+#### Déclaration du state
+
+**Méthode 1 : Dans le constructor**
+
+```jsx
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: 'Mon catalogue voitures',
+    };
+  }
+}
+```
+
+**Méthode 2 : Propriété de classe (syntaxe moderne)**
+
+```jsx
+class App extends Component {
+  state = {
+    title: 'Mon catalogue voitures',
+  }
+}
+```
+
+Les deux syntaxes sont équivalentes. La seconde est plus concise.
+
+#### Accès au state
+
+Dans un composant classe, on accède au state via `this.state` :
+
+```jsx
+render() {
+  return (
+    <div>
+      <h1>{this.state.title}</h1>
+    </div>
+  );
+}
+```
+
+#### Modification du state avec setState()
+
+**⚠️ Règle fondamentale : Ne JAMAIS modifier le state directement !**
+
+```jsx
+// ❌ INTERDIT : Modification directe
+this.state.title = "Nouveau titre";
+
+// ✅ CORRECT : Utiliser setState()
+this.setState({ title: "Nouveau titre" });
+```
+
+**Pourquoi utiliser setState() ?**
+
+| Raison | Explication |
+|--------|-------------|
+| **Détection des changements** | React compare le DOM virtuel avec le DOM actuel |
+| **Cycle de vie** | React surveille les mutations pour gérer le cycle de vie |
+| **Performance** | Seuls les éléments modifiés sont re-rendus |
+
+**Formes de setState() :**
+
+```jsx
+// Forme 1 : Objet (changements simples)
+this.setState({ title: "Nouveau titre" });
+
+// Forme 2 : Fonction (changements basés sur l'état précédent) ✅ Recommandée
+this.setState(prevState => ({
+  count: prevState.count + 1
+}));
+
+// Avec callback (exécuté après la mise à jour)
+this.setState(
+  { title: "Nouveau titre" },
+  () => console.log('State mis à jour:', this.state.title)
+);
+```
+
+#### Exemple complet : Modification du state avec événements
+
+```jsx
+import { Component } from 'react'
+import Mycars from './components/Mycars'
+
+class App extends Component {
+  state = {
+    title: 'Mon catalogue voitures',
+    colorTitle: 'green'
+  }
+
+  // Modification en dur
+  changeTitle = () => {
+    this.setState({ title: "Mon nouveau titre" });
+  }
+
+  // Modification avec paramètre
+  changeWithParam = (title) => {
+    this.setState({ title });
+  }
+
+  // Modification avec bind
+  changeWithBind = (param) => {
+    this.setState({ title: param });
+  }
+
+  // Modification dynamique avec input
+  changeWithInput = (e) => {
+    this.setState({ title: e.target.value });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <Mycars title={this.state.title} colorTitle={this.state.colorTitle} />
+        
+        {/* Bouton simple */}
+        <button onClick={this.changeTitle}>
+          Changer en dur
+        </button>
+        
+        {/* Avec paramètre (fonction anonyme) */}
+        <button onClick={() => this.changeWithParam('Titre via paramètre')}>
+          Changer avec paramètre
+        </button>
+        
+        {/* Avec bind */}
+        <button onClick={this.changeWithBind.bind(this, 'Titre via bind')}>
+          Changer avec Bind
+        </button>
+        
+        {/* Input dynamique */}
+        <input 
+          type="text" 
+          onChange={this.changeWithInput} 
+          value={this.state.title}
+        />
+      </div>
+    )
+  }
+}
+
+export default App
+```
+
+#### Méthodes de passage de données
+
+| Méthode | Syntaxe | Utilisation |
+|---------|---------|-------------|
+| **Fonction anonyme** | `onClick={() => this.func(param)}` | Passer des paramètres |
+| **Bind** | `onClick={this.func.bind(this, param)}` | Alternative avec bind |
+| **Référence directe** | `onClick={this.func}` | Sans paramètre |
+
+---
+
+### Communication Parent ↔ Enfant
+
+#### Parent → Enfant (via props)
+
+Le parent transmet des données à l'enfant via les props :
+
+```jsx
+// Parent
+<Enfant data={this.state.data} />
+
+// Enfant
+const Enfant = ({ data }) => <p>{data}</p>;
+```
+
+#### Enfant → Parent (via callback)
+
+L'enfant communique avec le parent en appelant une fonction passée en prop :
+
+```jsx
+// Parent
+class Parent extends Component {
+  state = { message: '' }
+
+  handleMessage = (msg) => {
+    this.setState({ message: msg });
+  }
+
+  render() {
+    return (
+      <div>
+        <p>Message reçu : {this.state.message}</p>
+        <Enfant onSendMessage={this.handleMessage} />
+      </div>
+    );
+  }
+}
+
+// Enfant
+const Enfant = ({ onSendMessage }) => {
+  return (
+    <button onClick={() => onSendMessage('Bonjour du composant enfant !')}>
+      Envoyer un message
+    </button>
+  );
+};
+```
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              COMMUNICATION BIDIRECTIONNELLE             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   ┌─────────────┐                                       │
+│   │   PARENT    │                                       │
+│   │   (state)   │                                       │
+│   └──────┬──────┘                                       │
+│          │                                              │
+│   props  │  ▲  callback                                 │
+│   (data) │  │  (fonction)                               │
+│          ▼  │                                           │
+│   ┌─────────────┐                                       │
+│   │   ENFANT    │                                       │
+│   │  (props)    │                                       │
+│   └─────────────┘                                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Note sur le constructor et les mauvaises pratiques
+
+#### Quand implémenter le constructor ?
+
+Le constructor n'est nécessaire que si vous devez :
+- Initialiser l'état local avec `this.state`
+- Lier des méthodes à l'instance avec `bind`
+
+```jsx
+constructor(props) {
+  super(props);
+  
+  // Initialisation du state (seul endroit où on peut affecter directement)
+  this.state = { counter: 0 };
+  
+  // Liaison des méthodes
+  this.handleClick = this.handleClick.bind(this);
+}
+```
+
+#### ⚠️ Erreurs courantes à éviter
+
+| ❌ Ne pas faire | Explication |
+|-----------------|-------------|
+| `this.setState()` dans le constructor | Provoque une erreur |
+| Copier les props dans le state | Anti-pattern |
+| Modifier `this.state` directement (hors constructor) | React ne détecte pas le changement |
+
+```jsx
+// ❌ INTERDIT : Copier les props dans le state
+constructor(props) {
+  super(props);
+  this.state = { color: props.color }; // NE JAMAIS FAIRE ÇA !
+}
+
+// ✅ CORRECT : Utiliser directement les props
+render() {
+  return <p style={{ color: this.props.color }}>Texte</p>;
+}
+```
+
+---
+
+### Récapitulatif
+
+| Aspect | Props | State |
+|--------|-------|-------|
+| **Définition** | Données reçues du parent | Données locales du composant |
+| **Accès (classe)** | `this.props.nom` | `this.state.nom` |
+| **Modification** | Impossible (immuable) | `this.setState({ ... })` |
+| **Destructuration** | `const { nom } = this.props` | `const { nom } = this.state` |
+| **Re-render** | Si les props changent | Si le state change |
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Utiliser `setState()` pour modifier le state | Modifier `this.state` directement |
+| Destructurer les props et le state | Accéder via `this.props.x` partout |
+| Passer des callbacks pour la communication enfant → parent | Modifier les props dans l'enfant |
+| Utiliser la forme fonction de `setState()` pour les calculs | Dépendre de `this.state` dans `setState()` |
+| Garder le state minimal | Dupliquer les props dans le state |
 
 ## Export default vs Named Export 
 
@@ -528,9 +738,9 @@ export default Mycars;
 Export default permet d'exporter un élément et de l'importer dans un autre composant avec le nom de notre choix (pas obligatoirement avec le vrai nom de la classe ou de la fonction).  
 
 exemple :  
-`export default Mycars` peut être importé de ces deux manières :  
-* `import Mycars from './components/Mycars'`
-* `import Container from './components/Mycars'`
+`export default MyCars` peut être importé de ces deux manières :  
+* `import MyCars from './components/MyCars'`
+* `import Container from './components/MyCars'`
 
 ### Option2 : Named Export 
 
@@ -538,15 +748,15 @@ Le named export oblige à conserver le nom du composant à exporter, et il faudr
 On utilisera le terme export devant la class ou la fonction.
 
 exmple :  
-`export class Mycars extends Component` (ou `export const Mycars ...`) peut être importé uniquement de cette manière : 
-* `import { Mycars } from './components/Mycars'`
+`export class MyCars extends Component` (ou `export const MyCars ...`) peut être importé uniquement de cette manière : 
+* `import { MyCars } from './components/MyCars'`
 
 ### Bonnes pratiques
 
 De manière générale, chaque composant doit avoir son fichier propre. C'est une bonne pratique.
 
 Il est toutefois possible d'avoir deux composants dans un même fichier :  
-composant Mycars.js
+composant MyCars.js
 ```JS
 import React from 'react';
 import Header from './Header';
@@ -562,7 +772,7 @@ const Car = ({ children, color }) => {
   );
 }
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
       {
@@ -596,10 +806,10 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
-Dans ce cas, le composant `Car` est uniquement utilisé et ne pourra être utilisé que dans le composant `Mycars`.
+Dans ce cas, le composant `Car` est uniquement utilisé et ne pourra être utilisé que dans le composant `MyCars`.
 
 ## Les Événements React
 
@@ -614,7 +824,7 @@ import React from 'react';
 import { Car } from './Car';
 import Header from './Header';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
       {
@@ -655,7 +865,7 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 ATTENTION : lors de l'appel de la fonction, on a pas ajouté de parenthèses après son appel : `this.noCopy()`.  
 L'ajout de parenthèses provoque un déclenchement de la fonction au chargement de la page.  
@@ -669,7 +879,7 @@ La modification direct d'un state dans une fonction n'est pas possible et est st
 import { Component } from 'react'
 import './App.css'
 
-import Mycars from './components/Mycars'
+import MyCars from './components/MyCars'
 
 class App extends Component {
   state = {
@@ -683,7 +893,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Mycars title={this.state.title} />
+        <MyCars title={this.state.title} />
         <button onClick={this.changeTitle}>Changer le nom en dur</button>
       </div>
     )
@@ -720,7 +930,7 @@ Pour palier à ce problème, React contient une logique de modification du state
   render() {
     return (
       <div className="App">
-        <Mycars title={this.state.title} />
+        <MyCars title={this.state.title} />
         <button onClick={this.changeTitle}>Changer le nom en dur</button>
         <button onClick={() => this.changeWithParam('Titre via paramètre')}>Changer le nom avec paramètre</button>
       </div>
@@ -749,7 +959,7 @@ Syntaxe : `this.function.bind(this,[arg1...]);`
   render() {
     return (
       <div className="App">
-        <Mycars title={this.state.title} colorTitle={this.state.colorTitle} />
+        <MyCars title={this.state.title} colorTitle={this.state.colorTitle} />
         <button onClick={this.changeWithBind.bind(this, 'Titre via bind')}>Changer le nom avec Bind</button>
       </div>
     )
@@ -771,7 +981,7 @@ L'objectif ici est de capter le changement d'un élément input text (formulaire
   render() {
     return (
       <div className="App">
-        <Mycars title={this.state.title} colorTitle={this.state.colorTitle} />
+        <MyCars title={this.state.title} colorTitle={this.state.colorTitle} />
         <input type="text" onChange={(e) => this.changeWithInput(e)} value={this.state.title}/>
       </div>
     )
@@ -857,7 +1067,7 @@ exemple 1 :
 import React from 'react';
 import { Car } from './Car';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
       {
@@ -907,7 +1117,7 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
 exemple 2 :  
@@ -918,7 +1128,7 @@ Ceci va permettre d'éviter d'appeler `car.brand`, `car.color` ...
 import React from 'react';
 import { Car } from './Car';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
       {
@@ -968,7 +1178,7 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
 ## Callback function et invocation d'une méthode dans les props
@@ -999,7 +1209,7 @@ Cette fonction devra calculer l'age de la voiture et retourner une chaîne de ca
 import React from 'react';
 import { Car } from './Car';
 
-class Mycars extends React.Component {
+class MyCars extends React.Component {
   state = {
     cars: [
       {
@@ -1054,7 +1264,7 @@ class Mycars extends React.Component {
   }
 }
 
-export default Mycars;
+export default MyCars;
 ```
 
 ## Passer une fonction dans une prop
