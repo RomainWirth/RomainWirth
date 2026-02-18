@@ -1,22 +1,18 @@
 import { Component } from "react";
 import frieza from "../assets/frieza.jpeg";
 
+import HandleClicks from "./HandleClicks";
+
 class Frieza extends Component {
-  state = {
-    bg: ''
-  }
-
-  handleClick = () => {
-    this.setState({ bg: 'bg-success' })  
-  }
-
   render() {
+    const { backGround, clickHandler } = this.props;
+    
     return (
-      <div className="col">
+      <div className={`col p-5 ${backGround}`}>
         <div 
           style={{ height: "200px", width: "auto" }}
-          className={`d-flex justify-content-center align-items-start overflow-hidden ${this.state.bg}`}
-          onClick={this.handleClick}
+          className={`d-flex justify-content-center align-items-start overflow-hidden ${backGround}`}
+          onClick={clickHandler}
         >
           <img 
             src={frieza} 
@@ -30,4 +26,6 @@ class Frieza extends Component {
   }
 }
 
-export default Frieza;
+const FriezaWithHandleClicks = HandleClicks(Frieza);
+
+export default FriezaWithHandleClicks;
