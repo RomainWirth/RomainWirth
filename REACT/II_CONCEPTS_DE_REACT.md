@@ -731,76 +731,171 @@ render() {
 | Utiliser la forme fonction de `setState()` pour les calculs | Dépendre de `this.state` dans `setState()` |
 | Garder le state minimal | Dupliquer les props dans le state |
 
-## Export default vs Named Export 
+## Export default vs Named Export
 
-### Option 1 : Export default
+### Introduction
 
-Export default permet d'exporter un élément et de l'importer dans un autre composant avec le nom de notre choix (pas obligatoirement avec le vrai nom de la classe ou de la fonction).  
+En JavaScript (et donc en React), il existe deux façons d'exporter des éléments depuis un module :
+- **Export default** : export par défaut (un seul par fichier)
+- **Named export** : export nommé (plusieurs possibles par fichier)
 
-exemple :  
-`export default MyCars` peut être importé de ces deux manières :  
-* `import MyCars from './components/MyCars'`
-* `import Container from './components/MyCars'`
+```
+┌─────────────────────────────────────────────────────────┐
+│                    TYPES D'EXPORT                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Export Default          │  Named Export               │
+│  ─────────────────       │  ─────────────              │
+│  • Un seul par fichier   │  • Plusieurs par fichier    │
+│  • Import libre          │  • Import exact             │
+│  • Sans accolades        │  • Avec accolades           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
 
-### Option2 : Named Export 
+### Export default
 
-Le named export oblige à conserver le nom du composant à exporter, et il faudra respecter une certaine syntaxe entre accolades.  
-On utilisera le terme export devant la class ou la fonction.
+L'export default permet d'exporter **un seul élément principal** par fichier.  
+Lors de l'import, on peut choisir **n'importe quel nom** pour l'élément importé.
 
-exmple :  
-`export class MyCars extends Component` (ou `export const MyCars ...`) peut être importé uniquement de cette manière : 
-* `import { MyCars } from './components/MyCars'`
+**Déclaration :**
 
-### Bonnes pratiques
-
-De manière générale, chaque composant doit avoir son fichier propre. C'est une bonne pratique.
-
-Il est toutefois possible d'avoir deux composants dans un même fichier :  
-composant MyCars.js
-```JS
-import React from 'react';
-import Header from './Header';
-
-import { Wrapper } from './Wrapper';
-
-const Car = ({ children, color }) => {
-  return children && (
-    <Wrapper>
-      <p>Marque : {children}</p>
-      <p>Couleur : {color ? color : 'inconnue'}</p>
-    </Wrapper>
-  );
+```jsx
+// Méthode 1 : Export à la fin du fichier
+class MyCars extends Component {
+  // ...
 }
 
+export default MyCars;
+
+// Méthode 2 : Export direct
+export default class MyCars extends Component {
+  // ...
+}
+
+// Méthode 3 : Composant fonction
+const MyCars = () => {
+  return <div>My Cars</div>;
+};
+
+export default MyCars;
+```
+
+**Import :**
+
+```jsx
+// Le nom peut être différent du nom original
+import MyCars from './components/MyCars';
+import Container from './components/MyCars';      // ✅ Fonctionne aussi
+import MonComposant from './components/MyCars';   // ✅ Fonctionne aussi
+```
+
+| Avantage | Inconvénient |
+|----------|--------------|
+| Flexibilité du nom à l'import | Un seul export par fichier |
+| Syntaxe simple | Moins explicite sur ce qui est importé |
+
+---
+
+### Named Export
+
+Le named export permet d'exporter **plusieurs éléments** depuis un même fichier.  
+Lors de l'import, on **doit utiliser le nom exact** de l'élément exporté.
+
+**Déclaration :**
+
+```jsx
+// Méthode 1 : Export direct devant la déclaration
+export class MyCars extends Component {
+  // ...
+}
+
+export const Car = ({ brand }) => {
+  return <p>{brand}</p>;
+};
+
+export const BRANDS = ['Audi', 'BMW', 'Mercedes'];
+
+// Méthode 2 : Export groupé à la fin
+class MyCars extends Component {
+  // ...
+}
+
+const Car = ({ brand }) => {
+  return <p>{brand}</p>;
+};
+
+const BRANDS = ['Audi', 'BMW', 'Mercedes'];
+
+export { MyCars, Car, BRANDS };
+```
+
+**Import :**
+
+```jsx
+// Import avec accolades - nom exact obligatoire
+import { MyCars } from './components/MyCars';
+import { Car } from './components/MyCars';
+import { MyCars, Car, BRANDS } from './components/MyCars';
+
+// ❌ Ne fonctionne PAS
+import { Container } from './components/MyCars'; // Erreur : Container n'existe pas
+```
+
+**Renommer à l'import avec `as` :**
+
+```jsx
+// Renommer un named export
+import { MyCars as Container } from './components/MyCars';
+import { Car as VehicleCard } from './components/MyCars';
+```
+
+| Avantage | Inconvénient |
+|----------|--------------|
+| Plusieurs exports par fichier | Nom exact requis |
+| Plus explicite | Syntaxe avec accolades |
+| Meilleur tree-shaking | - |
+
+---
+
+### Combiner les deux types d'export
+
+Il est possible de combiner export default et named exports dans un même fichier :
+
+```jsx
+// MyCars.jsx
+import React from 'react';
+
+// Named export : composant utilitaire
+export const Car = ({ brand, color }) => {
+  return (
+    <div>
+      <p>Marque : {brand}</p>
+      <p>Couleur : {color}</p>
+    </div>
+  );
+};
+
+// Named export : constante
+export const DEFAULT_COLOR = 'black';
+
+// Export default : composant principal
 class MyCars extends React.Component {
   state = {
     cars: [
-      {
-        brand: 'Audi', 
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        color: 'grey',
-      },
+      { brand: 'Audi', color: 'black' },
+      { brand: 'BMW', color: 'dark blue' },
+      { brand: 'Mercedes', color: 'grey' },
     ],
   }
 
   render() {
-    const { title, colorTitle } = this.props;
-
     return (
       <div>
-        <Header title={title} colorTitle={colorTitle} />
-        <div style={{ display: 'flex' }}>
-          {this.state.cars.map((car, index) => (
-            <Car key={index} color={car.color}>{car.brand}</Car>
-          ))}
-        </div>
+        <h1>My Cars</h1>
+        {this.state.cars.map((car, index) => (
+          <Car key={index} brand={car.brand} color={car.color} />
+        ))}
       </div>
     );
   }
@@ -809,376 +904,1075 @@ class MyCars extends React.Component {
 export default MyCars;
 ```
 
-Dans ce cas, le composant `Car` est uniquement utilisé et ne pourra être utilisé que dans le composant `MyCars`.
+**Import combiné :**
+
+```jsx
+// Import du default + named exports
+import MyCars, { Car, DEFAULT_COLOR } from './components/MyCars';
+
+// Ou séparément
+import MyCars from './components/MyCars';
+import { Car, DEFAULT_COLOR } from './components/MyCars';
+```
+
+---
+
+### Tableau comparatif
+
+| Aspect | Export Default | Named Export |
+|--------|----------------|--------------|
+| **Syntaxe d'export** | `export default Component` | `export const Component` |
+| **Syntaxe d'import** | `import X from './file'` | `import { X } from './file'` |
+| **Nombre par fichier** | 1 seul | Illimité |
+| **Nom à l'import** | Libre | Exact (ou avec `as`) |
+| **Accolades** | Non | Oui |
+| **Tree-shaking** | Moins efficace | Plus efficace |
+
+---
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Un composant principal = export default | Plusieurs composants principaux dans un fichier |
+| Un composant = un fichier | Mélanger trop de logiques dans un fichier |
+| Named exports pour les utilitaires/constantes | Exporter des éléments non utilisés ailleurs |
+| Nommer les exports de manière explicite | Utiliser des noms génériques (Component1, Util, etc.) |
+
+**Structure recommandée :**
+
+```
+src/
+├── components/
+│   ├── MyCars/
+│   │   ├── MyCars.jsx       ← export default MyCars
+│   │   ├── Car.jsx          ← export default Car (ou named si petit)
+│   │   └── index.js         ← ré-export centralisé
+│   └── utils/
+│       └── carUtils.js      ← named exports (fonctions utilitaires)
+```
+
+**Fichier index.js pour simplifier les imports :**
+
+```jsx
+// components/MyCars/index.js
+export { default } from './MyCars';
+export { default as Car } from './Car';
+
+// Utilisation
+import MyCars, { Car } from './components/MyCars';
+```
+
+---
+
+### Cas particulier : composant interne
+
+Lorsqu'un composant est utilisé **uniquement** à l'intérieur d'un autre composant, il n'est pas nécessaire de l'exporter :
+
+```jsx
+// MyCars.jsx
+import React from 'react';
+
+// Composant interne - PAS exporté
+const Car = ({ brand, color }) => {
+  return (
+    <div>
+      <p>Marque : {brand}</p>
+      <p>Couleur : {color}</p>
+    </div>
+  );
+};
+
+// Composant principal - exporté
+class MyCars extends React.Component {
+  state = {
+    cars: [
+      { brand: 'Audi', color: 'black' },
+      { brand: 'BMW', color: 'dark blue' },
+    ],
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>My Cars</h1>
+        {this.state.cars.map((car, index) => (
+          <Car key={index} brand={car.brand} color={car.color} />
+        ))}
+      </div>
+    );
+  }
+}
+
+export default MyCars;
+```
+
+Dans ce cas, le composant `Car` est uniquement accessible à l'intérieur du fichier `MyCars.jsx`.  
+C'est une bonne pratique lorsque le composant n'a pas vocation à être réutilisé ailleurs.
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   QUAND UTILISER ?                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Export Default                                         │
+│  ───────────────                                        │
+│  → Composant principal du fichier                       │
+│  → Un seul composant par fichier                        │
+│  → Convention : nom du fichier = nom du composant       │
+│                                                         │
+│  Named Export                                           │
+│  ─────────────                                          │
+│  → Fonctions utilitaires                                │
+│  → Constantes partagées                                 │
+│  → Plusieurs éléments liés dans un fichier              │
+│  → Types TypeScript                                     │
+│                                                         │
+│  Pas d'export                                           │
+│  ─────────────                                          │
+│  → Composant utilisé uniquement en interne              │
+│  → Fonctions helpers privées                            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
 
 ## Les Événements React
 
-Les événements ([Events](https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Scripting/Events)) sont des changements, des actions qui se produisent dans un système que l'on programme et auxquels ont peut répondre d'une manière ou d'une autre. 
-exemple : `onClick`, `onChange`, etc. 
+### Introduction
 
-exemple :  
-On va créer une fonction `noCopy` qui doit alerter l'utlisateur lorsqu'un élément est copié. 
-Cette fonction va être appelée à l'événement `onCopy` que l'on peut associer à n'importe quelle balise html.  
-```JS
+Les événements ([Events](https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Scripting/Events)) sont des changements ou des actions qui se produisent dans un système et auxquels on peut répondre d'une manière ou d'une autre.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    ÉVÉNEMENTS REACT                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Action utilisateur     →    Gestionnaire d'événement  │
+│   (clic, saisie, etc.)        (fonction handler)        │
+│                                                         │
+│           │                          │                  │
+│           ▼                          ▼                  │
+│   ┌─────────────┐            ┌─────────────┐            │
+│   │  onClick    │            │  setState() │            │
+│   │  onChange   │     →      │  Mise à jour│            │
+│   │  onSubmit   │            │  du state   │            │
+│   │  onCopy     │            │             │            │
+│   └─────────────┘            └─────────────┘            │
+│                                      │                  │
+│                                      ▼                  │
+│                              [ Re-render ]              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Différence entre JavaScript Vanilla et React
+
+React utilise le **camelCase** pour tous les événements, contrairement au HTML classique.
+
+| HTML (Vanilla JS) | React (JSX) |
+|-------------------|-------------|
+| `onclick` | `onClick` |
+| `onchange` | `onChange` |
+| `onsubmit` | `onSubmit` |
+| `oncopy` | `onCopy` |
+| `onmouseover` | `onMouseOver` |
+| `onkeydown` | `onKeyDown` |
+
+**Syntaxe comparée :**
+
+```html
+<!-- HTML Vanilla -->
+<button onclick="myFunction()">Cliquer</button>
+<input type="text" onchange="myFunction()" />
+<p oncopy="myFunction()">Texte à copier</p>
+```
+
+```jsx
+// React JSX
+<button onClick={myFunction}>Cliquer</button>
+<input type="text" onChange={myFunction} />
+<p onCopy={myFunction}>Texte à copier</p>
+```
+
+---
+
+### Liste des événements courants
+
+| Catégorie | Événement | Description |
+|-----------|-----------|-------------|
+| **Souris** | `onClick` | Clic sur un élément |
+| | `onDoubleClick` | Double-clic |
+| | `onMouseEnter` | Survol (entrée) |
+| | `onMouseLeave` | Survol (sortie) |
+| | `onMouseDown` | Bouton enfoncé |
+| | `onMouseUp` | Bouton relâché |
+| **Clavier** | `onKeyDown` | Touche enfoncée |
+| | `onKeyUp` | Touche relâchée |
+| | `onKeyPress` | Touche pressée (déprécié) |
+| **Formulaire** | `onChange` | Changement de valeur |
+| | `onSubmit` | Soumission du formulaire |
+| | `onFocus` | Focus sur l'élément |
+| | `onBlur` | Perte du focus |
+| **Presse-papiers** | `onCopy` | Copie |
+| | `onCut` | Couper |
+| | `onPaste` | Coller |
+| **Autres** | `onScroll` | Défilement |
+| | `onLoad` | Chargement terminé |
+| | `onError` | Erreur de chargement |
+
+---
+
+### Déclaration d'un événement
+
+#### ⚠️ Règle fondamentale : ne pas appeler la fonction immédiatement
+
+```jsx
+// ❌ INCORRECT : La fonction est exécutée au chargement de la page
+<button onClick={this.handleClick()}>Cliquer</button>
+
+// ✅ CORRECT : La fonction est passée en référence
+<button onClick={this.handleClick}>Cliquer</button>
+
+// ✅ CORRECT : Avec une fonction anonyme (si besoin de paramètres)
+<button onClick={() => this.handleClick()}>Cliquer</button>
+```
+
+**Pourquoi ?**
+
+| Syntaxe | Comportement |
+|---------|--------------|
+| `onClick={this.handleClick()}` | Exécute la fonction **immédiatement** au rendu |
+| `onClick={this.handleClick}` | Passe la **référence** de la fonction |
+| `onClick={() => this.handleClick()}` | Crée une fonction anonyme qui appellera `handleClick` au clic |
+
+---
+
+### Exemple basique : l'événement onCopy
+
+```jsx
 import React from 'react';
-import { Car } from './Car';
-import Header from './Header';
 
 class MyCars extends React.Component {
   state = {
     cars: [
-      {
-        brand: 'Audi', 
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        color: 'grey',
-      },
+      { brand: 'Audi', color: 'black' },
+      { brand: 'BMW', color: 'dark blue' },
+      { brand: 'Mercedes', color: 'grey' },
     ],
   }
 
-  // Fonction noCopy qui déclenche une alerte dans le DOM
+  // Fonction déclenchée lors de la copie
   noCopy = () => {
     alert("Copier c'est voler !");
   }
 
   render() {
-    const { title, colorTitle } = this.props;
+    return (
+      <div>
+        <h1>My Cars</h1>
+        {/* Événement onCopy sur le paragraphe */}
+        <p onCopy={this.noCopy}>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        </p>
+        <div style={{ display: 'flex' }}>
+          {this.state.cars.map((car, index) => (
+            <div key={index}>
+              <p>{car.brand}</p>
+              <p>{car.color}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default MyCars;
+```
+
+---
+
+### Événements et modification du state
+
+#### ⚠️ Règle : Ne JAMAIS modifier le state directement
+
+```jsx
+// ❌ INTERDIT : Modification directe du state
+changeTitle = () => {
+  this.state.title = "Nouveau titre"; // NE JAMAIS FAIRE ÇA !
+}
+
+// ✅ CORRECT : Utiliser setState()
+changeTitle = () => {
+  this.setState({ title: "Nouveau titre" });
+}
+```
+
+**Pourquoi utiliser setState() ?**
+
+| Raison | Explication |
+|--------|-------------|
+| **Détection des changements** | React compare le DOM virtuel avec le DOM actuel |
+| **Cycle de vie** | React surveille les mutations pour gérer le cycle de vie |
+| **Re-render** | `setState()` déclenche automatiquement un nouveau rendu |
+
+---
+
+### Méthodes de passage de paramètres
+
+Il existe plusieurs façons de passer des paramètres à une fonction événementielle :
+
+#### 1. Sans paramètre (référence directe)
+
+```jsx
+class App extends Component {
+  state = { title: 'Mon titre' }
+
+  changeTitle = () => {
+    this.setState({ title: "Nouveau titre" });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.title}</h1>
+        <button onClick={this.changeTitle}>Changer le titre</button>
+      </div>
+    );
+  }
+}
+```
+
+#### 2. Avec paramètre (fonction anonyme)
+
+```jsx
+class App extends Component {
+  state = { title: 'Mon titre' }
+
+  changeWithParam = (newTitle) => {
+    this.setState({ title: newTitle });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.title}</h1>
+        <button onClick={() => this.changeWithParam('Titre via paramètre')}>
+          Changer avec paramètre
+        </button>
+      </div>
+    );
+  }
+}
+```
+
+#### 3. Avec paramètre (bind)
+
+```jsx
+class App extends Component {
+  state = { title: 'Mon titre' }
+
+  changeWithBind = (newTitle) => {
+    this.setState({ title: newTitle });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.title}</h1>
+        <button onClick={this.changeWithBind.bind(this, 'Titre via bind')}>
+          Changer avec bind
+        </button>
+      </div>
+    );
+  }
+}
+```
+
+#### 4. Avec l'objet event (e)
+
+```jsx
+class App extends Component {
+  state = { title: 'Mon titre' }
+
+  changeWithInput = (e) => {
+    this.setState({ title: e.target.value });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.title}</h1>
+        <input 
+          type="text" 
+          value={this.state.title}
+          onChange={this.changeWithInput} 
+        />
+      </div>
+    );
+  }
+}
+```
+
+---
+
+### Tableau récapitulatif des méthodes
+
+| Méthode | Syntaxe | Utilisation |
+|---------|---------|-------------|
+| **Référence directe** | `onClick={this.func}` | Sans paramètre |
+| **Fonction anonyme** | `onClick={() => this.func(param)}` | Avec paramètre(s) |
+| **Bind** | `onClick={this.func.bind(this, param)}` | Alternative avec bind |
+| **Event implicite** | `onChange={this.func}` | Accès à `e.target.value` |
+
+---
+
+### L'objet Event (e)
+
+L'objet `event` est automatiquement passé aux gestionnaires d'événements React.
+
+```jsx
+handleClick = (e) => {
+  console.log(e);                    // SyntheticBaseEvent
+  console.log(e.target);             // Élément cliqué
+  console.log(e.target.value);       // Valeur (pour les inputs)
+  console.log(e.target.name);        // Attribut name
+  console.log(e.type);               // Type d'événement (click, change, etc.)
+}
+```
+
+**Propriétés utiles de l'objet event :**
+
+| Propriété | Description |
+|-----------|-------------|
+| `e.target` | L'élément qui a déclenché l'événement |
+| `e.target.value` | La valeur de l'élément (input, select, etc.) |
+| `e.target.name` | L'attribut `name` de l'élément |
+| `e.target.checked` | État coché (pour les checkbox) |
+| `e.type` | Type de l'événement |
+| `e.preventDefault()` | Empêche le comportement par défaut |
+| `e.stopPropagation()` | Arrête la propagation de l'événement |
+
+---
+
+### Empêcher le comportement par défaut
+
+La méthode `e.preventDefault()` empêche le comportement par défaut du navigateur.
+
+```jsx
+class Form extends Component {
+  state = { username: '' }
+
+  handleSubmit = (e) => {
+    e.preventDefault(); // Empêche le rechargement de la page
+    console.log('Formulaire soumis:', this.state.username);
+  }
+
+  handleChange = (e) => {
+    this.setState({ username: e.target.value });
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input 
+          type="text" 
+          value={this.state.username}
+          onChange={this.handleChange}
+        />
+        <button type="submit">Envoyer</button>
+      </form>
+    );
+  }
+}
+```
+
+**Cas d'utilisation de preventDefault() :**
+
+| Élément | Comportement par défaut | Raison d'utiliser preventDefault() |
+|---------|-------------------------|-------------------------------------|
+| `<form>` | Recharge la page | Traiter les données côté client |
+| `<a>` | Navigation vers href | Gérer la navigation avec React Router |
+| `<button type="submit">` | Soumet le formulaire | Contrôle personnalisé |
+
+---
+
+### Propagation des événements
+
+React utilise le **bubbling** (propagation ascendante) par défaut.
+
+```jsx
+class EventPropagation extends Component {
+  handleParentClick = () => {
+    console.log('Parent cliqué');
+  }
+
+  handleChildClick = (e) => {
+    e.stopPropagation(); // Arrête la propagation
+    console.log('Enfant cliqué');
+  }
+
+  render() {
+    return (
+      <div onClick={this.handleParentClick} style={{ padding: '20px', background: 'lightblue' }}>
+        <p>Zone parent</p>
+        <button onClick={this.handleChildClick}>
+          Cliquer ici
+        </button>
+      </div>
+    );
+  }
+}
+```
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  PROPAGATION (BUBBLING)                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Sans stopPropagation()     │  Avec stopPropagation()  │
+│   ──────────────────────     │  ─────────────────────── │
+│                              │                          │
+│   Clic sur bouton            │  Clic sur bouton         │
+│         │                    │         │                │
+│         ▼                    │         ▼                │
+│   handleChildClick()         │  handleChildClick()      │
+│         │                    │         │                │
+│         ▼                    │         ✗ (arrêté)       │
+│   handleParentClick()        │                          │
+│                              │                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Exemple complet : Formulaire avec plusieurs événements
+
+```jsx
+import { Component } from 'react';
+
+class CompleteForm extends Component {
+  state = {
+    username: '',
+    email: '',
+    message: '',
+    submitted: false
+  }
+
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.setState({ submitted: true });
+    console.log('Données:', this.state);
+  }
+
+  handleReset = () => {
+    this.setState({
+      username: '',
+      email: '',
+      message: '',
+      submitted: false
+    });
+  }
+
+  handleFocus = (e) => {
+    e.target.style.borderColor = 'blue';
+  }
+
+  handleBlur = (e) => {
+    e.target.style.borderColor = 'gray';
+  }
+
+  render() {
+    return (
+      <div>
+        <h2>Formulaire de contact</h2>
+        
+        {this.state.submitted && (
+          <div className="success">Formulaire envoyé avec succès !</div>
+        )}
+
+        <form onSubmit={this.handleSubmit}>
+          <div>
+            <label>Nom d'utilisateur :</label>
+            <input
+              type="text"
+              name="username"
+              value={this.state.username}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+            />
+          </div>
+
+          <div>
+            <label>Email :</label>
+            <input
+              type="email"
+              name="email"
+              value={this.state.email}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+            />
+          </div>
+
+          <div>
+            <label>Message :</label>
+            <textarea
+              name="message"
+              value={this.state.message}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+            />
+          </div>
+
+          <button type="submit">Envoyer</button>
+          <button type="button" onClick={this.handleReset}>Réinitialiser</button>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default CompleteForm;
+```
+
+---
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Utiliser le camelCase (`onClick`) | Utiliser le lowercase (`onclick`) |
+| Passer une référence de fonction | Appeler la fonction directement `onClick={func()}` |
+| Utiliser `setState()` pour modifier le state | Modifier `this.state` directement |
+| Utiliser `e.preventDefault()` pour les formulaires | Laisser le formulaire recharger la page |
+| Nommer les handlers avec le préfixe `handle` | Utiliser des noms génériques |
+| Utiliser des arrow functions pour éviter le binding | Oublier de bind `this` dans le constructor |
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   ÉVÉNEMENTS REACT                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Syntaxe                                                │
+│  ────────                                               │
+│  • camelCase : onClick, onChange, onSubmit              │
+│  • Valeur : fonction (référence, pas appel)             │
+│                                                         │
+│  Passage de paramètres                                  │
+│  ─────────────────────                                  │
+│  • Sans param : onClick={this.func}                     │
+│  • Avec param : onClick={() => this.func(param)}        │
+│  • Avec bind  : onClick={this.func.bind(this, param)}   │
+│                                                         │
+│  Objet event (e)                                        │
+│  ───────────────                                        │
+│  • e.target.value : valeur de l'input                   │
+│  • e.preventDefault() : empêche le comportement défaut  │
+│  • e.stopPropagation() : arrête la propagation          │
+│                                                         │
+│  Règle d'or                                             │
+│  ──────────                                             │
+│  • Toujours utiliser setState() pour modifier le state  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Destructuring (Déstructuration)
+
+### Introduction
+
+Le destructuring (déstructuration) est une syntaxe JavaScript qui permet d'extraire des valeurs d'un tableau ou d'un objet et de les assigner à des variables distinctes.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    DESTRUCTURING                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   TABLEAU                    │   OBJET                  │
+│   ────────                   │   ─────                  │
+│   const [a, b] = array       │   const {x, y} = object  │
+│   → Position importante      │   → Nom de clé important │
+│   → Crochets [ ]             │   → Accolades { }        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Destructuring d'un tableau
+
+Le destructuring de tableau permet de créer des variables à partir des éléments d'un tableau, **basé sur leur position**.
+
+**Sans destructuring :**
+
+```js
+const array = ["riri", "fifi", "loulou"];
+
+const userOne = array[0];   // "riri"
+const userTwo = array[1];   // "fifi"
+const userThree = array[2]; // "loulou"
+
+console.log(userOne, userTwo, userThree); // riri fifi loulou
+```
+
+**Avec destructuring :**
+
+```js
+const array = ["riri", "fifi", "loulou"];
+
+const [userOne, userTwo, userThree] = array;
+
+console.log(userOne, userTwo, userThree); // riri fifi loulou
+```
+
+**Syntaxes avancées :**
+
+| Syntaxe | Description | Exemple |
+|---------|-------------|---------|
+| Ignorer des éléments | Utiliser des virgules | `const [first, , third] = arr` |
+| Valeur par défaut | Assigner une valeur si undefined | `const [a = 0, b = 0] = arr` |
+| Rest operator | Récupérer le reste | `const [first, ...rest] = arr` |
+| Échange de variables | Permuter deux valeurs | `[a, b] = [b, a]` |
+
+```js
+const array = ["riri", "fifi", "loulou", "donald"];
+
+// Ignorer le deuxième élément
+const [first, , third] = array;
+console.log(first, third); // riri loulou
+
+// Rest operator : récupérer le reste du tableau
+const [premier, ...reste] = array;
+console.log(premier); // riri
+console.log(reste);   // ["fifi", "loulou", "donald"]
+
+// Échange de variables
+let a = 1;
+let b = 2;
+[a, b] = [b, a];
+console.log(a, b); // 2 1
+```
+
+---
+
+### Destructuring d'un objet
+
+Le destructuring d'objet permet de créer des variables à partir des propriétés d'un objet, **basé sur le nom des clés**.
+
+**Sans destructuring :**
+
+```js
+const members = {
+  userOne: "riri",
+  userTwo: "fifi",
+  userThree: "loulou"
+};
+
+const memberOne = members.userOne;     // "riri"
+const memberTwo = members.userTwo;     // "fifi"
+const memberThree = members.userThree; // "loulou"
+
+console.log(memberOne, memberTwo, memberThree); // riri fifi loulou
+```
+
+**Avec destructuring :**
+
+```js
+const members = {
+  userOne: "riri",
+  userTwo: "fifi",
+  userThree: "loulou"
+};
+
+const { userOne, userTwo, userThree } = members;
+
+console.log(userOne, userTwo, userThree); // riri fifi loulou
+```
+
+**Syntaxes avancées :**
+
+| Syntaxe | Description | Exemple |
+|---------|-------------|---------|
+| Renommer | Assigner à un autre nom | `const { userOne: hulk } = obj` |
+| Valeur par défaut | Si propriété undefined | `const { name = 'inconnu' } = obj` |
+| Rest operator | Récupérer le reste | `const { a, ...rest } = obj` |
+| Imbriqué | Objets dans objets | `const { user: { name } } = obj` |
+
+```js
+const members = {
+  userOne: "riri",
+  userTwo: "fifi",
+  userThree: "loulou"
+};
+
+// Renommer les variables
+const { userOne: hulk, userTwo: spiderMan, userThree: superMan } = members;
+console.log(hulk, spiderMan, superMan); // riri fifi loulou
+
+// Rest operator
+const { userOne, ...rest } = members;
+console.log(userOne); // riri
+console.log(rest);    // { userTwo: "fifi", userThree: "loulou" }
+
+// Destructuring imbriqué
+const user = {
+  name: "Alice",
+  address: {
+    city: "Paris",
+    country: "France"
+  }
+};
+
+const { address: { city, country } } = user;
+console.log(city, country); // Paris France
+```
+
+---
+
+### Destructuring dans React
+
+Le destructuring est omniprésent dans React pour accéder aux props, au state et aux données.
+
+#### Destructuring du state dans un composant Class
+
+```jsx
+import React from 'react';
+import Car from './Car';
+
+class MyCars extends React.Component {
+  state = {
+    cars: [
+      { brand: 'Audi', year: 2010, color: 'black' },
+      { brand: 'BMW', year: 2012, color: 'dark blue' },
+      { brand: 'Mercedes', year: 2020, color: 'grey' },
+    ],
+  }
+
+  render() {
+    // Destructuring du tableau cars
+    const [audi, bmw, mercedes] = this.state.cars;
+
+    return (
+      <div className='flex gap-20'>
+        <Car brand={audi.brand} year={audi.year} color={audi.color} />
+        <Car brand={bmw.brand} year={bmw.year} color={bmw.color} />
+        <Car brand={mercedes.brand} year={mercedes.year} color={mercedes.color} />
+      </div>
+    );
+  }
+}
+
+export default MyCars;
+```
+
+#### Destructuring dans la méthode .map()
+
+Au lieu d'utiliser `car.brand`, `car.year`, etc., on peut destructurer directement dans les paramètres de la fonction callback :
+
+```jsx
+import React from 'react';
+import Car from './Car';
+
+class MyCars extends React.Component {
+  state = {
+    cars: [
+      { brand: 'Audi', year: 2010, color: 'black' },
+      { brand: 'BMW', year: 2012, color: 'dark blue' },
+      { brand: 'Mercedes', year: 2020, color: 'grey' },
+    ],
+  }
+
+  render() {
+    const currentYear = new Date().getFullYear();
+
+    return (
+      <div className='flex gap-20'>
+        {/* Destructuring dans les paramètres de map() */}
+        {this.state.cars.map(({ brand, year, color }, index) => (
+          <Car 
+            key={index} 
+            brand={brand} 
+            age={currentYear - year} 
+            color={color} 
+          />
+        ))}
+      </div>
+    );
+  }
+}
+
+export default MyCars;
+```
+
+**Comparaison :**
+
+| Sans destructuring | Avec destructuring |
+|-------------------|-------------------|
+| `car.brand` | `brand` |
+| `car.year` | `year` |
+| `car.color` | `color` |
+| `this.state.cars.map((car, index) => ...)` | `this.state.cars.map(({ brand, year, color }, index) => ...)` |
+
+#### Destructuring des props dans un composant Fonction
+
+```jsx
+// ❌ Sans destructuring
+const SingerFunction = (props) => {
+  return (
+    <div>
+      <p>Nom : {props.name}</p>
+      <p>Age : {props.age} ans</p>
+    </div>
+  );
+};
+
+// ✅ Avec destructuring dans le corps de la fonction
+const SingerFunction = (props) => {
+  const { name, age } = props;
+  
+  return (
+    <div>
+      <p>Nom : {name}</p>
+      <p>Age : {age} ans</p>
+    </div>
+  );
+};
+
+// ✅✅ Avec destructuring directement dans les paramètres (recommandé)
+const SingerFunction = ({ name, age }) => {
+  return (
+    <div>
+      <p>Nom : {name}</p>
+      <p>Age : {age} ans</p>
+    </div>
+  );
+};
+```
+
+#### Destructuring des props dans un composant Class
+
+Dans un composant classe, on ne peut pas destructurer dans les paramètres.  
+Il faut le faire dans la méthode `render()` :
+
+```jsx
+import { Component } from 'react';
+
+class SingerClass extends Component {
+  render() {
+    // Destructuring obligatoire dans render()
+    const { name, age } = this.props;
 
     return (
       <div>
-        <Header title={title} colorTitle={colorTitle} />
-        {/* paragraphe avec un event onCopy */}
-        <p onCopy={this.noCopy}>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-        <div style={{ display: 'flex' }}>
-          {this.state.cars.map((car, index) => (
-            <Car key={index} color={car.color}>{car.brand}</Car>
-          ))}
-        </div>
+        <p>Nom : {name}</p>
+        <p>Age : {age} ans</p>
       </div>
     );
   }
 }
 
-export default MyCars;
+export default SingerClass;
 ```
-ATTENTION : lors de l'appel de la fonction, on a pas ajouté de parenthèses après son appel : `this.noCopy()`.  
-L'ajout de parenthèses provoque un déclenchement de la fonction au chargement de la page.  
-Pour éviter ceci, il faudra appeler la fonction dans une fonction anonyme : `() => {this.noCopy()}`
 
+#### Destructuring du state et des props combinés
 
-### Les événements et le changement de state
+```jsx
+import { Component } from 'react';
 
-La modification direct d'un state dans une fonction n'est pas possible et est strictement interdit en react :  
-```JS
-import { Component } from 'react'
-import './App.css'
-
-import MyCars from './components/MyCars'
-
-class App extends Component {
+class UserProfile extends Component {
   state = {
-    title: 'Mon catalogue voitures',
-  }
-
-  changeTitle = (e) => {
-    this.state = "TRUC"; // INTERDIT
+    isOnline: true,
+    lastSeen: '10:30'
   }
 
   render() {
-    return (
-      <div className="App">
-        <MyCars title={this.state.title} />
-        <button onClick={this.changeTitle}>Changer le nom en dur</button>
-      </div>
-    )
-  }
-}
-
-export default App
-
-```
-
-React a besoin via le DOM virtuel ce qui a été modifié et apporté au composant afin de détecter la différence entre le DOM virtuel et le DOM actuel (sur le navigateur)  
-et de mettre à jour seulement l'information nouvelle apportée au composant. 
-En utilisant this.state, React ne pourra pas détecter une quelconque modification.
-
-React a également besoin de surveiller les mutations du "state" pour pouvoir gérer le cycle de vie du composant.  
-(Voir chapitre sur le cycle de vie d'un composant React)
-
-Pour palier à ce problème, React contient une logique de modification du state avec `setState()` :
-```JS
-...
-  changeTitle = (e) => {
-    this.setState({
-      title: "Mon nouveau titre"
-    }); 
-  }
-
-  changeWithParam = (title) => {
-    this.setState({
-      title
-    })
-  }
-
-
-  render() {
-    return (
-      <div className="App">
-        <MyCars title={this.state.title} />
-        <button onClick={this.changeTitle}>Changer le nom en dur</button>
-        <button onClick={() => this.changeWithParam('Titre via paramètre')}>Changer le nom avec paramètre</button>
-      </div>
-    )
-  }
-...
-```
-La mutation du state est systématiquement détectée par React qui se chargera d'enclencher le rechargement du composant et de mettre à jour le DOM.  
-La méthode `render()` va donc se lancer. (plus de détails dans le chapitre sur le cycle de vie d'un composant React)
-
-#### Modification du state via un Bind
-
-Le `bind()` est une méthode qui est utilisée pour passer de la data en argument à une fonction d'une composant class.
-
-Syntaxe : `this.function.bind(this,[arg1...]);`
-
-```JS
-...
-  changeWithBind = (param) => {
-    this.setState({
-      title: param
-    })
-  }
-
-
-  render() {
-    return (
-      <div className="App">
-        <MyCars title={this.state.title} colorTitle={this.state.colorTitle} />
-        <button onClick={this.changeWithBind.bind(this, 'Titre via bind')}>Changer le nom avec Bind</button>
-      </div>
-    )
-  }
-...
-```
-
-#### Modification dynamique avec input text
-
-L'objectif ici est de capter le changement d'un élément input text (formulaire) pour modifier un autre élément du DOM. 
-```JS
-...
-  changeWithInput = (e) => {
-    this.setState({
-      title: e.target.value
-    })
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <MyCars title={this.state.title} colorTitle={this.state.colorTitle} />
-        <input type="text" onChange={(e) => this.changeWithInput(e)} value={this.state.title}/>
-      </div>
-    )
-  }
-...
-```
-`changeInput` est une fonction qui modifie l'état de l'élément qui contient title.  
-`onChange` va contenir l'appel de la fonction `changeInput`.  
-`value` est un paramètre qui affiche le contenu dans l'input.
-
-### Différence entre JS Vanilla et React : 
-
-React utilisera toujours le camelCase pour l'ajout de propriété à une balise.
-
-* Vanilla : on fait `oncopy`, `onclick`, `onchange`, etc.  
-```JS
-<p oncopy="myFunction()">Hello world !</p>
-<button onclick="myFunction()">mon bouton</button>
-<input type="text" onchange="myFunction()" />
-```
-* React : on fait `onCopy`, `onClick`, `onChange`, etc. (camel case)  
-```JS
-<p onCopy={myFunction()}>Hello world !</p>
-<button onClick={myFunction()}>mon bouton</button>
-<input type="text" onChange={myFunction()} />
-```
-
-### Note sur le constructor, la mutation et les mauvaises pratiques à éviter
-
-Si on initialise pas d'état local et qu'on ne lie pas de méthode, il n'est pas nécessaire d'implémenter son propre constructeur pour un composant réact.  
-On définit directement le state sans le constructor, sans le `this`.
-
-Comme vu plus haut : "il ne faut jamais modifier le state directement, on doit toujours passer par la méthode setState()".  
-Il s'agit de la procédure courante à l'extérieur du constructor.  
-Mais si on a besoin d'initialiser l'état local d'un composant en affectant un objet à `this.state`,  
-ou si on souhaite lier des méthodes gestionnaires d'événements à l'instance, il faudra implémenter le constructeur.  
-La procédure dans ce cas est un peu différente. 
-
-Exemple 1 :  
-On a besoin d'initialiser l’état local d'un composant en affectant le state (l'objet `this.state`).  
-Dans ce cas, on ne doit **SURTOUT PAS** appeler `setState()` dans le `constructor()`!  
-Au lieu de ça, on affecte directement l’état initial à `this.state` dans le constructeur.
-```JS
-constructor(props) {
-  super(props);
-  
-  // Ne pas appeler `this.setState()` ici !
-  this.state = { counter: 0 };
-}
-```
-
-Exemple 2 :  
-Si on souhaite lier des méthodes gestionnaires d’événements à l’instance, on va donc devoir implémenter le constructeur.
-```JS
-constructor(props) {
-   super(props);
-   this.handleClick = this.handleClick.bind(this);
-}
-```
-Le constructeur est le seul endroit où on doit affecter directement une valeur à `this.state` sans passer par la méthode `setState()` car cette dernière est strictement interdite dans le constructor().
-
-Une autre erreur courante chez les débutants en React consiste à copier les props dans l’état local.  
-Ne jamais faire ça !
-
-Exemple :
-```JS
-constructor(props) {
-  super(props);
-   
-  // Ne jamais faire ça !
-  this.state = { color: props.color };
-}
-```
-
-N.B. :`constructor(props)` est une méthode qui n'est plus obligatoire depuis React 16.  
-
-## Desctructuring array 
-
-Le destructuring permet de créer des alias pour un objet. 
-
-exemple 1 : 
-```JS
-import React from 'react';
-import { Car } from './Car';
-
-class MyCars extends React.Component {
-  state = {
-    cars: [
-      {
-        brand: 'Audi', 
-        year: 2010,
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        year: 2012,
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        year: 2020,
-        color: 'grey',
-      },
-    ],
-  }
-
-  render() {
-    // ici on destructure le tableau cars en donnant des alias à chaque objet
-    const [ audi, bmw, mercedes ] = this.state.cars; 
+    // Destructuring des props ET du state
+    const { name, age, city } = this.props;
+    const { isOnline, lastSeen } = this.state;
 
     return (
-      <div className='flex column justify-center items-center gap-20'>
-        <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
-        <div className='flex justify-center items-center gap-20'>
-          <Car 
-            brand={audi.brand} 
-            year={audi.year} 
-            color={audi.color} 
-          />
-          <Car 
-            brand={bmw.brand} 
-            year={bmw.year} 
-            color={bmw.color} 
-          />
-          <Car 
-            brand={mercedes.brand} 
-            year={mercedes.year} 
-            color={mercedes.color} 
-          />
-        </div>
+      <div>
+        <h2>{name}, {age} ans</h2>
+        <p>Ville : {city}</p>
+        <p>Statut : {isOnline ? '🟢 En ligne' : `🔴 Hors ligne (${lastSeen})`}</p>
       </div>
     );
   }
 }
 
-export default MyCars;
+export default UserProfile;
 ```
 
-exemple 2 :  
-on va destructurer l'objet passé en paramètre de la méthode `.map()` appelée dans la méthode `render()`.  
-Au lieu de mettre `car` en premier argument, on va mettre : `{ brand, year, color }`.  
-Ceci va permettre d'éviter d'appeler `car.brand`, `car.color` ...
-```JS
-import React from 'react';
-import { Car } from './Car';
+---
 
-class MyCars extends React.Component {
-  state = {
-    cars: [
-      {
-        brand: 'Audi', 
-        year: 2010,
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        year: 2012,
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        year: 2020,
-        color: 'grey',
-      },
-    ],
-  }
+### Tableau comparatif
 
-  age = (year) => {
-    const currentYear = new Date().getFullYear();
-    return currentYear - year;
-  }
+| Aspect | Tableau | Objet |
+|--------|---------|-------|
+| **Syntaxe** | `const [a, b] = arr` | `const { a, b } = obj` |
+| **Basé sur** | Position | Nom de la clé |
+| **Ordre important** | ✅ Oui | ❌ Non |
+| **Renommer** | Automatique (nouveau nom) | `{ ancien: nouveau }` |
+| **Ignorer** | Virgule `, ,` | Ne pas déclarer |
 
-  addTenYears = () => {
-    const updateState = this.state.cars.map(car => {
-      return car.year -= 10;
-    });
-    this.setState({ updateState });
-  }
+---
 
-  render() {
-    const currentYear = new Date().getFullYear();
+### Bonnes pratiques
 
-    return (
-      <div className='flex column justify-center items-center gap-20'>
-        <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
-        <div className='flex justify-center items-center gap-20'>
-          {/* ici on destructure le paramètre car en nommant les 3 clés de l'objet */}
-          {this.state.cars.map(({ brand, year, color }, index) => (
-            <Car key={index} brand={brand} age={currentYear - year} color={color} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-}
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Destructurer les props au début du composant | Accéder via `props.x` partout |
+| Destructurer le state dans `render()` | Utiliser `this.state.x` partout |
+| Utiliser des noms de variables explicites | Utiliser des noms génériques (a, b, c) |
+| Destructurer dans les paramètres des fonctions | Créer des variables intermédiaires inutiles |
+| Combiner avec les valeurs par défaut | Oublier de gérer les valeurs undefined |
 
-export default MyCars;
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 DESTRUCTURING REACT                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Composant Fonction                                     │
+│  ──────────────────                                     │
+│  const Component = ({ prop1, prop2 }) => { ... }        │
+│                                                         │
+│  Composant Class                                        │
+│  ───────────────                                        │
+│  render() {                                             │
+│    const { prop1, prop2 } = this.props;                 │
+│    const { state1, state2 } = this.state;               │
+│    ...                                                  │
+│  }                                                      │
+│                                                         │
+│  Dans .map()                                            │
+│  ──────────                                             │
+│  array.map(({ key1, key2 }, index) => ...)              │
+│                                                         │
+│  Avantages                                              │
+│  ─────────                                              │
+│  • Code plus lisible et concis                          │
+│  • Moins de répétitions                                 │
+│  • Facilite la maintenance                              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## Callback function et invocation d'une méthode dans les props
