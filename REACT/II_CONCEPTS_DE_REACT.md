@@ -1974,15 +1974,35 @@ export default UserProfile;
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
-
 ## Callback function et invocation d'une méthode dans les props
 
-RAPPEL : Qu'est-ce qu'une callback ?  
-Une [`callback`](https://developer.mozilla.org/fr/docs/Glossary/Callback_function) (fonction de rappel) est une fonction passée dans une autre fonction en tant qu'argument.  
-Elle est ensuite inviquée à l'intérieur de la fonction externe pour accomplir une sorte de routine ou d'action. 
+### Introduction
 
-exemple : 
-```JS
+Une [`callback`](https://developer.mozilla.org/fr/docs/Glossary/Callback_function) (fonction de rappel) est une fonction passée en tant qu'argument à une autre fonction.  
+Elle est ensuite invoquée à l'intérieur de la fonction externe pour accomplir une action.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    CALLBACK FUNCTION                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   function A (callback) {                               │
+│     // ... logique                                      │
+│     callback();  ← Invocation de la callback            │
+│   }                                                     │
+│                                                         │
+│   function B () {                                       │
+│     console.log("Je suis la callback");                 │
+│   }                                                     │
+│                                                         │
+│   A(B);  ← B est passée en argument à A                 │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Exemple JavaScript simple :**
+
+```js
 const greetings = (name) => {
   alert("Hello " + name);
 }
@@ -1995,62 +2015,106 @@ const processUserInput = (callback) => {
 processUserInput(greetings);
 ```
 
-On va créer une fonction 'getAge' qui prendra en paramètre 'year'.  
-Cette fonction devra calculer l'age de la voiture et retourner une chaîne de caractère à afficher :  
-'x an' si 0 ou 1 an, 'x ans' si plus de 1 an.
+| Élément | Rôle |
+|---------|------|
+| `greetings` | Fonction callback qui affiche un message |
+| `processUserInput` | Fonction qui reçoit et invoque la callback |
+| `processUserInput(greetings)` | Appel avec la callback en argument |
 
-```JS
+---
+
+### Utilisation des callbacks dans React
+
+Dans React, les callbacks sont essentielles pour :
+- Modifier le state du parent depuis un composant enfant
+- Réagir à des événements dans les composants enfants
+- Créer des composants réutilisables et découplés
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              CALLBACK DANS REACT                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   ┌─────────────────┐                                   │
+│   │     PARENT      │                                   │
+│   │                 │                                   │
+│   │  state = {...}  │                                   │
+│   │                 │                                   │
+│   │  maFonction = ()│ ← Fonction définie dans le parent │
+│   │                 │                                   │
+│   └────────┬────────┘                                   │
+│            │                                            │
+│            │ prop={this.maFonction}                     │
+│            │                                            │
+│            ▼                                            │
+│   ┌─────────────────┐                                   │
+│   │     ENFANT      │                                   │
+│   │                 │                                   │
+│   │ onClick={prop}  │ ← Invocation via événement        │
+│   │                 │                                   │
+│   └─────────────────┘                                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Exemple pratique : Calcul de l'âge d'une voiture
+
+Créons une fonction `getAge` qui calcule l'âge d'une voiture et retourne une chaîne formatée.
+
+**MyCars.jsx (composant parent) :**
+
+```jsx
 import React from 'react';
-import { Car } from './Car';
+import Car from './Car';
 
 class MyCars extends React.Component {
   state = {
     cars: [
-      {
-        brand: 'Audi', 
-        year: 2010,
-        color: 'black',
-      }, 
-      {
-        brand: 'BMW',
-        year: 2012,
-        color: 'dark blue',
-      }, 
-      {
-        brand: 'Mercedes',
-        year: 2020,
-        color: 'grey',
-      },
+      { brand: 'Audi', year: 2010, color: 'black' },
+      { brand: 'BMW', year: 2012, color: 'dark blue' },
+      { brand: 'Mercedes', year: 2020, color: 'grey' },
     ],
   }
 
+  // Callback qui calcule l'âge
   getAge = (year) => {
     const currentYear = new Date().getFullYear();
     const age = currentYear - year;
 
     if (age > 1) {
-      return `${age} ans.`;
+      return `${age} ans`;
     }
     if (age === 1) {
-      return `${age} an.`;
+      return `${age} an`;
     }
-    return '';
+    return 'Neuve';
   }
 
+  // Callback qui modifie le state
   addTenYears = () => {
-    const updateState = this.state.cars.map(car => {
-      return car.year -= 10;
-    });
-    this.setState({ updateState });
+    const updatedCars = this.state.cars.map(car => ({
+      ...car,
+      year: car.year - 10
+    }));
+    this.setState({ cars: updatedCars });
   }
 
   render() {
     return (
       <div className='flex column justify-center items-center gap-20'>
-        <button className='btn' onClick={this.addTenYears}>Ajouter 10 ans</button>
+        <button className='btn' onClick={this.addTenYears}>
+          Ajouter 10 ans
+        </button>
         <div className='flex justify-center items-center gap-20'>
-          {this.state.cars.map(({brand, year, color}, index) => (
-            <Car key={index} brand={brand} age={this.getAge(year)} color={color} />
+          {this.state.cars.map(({ brand, year, color }, index) => (
+            <Car 
+              key={index} 
+              brand={brand} 
+              age={this.getAge(year)}  {/* Callback invoquée ici */}
+              color={color} 
+            />
           ))}
         </div>
       </div>
@@ -2061,14 +2125,64 @@ class MyCars extends React.Component {
 export default MyCars;
 ```
 
-## Passer une fonction dans une prop
+**Car.jsx (composant enfant) :**
 
-Le composant enfant va attendre une fonction à déclancher.  
-Cette fonction est dans un premier temps inconnue, c'est le composant parent qui va déterminer quelle sera la fonction à passer.  
-En général, il s'agit d'une fonction qui va modifier l'état d'une donnée qui est affichée par le composant enfant.
+```jsx
+const Car = ({ brand, age, color }) => {
+  return (
+    <div className="car-card">
+      <h3>{brand}</h3>
+      <p>Âge : {age}</p>
+      <p>Couleur : {color}</p>
+    </div>
+  );
+};
 
-composant parent : 
-```JS
+export default Car;
+```
+
+| Callback | Rôle | Invocation |
+|----------|------|------------|
+| `getAge(year)` | Calcule et formate l'âge | Dans le `.map()` via les props |
+| `addTenYears()` | Modifie le state des voitures | Via `onClick` du bouton |
+
+---
+
+### Passer une fonction dans une prop
+
+Le composant enfant attend une fonction à déclencher.  
+Cette fonction est définie dans le composant parent et passée via les props.
+
+**Principe :**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│           PASSER UNE FONCTION EN PROP                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   PARENT                                                │
+│   ──────                                                │
+│   state = { message: '' }                               │
+│                                                         │
+│   updateMessage = (msg) => {                            │
+│     this.setState({ message: msg });                    │
+│   }                                                     │
+│                                                         │
+│   <Enfant onUpdate={this.updateMessage} />              │
+│            └───────────┬───────────┘                    │
+│                        │                                │
+│   ENFANT               │                                │
+│   ──────               ▼                                │
+│   <button onClick={() => props.onUpdate('Hello')}>      │
+│     Cliquer                                             │
+│   </button>                                             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Parent.jsx :**
+
+```jsx
 import { Component } from 'react';
 import Child from './Child';
 
@@ -2078,22 +2192,28 @@ class Parent extends Component {
     messageChild: null,
   }
 
+  // Fonction pour l'ordre du parent
   orderParent = () => {
-    this.setState({ messageParent: "Range ta chambre" })
+    this.setState({ messageParent: "Range ta chambre" });
   }
 
+  // Fonction callback passée à l'enfant
   answerChild = () => {
-    this.setState({ messageChild: "Oui, Papa" })
+    this.setState({ messageChild: "Oui, Papa" });
   }
 
   render() {
     return (
       <div className='flex column justify-center items-center gap-20'>
         <h2>Parent</h2>
-        <button onClick={this.orderParent}>Parent order</button>
+        <button onClick={this.orderParent}>Donner un ordre</button>
         <p>{this.state.messageParent}</p>
         <hr />
-        <Child name="Toto" updatedState={this.state} childAnswer={this.answerChild} />
+        <Child 
+          name="Toto" 
+          updatedState={this.state} 
+          childAnswer={this.answerChild}  {/* Callback passée en prop */}
+        />
       </div>
     );
   }
@@ -2102,151 +2222,313 @@ class Parent extends Component {
 export default Parent;
 ```
 
-Composant enfant : 
-```JS
-const Child = (props) => {
-  const { name, updatedState, childAnswer } = props;
+**Child.jsx :**
 
-  const btn = updatedState.messageParent !== null 
-    ? <button onClick={() => childAnswer()}>Answer</button> 
-    : <button disabled>Answer</button>;
+```jsx
+const Child = ({ name, updatedState, childAnswer }) => {
+  // Bouton activé seulement si le parent a donné un ordre
+  const isDisabled = updatedState.messageParent === null;
 
   return (
     <div>
       <h2>{name}</h2>
-      {btn}
+      <button 
+        onClick={childAnswer}  {/* Invocation de la callback */}
+        disabled={isDisabled}
+      >
+        Répondre
+      </button>
       <p>{updatedState.messageChild}</p>
     </div>
-  )
-}
+  );
+};
 
 export default Child;
 ```
 
-### Exercice Maman/Toto
+**Flux des données :**
 
-composant Parent : 
-```JS
+| Étape | Action | Composant |
+|-------|--------|-----------|
+| 1 | Clic sur "Donner un ordre" | Parent |
+| 2 | `orderParent()` modifie le state | Parent |
+| 3 | Le state est passé via `updatedState` | Parent → Child |
+| 4 | Le bouton "Répondre" devient actif | Child |
+| 5 | Clic sur "Répondre" | Child |
+| 6 | `childAnswer()` (callback) est invoquée | Child → Parent |
+| 7 | Le state du parent est modifié | Parent |
+
+---
+
+### Exercice : Maman et Toto
+
+**Objectif :** Compléter le code pour que :
+1. Maman puisse donner un ordre
+2. Toto puisse répondre uniquement après avoir reçu l'ordre
+
+**Maman.jsx (à compléter) :**
+
+```jsx
 import { Component } from 'react';
 import Toto from './Toto';
 
 class Maman extends Component {
-    state = {
-        messageMaman: null,
-        messageToto: null,
-        disabled: true
-    }
+  state = {
+    messageMaman: null,
+    messageToto: null,
+    disabled: true
+  }
 
-    // Compléter le code de la méthode ordreMaman.
-    ordreMaman = () => 
-    reponseToto = msg => this.setState({ messageToto: msg });
+  // TODO: Compléter cette méthode
+  ordreMaman = (msg) => {
+    // ???
+  }
 
-    render() {
-        return (
-            <div>
-                <h1>Maman</h1>
-                <button 
-                    onClick={() => this.ordreMaman("Va ranger ta chambre")}
-                >Order de la mère</button>
+  reponseToto = (msg) => {
+    this.setState({ messageToto: msg });
+  }
 
-                <p>{this.state.messageMaman}</p>
-
-                <hr />
-                
-                <Toto 
-                    name="Toto"
-                    reponseTotoProps={this.reponseToto}
-                    leState={this.state}
-                />
-            </div>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <h1>Maman</h1>
+        <button onClick={() => this.ordreMaman("Va ranger ta chambre")}>
+          Ordre de la mère
+        </button>
+        <p>{this.state.messageMaman}</p>
+        <hr />
+        <Toto 
+          name="Toto"
+          reponseTotoProps={this.reponseToto}
+          leState={this.state}
+        />
+      </div>
+    );
+  }
 }
 
 export default Maman;
 ```
 
-composant enfant : 
-```JS
-const Toto = props => {
+**Toto.jsx (à compléter) :**
+
+```jsx
+const Toto = ({ name, reponseTotoProps, leState }) => {
   return (
     <div>
-        <h2>{props.name}</h2>
-        <button 
-          // compléter
-        >Réponse</button>
-
-        <p>{props.leState.messageToto}</p>
+      <h2>{name}</h2>
+      <button 
+        // TODO: Compléter onClick et disabled
+      >
+        Réponse
+      </button>
+      <p>{leState.messageToto}</p>
     </div>
-  )
-}
+  );
+};
 
-export default Toto
+export default Toto;
 ```
 
 <details>
-<summary>Correction</summary>
+<summary>📝 Voir la correction</summary>
 
-composant Parent : 
-```JS
+**Maman.jsx (corrigé) :**
+
+```jsx
 import { Component } from 'react';
 import Toto from './Toto';
 
 class Maman extends Component {
-    state = {
-        messageMaman: null,
-        messageToto: null,
-        disabled: true
-    }
+  state = {
+    messageMaman: null,
+    messageToto: null,
+    disabled: true
+  }
 
-    ordreMaman = msg => this.setState({ messageMaman: msg, disabled: false });
-    reponseToto = msg => this.setState({ messageToto: msg });
+  ordreMaman = (msg) => {
+    this.setState({ 
+      messageMaman: msg, 
+      disabled: false  // Active le bouton de Toto
+    });
+  }
 
-    render() {
-        return (
-            <div>
-                <h1>Maman</h1>
-                <button 
-                    onClick={() => this.ordreMaman("Va ranger ta chambre")}
-                >Order de la mère</button>
+  reponseToto = (msg) => {
+    this.setState({ messageToto: msg });
+  }
 
-                <p>{this.state.messageMaman}</p>
-
-                <hr />
-                
-                <Toto 
-                    name="Toto"
-                    reponseTotoProps={this.reponseToto}
-                    leState={this.state}
-                />
-            </div>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <h1>Maman</h1>
+        <button onClick={() => this.ordreMaman("Va ranger ta chambre")}>
+          Ordre de la mère
+        </button>
+        <p>{this.state.messageMaman}</p>
+        <hr />
+        <Toto 
+          name="Toto"
+          reponseTotoProps={this.reponseToto}
+          leState={this.state}
+        />
+      </div>
+    );
+  }
 }
 
 export default Maman;
 ```
 
-composant Enfant : 
-```JS
-const Toto = props => {
+**Toto.jsx (corrigé) :**
+
+```jsx
+const Toto = ({ name, reponseTotoProps, leState }) => {
   return (
     <div>
-        <h2>{props.name}</h2>
-        <button 
-          onClick={() => props.reponseTotoProps("Non, je veux regarder la télé")}
-          disabled={props.leState.disabled}
-        >Réponse</button>
-
-        <p>{props.leState.messageToto}</p>
+      <h2>{name}</h2>
+      <button 
+        onClick={() => reponseTotoProps("Non, je veux regarder la télé")}
+        disabled={leState.disabled}
+      >
+        Réponse
+      </button>
+      <p>{leState.messageToto}</p>
     </div>
-  )
-}
+  );
+};
 
-export default Toto
+export default Toto;
 ```
+
 </details>
 
+---
+
+### Passer des paramètres à une callback
+
+Il existe plusieurs façons de passer des paramètres à une callback :
+
+| Méthode | Syntaxe | Utilisation |
+|---------|---------|-------------|
+| **Fonction anonyme** | `onClick={() => callback(param)}` | ✅ Recommandée |
+| **Bind** | `onClick={callback.bind(this, param)}` | Alternative |
+| **Fonction intermédiaire** | Créer une fonction qui appelle la callback | Pour logique complexe |
+
+```jsx
+// Méthode 1 : Fonction anonyme (recommandée)
+<button onClick={() => this.handleClick('param1', 'param2')}>
+  Cliquer
+</button>
+
+// Méthode 2 : Bind
+<button onClick={this.handleClick.bind(this, 'param1', 'param2')}>
+  Cliquer
+</button>
+
+// Méthode 3 : Fonction intermédiaire
+handleButtonClick = () => {
+  const param = this.calculateParam();
+  this.handleClick(param);
+}
+
+<button onClick={this.handleButtonClick}>
+  Cliquer
+</button>
+```
+
+---
+
+### Callback avec valeur de retour
+
+Une callback peut également retourner une valeur utilisée par le parent :
+
+```jsx
+class Parent extends Component {
+  state = {
+    items: [
+      { id: 1, name: 'Item 1', price: 10 },
+      { id: 2, name: 'Item 2', price: 20 },
+      { id: 3, name: 'Item 3', price: 30 },
+    ]
+  }
+
+  // Callback qui retourne une valeur formatée
+  formatPrice = (price) => {
+    return `${price.toFixed(2)} €`;
+  }
+
+  // Callback qui calcule le total
+  calculateTotal = () => {
+    return this.state.items.reduce((sum, item) => sum + item.price, 0);
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.items.map(item => (
+          <Item 
+            key={item.id}
+            name={item.name}
+            price={this.formatPrice(item.price)}  {/* Callback avec retour */}
+          />
+        ))}
+        <p>Total : {this.formatPrice(this.calculateTotal())}</p>
+      </div>
+    );
+  }
+}
+```
+
+---
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|----------|-----------------|
+| Nommer les callbacks de manière explicite (`onSubmit`, `handleClick`) | Utiliser des noms génériques (`func`, `cb`) |
+| Passer la callback en référence | Appeler la callback directement `prop={callback()}` |
+| Définir les callbacks dans le parent | Modifier le state du parent depuis l'enfant |
+| Utiliser des arrow functions pour le binding | Oublier le binding dans les classes |
+| Destructurer les props dans l'enfant | Accéder via `props.callback` partout |
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 CALLBACKS DANS REACT                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Définition                                             │
+│  ──────────                                             │
+│  Une callback est une fonction passée en argument       │
+│  à une autre fonction (ou composant).                   │
+│                                                         │
+│  Utilisation dans React                                 │
+│  ──────────────────────                                 │
+│  • Parent définit la fonction                           │
+│  • Parent passe la fonction en prop                     │
+│  • Enfant invoque la fonction via la prop               │
+│  • Le state du parent est modifié                       │
+│                                                         │
+│  Syntaxe                                                │
+│  ───────                                                │
+│  Parent : <Enfant onAction={this.maFonction} />         │
+│  Enfant : <button onClick={onAction}>Clic</button>      │
+│                                                         │
+│  Avec paramètres                                        │
+│  ───────────────                                        │
+│  <button onClick={() => onAction(param)}>Clic</button>  │
+│                                                         │
+│  Avantages                                              │
+│  ─────────                                              │
+│  • Communication enfant → parent                        │
+│  • Composants découplés et réutilisables                │
+│  • Logique centralisée dans le parent                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
 
 ## React Fragment
 
