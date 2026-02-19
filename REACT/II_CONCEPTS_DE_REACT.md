@@ -6170,3 +6170,6 @@ On peut placer les Error Boundaries à différents niveaux selon le besoin :
 
 ## Les Props de rendu
 
+D'après la [doc](https://fr.legacy.reactjs.org/docs/render-props.html), Le terme « prop de rendu » (render prop, NdT) fait référence à une technique qui consiste à partager du code entre des composants React en utilisant une prop dont la valeur est une fonction.
+
+Les props de rendu permettent d'éviter de répéter du code d'un composant à un autre
