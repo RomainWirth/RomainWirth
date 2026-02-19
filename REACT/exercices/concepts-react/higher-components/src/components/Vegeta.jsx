@@ -78,4 +78,6 @@ class Vegeta extends Component {
   }
 }
 
-export default countHits(Vegeta, hitGenerator);
+const VegetaWithHits = countHits(Vegeta, hitGenerator);
+
+export default VegetaWithHits;

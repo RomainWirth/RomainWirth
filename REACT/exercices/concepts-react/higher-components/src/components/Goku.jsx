@@ -78,4 +78,6 @@ class Goku extends Component {
   }
 }
 
-export default countHits(Goku, hitGenerator);
+const GokuWithHits = countHits(Goku, hitGenerator);
+
+export default GokuWithHits;
