@@ -3,18 +3,12 @@ import gokuImage from '../assets/goku.jpg'
 
 
 class Goku extends Component {
-  state = {
-    hits: 0
-  }
-
-  addOne = () => {
-    this.setState(prevState => { return { hits: prevState.hits + 1 } })
-  }
-
   render () {
+    const {hits, addOne, name} = this.props;
+    
     return (
       <div className="col">
-        <h2>Goku</h2>
+        <h2>{name}</h2>
         <div 
           style={{ height: '300px' }} 
           className="d-flex justify-content-center align-items-end"
@@ -26,7 +20,7 @@ class Goku extends Component {
           />
         </div>
         <br />
-        <button onClick={this.addOne} className="btn btn-success">{this.props.name} Strikes</button>
+        <button onClick={addOne} className="btn btn-success">{name} Strikes</button>
 
         <table className="table table-striped">
           <thead>
@@ -36,7 +30,7 @@ class Goku extends Component {
           </thead>
           <tbody>
             <tr>
-              <td>{this.state.hits}</td>
+              <td>{hits}</td>
             </tr>
           </tbody>
         </table>
