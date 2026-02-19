@@ -93,37 +93,37 @@ CYCLE DE VIE
 ## Schéma global du cycle de vie
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│              CYCLE DE VIE D'UN COMPOSANT                │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│   MONTAGE                MISE À JOUR        DÉMONTAGE   │
-│   ───────                ──────────         ─────────   │
-│                                                         │
-│   constructor()          setState()                     │
-│        │                 nouvelles props                │
-│        ▼                 forceUpdate()                  │
-│   getDerivedState...()        │                         │
-│        │                      ▼                         │
-│        ▼                 getDerivedState...()            │
-│   render()                    │                         │
-│        │                      ▼                         │
-│        ▼                 shouldComponentUpdate()        │
-│   [DOM mis à jour]            │                         │
-│        │                      ▼                         │
-│        ▼                 render()                       │
-│   componentDidMount()         │                         │
-│                               ▼                         │
-│                          getSnapshotBefore...()         │
-│                               │                         │
-│                               ▼                         │
-│                          [DOM mis à jour]    componentWill│
-│                               │              Unmount()  │
-│                               ▼                  │      │
-│                          componentDidUpdate()    ▼      │
-│                                             [DOM supprimé│
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│              CYCLE DE VIE D'UN COMPOSANT                              │
+├───────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│   MONTAGE                MISE À JOUR             DÉMONTAGE            │
+│   ───────                ──────────              ─────────            │
+│                                                                       │
+│   constructor()          setState()                                   │
+│        │                 nouvelles props                              │
+│        ▼                 forceUpdate()                                │
+│   getDerivedState...()        │                                       │
+│        │                      ▼                                       │
+│        ▼                 getDerivedState...()                         │
+│   render()                    │                                       │
+│        │                      ▼                                       │
+│        ▼                 shouldComponentUpdate()                      │
+│   [DOM mis à jour]            │                                       │
+│        │                      ▼                                       │
+│        ▼                 render()                                     │
+│   componentDidMount()         │                                       │
+│                               ▼                                       │
+│                          getSnapshotBefore...()                       │
+│                               │                                       │
+│                               ▼                                       │
+│                          [DOM mis à jour]    componentWillUnmount()   │
+│                               │                     │                 │
+│                               ▼                     │                 │
+│                          componentDidUpdate()       ▼                 │
+│                                                [DOM supprimé]         │
+│                                                                       │
+└───────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Équivalents Hooks
