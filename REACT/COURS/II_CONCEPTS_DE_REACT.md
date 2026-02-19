@@ -6601,3 +6601,542 @@ const Vegeta = () => {
 | Documenter les paramètres de la fonction | Laisser deviner les paramètres attendus |
 
 
+## BrowserRouter, Route, Switch, Link, NavLink, Strict et Exact
+
+### Introduction
+
+D'après la [documentation React](https://fr.legacy.reactjs.org/docs/glossary.html), le principe d'une **Single Page Application (SPA)** est d'afficher du contenu différent au sein d'une seule et même page HTML via des composants.
+
+L'idée est d'éviter d'appeler le serveur pour récupérer un fichier à chaque fois qu'on souhaite afficher une nouvelle page.  
+Avec React, on va se servir du **router** qui va prendre le relais du serveur afin d'afficher le composant requis.  
+Le router va travailler avec les **URL** afin de réaliser ceci.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              PRINCIPE DU ROUTING REACT                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Sans Router (Multi-page)                              │
+│   ─────────────────────────                             │
+│   Clic lien → Requête serveur → Nouvelle page HTML      │
+│                                                         │
+│   Avec Router (SPA)                                     │
+│   ─────────────────                                     │
+│   Clic lien → React Router → Nouveau composant affiché  │
+│   (pas de rechargement de page)                         │
+│                                                         │
+│   URL               Composant affiché                   │
+│   ────────────────  ─────────────────                   │
+│   /                 → <Docs />                          │
+│   /tutorial         → <Tutorials />                     │
+│   /community        → <Community />                     │
+│   /*                → <NotFound />                      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+> ⚠️ **Versions utilisées dans ce cours :**
+> - React **16.8.6**
+> - react-router-dom **5.3.3**
+>
+> La syntaxe et les composants présentés ici sont ceux de **React Router v5**.  
+> React Router v6 (compatible React 18) apporte des changements importants.  
+> Les équivalents v6 sont indiqués en fin de section.
+
+---
+
+### Installation
+
+```bash
+# React Router DOM v5 (utilisé dans ce cours)
+npm install react-router-dom@5.3.3
+
+# React Router DOM v6 (version actuelle)
+npm install react-router-dom@latest
+```
+
+---
+
+### Les composants disponibles
+
+| Composant | Rôle | Version |
+|-----------|------|---------|
+| `BrowserRouter` | Fournit le contexte de routing à l'application | v5 + v6 |
+| `Route` | Associe une URL à un composant | v5 + v6 |
+| `Switch` | Affiche uniquement la première route correspondante | v5 (remplacé par `Routes` en v6) |
+| `Link` | Lien de navigation sans rechargement de page | v5 + v6 |
+| `NavLink` | Lien de navigation avec classe active automatique | v5 + v6 |
+| `Redirect` | Redirige vers une autre URL | v5 (remplacé par `Navigate` en v6) |
+
+---
+
+### BrowserRouter
+
+`BrowserRouter` est le composant racine du routing.  
+Il doit **envelopper** toute l'application (ou la partie qui utilise le routing).  
+Il utilise l'**API History** du navigateur pour gérer les URL.
+
+```jsx
+// filepath: src/App.jsx
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+
+function App() {
+  return (
+    // BrowserRouter enveloppe toute l'application
+    <BrowserRouter>
+      <Menu />
+      <Switch>
+        {/* Les routes sont définies ici */}
+      </Switch>
+    </BrowserRouter>
+  )
+}
+```
+
+**Alternatives à BrowserRouter :**
+
+| Composant | Description | Usage |
+|-----------|-------------|-------|
+| `BrowserRouter` | Utilise l'API History (`/docs`, `/tutorial`) | Applications web standard |
+| `HashRouter` | Utilise le hash de l'URL (`/#/docs`, `/#/tutorial`) | Hébergement statique sans serveur |
+| `MemoryRouter` | Stocke l'historique en mémoire (pas dans l'URL) | Tests, React Native |
+
+---
+
+### Route
+
+`Route` associe une **URL** à un **composant** à afficher.
+
+```jsx
+// Syntaxe v5 avec prop "component"
+<Route exact path="/" component={Docs} />
+<Route path="/tutorial" component={Tutorials} />
+<Route path="/community" component={Community} />
+
+// Syntaxe v5 avec render (permet de passer des props)
+<Route path="/docs" render={(props) => <Docs {...props} title="Documentation" />} />
+```
+
+**Props disponibles sur Route (v5) :**
+
+| Prop | Description | Exemple |
+|------|-------------|---------|
+| `path` | URL à correspondre | `path="/tutorial"` |
+| `component` | Composant à afficher | `component={Tutorials}` |
+| `render` | Fonction retournant du JSX (permet les props) | `render={() => <Docs />}` |
+| `exact` | Correspondance exacte de l'URL | `exact path="/"` |
+| `strict` | Vérification stricte du slash final | `strict path="/community"` |
+
+---
+
+### exact
+
+Sans `exact`, React Router v5 effectue une **correspondance partielle** :  
+une route définie avec `path="/"` correspond à **toutes les URL** qui commencent par `/`.
+
+```jsx
+// ❌ Sans exact : / correspond à toutes les routes !
+<Route path="/" component={Docs} />       // Affiché pour /, /tutorial, /community...
+<Route path="/tutorial" component={Tutorials} />
+
+// ✅ Avec exact : / correspond uniquement à l'URL exacte /
+<Route exact path="/" component={Docs} />
+<Route path="/tutorial" component={Tutorials} />
+```
+
+```
+┌─────────────────────────────────────────────────────────┐
+│               COMPORTEMENT DE exact                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   URL : /tutorial                                       │
+│                                                         │
+│   Sans exact                    Avec exact              │
+│   ────────────                  ──────────              │
+│   path="/"      ✅ match        path="/"     ❌ no match │
+│   path="/tutorial" ✅ match     path="/tutorial" ✅ match│
+│                                                         │
+│   → Docs ET Tutorials          → Tutorials seulement    │
+│     affichés en même temps       affiché                │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### strict
+
+La prop `strict` vérifie la **présence ou l'absence du slash final** dans l'URL :
+
+```jsx
+<Route strict path="/community" component={Community} />
+```
+
+| URL | `strict path="/community"` | `path="/community"` |
+|-----|---------------------------|---------------------|
+| `/community` | ✅ Match | ✅ Match |
+| `/community/` | ❌ No match | ✅ Match |
+| `/community/events` | ✅ Match | ✅ Match |
+
+> ⚠️ `strict` seul ne garantit pas une correspondance exacte.  
+> Pour une correspondance parfaite, combiner `strict` et `exact` :
+
+```jsx
+<Route strict exact path="/community" component={Community} />
+```
+
+| URL | `strict exact path="/community"` |
+|-----|----------------------------------|
+| `/community` | ✅ Match |
+| `/community/` | ❌ No match |
+| `/community/events` | ❌ No match |
+
+---
+
+### Switch
+
+`Switch` parcourt ses routes enfants et affiche **uniquement la première** qui correspond à l'URL actuelle.
+
+```jsx
+<Switch>
+  <Route exact path="/" component={Docs} />
+  <Route path="/tutorial" component={Tutorials} />
+  <Route strict path="/community" component={Community} />
+  {/* Route par défaut : affiché si aucune route ne correspond */}
+  <Route component={NotFound} />
+</Switch>
+```
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              COMPORTEMENT DE Switch                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   URL : /tutorial                                       │
+│                                                         │
+│   Sans Switch                   Avec Switch             │
+│   ────────────                  ────────────            │
+│   exact path="/"   ❌           exact path="/"  ❌      │
+│   path="/tutorial" ✅ affiché   path="/tutorial" ✅     │
+│   path="/community" ❌          → STOP (1er match)      │
+│   (pas de composant) ✅ affiché path="/community" ignoré│
+│                                                         │
+│   → Tutorials ET NotFound       → Tutorials seulement   │
+│     affichés en même temps        affiché               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+> 💡 La route `<Route component={NotFound} />` **sans `path`** correspond à toutes les URL.  
+> Placée en dernier dans `Switch`, elle joue le rôle de **page 404**.
+
+---
+
+### Link
+
+`Link` remplace la balise `<a>` pour la navigation interne.  
+Il **empêche le rechargement** de la page tout en mettant à jour l'URL.
+
+```jsx
+import { Link } from 'react-router-dom';
+
+// ❌ Balise <a> : recharge la page
+<a href="/tutorial">Tutorial</a>
+
+// ✅ Link : navigation sans rechargement
+<Link to="/tutorial">Tutorial</Link>
+```
+
+**Props disponibles :**
+
+| Prop | Description | Exemple |
+|------|-------------|---------|
+| `to` | URL de destination (string) | `to="/tutorial"` |
+| `to` | URL de destination (objet) | `to={{ pathname: '/tutorial', state: { from: '/' } }}` |
+| `replace` | Remplace l'entrée dans l'historique | `replace` |
+
+---
+
+### NavLink
+
+`NavLink` fonctionne comme `Link` mais ajoute automatiquement une **classe CSS** lorsque le lien correspond à l'URL active.
+
+```jsx
+import { NavLink } from 'react-router-dom';
+
+<NavLink
+  className="nav-link"
+  activeClassName="active"   // Classe ajoutée si lien actif (défaut: "active")
+  to="/community"
+>
+  Community
+</NavLink>
+```
+
+**Props supplémentaires de NavLink :**
+
+| Prop | Description | Défaut |
+|------|-------------|--------|
+| `activeClassName` | Classe CSS ajoutée quand le lien est actif | `"active"` |
+| `activeStyle` | Style inline appliqué quand le lien est actif | `{}` |
+| `exact` | Applique la classe active uniquement sur l'URL exacte | `false` |
+| `strict` | Applique la vérification stricte du slash final | `false` |
+
+```jsx
+// Exemple complet avec NavLink
+<NavLink
+  className="nav-link"
+  activeClassName="active font-weight-bold"
+  exact
+  to="/"
+>
+  Docs
+</NavLink>
+```
+
+---
+
+### Exemple complet de l'application
+
+#### `App.jsx`
+
+```jsx
+// filepath: src/App.jsx
+import './App.css'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+
+import Menu from './components/Menu'
+import Docs from './components/Docs'
+import Tutorials from './components/Tutorials'
+import Community from './components/Community'
+import NotFound from './components/NotFound'
+
+function App() {
+  return (
+    <BrowserRouter>
+      {/* Menu affiché sur toutes les pages */}
+      <Menu />
+
+      {/* Switch : affiche uniquement la première route correspondante */}
+      <Switch>
+        {/* exact : évite que / corresponde à toutes les URL */}
+        <Route exact path="/" component={Docs} />
+
+        <Route path="/tutorial" component={Tutorials} />
+
+        {/* strict : vérifie la présence/absence du slash final */}
+        <Route strict path="/community" component={Community} />
+
+        {/* Route 404 : aucun path = correspond à tout */}
+        <Route component={NotFound} />
+      </Switch>
+    </BrowserRouter>
+  )
+}
+
+export default App
+```
+
+#### `Menu.jsx`
+
+```jsx
+// filepath: src/components/Menu.jsx
+import { Link, NavLink } from 'react-router-dom';
+
+const Menu = () => {
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a className="navbar-brand" href="/">Navbar</a>
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span className="navbar-toggler-icon"></span>
+      </button>
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            {/* Link : navigation simple */}
+            <Link className="nav-link" to="/">Docs</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/tutorial">Tutorial</Link>
+          </li>
+          <li className="nav-item">
+            {/* NavLink : ajoute la classe "active" si l'URL correspond */}
+            <NavLink
+              className="nav-link"
+              activeClassName="active"
+              to="/community"
+            >
+              Community
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  )
+}
+
+export default Menu;
+```
+
+---
+
+### Schéma de fonctionnement
+
+```
+┌─────────────────────────────────────────────────────────┐
+│           FONCTIONNEMENT DU ROUTING (v5)                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  BrowserRouter                                          │
+│  ─────────────                                          │
+│  Contexte de routing disponible dans toute l'app        │
+│          │                                              │
+│          ▼                                              │
+│  <Menu />  → Link / NavLink                             │
+│  → Clic sur un lien                                     │
+│  → Mise à jour de l'URL (sans rechargement)             │
+│          │                                              │
+│          ▼                                              │
+│  <Switch>                                               │
+│  → Parcourt les routes dans l'ordre                     │
+│  → S'arrête à la première correspondance               │
+│          │                                              │
+│          ├── exact path="/"     → <Docs />              │
+│          ├── path="/tutorial"   → <Tutorials />         │
+│          ├── strict path="/community" → <Community />   │
+│          └── (aucune)           → <NotFound />          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Migration vers React Router v6
+
+Avec React Router **v6** (compatible React 18), plusieurs changements importants :
+
+| v5 | v6 | Description |
+|----|----|----|
+| `<Switch>` | `<Routes>` | Renommé |
+| `<Route component={Comp}>` | `<Route element={<Comp />}>` | Syntaxe JSX directe |
+| `exact` | Inutile (exact par défaut) | Matching exact par défaut |
+| `strict` | Supprimé | N'existe plus |
+| `activeClassName` sur NavLink | `className` avec fonction | Gestion via callback |
+| `<Redirect>` | `<Navigate>` | Renommé |
+
+**Exemple v5 → v6 :**
+
+```jsx
+// ❌ React Router v5
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+
+<BrowserRouter>
+  <Switch>
+    <Route exact path="/" component={Docs} />
+    <Route path="/tutorial" component={Tutorials} />
+    <Route strict path="/community" component={Community} />
+    <Route component={NotFound} />
+  </Switch>
+</BrowserRouter>
+
+// ✅ React Router v6
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Docs />} />
+    <Route path="/tutorial" element={<Tutorials />} />
+    <Route path="/community" element={<Community />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</BrowserRouter>
+```
+
+```jsx
+// NavLink v5
+<NavLink
+  className="nav-link"
+  activeClassName="active"
+  to="/community"
+>
+  Community
+</NavLink>
+
+// NavLink v6 : className avec fonction
+<NavLink
+  className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+  to="/community"
+>
+  Community
+</NavLink>
+```
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│         ROUTING REACT - RÉSUMÉ (React Router v5)        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  BrowserRouter                                          │
+│  → Enveloppe l'application                              │
+│  → Fournit le contexte de routing                       │
+│                                                         │
+│  Switch                                                 │
+│  → Affiche la première Route correspondante             │
+│  → Route sans path = page 404 (à placer en dernier)     │
+│                                                         │
+│  Route                                                  │
+│  → path     : URL à correspondre                        │
+│  → component: composant à afficher                      │
+│  → exact    : correspondance exacte de l'URL            │
+│  → strict   : vérification du slash final               │
+│                                                         │
+│  Link                                                   │
+│  → Remplace <a> pour la navigation interne              │
+│  → Pas de rechargement de page                          │
+│                                                         │
+│  NavLink                                                │
+│  → Comme Link + classe "active" automatique             │
+│  → activeClassName pour personnaliser la classe         │
+│                                                         │
+│  ⚠️  React Router v5 → React Router v6                  │
+│  Switch    → Routes                                     │
+│  component → element={<Comp />}                         │
+│  exact     → inutile (par défaut en v6)                 │
+│  strict    → supprimé                                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Points à retenir
+
+| Concept | Description |
+|---------|-------------|
+| `BrowserRouter` | Toujours envelopper l'app ou la partie routée |
+| `Switch` | Indispensable pour éviter les affichages multiples |
+| `exact` sur `"/"` | Obligatoire en v5 pour éviter les conflits |
+| `Link` vs `<a>` | Toujours utiliser `Link` pour la navigation interne |
+| `NavLink` | Pour les menus de navigation (gestion de l'état actif) |
+| Route 404 | Toujours placer une route sans `path` en dernier dans `Switch` |
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|---------|----------------|
+| Utiliser `exact` sur le path `"/"` | Oublier `exact` et avoir des routes qui se cumulent |
+| Placer la route 404 en dernier | Placer la route sans `path` en premier |
+| Utiliser `Link` pour la navigation | Utiliser `<a href>` (recharge la page) |
+| Utiliser `NavLink` pour les menus | Gérer manuellement la classe active |
+| Migrer vers React Router v6 pour les nouveaux projets | Utiliser React Router v5 avec React 18 |
+
