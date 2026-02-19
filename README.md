@@ -7,7 +7,7 @@
     </a>
 </p>
 
-- 🔭 I’m currently working on [staays.com](https://www.staays.com/)
+- 🔭 I’m currently working on [gloobles.com](https://www.gloobles.com/)
 
 - 🌱 I’m currently learning **NextJS**
 
