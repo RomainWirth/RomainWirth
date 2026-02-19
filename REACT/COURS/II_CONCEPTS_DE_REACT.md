@@ -6168,8 +6168,436 @@ On peut placer les Error Boundaries à différents niveaux selon le besoin :
 └─────────────────────────────────────────────────────────┘
 ```
 
-## Les Props de rendu
+## Les Props de rendu (Render Props)
 
-D'après la [doc](https://fr.legacy.reactjs.org/docs/render-props.html), Le terme « prop de rendu » (render prop, NdT) fait référence à une technique qui consiste à partager du code entre des composants React en utilisant une prop dont la valeur est une fonction.
+### Introduction
 
-Les props de rendu permettent d'éviter de répéter du code d'un composant à un autre
+D'après la [doc](https://fr.legacy.reactjs.org/docs/render-props.html), 
+une **render prop** est une technique de partage de logique entre composants React.  
+Elle consiste à passer une **fonction** en tant que prop, cette fonction retournant du JSX.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   RENDER PROPS                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Problème                                              │
+│   ─────────                                             │
+│   Deux composants ont besoin de la même logique         │
+│   → Dupliquer le code ? ❌                              │
+│   → Render Props ? ✅                                   │
+│                                                         │
+│   Solution                                              │
+│   ────────                                              │
+│   Un composant "logique" partage son state              │
+│   via une fonction passée en prop                       │
+│                                                         │
+│   <AddHits render={(hits, addOne) => <Vegeta />} />     │
+│                │                                        │
+│                ▼                                        │
+│   AddHits gère le state                                 │
+│   Vegeta/Goku gèrent uniquement l'affichage             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Pourquoi utiliser les Render Props ?**
+
+| Problème | Sans Render Props | Avec Render Props |
+|----------|-------------------|-------------------|
+| Logique dupliquée | Chaque composant gère son propre state | Un seul composant gère le state |
+| Réutilisabilité | Faible | Élevée |
+| Maintenance | Modifier chaque composant | Modifier un seul endroit |
+| Couplage | Fort | Faible |
+
+---
+
+### Concept de base
+
+La render prop est une **fonction passée en prop** qui est appelée dans la méthode `render()` du composant qui la reçoit.
+
+```jsx
+// Le composant parent passe une fonction en prop "render"
+<MonComposant
+  render={(données) => (
+    <MonAffichage données={données} />
+  )}
+/>
+
+// Le composant "logique" appelle cette fonction dans son render()
+class MonComposant extends Component {
+  state = { données: '...' }
+
+  render() {
+    // Appel de la fonction passée en prop
+    return this.props.render(this.state.données);
+  }
+}
+```
+
+> 💡 La prop s'appelle conventionnellement `render`, mais elle peut avoir **n'importe quel nom**.  
+> L'important est que ce soit une **fonction qui retourne du JSX**.
+
+---
+
+### Exemple pratique : Goku vs Vegeta
+
+L'application met en scène deux combattants.  
+Chacun a son propre compteur de coups, mais la **logique est identique** pour les deux.
+
+#### Problème sans Render Props
+
+```jsx
+// ❌ Sans render props : state dupliqué dans chaque composant
+class Vegeta extends Component {
+  state = { hits: 0 } // Dupliqué !
+
+  addOne = () => {
+    this.setState(prev => ({ hits: prev.hits + 1 }))
+  }
+  // ...
+}
+
+class Goku extends Component {
+  state = { hits: 0 } // Dupliqué !
+
+  addOne = () => {
+    this.setState(prev => ({ hits: prev.hits + 1 }))
+  }
+  // ...
+}
+```
+
+#### Solution avec Render Props
+
+La logique (`state` + `addOne`) est **centralisée** dans `AddHits`,  
+qui la partage via une fonction passée en prop `render` :
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              ARCHITECTURE RENDER PROPS                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   App                                                   │
+│   ─────────────────────────────────────────────         │
+│   <AddHits render={(hits, addOne, saiyan) =>            │
+│     saiyan.vegeta && <Vegeta hits addOne />             │
+│   } />                                                  │
+│                                                         │
+│   <AddHits render={(hits, addOne, saiyan) =>            │
+│     saiyan.goku && <Goku hits addOne />                 │
+│   } />                                                  │
+│         │                      │                        │
+│         ▼                      ▼                        │
+│   AddHits #1              AddHits #2                    │
+│   state: { hits: 0 }      state: { hits: 0 }            │
+│   fighters: {             fighters: {                   │
+│     vegeta: true,           vegeta: true,               │
+│     goku: true              goku: true                  │
+│   }                       }                             │
+│         │                      │                        │
+│         ▼                      ▼                        │
+│   <Vegeta />              <Goku />                      │
+│   (UI uniquement)         (UI uniquement)               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### `AddHits.jsx` (composant logique)
+
+```jsx
+import { Component } from "react";
+
+class AddHits extends Component {
+  state = {
+    fighters: {
+      vegeta: true,
+      goku: true,
+    },
+    hits: 0
+  }
+
+  addOne = () => {
+    this.setState(prevState => ({
+      hits: prevState.hits + 1
+    }))
+  }
+
+  render() {
+    // Appel de la fonction render passée en prop
+    // On lui passe les données du state en arguments
+    return (
+      <>
+        {this.props.render(this.state.hits, this.addOne, this.state.fighters)}
+      </>
+    )
+  }
+}
+
+export default AddHits;
+```
+
+**Ce que fait `AddHits` :**
+
+| Élément | Rôle |
+|---------|------|
+| `state.hits` | Compteur de coups |
+| `state.fighters` | Objet qui contrôle l'affichage des combattants |
+| `addOne` | Méthode qui incrémente `hits` |
+| `this.props.render(...)` | Appelle la fonction passée en prop avec le state en arguments |
+
+#### `App.jsx` (composant parent)
+
+```jsx
+import { Component } from 'react'
+import Vegeta from './components/Vegeta';
+import Goku from './components/Goku';
+import AddHits from './components/AddHits';
+
+class App extends Component {
+  render() {
+    return (
+      <div className="container text-center">
+        <h1>Goku vs Vegeta</h1>
+        <div className="row">
+
+          {/* AddHits #1 : logique pour Vegeta */}
+          <AddHits
+            render={(hits, addOne, saiyan) => {
+              return (
+                saiyan.vegeta && <Vegeta hits={hits} addOne={addOne} name="Vegeta" />
+              )
+            }}
+          />
+
+          {/* AddHits #2 : logique pour Goku */}
+          <AddHits
+            render={(hits, addOne, saiyan) => {
+              return (
+                saiyan.goku && <Goku hits={hits} addOne={addOne} name="Goku" />
+              )
+            }}
+          />
+
+        </div>
+      </div>
+    )
+  }
+}
+
+export default App
+```
+
+**Analyse de la render prop :**
+
+```jsx
+<AddHits
+  render={(hits, addOne, saiyan) => {  // ← Fonction passée en prop
+    return (
+      saiyan.vegeta && <Vegeta hits={hits} addOne={addOne} name="Vegeta" />
+    )
+  }}
+/>
+```
+
+| Paramètre reçu | Provenance | Utilisation |
+|----------------|-----------|-------------|
+| `hits` | `this.state.hits` de `AddHits` | Passé en prop à `Vegeta` |
+| `addOne` | Méthode `addOne` de `AddHits` | Passé en prop à `Vegeta` |
+| `saiyan` | `this.state.fighters` de `AddHits` | Contrôle l'affichage conditionnel |
+
+#### `Vegeta.jsx` (composant UI)
+
+```jsx
+import { Component } from 'react'
+import vegetaImage from '../assets/vegeta-arc.jpg'
+
+class Vegeta extends Component {
+  render() {
+    const { hits, addOne, name } = this.props;
+
+    return (
+      <div className="col">
+        <h2>{name}</h2>
+        <div
+          style={{ height: '300px' }}
+          className="d-flex justify-content-center align-items-end"
+        >
+          <img src={vegetaImage} alt="Vegeta" width="200" />
+        </div>
+        <br />
+        <button onClick={addOne} className="btn btn-success">
+          {name} Strikes
+        </button>
+
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Hits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{hits}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+}
+
+export default Vegeta;
+```
+
+> 💡 `Vegeta` et `Goku` sont de **purs composants UI** :  
+> - Ils ne gèrent **aucun state**  
+> - Ils reçoivent tout via les **props**  
+> - `hits` et `addOne` viennent directement de `AddHits` via la render prop
+
+---
+
+### Flux de données complet
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 FLUX DE DONNÉES                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. Clic sur "Vegeta Strikes"                           │
+│          │                                              │
+│          ▼                                              │
+│  2. addOne() appelée (définie dans AddHits)             │
+│          │                                              │
+│          ▼                                              │
+│  3. setState → hits: 0 + 1 = 1                          │
+│          │                                              │
+│          ▼                                              │
+│  4. Re-render de AddHits                                │
+│          │                                              │
+│          ▼                                              │
+│  5. this.props.render(1, addOne, fighters) appelée      │
+│          │                                              │
+│          ▼                                              │
+│  6. La fonction retourne <Vegeta hits={1} ... />        │
+│          │                                              │
+│          ▼                                              │
+│  7. Vegeta affiche hits = 1                             │
+│                                                         │
+│  ⚠️  Chaque <AddHits /> a son propre state indépendant  │
+│      → Les hits de Vegeta et Goku sont séparés          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Variantes de la syntaxe
+
+La render prop peut s'appeler autrement que `render` :
+
+```jsx
+// Avec une prop nommée "render" (convention)
+<AddHits render={(hits, addOne) => <Vegeta hits={hits} addOne={addOne} />} />
+
+// Avec une prop nommée autrement
+<AddHits content={(hits, addOne) => <Vegeta hits={hits} addOne={addOne} />} />
+<AddHits component={(hits, addOne) => <Vegeta hits={hits} addOne={addOne} />} />
+
+// Via children (cas particulier)
+<AddHits>
+  {(hits, addOne) => <Vegeta hits={hits} addOne={addOne} />}
+</AddHits>
+
+// Dans le composant, on appelle alors :
+render() {
+  return this.props.children(this.state.hits, this.addOne);
+}
+```
+
+---
+
+### Comparaison avec les autres patterns
+
+| Pattern | Syntaxe | Usage | Équivalent moderne |
+|---------|---------|-------|--------------------|
+| **Render Props** | `render={(data) => <UI data={data} />}` | Partage de logique | Custom Hook |
+| **HOC** | `withLogic(Component)` | Partage de logique | Custom Hook |
+| **Custom Hook** | `const data = useLogic()` | Partage de logique | ✅ Recommandé |
+
+```jsx
+// Render Props (classe)
+<AddHits render={(hits, addOne) => <Vegeta hits={hits} addOne={addOne} />} />
+
+// Équivalent avec un Custom Hook (fonction)
+const useHits = () => {
+  const [hits, setHits] = useState(0);
+  const addOne = () => setHits(prev => prev + 1);
+  return { hits, addOne };
+};
+
+const Vegeta = () => {
+  const { hits, addOne } = useHits(); // Logique réutilisable
+  return (...);
+};
+```
+
+> 💡 Les **Render Props** et les **HOC** sont des patterns issus de l'ère des composants classe.  
+> Depuis React 16.8, les **Custom Hooks** sont la solution recommandée pour partager de la logique.  
+> Il reste important de connaître les Render Props pour comprendre et maintenir du **code legacy**.
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   RENDER PROPS                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Définition                                             │
+│  ──────────                                             │
+│  Fonction passée en prop qui retourne du JSX            │
+│  Permet de partager de la logique entre composants      │
+│                                                         │
+│  Syntaxe                                                │
+│  ───────                                                │
+│  Parent :                                               │
+│  <AddHits render={(hits, addOne) => <UI />} />          │
+│                                                         │
+│  Composant logique :                                    │
+│  render() {                                             │
+│   return this.props.render(this.state.hits, this.addOne)│
+│  }                                                      │
+│                                                         │
+│  Avantages                                              │
+│  ─────────                                              │
+│  → Évite la duplication de logique                      │
+│  → Composants UI purs et réutilisables                  │
+│  → Séparation logique / affichage                       │
+│                                                         │
+│  Inconvénients                                          │
+│  ────────────                                           │
+│  → Syntaxe parfois complexe à lire                      │
+│  → "Wrapper hell" si imbrication profonde               │
+│  → Remplacé par les Custom Hooks (React moderne)        │
+│                                                         │
+│  Recommandation                                         │
+│  ──────────────                                         │
+│  → Code legacy : Render Props                           │
+│  → Nouveaux projets : Custom Hooks                      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|---------|----------------|
+| Nommer la prop `render` par convention | Utiliser des noms ambigus |
+| Garder les composants UI sans state | Mélanger logique et affichage |
+| Passer uniquement les données nécessaires | Passer tout le state |
+| Préférer les Custom Hooks pour les nouveaux projets | Créer des render props trop imbriquées |
+| Documenter les paramètres de la fonction | Laisser deviner les paramètres attendus |
+
+
