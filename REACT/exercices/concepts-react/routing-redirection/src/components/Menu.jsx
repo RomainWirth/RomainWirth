@@ -26,6 +26,9 @@ const Menu = () => {
           <li className="nav-item">
             <NavLink className="nav-link" to="/community">Community</NavLink>
           </li>
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/users/:profileId">Profile</NavLink>
+          </li>
         </ul>
       </div>
     </nav>

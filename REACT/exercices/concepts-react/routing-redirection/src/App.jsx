@@ -6,6 +6,7 @@ import Menu from './components/Menu'
 import Docs from './components/Docs'
 import Tutorials from './components/Tutorials'
 import Community from './components/Community'
+import Profile from './components/Profile'
 import NotFound from './components/NotFound'
 
 class App extends Component {
@@ -17,7 +18,8 @@ class App extends Component {
       underConstruction: {
         Docs: false,
         Tutorials: true,
-        Community: false
+        Community: false,
+        Profile: false
       }
     }
   }
@@ -38,6 +40,7 @@ class App extends Component {
             )
           )} /> */}
           <Route strict path="/community" component={Community} />
+          <Route path="/users/:profileId" component={Profile} />
           <Route component={NotFound} />
         </Switch>
       </BrowserRouter>
