@@ -1,5 +1,6 @@
 import './App.css'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { Component } from 'react'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 import Menu from './components/Menu'
 import Docs from './components/Docs'
@@ -7,19 +8,41 @@ import Tutorials from './components/Tutorials'
 import Community from './components/Community'
 import NotFound from './components/NotFound'
 
-function App() {
+class App extends Component {
 
-  return (
-    <BrowserRouter>
-      <Menu />
-      <Switch>
-        <Route exact path="/" component={Docs} />
-        <Route path="/tutorial" component={Tutorials} />
-        <Route strict path="/community" component={Community} />
-        <Route component={NotFound} />
-      </Switch>
-    </BrowserRouter>
-  )
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      underConstruction: {
+        Docs: false,
+        Tutorials: true,
+        Community: false
+      }
+    }
+  }
+
+
+  render () {
+    return (
+      <BrowserRouter>
+        <Menu />
+        <Switch>
+          <Route exact path="/" component={Docs} />
+          <Route path="/tutorial" component={Tutorials} />
+          {/* <Route path="/tutorial" component={() => (
+            this.state.underConstruction.Tutorials ? (
+              <Redirect to="/" />
+            ) : (
+              <Tutorials />
+            )
+          )} /> */}
+          <Route strict path="/community" component={Community} />
+          <Route component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    )
+  }
 }
 
 export default App
