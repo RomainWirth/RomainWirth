@@ -7140,3 +7140,653 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 | Utiliser `NavLink` pour les menus | Gérer manuellement la classe active |
 | Migrer vers React Router v6 pour les nouveaux projets | Utiliser React Router v5 avec React 18 |
 
+## Les Redirections
+
+### Introduction
+
+La redirection permet de **renvoyer automatiquement** l'utilisateur vers une autre URL.  
+React Router v5 propose deux approches pour gérer les redirections.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   LES REDIRECTIONS                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Méthode 1 : Composant <Redirect>                      │
+│   ─────────────────────────────────                     │
+│   → Dans le JSX, via une condition                      │
+│   → Utilisé dans App.jsx au niveau des routes           │
+│                                                         │
+│   Méthode 2 : props.history.push()                      │
+│   ─────────────────────────────────                     │
+│   → Dans le composant lui-même                          │
+│   → Utilisé pour les redirections programmatiques       │
+│   → Permet d'ajouter un délai (setTimeout, etc.)        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+| Méthode | Déclencheur | Cas d'usage |
+|---------|-------------|-------------|
+| `<Redirect>` | Conditionnel au rendu | Page en construction, accès non autorisé |
+| `history.push()` | Programmatique | Après soumission de formulaire, délai, action |
+
+---
+
+### Méthode 1 : Le composant `<Redirect>`
+
+`Redirect` est importé depuis `react-router-dom`.  
+On l'utilise généralement dans `App.jsx` au niveau de la définition des routes.
+
+```jsx
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+```
+
+#### Exemple : Page en construction
+
+```jsx
+// filepath: src/App.jsx
+import './App.css'
+import { Component } from 'react'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+
+import Menu from './components/Menu'
+import Docs from './components/Docs'
+import Tutorials from './components/Tutorials'
+import Community from './components/Community'
+import NotFound from './components/NotFound'
+
+class App extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      // Booléen pour savoir si une page est en construction
+      underConstruction: {
+        Docs: false,
+        Tutorials: true,   // ← Page Tutorials en construction
+        Community: false
+      }
+    }
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <Menu />
+        <Switch>
+          <Route exact path="/" component={Docs} />
+
+          {/* Redirection conditionnelle */}
+          <Route path="/tutorial" component={() => (
+            this.state.underConstruction.Tutorials ? (
+              <Redirect to="/" />    // ← Redirige vers / si en construction
+            ) : (
+              <Tutorials />          // ← Sinon affiche le composant
+            )
+          )} />
+
+          <Route strict path="/community" component={Community} />
+          <Route component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    )
+  }
+}
+
+export default App
+```
+
+**Flux de la redirection :**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│            FLUX DE LA REDIRECTION CONDITIONNELLE        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Clic sur "Tutorial"                                   │
+│          │                                              │
+│          ▼                                              │
+│   URL : /tutorial                                       │
+│          │                                              │
+│          ▼                                              │
+│   underConstruction.Tutorials === true ?                │
+│          │                                              │
+│      true│              false│                          │
+│          ▼                   ▼                          │
+│   <Redirect to="/" />   <Tutorials />                   │
+│          │                                              │
+│          ▼                                              │
+│   URL : /  (page d'accueil)                             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Méthode 2 : `props.history.push()`
+
+Lorsqu'un composant est associé à une `<Route>`, React Router injecte automatiquement **trois objets** dans ses props :
+
+| Objet | Description |
+|-------|-------------|
+| `history` | Gestion de la navigation (push, replace, goBack...) |
+| `location` | Informations sur l'URL actuelle |
+| `match` | Informations sur la route correspondante |
+
+La méthode `history.push()` permet de **naviguer programmatiquement** vers une URL.
+
+```jsx
+// Redirection immédiate
+props.history.push('/');
+
+// Redirection avec délai
+setTimeout(() => {
+  props.history.push('/');
+}, 5000);
+```
+
+#### Exemple : Redirection automatique après 5 secondes
+
+```jsx
+// filepath: src/components/Tutorials.jsx
+const Tutorials = (props) => {
+
+  // Redirection vers / après 5 secondes
+  setTimeout(() => {
+    props.history.push('/')
+  }, 5000)
+
+  return (
+    <div className="container">
+      <h1>Tutorials</h1>
+      <p>Cette page sera redirigée dans 5 secondes...</p>
+    </div>
+  )
+}
+
+export default Tutorials
+```
+
+**Méthodes disponibles sur `history` :**
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `push(path)` | Navigue vers une URL (ajoute dans l'historique) | `history.push('/home')` |
+| `replace(path)` | Navigue vers une URL (remplace l'entrée courante) | `history.replace('/login')` |
+| `goBack()` | Retourne à la page précédente | `history.goBack()` |
+| `goForward()` | Avance à la page suivante | `history.goForward()` |
+| `go(n)` | Se déplace de n entrées dans l'historique | `history.go(-2)` |
+
+> ⚠️ `props.history` n'est disponible **que** si le composant est directement rendu par une `<Route>`.  
+> Pour les composants enfants, il faut utiliser le HOC `withRouter` ou le hook `useHistory` (v5) / `useNavigate` (v6).
+
+---
+
+### Équivalent React Router v6
+
+| v5 | v6 |
+|----|-----|
+| `<Redirect to="/" />` | `<Navigate to="/" />` |
+| `props.history.push('/')` | `const navigate = useNavigate(); navigate('/')` |
+
+```jsx
+// ✅ React Router v6
+import { Navigate, useNavigate } from 'react-router-dom';
+
+// Méthode 1 : composant Navigate
+<Route path="/tutorial" element={
+  underConstruction ? <Navigate to="/" /> : <Tutorials />
+} />
+
+// Méthode 2 : hook useNavigate
+const Tutorials = () => {
+  const navigate = useNavigate();
+
+  setTimeout(() => {
+    navigate('/');
+  }, 5000);
+
+  return <div>Tutorials</div>;
+};
+```
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  LES REDIRECTIONS                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  <Redirect to="/" />          (v5)                      │
+│  <Navigate to="/" />          (v6)                      │
+│  → Redirection déclarative dans le JSX                  │
+│  → Conditionnel : état, props, authentification         │
+│                                                         │
+│  props.history.push('/')      (v5)                      │
+│  const nav = useNavigate()    (v6)                      │
+│  → Redirection programmatique                           │
+│  → Après une action, un délai, un formulaire            │
+│                                                         │
+│  ⚠️  props.history disponible uniquement                 │
+│      sur les composants directement dans une Route      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|---------|----------------|
+| Utiliser `<Redirect>` pour les redirections conditionnelles simples | Utiliser `window.location.href` (recharge la page) |
+| Utiliser `history.push()` pour les redirections après action | Laisser une page vide sans redirection |
+| Gérer les accès non autorisés avec `<Redirect>` | Oublier de gérer les cas de redirection |
+| Préférer `useNavigate` pour les nouveaux projets (v6) | Utiliser `history.push` dans des composants sans Route |
+
+---
+
+## Les paramètres de Route
+
+### Introduction
+
+Les paramètres de route permettent de créer des **URL dynamiques** qui changent en fonction d'une donnée (un id, un nom d'utilisateur, etc.).
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              PARAMÈTRES DE ROUTE                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Route définie :                                       │
+│   /users/:userId                                        │
+│         └──────── → Paramètre dynamique                 │
+│                                                         │
+│   URLs correspondantes :                                │
+│   /users/1        → userId = "1"                        │
+│   /users/42       → userId = "42"                       │
+│   /users/john     → userId = "john"                     │
+│                                                         │
+│   Accès dans le composant :                             │
+│   this.props.match.params.userId                        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+| Concept | Syntaxe | Description |
+|---------|---------|-------------|
+| Définition du paramètre | `path="/users/:userId"` | `:nom` définit un paramètre |
+| Accès au paramètre | `this.props.match.params.userId` | Via `match.params` |
+| Plusieurs paramètres | `path="/users/:userId/posts/:postId"` | Combinables |
+
+---
+
+### Définition d'une route avec paramètre
+
+```jsx
+// filepath: src/App.jsx
+<Route path="/users/:userId" component={Profile} />
+```
+
+> **⚠️ Attention à l'ordre des routes :**  
+> La route exact `/users` doit être déclarée **avant** `/users/:userId`, sinon elle ne sera jamais atteinte.
+
+```jsx
+<Switch>
+  <Route exact path="/users" component={Users} />      // ← exact obligatoire
+  <Route path="/users/:userId" component={Profile} />  // ← paramètre dynamique
+</Switch>
+```
+
+---
+
+### Accès aux paramètres dans le composant
+
+React Router injecte automatiquement les props `match`, `location` et `history` dans les composants rendus par une `<Route>`.
+
+Le paramètre est accessible via `this.props.match.params.nomDuParametre` :
+
+```jsx
+componentDidMount() {
+  console.log(this.props.match.params)
+  // → { userId: "1" }
+
+  const { userId } = this.props.match.params
+  // → userId = "1"
+}
+```
+
+> **⚠️ Important :** Les paramètres de route sont **toujours des chaînes de caractères**.  
+> Pour utiliser un id numérique, il faut le convertir : `parseInt(userId)` ou `Number(userId)`.
+
+---
+
+### Exemple complet : Liste d'utilisateurs et profil
+
+#### Structure du projet
+
+```
+src/
+├── components/
+│   ├── Menu.jsx
+│   ├── Users.jsx    ← Liste des utilisateurs
+│   └── Profile.jsx  ← Détail d'un utilisateur
+└── App.jsx
+```
+
+#### `App.jsx`
+
+```jsx
+// filepath: src/App.jsx
+import './App.css'
+import { Component } from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+
+import Menu from './components/Menu'
+import Docs from './components/Docs'
+import Tutorials from './components/Tutorials'
+import Community from './components/Community'
+import Users from './components/Users'
+import Profile from './components/Profile'
+import NotFound from './components/NotFound'
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <Menu />
+        <Switch>
+          <Route exact path="/" component={Docs} />
+          <Route path="/tutorial" component={Tutorials} />
+          <Route strict path="/community" component={Community} />
+          {/* exact obligatoire pour ne pas capturer /users/1 */}
+          <Route exact path="/users" component={Users} />
+          {/* :userId est le paramètre dynamique */}
+          <Route path="/users/:userId" component={Profile} />
+          <Route component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    )
+  }
+}
+
+export default App
+```
+
+#### `Menu.jsx`
+
+```jsx
+// filepath: src/components/Menu.jsx
+import { Link, NavLink } from 'react-router-dom';
+
+const Menu = () => {
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a className="navbar-brand" href="/">Navbar</a>
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <Link className="nav-link" to="/">Docs</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/tutorial">Tutorial</Link>
+          </li>
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/community">Community</NavLink>
+          </li>
+          <li className="nav-item">
+            {/* NavLink actif sur /users ET /users/:userId */}
+            <NavLink className="nav-link" to="/users">Users</NavLink>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  )
+}
+
+export default Menu;
+```
+
+#### `Users.jsx` (liste des utilisateurs)
+
+```jsx
+// filepath: src/components/Users.jsx
+import { Component } from 'react';
+import { Link } from 'react-router-dom';
+
+class Users extends Component {
+  state = {
+    users: [],
+    error: null,
+  }
+
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((users) => {
+        this.setState({ users });
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+      });
+  }
+
+  render() {
+    const { users, error } = this.state
+
+    if (error) return <div className="container mt-3 text-danger">{error}</div>
+    if (!users.length) return <div className="container mt-3">Chargement...</div>
+
+    return (
+      <div className="container mt-3">
+        <h1>Users</h1>
+        <ul className="list-group list-group-flush">
+          {users.map((user) => (
+            <li key={user.id} className="list-group-item">
+              <p>{user.name}</p>
+              {/* Lien vers le profil de l'utilisateur */}
+              <Link to={`/users/${user.id}`}>
+                Voir le profil
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default Users;
+```
+
+#### `Profile.jsx` (détail d'un utilisateur)
+
+```jsx
+// filepath: src/components/Profile.jsx
+import { Component } from 'react'
+
+class Profile extends Component {
+  state = {
+    user: null,
+    error: null,
+  }
+
+  componentDidMount() {
+    // Récupération du paramètre de route
+    const { userId } = this.props.match.params
+
+    // Utilisation du paramètre dans la requête API
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Utilisateur non trouvé');
+        }
+        return response.json();
+      })
+      .then((user) => {
+        this.setState({ user });
+      })
+      .catch((error) => {
+        this.setState({ error: error.message })
+      });
+  }
+
+  render() {
+    const { user, error } = this.state
+
+    if (error) return <div className="container mt-3 text-danger">{error}</div>
+    if (!user) return <div className="container mt-3">Chargement...</div>
+
+    const { id, name, username, email, phone, website } = user
+
+    return (
+      <div className="container mt-3">
+        <h1>Profile</h1>
+        <ul className="list-group list-group-flush">
+          <li className="list-group-item">ID : {id}</li>
+          <li className="list-group-item">Nom : {name}</li>
+          <li className="list-group-item">Username : {username}</li>
+          <li className="list-group-item">Email : {email}</li>
+          <li className="list-group-item">Téléphone : {phone}</li>
+          <li className="list-group-item">
+            <a href={`http://${website}`} target="_blank" rel="noopener noreferrer">
+              {website}
+            </a>
+          </li>
+        </ul>
+      </div>
+    )
+  }
+}
+
+export default Profile
+```
+
+---
+
+### Flux de navigation complet
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              FLUX PARAMÈTRES DE ROUTE                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. Users.jsx : liste des utilisateurs                  │
+│     <Link to="/users/1">Voir le profil</Link>           │
+│          │                                              │
+│          ▼                                              │
+│  2. URL : /users/1                                      │
+│          │                                              │
+│          ▼                                              │
+│  3. Switch : match avec /users/:userId                  │
+│     → userId = "1"                                      │
+│          │                                              │
+│          ▼                                              │
+│  4. Profile.jsx : componentDidMount()                   │
+│     const { userId } = this.props.match.params          │
+│     → userId = "1"                                      │
+│          │                                              │
+│          ▼                                              │
+│  5. fetch /users/1                                      │
+│     → { id: 1, name: "Leanne Graham", ... }            │
+│          │                                              │
+│          ▼                                              │
+│  6. setState({ user }) → re-render → affichage          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### L'objet `match.params` en détail
+
+```jsx
+// Route : /users/:userId
+// URL : /users/42
+
+componentDidMount() {
+  console.log(this.props.match)
+  // {
+  //   params: { userId: "42" },  ← Les paramètres de route
+  //   isExact: true,
+  //   path: "/users/:userId",
+  //   url: "/users/42"
+  // }
+
+  console.log(this.props.match.params)
+  // { userId: "42" }
+
+  const { userId } = this.props.match.params
+  // userId = "42" (string !)
+}
+```
+
+---
+
+### Équivalent React Router v6
+
+| v5 | v6 |
+|----|-----|
+| `this.props.match.params.userId` | `const { userId } = useParams()` |
+| `<Route path="/users/:userId" component={Profile}>` | `<Route path="/users/:userId" element={<Profile />}>` |
+
+```jsx
+// ✅ React Router v6 : hook useParams
+import { useParams } from 'react-router-dom';
+
+const Profile = () => {
+  const { userId } = useParams(); // Plus besoin de props.match.params
+
+  // ...
+};
+```
+
+---
+
+### Récapitulatif
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              PARAMÈTRES DE ROUTE                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Définition                                             │
+│  ──────────                                             │
+│  <Route path="/users/:userId" component={Profile} />    │
+│                       ↑                                 │
+│                  Paramètre (:nom)                       │
+│                                                         │
+│  Accès (v5)                                             │
+│  ──────────                                             │
+│  this.props.match.params.userId                         │
+│  → Toujours une chaîne de caractères                    │
+│                                                         │
+│  Accès (v6)                                             │
+│  ──────────                                             │
+│  const { userId } = useParams()                         │
+│                                                         │
+│  Points importants                                      │
+│  ─────────────────                                      │
+│  → exact obligatoire sur /users si /users/:userId exist │
+│  → Paramètre = string (convertir si besoin)             │
+│  → Accessible uniquement dans les composants de Route   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Bonnes pratiques
+
+| ✅ Faire | ❌ Ne pas faire |
+|---------|----------------|
+| Utiliser `exact` sur la route parente | Oublier `exact` et avoir des conflits de routes |
+| Vérifier que le paramètre existe avant de faire un fetch | Faire un fetch avec `undefined` |
+| Gérer les états de chargement et d'erreur | Laisser l'UI vide pendant le chargement |
+| Convertir le paramètre si un type numérique est attendu | Utiliser un string là où un nombre est attendu |
+| Utiliser `useParams` pour les nouveaux projets (v6) | Utiliser `props.match.params` dans des composants profonds |
+
+## React Context
