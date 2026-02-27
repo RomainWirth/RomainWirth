@@ -56,7 +56,7 @@ INTRODUCTION
 
 ---
 
-## II. Le cycle de vie d'un composant
+## III. Le cycle de vie d'un composant
 
 | # | Fichier | Contenu |
 |---|---------|---------|
