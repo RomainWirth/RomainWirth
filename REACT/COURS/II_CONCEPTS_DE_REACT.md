@@ -7790,3 +7790,13 @@ const Profile = () => {
 | Utiliser `useParams` pour les nouveaux projets (v6) | Utiliser `props.match.params` dans des composants profonds |
 
 ## React Context
+
+Selon la [doc](https://fr.legacy.reactjs.org/docs/context.html) :  
+Le Contexte offre un moyen de faire passer des données à travers l’arborescence du composant sans avoir à passer manuellement les props à chaque niveau.
+
+Habituellement, les datas sont passées d'un composant parent vers un enfant via les props.  
+Cela peut parfois être lourd.  
+De plus, il est préférable d'éviter le props drilling, c'est à dire de passer des props d'un parent vers un enfant, qui passe ensuite vers un autre enfant, etc. (nested components).  
+
+Le contexte est une réponse à cette problématique et permet de partager des valeurs entre composants sans avoir à explicitement passer une prop à chaque niveau de l'arborescence.
+
