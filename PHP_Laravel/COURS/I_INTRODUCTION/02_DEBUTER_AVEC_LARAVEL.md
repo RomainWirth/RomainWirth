@@ -1790,7 +1790,7 @@ $all    = request()->all();
 $isAjax = request()->ajax();
 ```
 
-### Redirection — `redirect()` et `back()`
+### Redirection - `redirect()` et `back()`
 
 ```PHP
 return redirect('/dashboard');
@@ -1801,7 +1801,7 @@ return back()->withErrors(['email' => 'Email invalide.']);
 return back()->with('success', 'Profil mis à jour.');
 ```
 
-### Réponse HTTP — `response()` et `abort()`
+### Réponse HTTP - `response()` et `abort()`
 
 ```PHP
 return response('Hello', 200);
@@ -1819,7 +1819,7 @@ Déjà couvert dans la section **[## Views](#vues---view)**, `view()` retourne u
 return view('users.index', compact('users'));
 ```
 
-### URLs — `url()`, `asset()` et `route()`
+### URLs - `url()`, `asset()` et `route()`
 
 Couvertes en détail dans la section **[## URL Generation](#url-generation)** ci-dessous :
 ```PHP
@@ -1828,11 +1828,11 @@ asset('css/app.css');                // URL vers public/css/app.css
 route('users.show', ['id' => 1]);   // URL d'une route nommée
 ```
 
-### Classes utilitaires — `Str::` et `Arr::`
+### Classes utilitaires - `Str::` et `Arr::`
 
 Laravel fournit deux classes utilitaires très complètes pour manipuler chaînes et tableaux.
 
-`Str::` — **manipulation de chaînes de caractères (string)** :
+`Str::` - **manipulation de chaînes de caractères (string)** :
 ```PHP
 use Illuminate\Support\Str;
 
@@ -1845,7 +1845,7 @@ Str::random(16);                         // chaîne aléatoire de 16 caractères
 Str::uuid();                             // génère un UUID v4
 ```
 
-`Arr::` — **manipulation de tableaux (Array)** :
+`Arr::` - **manipulation de tableaux (Array)** :
 ```PHP
 use Illuminate\Support\Arr;
 
@@ -1861,8 +1861,8 @@ Arr::flatten([[1, 2], [3, 4]]);          // [1, 2, 3, 4]
 
 | Helper / Classe             | Usage principal                             |
 | --------------------------- | ------------------------------------------- |
-| `dd($var)`                  | Debug — affiche et stoppe l'exécution       |
-| `dump($var)`                | Debug — affiche sans stopper                |
+| `dd($var)`                  | Debug - affiche et stoppe l'exécution       |
+| `dump($var)`                | Debug - affiche sans stopper                |
 | `now()`                     | Date/heure courante (objet `Carbon`)        |
 | `today()`                   | Date courante à minuit (objet `Carbon`)     |
 | `collect($array)`           | Transforme un tableau en Collection Laravel |
@@ -1886,7 +1886,7 @@ Arr::flatten([[1, 2], [3, 4]]);          // [1, 2, 3, 4]
 
 Laravel fournit un ensemble d'outils pour **générer et manipuler des URL** de façon fiable : URLs absolues, URLs de routes nommées, assets publics, URLs signées (protégées contre la manipulation), et URLs temporaires.
 
-### `url()` — URL absolue
+### `url()` - URL absolue
 
 `url()` génère une URL absolue en prenant automatiquement en compte le domaine de l'application (avec ou sans HTTPS, selon la configuration) :
 
@@ -1915,7 +1915,7 @@ echo urldecode(url()->query('/posts', ['columns' => ['title', 'body']]));
 // https://example.com/posts?columns[0]=title&columns[1]=body
 ```
 
-### `asset()` — URL d'un fichier public
+### `asset()` - URL d'un fichier public
 
 `asset()` génère l'URL d'un fichier situé dans le dossier `public/` de l'application.
 C'est la méthode à utiliser pour référencer des fichiers CSS, JavaScript ou images dans les vues :
@@ -1952,7 +1952,7 @@ echo URL::current();
 echo URL::full();
 ```
 
-### `route()` — URL d'une route nommée
+### `route()` - URL d'une route nommée
 
 Grâce au **nommage des routes**, on peut générer une URL à partir de la clé de la route plutôt que d'écrire le chemin en dur (voir section **Routing > Routes nommées**) :
 
@@ -1983,7 +1983,7 @@ echo route('post.show', ['post' => 1, 'search' => 'rocket']);
 // https://example.com/post/1?search=rocket
 ```
 
-### `action()` — URL d'une méthode de controller
+### `action()` - URL d'une méthode de controller
 
 Comme la plupart des URL redirigent vers un controller, Laravel propose le helper `action()` pour générer l'URL associée à une méthode de controller directement :
 
@@ -2003,7 +2003,7 @@ $url = action([UserController::class, 'profile'], ['id' => 1]);
 
 Signer une URL protège ses paramètres contre toute manipulation : Laravel génère un **hash** (signature) ajouté en query string. Si l'URL est modifiée, la signature devient invalide et le serveur peut rejeter la requête.
 
-**Cas d'usage typique :** lien de désinscription à une newsletter envoyé par email — on veut s'assurer qu'un utilisateur ne peut pas changer l'ID pour désabonner quelqu'un d'autre.
+**Cas d'usage typique :** lien de désinscription à une newsletter envoyé par email - on veut s'assurer qu'un utilisateur ne peut pas changer l'ID pour désabonner quelqu'un d'autre.
 
 **Générer une URL signée :**
 
@@ -2102,6 +2102,270 @@ $uri = Uri::of('https://example.com')
 | `URL::temporarySignedRoute('name', now()->addMinutes(30), [...])` | URL signée avec expiration |
 | `Uri::of('...')`, `Uri::route(...)`, etc.           | Manipulation orientée objet d'une URI                   |
 
-## Collection
+## [Collection](https://laravel.com/docs/12.x/collections)
+
+### Qu'est-ce qu'une Collection ?
+
+En PHP natif, les tableaux (`array`) sont des **types primitifs**, pas des objets : on les manipule avec des fonctions procédurales (`array_map()`, `array_filter()`, `usort()`, etc.) dont la syntaxe est peu homogène et difficile à chaîner.
+
+Laravel propose la classe `Collection` (`Illuminate\Support\Collection`) qui **encapsule un tableau** dans un objet et expose plus de 150 méthodes pour transformer, filtrer, trier et agréger les données - avec une API cohérente et chaînable.
+
+> Les Collections sont omniprésentes dans Laravel : les requêtes Eloquent retournent des Collections, `DB::table()->get()` également.
+
+### Créer une Collection
+
+Le plus souvent, on utilise le helper `collect()` :
+
+```PHP
+$collection = collect([1, 2, 3, 4, 5]);
+$collection = collect(['name' => 'Alice', 'role' => 'admin']);
+```
+
+On peut aussi instancier la classe directement ou créer une Collection depuis un JSON :
+
+```PHP
+use Illuminate\Support\Collection;
+
+$collection = new Collection([1, 2, 3]);
+$collection = Collection::fromJson('{"name":"Alice","role":"admin"}');
+```
+
+### Méthodes essentielles
+
+Les méthodes des Collections sont **non-destructives** par défaut : elles retournent une **nouvelle** Collection sans modifier l'originale.
+
+#### Transformation
+
+**`map()`** - transforme chaque élément et retourne une nouvelle Collection :
+
+```PHP
+$numbers = collect([1, 2, 3, 4, 5]);
+
+$doubled = $numbers->map(fn(int $n) => $n * 2);
+// Collection : [2, 4, 6, 8, 10]
+```
+
+**`filter()`** - conserve uniquement les éléments satisfaisant la condition :
+
+```PHP
+$evens = $numbers->filter(fn(int $n) => $n % 2 === 0);
+$evens->all(); // [2, 4]
+
+// Sans callback, filter() retire les valeurs "falsy" (null, false, 0, '') :
+$clean = collect([1, null, 2, false, 3])->filter()->values();
+// Collection : [1, 2, 3]
+```
+
+**`reject()`** - inverse de `filter()` - conserve ce qui **ne** satisfait **pas** la condition :
+
+```PHP
+$odds = $numbers->reject(fn(int $n) => $n % 2 === 0);
+// Collection : [1, 3, 5]
+```
+
+**`each()`** - itère sur chaque élément sans modifier la Collection (effets de bord) :
+
+```PHP
+$collection->each(function (mixed $item) {
+    Log::info($item);
+});
+```
+
+#### Recherche et extraction
+
+**`first()` / `last()`** - retourne le premier / dernier élément, avec ou sans condition :
+
+```PHP
+$first = collect([1, 2, 3])->first();                     // 1
+$last  = collect([1, 2, 3])->last();                      // 3
+$big   = collect([1, 2, 3, 4])->first(fn($n) => $n > 2); // 3
+```
+
+**`pluck()`** - extrait une colonne par clé :
+
+```PHP
+$users = collect([
+    ['name' => 'Alice', 'role' => 'admin'],
+    ['name' => 'Bob',   'role' => 'user'],
+]);
+
+$names = $users->pluck('name');
+$names->all(); // ['Alice', 'Bob']
+
+// Avec un deuxième argument pour indexer le résultat par clé :
+$byName = $users->pluck('role', 'name');
+// ['Alice' => 'admin', 'Bob' => 'user']
+```
+
+**`where()`** - filtre par clé/valeur (idéal pour les tableaux associatifs ou les modèles Eloquent) :
+
+```PHP
+$products = collect([
+    ['name' => 'Desk',     'price' => 200],
+    ['name' => 'Chair',    'price' => 100],
+    ['name' => 'Bookcase', 'price' => 150],
+    ['name' => 'Door',     'price' => 100],
+]);
+
+$cheap = $products->where('price', 100);
+/*
+    [
+        ['name' => 'Chair', 'price' => 100],
+        ['name' => 'Door',  'price' => 100],
+    ]
+*/
+```
+
+**`contains()`** - vérifie si une valeur ou une condition est présente :
+
+```PHP
+collect([1, 2, 3])->contains(2);                     // true
+collect([1, 2, 3])->contains(fn(int $n) => $n > 5); // false
+$products->contains('name', 'Desk');                  // true
+```
+
+#### Agrégation
+
+```PHP
+$numbers = collect([1, 2, 3, 4, 5]);
+
+$numbers->count();            // 5
+$numbers->sum();              // 15
+$numbers->avg();              // 3.0
+$numbers->min();              // 1
+$numbers->max();              // 5
+
+// Sur des tableaux associatifs :
+$products->sum('price');      // 550
+$products->avg('price');      // 137.5
+```
+
+#### Tri et organisation
+
+**`sortBy()` / `sortByDesc()`** - trie par une clé ou une expression :
+
+```PHP
+$sorted     = $products->sortBy('price');     // ordre croissant
+$sortedDesc = $products->sortByDesc('price'); // ordre décroissant
+```
+
+**`groupBy()`** - regroupe les éléments par une clé :
+
+```PHP
+$grouped = $products->groupBy('price');
+/*
+    Collection {
+        100 => [['name' => 'Chair', ...], ['name' => 'Door', ...]],
+        150 => [['name' => 'Bookcase', ...]],
+        200 => [['name' => 'Desk', ...]],
+    }
+*/
+```
+
+**`chunk()`** - divise la Collection en sous-Collections de taille fixe :
+
+```PHP
+$chunks = collect([1, 2, 3, 4, 5])->chunk(2);
+// [[1, 2], [3, 4], [5]]
+```
+
+**`unique()`** - retire les doublons :
+
+```PHP
+$unique = collect([1, 2, 2, 3, 3, 4])->unique()->values();
+// [1, 2, 3, 4]
+```
+
+> `values()` réindexe la Collection (repart de 0) après une opération qui peut créer des "trous" dans les index.
+
+#### Sérialisation
+
+**`all()`** - retourne le tableau PHP sous-jacent (sans conversion récursive) :
+
+```PHP
+$array = collect([1, 2, 3])->all(); // [1, 2, 3]
+```
+
+**`toArray()`** - convertit récursivement en tableau PHP (y compris les sous-Collections ou modèles Eloquent) :
+
+```PHP
+$collection = collect(['name' => 'Desk', 'price' => 200]);
+$collection->toArray();
+// ['name' => 'Desk', 'price' => 200]
+```
+
+**`toJson()`** - convertit en chaîne JSON :
+
+```PHP
+$json = collect(['name' => 'Desk', 'price' => 200])->toJson();
+// '{"name":"Desk","price":200}'
+```
+
+### Chaînage de méthodes
+
+L'un des grands atouts des Collections est la **fluidité du chaînage** : chaque méthode retourne une nouvelle Collection, ce qui permet d'enchaîner les opérations sans variables intermédiaires :
+
+```PHP
+$result = collect($rawData)
+    ->filter(fn($item) => $item['active'])
+    ->sortBy('name')
+    ->pluck('name')
+    ->values()
+    ->toArray();
+```
+
+### Lazy Collections
+
+Pour les jeux de données très volumineux, Laravel propose les **Lazy Collections** (`LazyCollection`). Contrairement aux Collections classiques qui chargent tout en mémoire, elles utilisent les **générateurs PHP** pour traiter les données au fil de l'eau :
+
+```PHP
+use Illuminate\Support\LazyCollection;
+
+LazyCollection::make(function () {
+    $handle = fopen('large-file.csv', 'r');
+    while (($line = fgets($handle)) !== false) {
+        yield $line;
+    }
+})->chunk(100)->each(function ($chunk) {
+    // traite 100 lignes à la fois sans tout charger en mémoire
+});
+```
+
+Eloquent expose aussi les Lazy Collections via `cursor()` :
+
+```PHP
+User::cursor()->each(function (User $user) {
+    // itère sur des milliers d'utilisateurs sans saturer la mémoire RAM
+});
+```
+
+### Résumé
+
+Une **Collection** est une enveloppe objet autour d'un tableau PHP, exposant plus de 150 méthodes cohérentes et chaînables.
+
+| Méthode / Concept                              | Rôle                                                       |
+| ---------------------------------------------- | ---------------------------------------------------------- |
+| `collect($array)`                              | Créer une Collection depuis un tableau                     |
+| `Collection::fromJson($json)`                  | Créer une Collection depuis du JSON                        |
+| `->all()`                                      | Retourner le tableau PHP sous-jacent                       |
+| `->toArray()`                                  | Conversion récursive en tableau                            |
+| `->toJson()`                                   | Conversion en chaîne JSON                                  |
+| `->map(fn($item) => ...)`                      | Transformer chaque élément                                 |
+| `->filter(fn($item) => ...)`                   | Conserver selon condition                                  |
+| `->reject(fn($item) => ...)`                   | Exclure selon condition                                    |
+| `->each(fn($item) => ...)`                     | Itérer sans modifier                                       |
+| `->first() / ->last()`                         | Premier / dernier élément                                  |
+| `->pluck('key')`                               | Extraire une colonne par clé                               |
+| `->where('key', $val)`                         | Filtrer par clé/valeur                                     |
+| `->contains($val)`                             | Vérifier la présence d'une valeur                          |
+| `->count() / ->sum() / ->avg()`                | Comptage et agrégation                                     |
+| `->min() / ->max()`                            | Valeur minimale / maximale                                 |
+| `->sortBy('key') / ->sortByDesc('key')`        | Trier par clé                                              |
+| `->groupBy('key')`                             | Regrouper par clé                                          |
+| `->chunk($n)`                                  | Découper en sous-Collections de taille `$n`                |
+| `->unique()`                                   | Supprimer les doublons                                     |
+| `->values()`                                   | Réindexer (repart de 0)                                    |
+| `->merge($array)`                              | Fusionner avec un autre tableau                            |
+| `User::cursor()`                               | Lazy Collection - itération économe en mémoire             |
 
 ## Résumé
