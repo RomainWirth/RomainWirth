@@ -126,7 +126,7 @@ class UserController extends Controller
 - Elle contient une méthode `show()` qui reçoit en paramètre un `$id` et retourne une `View`.
 - La vue sera un fichier contenant du HTML/CSS/JS, à laquelle on passe un tableau de données.
 
-> PSR — PHP Standards Recommendations
+> PSR - PHP Standards Recommendations
 > Les PSR sont des recommandations de standardisation publiées par le PHP-FIG (PHP Framework Interoperability Group), un groupe réunissant les principaux acteurs de l'écosystème PHP (Laravel, Symfony, Laminas, etc.).
 >
 > Elles définissent des conventions communes pour garantir l'interopérabilité entre projets et frameworks. Les principales PSR sont :
@@ -135,7 +135,7 @@ class UserController extends Controller
 > | ------ | --------------------------------------------------- |
 > | PSR-1  | Règles de base du style de code                     |
 > | PSR-2  | Guide de style de code (remplacé par PSR-12)        |
-> | PSR-4  | Autoloading — convention de nommage des namespaces  |
+> | PSR-4  | Autoloading - convention de nommage des namespaces  |
 > | PSR-7  | Interface pour les messages HTTP (Request/Response) |
 > | PSR-12 | Style de code étendu (successeur de PSR-2)          |
 >
@@ -160,7 +160,7 @@ Ces noms de méthodes sont ok et cohérents. Mais comme ils sont récurrents (CR
 1. `index()` pour afficher tous les produits
 2. `show($id)` pour afficher un seul produit
 
-> CRUD — Create, Read, Update, Delete
+> CRUD - Create, Read, Update, Delete
 > Le CRUD regroupe les quatre opérations fondamentales de la persistance des données :
 >
 > | Opération | SQL      | HTTP        | Description                   |
@@ -244,7 +244,7 @@ class UserController extends Controller
 
 Laravel détecte le type attendu (`UserRepository`) et l'injecte automatiquement à l'instanciation du controller.
 
-**Injection dans une méthode — avec `Request` :**
+**Injection dans une méthode - avec `Request` :**
 
 Chaque méthode peut recevoir en premier paramètre une instance de `Request`, l'objet central qui encapsule toutes les informations de la requête HTTP entrante (données POST, paramètres GET, fichiers, headers, session, utilisateur connecté, etc.).
 
@@ -273,7 +273,7 @@ class UserController extends Controller
 >
 ```
 
-**Injection combinée — `Request` + paramètre de route :**
+**Injection combinée - `Request` + paramètre de route :**
 
 ```PHP
 <?php
@@ -505,7 +505,7 @@ Route::get('/user/{id}', function (string $id) {
 Nommer ses routes est une **bonne pratique essentielle**.
 
 Pourquoi ? Imaginons une route `/contact` utilisée à plusieurs endroits dans le code (menu, footer, CTA, etc.).
-Si on écrit l'URL en dur (`href="/contact"`), et qu'on décide plus tard de la renommer en `/contactez-nous` suite à un audit SEO, il faudra modifier chaque occurrence dans le code — source d'erreurs et très fastidieux.
+Si on écrit l'URL en dur (`href="/contact"`), et qu'on décide plus tard de la renommer en `/contactez-nous` suite à un audit SEO, il faudra modifier chaque occurrence dans le code - source d'erreurs et très fastidieux.
 
 Avec des routes nommées, **on référence la route par sa clé**, pas par son URL. Si l'URL change, il suffit de la modifier à un seul endroit : la déclaration de la route.
 
@@ -629,7 +629,7 @@ Route::prefix('admin')
 ## [Views](https://laravel.com/docs/12.x/views)
 
 Les Views sont la troisième couche du modèle MVC.
-C'est ici qu'on retrouve tout le code HTML (et le CSS/JS associé) — et rien d'autre : **pas de logique métier**.
+C'est ici qu'on retrouve tout le code HTML (et le CSS/JS associé) - et rien d'autre : **pas de logique métier**.
 Ce sont les controllers qui préparent les données et retournent les vues avec ces données.
 
 Laravel place les vues dans le dossier `/resources/views`.
@@ -814,7 +814,7 @@ class ProfileComposer
   }
 }
 ```
-> Laravel résout automatiquement les dépendances du constructeur via le conteneur IoC — pas besoin de les instancier manuellement.
+> Laravel résout automatiquement les dépendances du constructeur via le conteneur IoC - pas besoin de les instancier manuellement.
 
 **Cibler plusieurs vues ou toutes les vues :**
 ```PHP
@@ -826,7 +826,7 @@ View::composer('*', function (View $view) {
   // ...
 });
 ```
-### Optimisation — cache des vues
+### Optimisation - cache des vues
 
 Par défaut, les vues Blade sont compilées à la demande (au premier accès) puis mises en cache.
 En production, on peut forcer la compilation de toutes les vues à l'avance pour éviter le coût de compilation lors des requêtes :
@@ -1307,12 +1307,12 @@ Blade intervient pour faciliter la tâche :
 </form>
 ```
 
-> **CSRF — Cross-Site Request Forgery**
+> **CSRF - Cross-Site Request Forgery**
 >
 > Le CSRF est une attaque qui consiste à faire exécuter à un utilisateur authentifié une requête à son insu, en l'attirant sur une page malveillante qui envoie silencieusement une requête vers l'application.
 >
 > **Exemple d'attaque :**
-> Un utilisateur est connecté à sa banque. Il visite un site malveillant qui contient un formulaire caché pointant vers `banque.com/virement` avec des données préremplies. Son navigateur envoie automatiquement les cookies de session — la banque croit que la requête est légitime.
+> Un utilisateur est connecté à sa banque. Il visite un site malveillant qui contient un formulaire caché pointant vers `banque.com/virement` avec des données préremplies. Son navigateur envoie automatiquement les cookies de session - la banque croit que la requête est légitime.
 >
 > **La protection par token :**
 > Pour s'en prémunir, Laravel génère un **token CSRF** unique par session utilisateur. Ce token est inclus dans chaque formulaire via `@csrf`, et Laravel le vérifie à chaque requête `POST`, `PUT`, `PATCH` ou `DELETE`.
@@ -1535,7 +1535,7 @@ Deux méthodes possibles :
 Le composant `alert` reçoit deux attributs : `type` et `message`.
 
 * `type="error"` est une valeur statique (string littérale).
-* `:message="$message"` : le préfixe `:` indique à Blade d'interpréter la valeur comme une expression PHP — ici, la variable `$message`.
+* `:message="$message"` : le préfixe `:` indique à Blade d'interpréter la valeur comme une expression PHP - ici, la variable `$message`.
 
 Ce genre de syntaxe est inspirée des frameworks JS comme `Vue.js`.
 
@@ -1710,7 +1710,177 @@ Un composant Blade est une **classe PHP** couplée à une **vue Blade**.
 
 Les composants permettent de **factoriser le code** en réutilisant des blocs (bouton, alerte, formulaire) et en définissant des **layouts** communs à toutes les pages.
 
-## Helper
+## [Helpers](https://laravel.com/docs/12.x/helpers)
+
+Laravel fournit un ensemble de **fonctions utilitaires** et de **classes d'aide** utilisables n'importe où dans l'application, sans avoir besoin d'instancier un objet ou d'injecter un service.
+
+Il en existe deux types :
+
+- **Fonctions procédurales** - des fonctions globales appelables directement (`dd()`, `collect()`, `now()`, `request()`, etc.)
+- **Classes utilitaires** - des classes avec méthodes statiques (`Arr::`, `Str::`, `Number::`, etc.)
+
+Ces helpers couvrent les besoins les plus courants du quotidien : debug, manipulation de chaînes et de tableaux, gestion des dates, génération d'URLs, etc.
+
+### Debug - `dd()` et `dump()`
+
+`dd()` signifie **Dump & Die** : il affiche le contenu d'une ou plusieurs variables de façon lisible, puis **stoppe l'exécution** du code.
+
+```PHP
+$user = User::find(1);
+dd($user);                   // affiche $user et stoppe
+dd($user, $request->all()); // accepte plusieurs variables
+```
+
+`dump()` fait la même chose sans stopper l'exécution : l'affichage a lieu puis le code continue.
+```PHP
+dump($user); // affiche $user et continue
+```
+> Ces fonctions sont uniquement destinées au **debug** et ne doivent pas rester en production.
+
+### Dates - `now()` et `today()`
+
+`now()` retourne un objet `Carbon` représentant la date et l'heure actuelles dans le fuseau horaire défini dans `config/app.php`.
+```PHP
+$now = now();
+$now->format('d/m/Y H:i');  // "18/03/2026 14:30"
+$now->addDays(7);            // dans 7 jours
+$now->diffForHumans();       // "il y a quelques secondes"
+```
+
+`today()` retourne un `Carbon` avec l'heure fixée à minuit (00:00:00) :
+```PHP
+$today = today(); // 2026-03-18 00:00:00
+```
+> `Carbon` est une bibliothèque PHP de gestion de dates intégrée à Laravel. Elle étend la classe native `DateTime` avec de nombreuses méthodes pratiques.
+
+### Collections - `collect()`
+
+`collect()` transforme un tableau en **Collection Laravel**, un objet enrichi avec de nombreuses méthodes de manipulation de données.
+```PHP
+$numbers = collect([1, 2, 3, 4, 5]);
+
+$doubled = $numbers->map(fn($n) => $n * 2);           // [2, 4, 6, 8, 10]
+$evens   = $numbers->filter(fn($n) => $n % 2 === 0); // [2, 4]
+$sum     = $numbers->sum();                            // 15
+```
+
+### Configuration - `config()` et `env()`
+
+`config()` lit une valeur depuis les fichiers de configuration (`config/*.php`) :
+```PHP
+$appName = config('app.name');
+$dbName  = config('database.connections.mysql.database');
+$value   = config('app.timezone', 'UTC'); // valeur par défaut si absente
+```
+
+`env()` lit une variable d'environnement depuis le fichier `.env` :
+```PHP
+$debug  = env('APP_DEBUG');
+$apiKey = env('STRIPE_KEY', 'default-value');
+```
+
+> En production, il est déconseillé d'appeler `env()` directement hors des fichiers `config/`. Après un `php artisan config:cache`, le `.env` n'est plus lu - seule la config mise en cache est utilisée.
+
+### Requête HTTP - `request()`
+
+`request()` retourne l'instance de la requête HTTP courante (équivalent à l'injection de `Request`) :
+```PHP
+$name   = request('name');    // équivalent à $request->input('name')
+$all    = request()->all();
+$isAjax = request()->ajax();
+```
+
+### Redirection — `redirect()` et `back()`
+
+```PHP
+return redirect('/dashboard');
+return redirect()->route('users.index');
+return redirect()->back();
+
+return back()->withErrors(['email' => 'Email invalide.']);
+return back()->with('success', 'Profil mis à jour.');
+```
+
+### Réponse HTTP — `response()` et `abort()`
+
+```PHP
+return response('Hello', 200);
+return response()->json(['status' => 'ok']);
+return response()->download(storage_path('file.pdf'));
+
+abort(404);                    // lance une exception HTTP 404
+abort(403, 'Accès refusé.');
+```
+
+### Vues - `view()`
+
+Déjà couvert dans la section **[## Views](#vues---view)**, `view()` retourne une instance de vue Blade :
+```PHP
+return view('users.index', compact('users'));
+```
+
+### URLs — `url()`, `asset()` et `route()`
+
+Couvertes en détail dans la section **[## URL Generation](#url-generation)** ci-dessous :
+```PHP
+url('/profile/1');                   // URL absolue
+asset('css/app.css');                // URL vers public/css/app.css
+route('users.show', ['id' => 1]);   // URL d'une route nommée
+```
+
+### Classes utilitaires — `Str::` et `Arr::`
+
+Laravel fournit deux classes utilitaires très complètes pour manipuler chaînes et tableaux.
+
+`Str::` — **manipulation de chaînes de caractères (string)** :
+```PHP
+use Illuminate\Support\Str;
+
+Str::upper('hello');                     // "HELLO"
+Str::slug('Mon Article');               // "mon-article"
+Str::limit('Texte très long...', 50);  // tronque à 50 caractères
+Str::contains('Laravel', 'avel');       // true
+Str::startsWith('Laravel', 'La');       // true
+Str::random(16);                         // chaîne aléatoire de 16 caractères
+Str::uuid();                             // génère un UUID v4
+```
+
+`Arr::` — **manipulation de tableaux (Array)** :
+```PHP
+use Illuminate\Support\Arr;
+
+Arr::get($array, 'user.name', 'défaut'); // lecture avec notation pointée
+Arr::has($array, 'user.email');          // vérifie l'existence d'une clé
+Arr::pluck($users, 'name');              // extrait une colonne : ['Alice', 'Bob']
+Arr::first($array, fn($v) => $v > 10);  // premier élément correspondant
+Arr::random($array);                     // élément aléatoire
+Arr::flatten([[1, 2], [3, 4]]);          // [1, 2, 3, 4]
+```
+
+### Résumé
+
+| Helper / Classe             | Usage principal                             |
+| --------------------------- | ------------------------------------------- |
+| `dd($var)`                  | Debug — affiche et stoppe l'exécution       |
+| `dump($var)`                | Debug — affiche sans stopper                |
+| `now()`                     | Date/heure courante (objet `Carbon`)        |
+| `today()`                   | Date courante à minuit (objet `Carbon`)     |
+| `collect($array)`           | Transforme un tableau en Collection Laravel |
+| `config('app.name')`        | Lire une valeur de configuration            |
+| `env('APP_KEY')`            | Lire une variable d'environnement           |
+| `request('field')`          | Accéder aux données de la requête courante  |
+| `redirect('/url')`          | Rediriger vers une URL                      |
+| `back()`                    | Rediriger vers la page précédente           |
+| `response()->json()`        | Retourner une réponse JSON                  |
+| `abort(404)`                | Lancer une exception HTTP                   |
+| `view('nom')`               | Retourner une vue Blade                     |
+| `url('/path')`              | Générer une URL absolue                     |
+| `asset('file')`             | Générer l'URL d'un asset public             |
+| `route('name')`             | Générer l'URL d'une route nommée            |
+| `Str::slug('Mon Titre')`    | Convertir en slug URL                       |
+| `Str::random(16)`           | Générer une chaîne aléatoire                |
+| `Arr::pluck($arr, 'key')`   | Extraire une colonne d'un tableau           |
+| `Arr::get($arr, 'a.b')`     | Lire via notation pointée                   |
 
 ## URL Generation
 
