@@ -1,4 +1,4 @@
-# Filament — Pages Custom
+# Filament - Pages Custom
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/pages](https://filamentphp.com/docs/3.x/panels/pages)
 
@@ -105,7 +105,7 @@ class GeneralSettings extends Page implements HasForms
     protected static ?string $title          = 'Paramètres généraux';
     protected static string  $view           = 'filament.pages.general-settings';
 
-    // État du formulaire — propriété publique Livewire
+    // État du formulaire - propriété publique Livewire
     public ?array $data = [];
 
     public function mount(): void
@@ -167,7 +167,7 @@ class GeneralSettings extends Page implements HasForms
 </x-filament-panels::page>
 ```
 
-## 6. `SettingsPage` — raccourci pour les settings
+## 6. `SettingsPage` - raccourci pour les settings
 
 Pour les pages de configuration qui lisent/écrivent dans une classe settings (typiquement via `spatie/laravel-settings`), Filament propose `SettingsPage` qui se charge du fill et du save automatiquement :
 ```PHP
@@ -188,7 +188,7 @@ class ManageGeneralSettings extends SettingsPage
     }
 }
 ```
-> Pas besoin de `mount()`, `save()`, ni `statePath()` — tout est géré par `SettingsPage`.
+> Pas besoin de `mount()`, `save()`, ni `statePath()` - tout est géré par `SettingsPage`.
 
 ## . Page custom avec une table
 
@@ -299,7 +299,7 @@ méthodes publiques       ← save(), delete(), ou toute méthode appelée par w
 re-render automatique
 ```
 
-### `mount()` — initialisation
+### `mount()` - initialisation
 ```PHP
 <?php
 public function mount(): void

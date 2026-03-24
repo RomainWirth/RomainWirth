@@ -1,4 +1,4 @@
-# Filament — L'Infolist
+# Filament - L'Infolist
 
 Doc officielle : [https://filamentphp.com/docs/3.x/infolists/overview](https://filamentphp.com/docs/3.x/infolists/overview)
 
@@ -73,7 +73,7 @@ public static function infolist(Infolist $infolist): Infolist
 ```
 ## 4. Les composants d'entrée (`Entry`)
 
-### `TextEntry` — le plus polyvalent
+### `TextEntry` - le plus polyvalent
 
 ```PHP
 <?php
@@ -108,7 +108,7 @@ TextEntry::make('deleted_at')
     ->hidden(fn ($record) => $record->deleted_at === null),
 ```
 
-### `BadgeEntry` — valeur avec badge coloré
+### `BadgeEntry` - valeur avec badge coloré
 ```PHP
 <?php
 BadgeEntry::make('status')
@@ -125,7 +125,7 @@ BadgeEntry::make('status')
     ]),
 ```
 
-### `ImageEntry` — affichage d'image
+### `ImageEntry` - affichage d'image
 ```PHP
 <?php
 ImageEntry::make('avatar')
@@ -137,7 +137,7 @@ ImageEntry::make('cover_image')
     ->extraImgAttributes(['class' => 'rounded-lg']),
 ```
 
-### `IconEntry` — valeur booléenne ou icône
+### `IconEntry` - valeur booléenne ou icône
 ```PHP
 <?php
 use Filament\Infolists\Components\IconEntry;
@@ -158,7 +158,7 @@ IconEntry::make('type')
     }),
 ```
 
-### `ColorEntry` — affichage d'une couleur
+### `ColorEntry` - affichage d'une couleur
 ```PHP
 <?php
 use Filament\Infolists\Components\ColorEntry;
@@ -166,7 +166,7 @@ use Filament\Infolists\Components\ColorEntry;
 ColorEntry::make('brand_color'), // affiche un carré coloré (#hex)
 ```
 
-### `KeyValueEntry` — tableau clé/valeur
+### `KeyValueEntry` - tableau clé/valeur
 ```PHP
 <?php
 use Filament\Infolists\Components\KeyValueEntry;
@@ -175,7 +175,7 @@ KeyValueEntry::make('metadata')
     ->label('Métadonnées'), // affiche un JSON sous forme de tableau
 ```
 
-### `RepeatableEntry` — liste d'éléments répétés
+### `RepeatableEntry` - liste d'éléments répétés
 ```PHP
 <?php
 use Filament\Infolists\Components\RepeatableEntry;

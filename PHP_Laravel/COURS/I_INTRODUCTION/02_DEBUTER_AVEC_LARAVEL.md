@@ -2377,7 +2377,7 @@ Ce cours couvre les fondamentaux pour débuter avec Laravel, en suivant le chemi
 Laravel suit le **design pattern MVC** (Modèle - Vue - Contrôleur) :
 
 - Le **Modèle** gère les données et leur logique (Eloquent).
-- La **Vue** affiche les données (templates Blade — aucune logique métier).
+- La **Vue** affiche les données (templates Blade - aucune logique métier).
 - Le **Contrôleur** reçoit les requêtes, orchestre les traitements et retourne une réponse.
 
 Le cycle d'une requête : `Routing → Controller → (Model) → View → Réponse HTTP`.

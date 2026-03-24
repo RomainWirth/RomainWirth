@@ -1,4 +1,4 @@
-# Filament — Les Actions
+# Filament - Les Actions
 
 Doc officielle : [https://filamentphp.com/docs/3.x/actions/overview](https://filamentphp.com/docs/3.x/actions/overview)
 
@@ -44,7 +44,7 @@ public static function table(Table $table): Table
 ```
 Ces actions ouvrent automatiquement des modales avec le formulaire de la Resource, sans configuration supplémentaire.
 
-## 3. `Action::make()` — action personnalisée
+## 3. `Action::make()` - action personnalisée
 
 ```PHP
 <?php
@@ -135,7 +135,7 @@ Action::make('archiver')
 ->modalWidth('lg') // sm, md, lg, xl, 2xl, 3xl... ou MaxWidth::Large
 ```
 
-## 6. `HeaderActions` — actions dans l'en-tête de page
+## 6. `HeaderActions` - actions dans l'en-tête de page
 
 Sur les pages `ListRecords`, `CreateRecord`, `EditRecord` ou une page custom :
 ```PHP
@@ -160,7 +160,7 @@ protected function getHeaderActions(): array
 }
 ```
 
-## 7. `BulkAction` — actions sur sélection multiple
+## 7. `BulkAction` - actions sur sélection multiple
 ```PHP
 <?php
 use Filament\Tables\Actions\BulkAction;
@@ -206,7 +206,7 @@ use Filament\Forms\Components\Actions;
 ])
 ```
 
-## 9. `ActionGroup` — regrouper des actions dans un menu
+## 9. `ActionGroup` - regrouper des actions dans un menu
 
 Évite de surcharger les lignes de table avec trop de boutons :
 ```PHP

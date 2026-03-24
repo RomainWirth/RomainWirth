@@ -1,4 +1,4 @@
-# Filament — Les Notifications
+# Filament - Les Notifications
 
 Doc officielle : [https://filamentphp.com/docs/3.x/notifications/overview](https://filamentphp.com/docs/3.x/notifications/overview)
 
@@ -137,7 +137,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use Notifiable; // trait standard Laravel — suffit pour Filament
+    use Notifiable; // trait standard Laravel - suffit pour Filament
 }
 ```
 

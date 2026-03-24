@@ -1,4 +1,4 @@
-# Filament — Les Widgets
+# Filament - Les Widgets
 
 Doc officielle : [https://filamentphp.com/docs/3.x/widgets/overview](https://filamentphp.com/docs/3.x/widgets/overview)
 
@@ -22,7 +22,7 @@ php artisan make:filament-widget LatestOrders --table
 
 Les fichiers sont générés dans app/Filament/Widgets/.
 
-## 3. `StatsOverviewWidget` — cartes de statistiques
+## 3. `StatsOverviewWidget` - cartes de statistiques
 
 ```PHP
 <?php
@@ -68,7 +68,7 @@ Stat::make('label', 'value')
     ->extraAttributes(['class' => 'cursor-pointer']),
 ```
 
-## 4. `ChartWidget` — graphiques
+## 4. `ChartWidget` - graphiques
 
 ```PHP
 <?php
@@ -140,7 +140,7 @@ protected function getData(): array
     // ... requête avec $startDate
 }
 ```
-## 5. `TableWidget` — table intégrée
+## 5. `TableWidget` - table intégrée
 ```PHP
 <?php
 

@@ -1,4 +1,4 @@
-# Filament — Navigation & Configuration du Panel
+# Filament - Navigation & Configuration du Panel
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/navigation](https://filamentphp.com/docs/3.x/panels/navigation)
 
@@ -265,7 +265,7 @@ Chaque panel a son propre chemin, ses propres Resources et son propre modèle d'
 )
 ```
 
-## 11. `render hooks` — injecter du HTML partout
+## 11. `render hooks` - injecter du HTML partout
 
 Les render hooks permettent d'injecter du contenu personnalisé à des endroits précis du panel :
 ```PHP

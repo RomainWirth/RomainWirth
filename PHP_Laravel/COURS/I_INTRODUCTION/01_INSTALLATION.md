@@ -54,7 +54,7 @@ composer global require laravel/installer
 
 ### Créer un nouveau projet
 
-On pourra ensuite créer un projet laravel en utilisant cette commande  
+On pourra ensuite créer un projet laravel en utilisant cette commande
 (attention au répertoire ou on crée le projet !):
 
 ```bash
@@ -106,19 +106,19 @@ Voici les étapes lors de la création d'un projet :
 laravel new example-app
 ```
 
-Choisir `none` pour le starter kit :  
+Choisir `none` pour le starter kit :
 ![../assets/laravel_new.png](../assets/laravel_new.png)
 
-Laravel Boost (assistance IA) :  
+Laravel Boost (assistance IA) :
 ![../assets/laravel_new-suite.png](../assets/laravel_new-suite.png)
 
-Choix de la base de données :  
+Choix de la base de données :
 ![../assets/laravel_new-suite-2.png](../assets/laravel_new-suite-2.png)
 
-Installation des dépendances npm :  
+Installation des dépendances npm :
 ![../assets/laravel_new-suite-3.png](../assets/laravel_new-suite-3.png)
 
-Lancement du serveur avec `composer run dev` :  
+Lancement du serveur avec `composer run dev` :
 ![../assets/laravel_starting-server.png](../assets/laravel_starting-server.png)
 
 ## Solution Laravel Herd
@@ -212,14 +212,14 @@ php artisan make:policy ArticlePolicy
 
 ### Création d'une commande personnalisée
 
-Il est également possible de créer ses propres commandes.  
+Il est également possible de créer ses propres commandes.
 Par exemple :
 
 - une commande qui lance un script de synchronisation
 - une commande qui génère un export
 - etc.
 
-Ces commandes sont des classes stockées dans le dossier `app/Console/Commands`.  
+Ces commandes sont des classes stockées dans le dossier `app/Console/Commands`.
 Pour en créer une :
 
 ```bash
@@ -256,7 +256,7 @@ php artisan emails:send
 
 ## Le fichier .env et la configuration
 
-Toute application a besoin d'une configuration adaptée à son environnement.  
+Toute application a besoin d'une configuration adaptée à son environnement.
 Cette configuration sera différente selon les contextes : local, préprod, production, test...
 
 Par exemple, le mot de passe de la base de données en local sera différent de celui utilisé en production.
@@ -265,10 +265,10 @@ Par exemple, le mot de passe de la base de données en local sera différent de 
 
 Laravel centralise sa configuration dans le dossier `/config`, avec des fichiers comme :
 
-- `database.php` — configuration des bases de données
-- `mail.php` — configuration de l'envoi d'emails
-- `session.php` — configuration des sessions
-- `cache.php` — configuration du cache
+- `database.php` - configuration des bases de données
+- `mail.php` - configuration de l'envoi d'emails
+- `session.php` - configuration des sessions
+- `cache.php` - configuration du cache
 - etc.
 
 Ces fichiers contiennent des tableaux PHP servant à la configuration. Mais comme ils sont uniques, comment différencier les environnements ?
@@ -330,7 +330,7 @@ return [
 
 ### Le fichier `.env.example`
 
-Puisque le `.env` n'est pas versionné, Laravel fournit un fichier `.env.example` qui sert de modèle.  
+Puisque le `.env` n'est pas versionné, Laravel fournit un fichier `.env.example` qui sert de modèle.
 Ce fichier **est** versionné : il liste toutes les clés nécessaires au projet, sans les valeurs sensibles.
 
 Lors de l'installation d'un projet existant :
@@ -353,7 +353,7 @@ App::environment('production')         // true si APP_ENV=production
 App::environment(['local', 'staging']) // true si l'un des deux correspond
 ```
 
-Exemple concret — empêcher l'indexation hors production :
+Exemple concret - empêcher l'indexation hors production :
 
 ```php
 <meta name="robots" content="{{ App::environment('production') ? 'index,follow' : 'noindex,nofollow' }}">
@@ -370,7 +370,7 @@ php artisan config:clear   # vide le cache de configuration
 
 > **Attention :** après toute modification du `.env`, penser à vider le cache avec `php artisan config:clear`, sinon les nouvelles valeurs ne seront pas prises en compte.
 
-# Résumé — Installation Laravel
+# Résumé - Installation Laravel
 
 ## Prérequis
 
@@ -396,7 +396,7 @@ npm install && npm run build               # dépendances front-end
 composer run dev                           # lancer le serveur (PHP + Vite)
 ```
 
-## Artisan — CLI de Laravel
+## Artisan - CLI de Laravel
 
 ```bash
 php artisan list                        # liste toutes les commandes

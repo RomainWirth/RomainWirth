@@ -1,4 +1,4 @@
-# Filament — Auth & Policies
+# Filament - Auth & Policies
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/resources/getting-started#authorization](https://filamentphp.com/docs/3.x/panels/resources/getting-started#authorization)
 
@@ -95,7 +95,7 @@ Si on veut affiner ou remplacer le comportement de la Policy directement dans la
 <?php
 class PostResource extends Resource
 {
-    // Surcharge locale — prend le dessus sur la Policy
+    // Surcharge locale - prend le dessus sur la Policy
     public static function canCreate(): bool
     {
         return auth()->user()->hasRole('admin');
@@ -279,7 +279,7 @@ Action::make('approve')
     ->action(...),
 ```
 
-## 9. Super Admin — contourner toutes les vérifications
+## 9. Super Admin - contourner toutes les vérifications
 
 Pour donner un accès total à un rôle admin sans définir chaque permission, on utilise le `Gate::before()` dans un Service Provider :
 ```PHP

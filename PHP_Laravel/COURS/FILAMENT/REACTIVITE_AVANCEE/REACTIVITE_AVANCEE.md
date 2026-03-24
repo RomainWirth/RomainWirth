@@ -1,4 +1,4 @@
-# Filament — Réactivité avancée & sujets complémentaires
+# Filament - Réactivité avancée & sujets complémentaires
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/resources/getting-started](https://filamentphp.com/docs/3.x/panels/resources/getting-started)
 
@@ -69,7 +69,7 @@ protected function afterCreate(): void
 }
 ```
 
-## 2. `afterStateHydrated()` — réagir au chargement initial
+## 2. `afterStateHydrated()` - réagir au chargement initial
 
 `afterStateUpdated()` se déclenche à chaque interaction utilisateur. `afterStateHydrated()` se déclenche une seule fois au chargement, après que le state a été rempli depuis le modèle.
 
@@ -94,7 +94,7 @@ BDD → fill() → afterStateHydrated()  → [affichage initial]
                                        dehydrateStateUsing() → BDD
 ```
 
-## 3. `mutateDehydratedState()` — dernière transformation avant save
+## 3. `mutateDehydratedState()` - dernière transformation avant save
 
 Moins connu, `mutateDehydratedState()` est appelé sur le state final juste avant que Filament ne construise le tableau à passer au modèle. C'est utile pour des transformations globales :
 ```PHP
@@ -192,7 +192,7 @@ TextInput::make('personal_note')
     ->prohibitedIf('is_public', true), // interdit si is_public est true
 ```
 
-## 6. Les `otherTravelPreferencesToggles()` — génération dynamique de champs
+## 6. Les `otherTravelPreferencesToggles()` - génération dynamique de champs
 
 Un pattern très intéressant dans ton UserResource.php:380 : générer dynamiquement un tableau de composants à partir d'une source de données :
 ```PHP
@@ -416,7 +416,7 @@ TextInput::make('name')
 
 ## 9. La page `SettingsPage`
 
-Ci dessous un exemple de `SettingsPage` — une page Filament spéciale qui lit/écrit dans une classe de settings (souvent via `spatie/laravel-settings`) plutôt qu'un modèle Eloquent.
+Ci dessous un exemple de `SettingsPage` - une page Filament spéciale qui lit/écrit dans une classe de settings (souvent via `spatie/laravel-settings`) plutôt qu'un modèle Eloquent.
 
 ```PHP
 <?php

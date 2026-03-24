@@ -16,7 +16,7 @@ const Buttons = () => {
     <Container>
       {buttonClasses.map((variant) => (
         <Alert variant={variant} key={variant} className="text-center">
-          This is a {variant} alert—check it out!
+          This is a {variant} alert-check it out!
         </Alert>
       ))}
     </Container>
