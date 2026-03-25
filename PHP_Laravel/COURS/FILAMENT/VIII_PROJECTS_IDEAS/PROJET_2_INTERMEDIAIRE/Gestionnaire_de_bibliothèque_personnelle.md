@@ -4,7 +4,7 @@ Une interface d'administration pour gérer une collection de livres, avec auteur
 
 ## Prérequis
 
-* Bases Laravel solides (Eloquent, migrations, relations, Policies)
+* Bases Laravel solides (Eloquent, migrations, relations, Policies), voir cours Laravel
 * Avoir lu les cours Forms, Tables, Actions du cours Filament
 
 ---
