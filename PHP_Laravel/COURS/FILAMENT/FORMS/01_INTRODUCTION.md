@@ -2,7 +2,31 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/forms/getting-started](https://filamentphp.com/docs/3.x/forms/getting-started)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Architecture générale](#1-architecture-générale--filament-repose-sur-livewire) | Filament = Laravel + Livewire. L'état du formulaire vit côté **serveur PHP**. |
+| 2 | [Cycle de vie d'un formulaire](#2-le-cycle-de-vie-dun-formulaire) | `fill` → `mount` → interactions → `dehydrate` → save. |
+| 3 | [Le State](#3-le-state--comment-filament-gère-les-données) | Un simple tableau PHP `$data[]` qui centralise toutes les valeurs des champs. |
+| 4 | [Réactivité](#4-le-système-de-réactivité) | `->live()` pour qu'un champ déclenche un aller-retour serveur à chaque changement. |
+| 5 | [Validation](#5-la-validation) | Les règles se déclarent directement sur le composant, en API fluente. |
+| 6 | [Visibilité conditionnelle](#6-visibilité-conditionnelle) | `->visible()`, `->disabled()`, `->readOnly()` : trois comportements distincts. |
+| 7 | [Pattern Fluent Builder](#7-le-pattern-fluent-builder) | Tous les composants sont chaînables. On **déclare**, Filament **construit**. |
+| 8 | [Layout & columnSpan](#8-layout--la-théorie-du-columnspan) | Grille CSS configurable : `->columns(2)` + `->columnSpan(1)`. |
+| 9 | [formatStateUsing vs dehydrateStateUsing](#9-formatstateusing-vs-dehydratestateusing) | Transformer les données à l'**affichage** ou à la **sauvegarde**. |
+| 10 | [Organisation du code](#10-organisation-du-code---patterns) | Extraire les sections, blocs et partials dans des classes dédiées. |
+| 11 | [Récapitulatif du flux de données](#récapitulatif-du-flux-de-données) | Vue d'ensemble du chemin BDD → formulaire → BDD. |
+| → | [02 - Bloc Builder](02_BLOC_BUILDER.md) | Créer un page builder dynamique via JSON. |
+| → | [03 - Composants custom](03_CUSTOM_COMPONENT.md) | Créer ses propres champs Filament. |
+
+---
+
 ## 1. Architecture générale : Filament repose sur Livewire
+
+> **En résumé** : Filament n'est pas une application JS. Tout tourne en PHP côté serveur. Chaque interaction passe par un aller-retour HTTP vers Laravel via Livewire. C'est ce qui rend la réactivité entre champs possible, mais aussi ce qui la rend "coûteuse" en requêtes.
 
 Avant tout, il faut comprendre la fondation technique. Filament est entièrement construit sur Laravel Livewire, qui est lui-même un système de composants full-stack : chaque interaction (frappe, clic, changement de champ) déclenche une requête HTTP vers le serveur PHP, qui re-render le composant et renvoie uniquement le diff HTML au navigateur via AJAX.
 
@@ -21,6 +45,8 @@ Eloquent Model
 Doc : [https://livewire.laravel.com/docs/components](https://livewire.laravel.com/docs/components)
 
 ## 2. Le cycle de vie d'un formulaire
+
+> **En résumé** : Un formulaire Filament passe par 4 phases. `fill()` charge les données depuis la BDD. `mount()` initialise le composant. Les interactions déclenchent des mises à jour du state. Enfin, `dehydrate()` valide et sauvegarde. Comprendre ces phases aide à savoir **où placer sa logique**.
 
 Quand tu ouvres une page Edit dans Filament, voici ce qui se passe dans l'ordre :
 
@@ -43,6 +69,8 @@ Lors du submit, Filament appelle `$form->getState()`, qui :
 Doc : [https://filamentphp.com/docs/3.x/forms/adding-a-form-to-a-livewire-component](https://filamentphp.com/docs/3.x/forms/adding-a-form-to-a-livewire-component)
 
 ## 3. Le State : comment Filament gère les données
+
+> **En résumé** : Le state, c'est simplement un tableau PHP `$data[]` qui vit dans le composant Livewire. Chaque champ lit et écrit dans ce tableau via son `statePath` (un chemin en dot-notation). `$get('field')` lit une valeur, `$set('field', val)` l'écrit. Tout le reste (validation, affichage, sauvegarde) se base sur ce tableau.
 
 Le "state" est le concept central. C'est un tableau PHP associatif qui vit dans le composant Livewire sous la propriété `$data`. Chaque champ a un statePath : un chemin en dot-notation qui pointe vers sa valeur dans ce tableau.
 
@@ -91,6 +119,8 @@ Ce sont des wrappers autour du state. Ils utilisent le dot-notation :
 
 ## 4. Le système de réactivité
 
+> **En résumé** : Par défaut, un champ ne déclenche rien avant la soumission du formulaire. `->live()` active les mises à jour en temps réel (aller-retour serveur à chaque changement). C'est indispensable pour des comportements comme "afficher ce champ si cet autre champ a telle valeur". À utiliser avec parcimonie : chaque `->live()` = une requête HTTP par interaction.
+
 Filament a deux niveaux de réactivité :
 
 `->reactive()` (ancien, v2)
@@ -113,6 +143,8 @@ utilisation de `->live(debounce: 500)` pour ne pas envoyer une requête à chaqu
 **Règle d'or** : n'utiliser `->live()` que sur les champs qui en ont besoin, car chaque requête Livewire re-render toute la page du formulaire.
 
 ## 5. La validation
+
+> **En résumé** : Les règles de validation se déclarent directement sur le champ avec des méthodes fluentes (`->required()`, `->email()`, `->unique()`). Filament les traduit en règles Laravel standard. On peut aussi injecter des closures pour une validation conditionnelle (ex : requis seulement à la création).
 
 ### Déclaration inline (fluent API)
 
@@ -149,6 +181,8 @@ Sans `ignoreRecord: true`, la validation unique rejette le record existant lors 
 
 ## 6. Visibilité conditionnelle
 
+> **En résumé** : Trois méthodes distincts, trois comportements différents. `->visible(false)` supprime le champ du HTML. `->disabled()` l'affiche mais n'enregistre pas sa valeur. `->readOnly()` l'affiche, n'autorise pas la saisie, mais **conserve** la valeur en BDD. Le choix entre les trois a des implications sur la sauvegarde.
+
 ### `->visible()` et `->hidden()`
 
 ```PHP
@@ -173,6 +207,8 @@ Un champ `disabled` ne **soumet pas sa valeur** - attention en édition : utilis
 
 ## 7. Le pattern Fluent Builder
 
+> **En résumé** : Chaque composant Filament retourne `$this` après chaque méthode, ce qui permet de chaîner les appels. L'approche est **déclarative** : on décrit ce que le formulaire doit faire, Filament s'occupe du rendu HTML et du comportement. Il n'y a pas de template Blade à écrire pour les cas courants.
+
 Tous les composants Filament utilisent le pattern Builder (interface fluide) : chaque méthode retourne `$this`, donc les appels sont chaînables.
 
 Exemple :
@@ -189,6 +225,8 @@ TextInput::make('name')   // retourne une instance de TextInput
 C'est un pattern déclaratif : tu décris le formulaire, Filament se charge du rendu et du comportement. Il n'y a pas de template Blade à écrire pour les cas standard.
 
 ## 8. Layout : la théorie du columnSpan
+
+> **En résumé** : Filament utilise une grille CSS configurable. Chaque `Section`, `Group` ou `Form` définit un nombre de colonnes avec `->columns(N)`. Les champs enfants déclarent combien de colonnes ils occupent avec `->columnSpan(N)` ou `->columnSpanFull()`. C'est le même modèle que CSS Grid, mais en PHP.
 
 Filament utilise une grille CSS. Chaque Section, Group ou Form définit un nombre de colonnes. Les composants enfants déclarent combien de colonnes ils occupent :
 
@@ -211,6 +249,9 @@ Responsive avec un tableau :
 ```
 
 ## 9. formatStateUsing() vs dehydrateStateUsing()
+
+> **En résumé** : Ces deux méthodes permettent de transformer les données à deux moments clés. `formatStateUsing()` transforme la valeur **à l'affichage** (BDD → champ). `dehydrateStateUsing()` transforme la valeur **à la sauvegarde** (champ → BDD). Exemple typique : afficher un slug reformaté, mais hasher un mot de passe avant d'enregistrer.
+
 Ces deux méthodes sont symétriques et souvent confondues :
 
 | Méthode                 |	Quand                | Direction        |
@@ -231,115 +272,54 @@ TextInput::make('password')
     ),
 ```
 
-## 10. Composants custom - Architecture interne
+## 10. Organisation du code - Patterns
 
-Prenons l'exemple d'un composant entièrement sur-mesure : PlaceSelector. Voici la théorie derrière :
-
-Tout composant Filament hérite de `Field`, qui hérite de `Component`. La classe `Component` est elle-même un objet PHP qui :
-* maintient son propre state
-* possède une vue Blade associée (`$view`)
-* peut enregistrer des **event listeners Livewire** pour communiquer avec le frontend
-* peut utiliser des **traits** pour activer des comportements (affix, placeholder, etc.)
-
-```
-Field
- └── Component
-      └── Concerns\HasState       - gère la lecture/écriture du state
-      └── Concerns\HasValidation  - gère les règles de validation
-      └── Concerns\CanBeDisabled  - gère disabled/enabled
-      └── Concerns\HasLifecycle   - setUp(), mount(), ...
-```
-Le `registerListeners()` dans `PlaceSelector` permet d'écouter des événements Livewire émis depuis la vue Alpine.js :
-```PHP
-<?php
-// Vue Blade (Alpine.js émet l'event)
-$dispatch('placeSelector::selectItem', { statePath: '...', placeId: '...' })
-
-// PHP reçoit l'event
-$this->registerListeners([
-    'placeSelector::selectItem' => [
-        function (PlaceSelector $component, string $statePath, string $placeId): void {
-            // auto-remplit les autres champs via data_set()
-        }
-    ]
-]);
-```
-
-## 11. Organisation du code - Patterns observés dans ce projet
+> **En résumé** : Sur des formulaires complexes, on n'écrit pas tout dans la Resource. On extrait les sections dans des classes dédiées. C'est ce qui rend les formulaires maintenables même avec des dizaines de champs.
 
 ### Pattern 1 : Sections extraites dans des classes dédiées
 
- chaque onglet délégué à une classe externe :
+Quand un formulaire est long (beaucoup d'onglets, de sections), on extrait chaque partie dans une classe avec une méthode `schema()` statique. La Resource reste lisible car elle ne contient plus que la structure.
+
 ```PHP
 <?php
+// Dans la Resource
 Tab::make('General')->schema(Sections\GeneralTab::schema()),
 Tab::make('Location')->schema(Sections\LocationTab::schema()),
-```
 
-Chaque `Section` est dans le directory **Sections**. Avantage : le fichier Resource reste lisible même avec des formulaires complexes.
-
-### Pattern 2 : Blocs réutilisables (Builder)
-
-Les blocs du `Builder` sont chacun dans une classe distincte dans le directory **Blocks**, avec une méthode static `schema()` qui retourne un `Builder\Block`.
-
-Exemple :
-```PHP
-<?php
-
-namespace App\Filament\Resources\Blocks;
-
-use App\Filament\Resources\Blocks\Partials\VisibilityToggle;
-use Filament\Forms;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
-
-class HeroBlock
+// Dans app/Filament/Resources/Sections/GeneralTab.php
+class GeneralTab
 {
-    public static function schema()
+    public static function schema(): array
     {
-        return Forms\Components\Builder\Block::make('hero')
-            ->schema([
-                VisibilityToggle::make(),
-                SpatieMediaLibraryFileUpload::make('hero_image')
-                    ->collection('hero')
-                    ->label('Hero image')
-                    ->helperText('This is the background for the hero')
-                    ->required()
-                    ->imageEditor()
-                    ->columnSpanFull(),
-                TextInput::make('title')
-                    ->label('Title')
-                    ->required()
-                    ->columnSpanFull(),
-            ]);
+        return [
+            TextInput::make('name')->required(),
+            // ...
+        ];
     }
 }
 ```
 
-### Pattern 3 : Partials partagés entre blocs
+### Pattern 2 : Blocs Builder et Partials partagés
 
-VisibilityToggle.php - un Toggle commun inclus dans tous les blocs. Évite la duplication.
+Pour les composants `Builder`, chaque bloc vit dans sa propre classe. Les éléments communs à plusieurs blocs (ex : un toggle "Masquer") sont extraits en **Partials**.
 
-```PHP
-<?php
-
-namespace App\Filament\Resources\Blocks\Partials;
-
-use Filament\Forms\Components\Toggle;
-
-class VisibilityToggle
-{
-    public static function make(): Toggle
-    {
-        return Toggle::make('hidden')
-            ->label('Hide')
-            ->onColor('warning')
-            ->columnSpanFull();
-    }
-}
+```
+app/Filament/Resources/
+├── Sections/
+│   ├── GeneralTab.php
+│   └── LocationTab.php
+└── Blocks/
+    ├── HeroBlock.php
+    ├── ParagraphBlock.php
+    └── Partials/
+        └── VisibilityToggle.php   ← réutilisé dans tous les blocs
 ```
 
-## Récuapitulatif du flux de données
+→ Pour le détail complet du Builder : [02 - Bloc Builder](02_BLOC_BUILDER.md)
+
+→ Pour créer ses propres composants de formulaire : [03 - Composants custom](03_CUSTOM_COMPONENT.md)
+
+## Récapitulatif du flux de données
 
 ```
 BDD (MySQL)
