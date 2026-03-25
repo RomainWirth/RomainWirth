@@ -2,9 +2,32 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/tables/getting-started](https://filamentphp.com/docs/3.x/tables/getting-started)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Structure de base](#1-structure-de-base) | `columns`, `filters`, `actions`, `bulkActions` : les 4 piliers d'une table. |
+| 2 | [Les colonnes](#2-les-colonnes) | `TextColumn`, dot-notation, `state()`, `badge()`, `IconColumn`, `ImageColumn`. |
+| 3 | [Colonnes custom](#3-colonnes-custom-réutilisables) | Extraire une colonne répétitive dans une classe dédiée. |
+| 4 | [Les filtres](#4-les-filtres) | Modifier la query Eloquent depuis l'UI via `SelectFilter`, `TernaryFilter`, `Filter` custom. |
+| 5 | [Actions par ligne](#5-les-actions-par-ligne) | Boutons sur chaque ligne : natifs (`EditAction`…) ou entièrement custom avec modale. |
+| 6 | [BulkActions](#6-les-bulkactions---actions-sur-sélection-multiple) | Agir sur une sélection de lignes cochées, avec formulaire dans une modale. |
+| 7 | [Tri, recherche, pagination](#7-tri-recherche-pagination) | Options globales de la table : tri par défaut, recherche, pagination, polling. |
+| 8 | [Surcharger la query](#8-surcharger-la-query-eloquent) | Modifier la requête de base : scopes, eager loading, soft deletes. |
+| 9 | [Layout des filtres](#9---layout---changer-la-présentation) | Changer la position du panneau de filtres. |
+| 10 | [Colonnes éditables](#10-colonnes-éditables-en-ligne) | Éditer une valeur directement dans la table sans passer par la page d'édition. |
+| 11 | [hintAction sur colonne](#11-hintaction-sur-une-colonne) | Ajouter un bouton d'action directement dans une cellule. |
+| — | [Récapitulatif structurel](#récapitulatif-structurel) | Vue d'ensemble Table → columns / filters / actions / bulkActions. |
+
+---
+
 ## 1. Structure de base
 
-Une table est définie dans la méthode table(Table $table): Table d'une Resource. Elle se compose de quatre parties :
+> **En résumé** : La table est définie dans la méthode `table()` de la Resource. Elle s'articule toujours autour de 4 clés : `columns` (ce qu'on affiche), `filters` (comment l'utilisateur filtre), `actions` (boutons par ligne), `bulkActions` (boutons sur sélection). Tout le reste (tri, pagination, recherche…) se configure directement sur l'objet `$table`.
+
+Une table est définie dans la méthode `table(Table $table): Table` d'une Resource. Elle se compose de quatre parties :
 ```PHP
 <?php
 public static function table(Table $table): Table
@@ -18,6 +41,8 @@ public static function table(Table $table): Table
 ```
 
 ## 2. Les colonnes
+
+> **En résumé** : `TextColumn` couvre la grande majorité des cas (texte, dates, nombres, badges). La dot-notation (`destination.name`) charge automatiquement les relations sans écrire de query. `->state()` permet d'afficher une valeur calculée qui n'est pas un attribut direct du modèle. `->badge()` + `->color()` transforme une valeur en badge coloré selon son contenu.
 
 ### `TextColumn` - la plus utilisée
 ```PHP
@@ -120,6 +145,8 @@ Tables\Columns\ImageColumn::make('avatar')
 
 ### 3. Colonnes custom (réutilisables)
 
+> **En résumé** : Quand la même configuration de colonne revient dans plusieurs tables (ex : une `IconColumn` booléen avec `toggleable`), on l'extrait dans une classe dédiée avec une méthode statique `make()`. Le principe est identique aux blocs du Builder ou aux sections de formulaire : on factorise pour éviter la duplication et centraliser les modifications.
+
 Exactement comme pour les Forms, on peut extraire des colonnes fréquemment réutilisées dans des classes dédiées. Exemple :
 ```PHP
 <?php
@@ -146,6 +173,8 @@ class BooleanColumn
 ```
 
 ## 4. Les filtres
+
+> **En résumé** : Les filtres modifient la query Eloquent en fonction des choix de l'utilisateur dans le panneau de filtres. `SelectFilter` couvre les cas simples (filtrer par une valeur ou une relation). `TernaryFilter` gère les booléens à trois états. Le `Filter` générique est le plus puissant : on lui passe un formulaire Filament et une closure qui reçoit le `Builder` Eloquent — on peut faire n'importe quelle requête.
 
 Les filtres ajoutent un panneau latéral (ou en ligne) permettant à l'utilisateur de filtrer les résultats. Chaque filtre modifie la **query Eloquent**.
 
@@ -215,6 +244,8 @@ Tables\Filters\Filter::make('not_published')
 
 ## 5. Les actions par ligne
 
+> **En résumé** : Les actions apparaissent dans la dernière colonne de chaque ligne. Filament fournit les actions CRUD natives (`EditAction`, `DeleteAction`…). Pour un comportement métier spécifique, on utilise `Action::make()` en définissant l'icône, la couleur, une confirmation optionnelle, et la closure `->action()` qui reçoit le `$record`. On peut aussi ouvrir une modale avec un formulaire Filament via `->form([...])` pour collecter des données avant d'agir.
+
 Actions affichées sur chaque ligne de la table.
 
 ### Actions natives
@@ -266,6 +297,8 @@ Tables\Actions\Action::make('change_status')
 
 ## 6. Les BulkActions - actions sur sélection multiple
 
+> **En résumé** : Les BulkActions apparaissent dans la barre du dessus quand l'utilisateur coche des lignes. La différence avec une `Action` : la closure `->action()` reçoit une `Collection` de records au lieu d'un seul. On peut aussi ouvrir une modale avec un formulaire (ex : choisir un nouveau statut) avant d'appliquer l'action. `->deselectRecordsAfterCompletion()` décoche tout après l'exécution.
+
 Permettent d'agir sur plusieurs lignes cochées simultanément.
 
 ### Actions natives
@@ -307,6 +340,8 @@ BulkAction::make('update_status')
 
 ## 7. Tri, recherche, pagination
 
+> **En résumé** : Ces options se configurent directement sur l'objet `$table`. `->defaultSort('colonne', 'asc|desc')` définit l'ordre initial. La recherche peut être activée colonne par colonne (`->searchable()`) ou sur plusieurs colonnes à la fois. `->poll('30s')` rafraîchit automatiquement la table sans recharger la page. `->deferLoading()` affiche un skeleton pendant le chargement — utile pour les tables lentes.
+
 ```PHP
 <?php
 $table
@@ -338,6 +373,8 @@ public static function getGloballySearchableAttributes(): array
 
 ## 8. Surcharger la query Eloquent
 
+> **En résumé** : Par défaut Filament applique tous les global scopes du modèle (ex : `SoftDeletingScope` qui exclut les enregistrements supprimés). On override `getEloquentQuery()` pour retirer certains scopes ou ajouter des eager loads. C'est aussi là qu'on ajoute des `->with([...])` pour éviter les problèmes N+1 sur les colonnes en dot-notation.
+
 Pour modifier la query de base de la table (exclure des scopes, ajouter des eager loads...) :
 ```PHP
 <?php
@@ -354,6 +391,8 @@ public static function getEloquentQuery(): Builder
 
 ## 9. `->layout()` - changer la présentation
 
+> **En résumé** : Par défaut le panneau de filtres est dans un dropdown en haut à droite. `FiltersLayout::AboveContent` l'affiche directement au-dessus de la table — pratique quand il y a beaucoup de filtres ou qu'on veut qu'ils soient visibles en permanence. `FiltersLayout::BelowContent` le place en dessous.
+
 Par défaut la table est en mode liste. On peut passer en grille :
 ```PHP
 <?php
@@ -366,6 +405,8 @@ $table
 ```
 
 ## 10. Colonnes éditables en ligne
+
+> **En résumé** : Certains types de colonnes permettent d'éditer la valeur directement dans la cellule sans naviguer vers la page d'édition. `TextInputColumn` pour le texte, `SelectColumn` pour un select, `CheckboxColumn` / `ToggleColumn` pour les booléens. On peut ajouter des `->rules([...])` pour valider la saisie. À utiliser avec mesure : trop d'éditions inline rend la table confuse.
 
 Filament permet d'éditer certaines valeurs directement dans la table sans passer par la page d'édition :
 ```PHP
@@ -382,6 +423,8 @@ Tables\Columns\ToggleColumn::make('is_featured'),
 ```
 
 ## 11. `hintAction` sur une colonne
+
+> **En résumé** : `->hintAction()` ajoute un petit bouton discret directement dans la cellule (en général une icône à droite). C'est différent des actions de ligne qui sont groupées dans la dernière colonne : ici l'action est contextuelle à une colonne précise. Utile pour des actions courtes liées à la valeur affichée (ex : annuler un abonnement depuis la cellule "Plan").
 
 Permet d'ajouter un bouton d'action directement dans une cellule :
 ```PHP

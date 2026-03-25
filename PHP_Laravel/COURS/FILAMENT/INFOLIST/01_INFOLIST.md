@@ -2,7 +2,26 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/infolists/overview](https://filamentphp.com/docs/3.x/infolists/overview)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Qu'est-ce qu'un Infolist ?](#1-quest-ce-quun-infolist-) | L'équivalent lecture seule d'un formulaire : afficher sans éditer. |
+| 2 | [Activer la page View](#2-activer-la-page-view-sur-une-resource) | Ajouter la page `ViewRecord` à la Resource via `getPages()`. |
+| 3 | [Définir l'Infolist](#3-définir-linfolist-dans-la-resource) | Méthode `infolist()` dans la Resource avec des `Entry` et des `Section`. |
+| 4 | [Composants d'entrée (Entry)](#4-les-composants-dentrée-entry) | `TextEntry`, `BadgeEntry`, `ImageEntry`, `IconEntry`, `RepeatableEntry`… |
+| 5 | [Mise en page](#5-mise-en-page) | `Section`, `Grid`, `Split`, `Tabs` : identiques aux layouts de formulaire. |
+| 6 | [Actions dans un Infolist](#6-actions-dans-un-infolist) | Ajouter des boutons d'action sur une `Section` ou un `Entry`. |
+| 7 | [Hors Resource (Livewire custom)](#7-infolist-dans-un-contexte-autre-quune-resource) | Trait `InteractsWithInfolists` pour utiliser un Infolist dans un Widget. |
+| — | [Récapitulatif](#récapitulatif) | Vue d'ensemble composants / layout / contextes / actions. |
+
+---
+
 ## 1. Qu'est-ce qu'un Infolist ?
+
+> **En résumé** : L'Infolist est la version affichage-seulement d'un formulaire. Là où `form()` utilise des `TextInput`, `Select`… que l'utilisateur peut modifier, `infolist()` utilise des `TextEntry`, `BadgeEntry`… en lecture seule. C'est la base de la page `ViewRecord`. Les composants de layout (`Section`, `Grid`, `Tabs`…) sont identiques à ceux des formulaires.
 
 Un Infolist est l'équivalent lecture seule d'un formulaire. Il sert à afficher les données d'un record de manière structurée, sans champs éditables. C'est la base de la page ViewRecord dans une Resource.
 
@@ -14,6 +33,9 @@ Un Infolist est l'équivalent lecture seule d'un formulaire. Il sert à afficher
 | State       | Hydraté depuis le modèle, sauvegardé en BDD |	Hydraté depuis le modèle uniquement |
 
 ## 2. Activer la page View sur une Resource
+
+> **En résumé** : La page `ViewRecord` n'est pas générée par défaut. On l'ajoute soit en passant `--view` lors de la génération de la Resource, soit en déclarant manuellement `'view' => Pages\ViewPost::route('/{record}')` dans `getPages()`. Une fois ajoutée, Filament affiche automatiquement un bouton "Voir" dans la table et gère le routing.
+
 ```bash
 php artisan make:filament-resource Post --generate --view
 ```
@@ -32,6 +54,9 @@ public static function getPages(): array
 ```
 
 ## 3. Définir l'Infolist dans la Resource
+
+> **En résumé** : La méthode `infolist()` fonctionne exactement comme `form()` : on lui passe un `->schema([...])` avec des composants. La différence : les composants sont des `Entry` (lecture seule) au lieu de champs éditables. La dot-notation (`author.name`) charge les relations automatiquement, comme en formulaire. Le layout (`Section`, `->columns()`…) est identique.
+
 ```PHP
 <?php
 use Filament\Infolists\Infolist;
@@ -72,6 +97,8 @@ public static function infolist(Infolist $infolist): Infolist
 }
 ```
 ## 4. Les composants d'entrée (`Entry`)
+
+> **En résumé** : Chaque `Entry` est l'équivalent lecture seule d'un champ de formulaire. `TextEntry` est le plus polyvalent : il formate dates, montants, HTML, relations et valeurs calculées. `BadgeEntry` affiche une valeur sous forme de badge coloré. `RepeatableEntry` est l'équivalent du `Repeater` côté affichage : il itère sur un tableau JSON ou une relation et affiche chaque élément avec un sous-schéma.
 
 ### `TextEntry` - le plus polyvalent
 
@@ -191,6 +218,8 @@ RepeatableEntry::make('travel_companions')
 
 ## 5. Mise en page
 
+> **En résumé** : Les composants de layout de l'Infolist sont les mêmes qu'en formulaire. `Section` regroupe des entrées avec un titre, et peut être rétractable. `Grid` crée une grille à N colonnes. `Split` dispose deux blocs côte à côte (ex : photo à gauche, infos à droite). `Tabs` creé des onglets pour séparer des catégories d'informations. On utilise `->columnSpanFull()` pour qu'une entrée occupe toute la largeur.
+
 Les mêmes composants de layout qu'en formulaire sont disponibles :
 
 ### `Section`
@@ -253,6 +282,8 @@ Tabs::make()->tabs([
 
 ## 6. Actions dans un Infolist
 
+> **En résumé** : Un Infolist est en lecture seule, mais on peut y intégrer des boutons d'action. On les déclare via `->headerActions([...])` sur une `Section`. C'est utile pour des actions métier contextuelles à la vue (ex : "Approuver", "Envoyer un email"…) sans avoir à quitter la page. Ces actions utilisent `Filament\Infolists\Components\Actions\Action` (namespace propre à l'Infolist).
+
 On peut ajouter des actions directement dans l'Infolist (sur une `Section` ou un `Entry`) :
 ```PHP
 <?php
@@ -271,6 +302,8 @@ Section::make('Statut')
 ```
 
 ## 7. Infolist dans un contexte autre qu'une Resource
+
+> **En résumé** : Un Infolist ne se limite pas aux pages `ViewRecord`. On peut l'utiliser dans n'importe quel composant Livewire (Widget, page custom…) en ajoutant le trait `InteractsWithInfolists`. On définit ensuite une méthode publique qui retourne un `Infolist` configuré avec `->record($this->user)`. Dans la vue Blade, on affiche l'infolist avec `{{ $this->nomDeLaMethode }}`.
 
 L'Infolist peut être utilisé dans n'importe quel composant Livewire via le trait `InteractsWithInfolists` :
 ```PHP

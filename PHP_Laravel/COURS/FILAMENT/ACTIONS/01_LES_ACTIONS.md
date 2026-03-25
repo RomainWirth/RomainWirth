@@ -2,7 +2,30 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/actions/overview](https://filamentphp.com/docs/3.x/actions/overview)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Qu'est-ce qu'une Action ?](#1-quest-ce-quune-action-) | Un bouton déclencheur utilisable dans 6 contextes différents. |
+| 2 | [Actions prédéfinies (Built-in)](#2-les-actions-prédéfinies-built-in) | `EditAction`, `DeleteAction`, `ViewAction`… : zéro configuration pour le CRUD. |
+| 3 | [Action::make() custom](#3-actionmake---action-personnalisée) | Créer un bouton métier avec icône, couleur, condition et logique PHP. |
+| 4 | [Modale avec formulaire](#4-actions-avec-modale-et-formulaire) | Ouvrir une modale avec des champs Filament avant d'exécuter l'action. |
+| 5 | [Personnaliser la modale](#5-personnaliser-la-modale) | Titre, description, labels des boutons, taille, icône. |
+| 6 | [HeaderActions](#6-headeractions---actions-dans-len-tête-de-page) | Boutons dans l'en-tête des pages List, Create, Edit ou custom. |
+| 7 | [BulkAction](#7-bulkaction---actions-sur-sélection-multiple) | Agir sur une sélection de lignes cochées. |
+| 8 | [Actions dans un formulaire](#8-actions-dans-un-formulaire) | Bouton dans un champ (`suffixAction`) ou bloc autonome dans le form. |
+| 9 | [ActionGroup](#9-actiongroup---regrouper-des-actions-dans-un-menu) | Regrouper plusieurs actions dans un dropdown pour alléger l'affichage. |
+| 10 | [URL et redirection](#10-url-et-redirection) | Naviguer vers une URL ou rediriger après l'action. |
+| 11 | [Autorisation des actions](#11-autorisation-des-actions) | Contrôler la visibilité et l'accès via policies ou closures. |
+| — | [Récapitulatif](#récapitulatif) | Vue d'ensemble types / contextes / modale / utilitaires. |
+
+---
+
 ## 1. Qu'est-ce qu'une Action ?
+
+> **En résumé** : Une Action est l'abstraction Filament pour tout bouton qui fait quelque chose. La même classe `Action` (ou ses variantes) peut apparaître dans une ligne de table, dans l'en-tête d'une page, dans un formulaire ou dans une infolist. Ce qui change c'est le **contexte de déclaration** (dans `->actions()`, dans `getHeaderActions()`…) et le **namespace importé** (`Filament\Tables\Actions` vs `Filament\Actions`), pas la logique.
 
 Une Action est un **bouton déclencheur** qui peut ouvrir une modale, exécuter du code, rediriger, etc. Filament distingue plusieurs contextes d'utilisation :
 
@@ -16,6 +39,8 @@ Une Action est un **bouton déclencheur** qui peut ouvrir une modale, exécuter 
 | Infolist                   | sur une entrée ou en header       |
 
 ## 2. Les actions prédéfinies (Built-in)
+
+> **En résumé** : Filament fournit des actions CRUD complètes prêtes à l'emploi. `EditAction`, `ViewAction` et `DeleteAction` ouvrent automatiquement la modale ou la page correspondante, et vérifient les policies du modèle (`canEdit()`, `canDelete()`…) sans aucune configuration. `ReplicateAction` duplique l'enregistrement. C'est le point de départ — on ne crée une action custom que pour ce que ces built-ins ne couvrent pas.
 
 Filament fournit des actions CRUD déjà configurées, à importer depuis `Filament\Tables\Actions` ou `Filament\Actions` :
 ```PHP
@@ -45,6 +70,8 @@ public static function table(Table $table): Table
 Ces actions ouvrent automatiquement des modales avec le formulaire de la Resource, sans configuration supplémentaire.
 
 ## 3. `Action::make()` - action personnalisée
+
+> **En résumé** : `Action::make('identifiant')` crée un bouton métier sur mesure. Les méthodes fluentes définissent l'apparence (`->label()`, `->icon()`, `->color()`), les conditions (`->visible()`, `->disabled()`), et la logique via `->action(fn)` qui reçoit le `$record` courant. Sans `->form()`, l'action s'exécute directement — avec `->requiresConfirmation()` on ajoute juste une modale de confirmation avant l'exécution.
 
 ```PHP
 <?php
@@ -80,6 +107,8 @@ Action::make('nom')
 ```
 
 ## 4. Actions avec modale et formulaire
+
+> **En résumé** : En ajoutant `->form([...])` à une action, Filament ouvre une modale contenant les champs déclarés. La closure `->action()` reçoit alors `$data` (les valeurs du formulaire) en plus du `$record`. On peut pré-remplir les champs avec les valeurs actuelles du record via `->fillForm(fn)` — utile pour une modale d'édition partielle sans ouvrir toute la page Edit.
 
 On peut construire une modale complète avec un formulaire :
 ```PHP
@@ -118,6 +147,9 @@ Action::make('changeStatus')
 ```
 
 ## 5. Personnaliser la modale
+
+> **En résumé** : Par défaut, `->requiresConfirmation()` génère une modale avec des textes anglais génériques. On les surcharge avec `->modalHeading()`, `->modalDescription()`, `->modalSubmitActionLabel()` et `->modalCancelActionLabel()`. `->modalWidth()` contrôle la taille — utile quand le formulaire dans la modale est large.
+
 ```PHP
 <?php
 Action::make('archiver')
@@ -136,6 +168,8 @@ Action::make('archiver')
 ```
 
 ## 6. `HeaderActions` - actions dans l'en-tête de page
+
+> **En résumé** : Les `HeaderActions` sont les boutons visibles en haut à droite des pages Filament. Sur `ListRecords`, on y met typiquement le bouton "Créer" (`CreateAction::make()`). Sur `EditRecord`, on peut ajouter des actions métier (ex : "Publier", "Envoyer un email"…). Ces actions sont déclarées en surchargeant `getHeaderActions()` dans la classe de page. Elles utilisent `Filament\Actions` (hors table), pas `Filament\Tables\Actions`.
 
 Sur les pages `ListRecords`, `CreateRecord`, `EditRecord` ou une page custom :
 ```PHP
@@ -161,6 +195,9 @@ protected function getHeaderActions(): array
 ```
 
 ## 7. `BulkAction` - actions sur sélection multiple
+
+> **En résumé** : Une `BulkAction` est identique à une `Action` normale, sauf que sa closure `->action()` reçoit une `Collection` Eloquent de tous les records cochés. On itère dessus avec `->each()`. `->deselectRecordsAfterCompletion()` vide la sélection une fois l'action terminée, ce qui évite que l'utilisateur relance l'action par erreur.
+
 ```PHP
 <?php
 use Filament\Tables\Actions\BulkAction;
@@ -180,6 +217,8 @@ use Illuminate\Database\Eloquent\Collection;
 ```
 
 ## 8. Actions dans un formulaire
+
+> **En résumé** : On peut placer des actions directement dans le schéma d'un formulaire. `->suffixAction()` (ou `->prefixAction()`) accroche un bouton à l'intérieur d'un champ (ex : bouton "générer" dans un TextInput). `Actions::make([...])` crée un bloc de boutons autonome inséré dans la grille du formulaire. Ces actions utilisent `Filament\Forms\Components\Actions\Action` (namespace différent des actions de table ou de page).
 
 On peut placer des actions directement dans un formulaire, par exemple pour déclencher une action sans soumettre le formulaire entier :
 ```PHP
@@ -208,6 +247,8 @@ use Filament\Forms\Components\Actions;
 
 ## 9. `ActionGroup` - regrouper des actions dans un menu
 
+> **En résumé** : Quand une ligne de table cumule 4+ actions, l'interface devient surchargée. `ActionGroup::make([...])` regroupe plusieurs actions dans un menu déroulant (dropdown). On n'affiche que les actions principales en direct, et on met les actions secondaires dans le groupe. `->button()` affiche le groupe sous forme de bouton plein plutôt que d'une simple icône.
+
 Évite de surcharger les lignes de table avec trop de boutons :
 ```PHP
 <?php
@@ -228,6 +269,9 @@ use Filament\Tables\Actions\ActionGroup;
 ```
 
 ## 10. URL et redirection
+
+> **En résumé** : `->url()` transforme l'action en lien (pas de `->action()` nécessaire). `->openUrlInNewTab()` ouvre dans un nouvel onglet. Pour rediriger **après** avoir exécuté de la logique, on utilise `->successRedirectUrl()` qui est évalué une fois l'action terminée avec succès.
+
 ```PHP
 <?php
 Action::make('viewInvoice')
@@ -244,6 +288,8 @@ Action::make('viewInvoice')
 ```
 
 ## 11. Autorisation des actions
+
+> **En résumé** : Les actions built-in (`EditAction`, `DeleteAction`…) vérifient automatiquement les policies Laravel du modèle (`canEdit()`, `canDelete()`…). Pour les actions custom, on utilise `->visible(fn)` ou `->hidden(fn)` pour contrôler l'affichage, et `->authorize('policyMethod')` pour lever une exception si l'utilisateur n'a pas la permission. `->visible()` masque le bouton, `->authorize()` échoue même si l'action est appelée directement — c'est une défense en profondeur.
 
 Chaque action peut être conditionnée par une policy ou un check manuel :
 ```PHP

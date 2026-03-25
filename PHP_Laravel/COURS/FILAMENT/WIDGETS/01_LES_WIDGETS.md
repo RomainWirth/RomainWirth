@@ -2,7 +2,29 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/widgets/overview](https://filamentphp.com/docs/3.x/widgets/overview)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Qu'est-ce qu'un Widget ?](#1-quest-ce-quun-widget-) | Trois types natifs : `StatsOverviewWidget`, `ChartWidget`, `TableWidget`. |
+| 2 | [Création d'un widget](#2-création-dun-widget) | `make:filament-widget` génère la classe avec le flag du type voulu. |
+| 3 | [StatsOverviewWidget](#3-statsoverviewwidget---cartes-de-statistiques) | Cartes de chiffres avec description, couleur et mini-sparkline. |
+| 4 | [ChartWidget](#4-chartwidget---graphiques) | Graphiques Chart.js avec filtres temporels intégrés. |
+| 5 | [TableWidget](#5-tablewidget---table-intégrée) | Table Filament complète embarquée dans un widget. |
+| 6 | [Enregistrer les widgets](#6-enregistrer-les-widgets) | Dashboard (Panel Provider), Resource pages, ou pages custom. |
+| 7 | [Mise en page](#7-mise-en-page-columnspan) | Contrôler la largeur dans la grille via `$columnSpan`. |
+| 8 | [Polling](#8-polling-rafraîchissement-automatique) | Rafraîchissement automatique à intervalle défini. |
+| 9 | [Données contextuelles](#9-widgets-avec-données-contextuelles-record) | Injecter le `$record` courant dans un widget de page Edit. |
+| 10 | [Widget custom Blade](#10-widget-custom-blade-pur) | Vue Blade libre pour des interfaces entièrement sur mesure. |
+| — | [Récapitulatif](#récapitulatif) | Vue d'ensemble des types, enregistrement et options. |
+
+---
+
 ## 1. Qu'est-ce qu'un Widget ?
+
+> **En résumé** : Un widget est un composant autonome qui s'insère dans le dashboard ou dans n'importe quelle page Filament pour afficher des données visuelles. Filament propose 3 types prêts à l'emploi : `StatsOverviewWidget` (cartes de chiffres clés), `ChartWidget` (graphiques Chart.js) et `TableWidget` (mini-table). On peut aussi créer un widget Blade libre pour des interfaces entièrement sur mesure.
 
 Un Widget est un bloc réutilisable affiché sur le dashboard ou dans n'importe quelle page Filament. Filament propose trois types natifs :
 
@@ -14,6 +36,8 @@ Un Widget est un bloc réutilisable affiché sur le dashboard ou dans n'importe 
 
 ## 2. Création d'un widget
 
+> **En résumé** : Comme pour les Resources ou les Pages, `make:filament-widget` génère automatiquement la classe dans `app/Filament/Widgets/`. Le flag (`--stats-overview`, `--chart`, `--table`) détermine le type de base généré. Sans flag, Artisan génère un widget Blade libre.
+
 ```bash
 php artisan make:filament-widget StatsOverview --stats-overview
 php artisan make:filament-widget RevenueChart --chart
@@ -23,6 +47,8 @@ php artisan make:filament-widget LatestOrders --table
 Les fichiers sont générés dans app/Filament/Widgets/.
 
 ## 3. `StatsOverviewWidget` - cartes de statistiques
+
+> **En résumé** : C'est le type le plus simple : on retourne un tableau de `Stat` dans `getStats()`. Chaque `Stat` affiche un label, une valeur chiffrée, une description optionnelle, une icône et une couleur. `->chart([...])` ajoute une mini-sparkline animée. `->url()` rend la carte entière cliquable vers une page Filament.
 
 ```PHP
 <?php
@@ -69,6 +95,8 @@ Stat::make('label', 'value')
 ```
 
 ## 4. `ChartWidget` - graphiques
+
+> **En résumé** : `ChartWidget` s'appuie sur Chart.js. On retourne les données dans `getData()` au format Chart.js (datasets + labels), et `getType()` définit le type de rendu (`line`, `bar`, `pie`…). `getFilters()` ajoute un sélecteur de période intégré au widget — la valeur choisie est disponible dans `$this->filter` pour adapter la requête Eloquent.
 
 ```PHP
 <?php
@@ -141,6 +169,9 @@ protected function getData(): array
 }
 ```
 ## 5. `TableWidget` - table intégrée
+
+> **En résumé** : `TableWidget` embarque une table Filament complète (colonnes, filtres, actions…). La différence avec une Resource : on passe la query directement dans `->query()` de la méthode `table()`. `$columnSpan = 'full'` étale le widget sur toute la largeur. C'est idéal pour afficher les derniers enregistrements d'un modèle en bas d'un dashboard.
+
 ```PHP
 <?php
 
@@ -181,6 +212,8 @@ class LatestOrders extends BaseWidget
 }
 ```
 ## 6. Enregistrer les widgets
+
+> **En résumé** : Les widgets s'enregistrent à trois endroits distincts. Sur le dashboard principal : dans `->widgets([...])` du Panel Provider, qui fixe aussi l'ordre d'affichage. Dans une Resource : via `getHeaderWidgets()` / `getFooterWidgets()` sur la page List ou Edit concernée. Dans une page custom : via `getWidgets()`. Filament auto-découvre les classes dans `app/Filament/Widgets/`, mais l'enregistrement explicite permet de contrôler ordre et visibilité.
 
 ### Sur le Dashboard
 
@@ -232,6 +265,8 @@ public function getWidgets(): array
 
 ## 7. Mise en page (`columnSpan`)
 
+> **En résumé** : Le dashboard est une grille (2 colonnes par défaut). Chaque widget déclare sa largeur via la propriété `$columnSpan` : un entier (nombre de colonnes occupées), `'full'` (toute la largeur), ou un tableau responsive (`['md' => 2, 'xl' => 3]`). Le nombre total de colonnes de la grille se configure avec `->widgetColumnSpan()` dans le Panel Provider.
+
 Le dashboard utilise une grille de 2 colonnes par défaut. On contrôle la largeur de chaque widget :
 ```PHP
 <?php
@@ -256,6 +291,8 @@ Pour changer le nombre de colonnes du dashboard :
 
 ## 8. Polling (rafraîchissement automatique)
 
+> **En résumé** : `$pollingInterval` est une propriété statique de la classe widget. Filament déclenche automatiquement un rechargement Livewire à l'intervalle défini (`'15s'`, `'30s'`…). Mettre `null` désactive le polling. Utile pour les widgets de monitoring en temps réel — mais attention à la charge serveur si plusieurs widgets polent en simultané.
+
 ```PHP
 <?php
 class StatsOverview extends BaseWidget
@@ -268,6 +305,8 @@ class StatsOverview extends BaseWidget
 ```
 
 ## 9. Widgets avec données contextuelles (Record)
+
+> **En résumé** : Quand un widget est affiché depuis la page Edit d'une Resource, Filament peut y injecter automatiquement le `$record` courant — à condition que le widget déclare une propriété publique `public ?Model $record = null`. C'est idéal pour créer des widgets contextuels qui n'affichent des stats que pour l'enregistrement en cours (ex : les commandes passées par un utilisateur précis).
 
 Dans une page Edit, on peut passer le `$record` courant au widget :
 ```PHP
@@ -294,6 +333,8 @@ class UserOrderStats extends BaseWidget
 ```
 
 ## 10. Widget custom (Blade pur)
+
+> **En résumé** : Pour une interface qui ne rentre dans aucun des 3 types natifs (carte interactive, tableau de bord maison, composant Alpine.js…), on crée un widget de base et on définit `$view` pointant vers un template Blade. `getViewData()` injecte les variables dans la vue. Le wrapper `<x-filament-widgets::widget>` applique automatiquement le style Filament (fond, bordure, padding).
 
 Pour un widget entièrement custom (interface spéciale, carte interactive...) :
 ```bash

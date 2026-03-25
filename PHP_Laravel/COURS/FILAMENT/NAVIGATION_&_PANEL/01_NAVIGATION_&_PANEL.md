@@ -2,7 +2,30 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/navigation](https://filamentphp.com/docs/3.x/panels/navigation)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Le Panel Provider](#1-le-panel-provider) | Point d'entrée unique pour toute la configuration du panel. |
+| 2 | [Couleurs et thème](#2-couleurs-et-thème) | Palette Tailwind ou RGB custom, dark mode. |
+| 3 | [Logo, favicon, icône](#3-logo-favicon-icône) | Personnaliser l'identité visuelle de la sidebar. |
+| 4 | [Navigation par défaut](#4-la-navigation-par-défaut--autodiscovery) | Autodiscovery des Resources/Pages/Widgets + propriétés statiques de navigation. |
+| 5 | [Groupes de navigation](#5-groupes-de-navigation) | Regrouper les items dans la sidebar et contrôler l'ordre des groupes. |
+| 6 | [Badges dynamiques](#6-badges-dynamiques-sur-les-items-de-navigation) | Compteur en temps réel sur un item de menu. |
+| 7 | [Navigation manuelle](#7-navigation-entièrement-manuelle) | Désactiver l'autodiscovery et construire la navigation à la main. |
+| 8 | [Le Dashboard](#8-le-dashboard) | Personnaliser ou remplacer la page d'accueil du panel. |
+| 9 | [Multi-panels](#9-multi-panels) | Plusieurs panels indépendants (admin, client…) sur la même app. |
+| 10 | [Sidebar avancée](#10-personnalisation-avancée-de-la-sidebar) | Réductible, full-collapsed, navigation horizontale. |
+| 11 | [Render hooks](#11-render-hooks---injecter-du-html-partout) | Injecter du HTML ou des vues Blade à n'importe quel endroit du panel. |
+| — | [Récapitulatif](#récapitulatif) | Vue d'ensemble Panel Provider, navigation, apparence, multi-panels. |
+
+---
+
 ## 1. Le Panel Provider
+
+> **En résumé** : Le Panel Provider est le fichier de configuration central de Filament — l'équivalent d'un `config/` mais sous forme de classe fluente. Tout y passe : l'URL du panel, la page de login, les couleurs, les dossiers à scanner pour l'autodiscovery, les middlewares d'authentification. Un projet peut avoir plusieurs Panel Providers (un par panel). La méthode `panel()` retourne l'objet `Panel` après chaînage de toutes les options.
 
 Tout part du **Panel Provider**, généré lors de l'installation :
 ```bash
@@ -41,6 +64,8 @@ class AdminPanelProvider extends PanelProvider
 ```
 
 ## 2. Couleurs et thème
+
+> **En résumé** : Filament utilise Tailwind CSS et expose six emplacements de couleur (`primary`, `gray`, `danger`, `info`, `success`, `warning`). Chacun accepte une constante `Color::*` (toutes les couleurs Tailwind), un code hex, ou un tableau complet de nuances RGB 50→950 pour un contrôle total. La couleur `primary` est la plus visible : elle colore les boutons, les liens actifs et les badges. `darkMode(false)` supprime le toggle dark/light.
 
 ### Palette de couleurs
 ```PHP
@@ -82,6 +107,9 @@ On peut aussi passer une couleur RGB personnalisée :
 ```
 
 ## 3. Logo, favicon, icône
+
+> **En résumé** : Par défaut Filament affiche le `$brandName` en texte dans la sidebar. `->brandLogo()` remplace ce texte par une image. `->darkModeBrandLogo()` permet de fournir une version alternative pour le dark mode (souvent logo blanc sur fond sombre). `->brandLogoHeight()` contrôle la taille. `->favicon()` met à jour l'icône dans l'onglet du navigateur.
+
 ```PHP
 <?php
 ->brandName('Mon Application')               // nom dans la sidebar
@@ -92,6 +120,8 @@ On peut aussi passer une couleur RGB personnalisée :
 ```
 
 ## 4. La navigation par défaut : autodiscovery
+
+> **En résumé** : `discoverResources()` / `discoverPages()` / `discoverWidgets()` font en sorte que Filament scanne les dossiers configurés et enregistre automatiquement tout ce qu'il trouve — pas besoin de déclarer chaque classe manuellement. L'ordre et l'apparence de chaque item dans la sidebar se contrôlent via les propriétés statiques `$navigationIcon`, `$navigationLabel`, `$navigationGroup` et `$navigationSort` directement sur la Resource.
 
 Filament **découvre automatiquement** les Resources, Pages et Widgets dans les dossiers configurés. Chaque Resource est ajoutée à la navigation selon ses propriétés statiques :
 ```PHP
@@ -108,6 +138,8 @@ class PostResource extends Resource
 ```
 
 ## 5. Groupes de navigation
+
+> **En résumé** : Déclarer le même `$navigationGroup = 'Contenu'` sur plusieurs Resources les regroupe automatiquement dans la sidebar. L'ordre des items à l'intérieur d'un groupe se gère avec `$navigationSort`. L'ordre des **groupes entre eux** se définit dans le Panel Provider via `->navigationGroups([...])` — le paramètre `->collapsed()` permet de replier un groupe par défaut.
 
 Les groupes regroupent visuellement les items dans la sidebar. Il suffit de mettre le même `$navigationGroup` sur plusieurs Resources :
 ```PHP
@@ -140,6 +172,8 @@ Pour contrôler l'**ordre des groupes** eux-mêmes, on les déclare dans le Pane
 
 ## 6. Badges dynamiques sur les items de navigation
 
+> **En résumé** : `getNavigationBadge()` retourne une chaîne affichée dans une pastille à droite de l'item de menu — typiquement un compteur. `getNavigationBadgeColor()` change la couleur selon la valeur (ex : rouge si plus de 10 commandes en attente). `getNavigationBadgeTooltip()` ajoute une info-bulle au survol. Ces méthodes sont appelées à chaque rendu de la navigation : penser à mettre le résultat en cache si la requête est coûteuse.
+
 Un badge (compteur) affiché à droite d'un item de menu :
 ```PHP
 <?php
@@ -167,6 +201,8 @@ class OrderResource extends Resource
 
 ## 7. Navigation entièrement manuelle
 
+> **En résumé** : Quand l'autodiscovery ne suffit pas (ordre très précis, items conditionnels, liens externes…), on passe une closure à `->navigation()` dans le Panel Provider. On construit alors la navigation avec `NavigationItem::make()` et `NavigationGroup::make()`. `...PostResource::getNavigationItems()` récupère les items générés par la Resource pour les intégrer dans un groupe custom. `->isActiveWhen()` définit quand l'item doit être considéré actif.
+
 Pour désactiver l'autodiscovery et tout contrôler manuellement :
 ```PHP
 <?php
@@ -193,6 +229,8 @@ Pour désactiver l'autodiscovery et tout contrôler manuellement :
 ```
 
 ## 8. Le Dashboard
+
+> **En résumé** : Le Dashboard (`/admin`) est une page Filament comme les autres — elle peut être surchargée en créant `app/Filament/Pages/Dashboard.php` qui étend `\Filament\Pages\Dashboard`. `getColumns()` contrôle le nombre de colonnes de la grille de widgets. Pour le supprimer complètement, il suffit de ne pas l'inclure dans `->pages([])`.
 
 Le Dashboard est une page spéciale (`/admin`). On peut la personnaliser ou la remplacer :
 
@@ -227,6 +265,8 @@ class Dashboard extends \Filament\Pages\Dashboard
 
 ## 9. Multi-panels
 
+> **En résumé** : Un même projet Laravel peut avoir plusieurs panels complètement indépendants — ex. `admin` pour les gestionnaires (`/admin`) et `app` pour les clients (`/app`). Chaque panel a son propre `PanelProvider`, ses propres Resources dans des dossiers séparés, et peut utiliser un garde d'authentification différent. `canAccessPanel()` sur le modèle `User` permet de différencier les accès selon `$panel->getId()`.
+
 On peut avoir plusieurs panels (ex: `admin` et `app` pour les clients) :
 ```bash
 php artisan filament:install --panels
@@ -248,6 +288,9 @@ Chaque panel a son propre chemin, ses propres Resources et son propre modèle d'
 ```
 
 ## 10. Personnalisation avancée de la sidebar
+
+> **En résumé** : `->sidebarCollapsibleOnDesktop()` ajoute un bouton pour réduire la sidebar sur grand écran. `->sidebarFullyCollapsibleOnDesktop()` la réduit à de simples icônes (mode rail). `->topNavigation()` bascule vers une navigation horizontale en haut de page, ce qui libère l'espace latéral pour le contenu. Ces options se combinent avec `->maxContentWidth()` pour ajuster la mise en page globale.
+
 ```PHP
 <?php
 ->sidebarCollapsibleOnDesktop()   // sidebar réductible sur desktop
@@ -266,6 +309,8 @@ Chaque panel a son propre chemin, ses propres Resources et son propre modèle d'
 ```
 
 ## 11. `render hooks` - injecter du HTML partout
+
+> **En résumé** : Les render hooks sont des points d'injection prédéfinis dans le layout de Filament. `->renderHook(PanelsRenderHook::BODY_START, fn() => '...')` insère du HTML avant tout le contenu du body — utile pour une bannière de maintenance, un script d'analytics, ou un widget custom en dehors du système de widgets. La closure peut retourner une string, une `View` Blade ou un composant Livewire. Les hooks couvrent tout : sidebar, topbar, head, body, global search.
 
 Les render hooks permettent d'injecter du contenu personnalisé à des endroits précis du panel :
 ```PHP

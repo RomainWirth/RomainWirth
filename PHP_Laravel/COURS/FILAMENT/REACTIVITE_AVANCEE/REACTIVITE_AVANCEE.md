@@ -2,7 +2,28 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/resources/getting-started](https://filamentphp.com/docs/3.x/panels/resources/getting-started)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Hooks de cycle de vie](#1-les-hooks-de-cycle-de-vie-sur-les-pages) | Intervenir avant/après la sauvegarde depuis la classe de page (`mutateFormDataBefore*`, `afterCreate`…). |
+| 2 | [afterStateHydrated()](#2-afterstatehydrated---réagir-au-chargement-initial) | Transformer un champ une seule fois au chargement, avant que l'utilisateur n'interagit. |
+| 3 | [mutateDehydratedState()](#3-mutatedehydratedstate---dernière-transformation-avant-save) | Dernière passe de nettoyage sur un champ juste avant que Filament construise le tableau à sauvegarder. |
+| 4 | [dehydrateStateUsing avancé](#4-dehydratestateusing-avancé-avec-tagsinput) | Normaliser un tableau de valeurs (tags) avant sauvegarde. |
+| 5 | [Rule objects validation](#5-rule-objects-pour-la-validation-avancée) | Utiliser les objets `Rule` Laravel et les closures de validation dans Filament. |
+| 6 | [Génération dynamique de champs](#6-les-othertravelpreferencestoggles---génération-dynamique-de-champs) | Générer un tableau de composants à la volée et l'injecter dans un schéma via le spread operator. |
+| 7 | [RelationManagers](#7-les-relationmanagers) | Tables Filament embarquées dans la page Edit d'un record pour afficher une relation. |
+| 8 | [getStateUsing / state / formatStateUsing](#8-getstateusing-vs-state-vs-formatstateusing) | Trois méthodes distinctes pour contrôler la valeur affichée dans une colonne ou un champ. |
+| 9 | [SettingsPage](#9-la-page-settingspage) | Page Filament spéciale qui lit/écrit dans une classe de settings plutôt qu'un modèle Eloquent. |
+| — | [Récapitulatif](#récapitulatif-des-mécanismes-de-transformation) | Flux complet des données : BDD → hydratation → interaction → déhydratation → BDD. |
+
+---
+
 ## 1. Les hooks de cycle de vie sur les pages
+
+> **En résumé** : Dans Filament, la logique métier autour de la sauvegarde ne se place pas dans la Resource mais dans les **classes de pages** (`CreateRecord`, `EditRecord`). `mutateFormDataBeforeCreate/Save()` permet de modifier tout le tableau `$data` avant qu'il soit passé au modèle (ex : calculer un slug). `beforeCreate()` / `afterCreate()` sont des hooks sans retour, parfaits pour déclencher des notifications ou des jobs. À ne pas confondre avec `dehydrateStateUsing()` qui agit champ par champ depuis la Resource.
 
 Dans les classes de pages (`CreateRecord`, `EditRecord`), Filament expose des hooks qui permettent d'intervenir avant ou après la sauvegarde en BDD. C'est une couche au-dessus des callbacks de champs.
 
@@ -71,6 +92,8 @@ protected function afterCreate(): void
 
 ## 2. `afterStateHydrated()` - réagir au chargement initial
 
+> **En résumé** : `afterStateHydrated()` se déclenche **une seule fois**, quand Filament remplit le formulaire depuis le modèle (ou depuis `mutateFormDataBeforeFill`). C'est l'endroit pour convertir une donnée stockée en BDD dans un format plus commode à éditer (ex : centimes → euros). `dehydrateStateUsing()` fait l'opération inverse au moment du save. Ces deux callbacks vont toujours en binôme.
+
 `afterStateUpdated()` se déclenche à chaque interaction utilisateur. `afterStateHydrated()` se déclenche une seule fois au chargement, après que le state a été rempli depuis le modèle.
 
 ```PHP
@@ -96,6 +119,8 @@ BDD → fill() → afterStateHydrated()  → [affichage initial]
 
 ## 3. `mutateDehydratedState()` - dernière transformation avant save
 
+> **En résumé** : `mutateDehydratedStateUsing()` est la dernière étape de transformation d'un champ avant que sa valeur soit incluse dans le tableau final envoyé au modèle. Contrairement à `dehydrateStateUsing()` qui remplace la valeur, `mutateDehydratedStateUsing()` reçoit la valeur **déjà déhydratée** et peut la nettoyer une dernière fois. Utile pour des sanitisations légères comme retirer les caractères non désirés d'un numéro de téléphone.
+
 Moins connu, `mutateDehydratedState()` est appelé sur le state final juste avant que Filament ne construise le tableau à passer au modèle. C'est utile pour des transformations globales :
 ```PHP
 <?php
@@ -108,6 +133,8 @@ TextInput::make('phone')
 ```
 
 ## 4. `dehydrateStateUsing` avancé avec `TagsInput`
+
+> **En résumé** : `TagsInput` stocke un tableau de chaînes, pas une simple string. `dehydrateStateUsing()` reçoit donc `array $state`. C'est l'endroit pour normaliser les tags (lowercase, trim, tri alphabétique) avant de les persister. Cet exemple est dans une `SettingsPage` (pas une Resource), ce qui montre que le même mécanisme fonctionne partout où Filament gère un formulaire.
 
 Dans l'exemple ci-dessous, on voit un usage élaboré : normaliser et trier un tableau de tags avant de le sauvegarder :
 ```PHP
@@ -152,6 +179,8 @@ Ici `$state` est un tableau (pas une string) car `TagsInput` stocke plusieurs va
 
 ## 5. `Rule` objects pour la validation avancée
 
+> **En résumé** : `->rules([])` accepte n'importe quelle règle Laravel : strings (`'required'`), objets `Rule` (ex : `Rule::unique()->ignore($this->record?->id)` pour exclure le record en cours d'édition), ou closures personnalisées. `->requiredIf()` et `->prohibitedIf()` permettent une validation conditionnelle déclarative sans écrire de règle custom.
+
 Filament accepte toutes les règles de validation Laravel via `->rules([])`, y compris les objets `Rule` :
 ```PHP
 <?php
@@ -193,6 +222,8 @@ TextInput::make('personal_note')
 ```
 
 ## 6. Les `otherTravelPreferencesToggles()` - génération dynamique de champs
+
+> **En résumé** : Quand un formulaire contient de nombreux champs identiques (ex : une liste d'options booléennes issues d'une enum ou d'un tableau de config), on évite la duplication en générant le tableau de composants dynamiquement dans une méthode statique. Le spread operator `...self::method()` l'injecte dans le `->schema([])` comme si les composants étaient écrits en dur. La dot-notation `other_options.key` mappe automatiquement vers une clé dans une colonne JSON castée en `array`.
 
 Un pattern très intéressant dans ton UserResource.php:380 : générer dynamiquement un tableau de composants à partir d'une source de données :
 ```PHP
@@ -343,6 +374,8 @@ utilisation du schéma avec le spread operator :
 
 ## 7. Les RelationManagers
 
+> **En résumé** : Un `RelationManager` est une mini-Resource (avec sa propre `table()` et `form()`) qui s'affiche en onglet en bas de la page Edit d'un record parent. Il est automatiquement scopé : si on édite l'utilisateur 5, la table n'affiche que ses commandes. On le déclare dans `getRelations()` de la Resource. La commande `make:filament-relation-manager` génère la classe avec les bons stubs.
+
 Ce sont des tables Filament embarquées dans la page d'édition d'un record, affichant les données d'une relation. Exemple :
 ```PHP
 <?php
@@ -391,6 +424,8 @@ php artisan make:filament-relation-manager UserResource orders number
 
 ## 8. `->getStateUsing()` vs `->state()` vs `->formatStateUsing()`
 
+> **En résumé** : Ces trois méthodes semblent similaires mais ont des rôles distincts. `->getStateUsing()` et `->state()` (syntaxe v3) servent dans les **colonnes de table** pour définir une valeur calculée quand il n'y a pas d'attribut direct sur le modèle. `->formatStateUsing()` sert à **transformer l'affichage** d'un attribut existant, aussi bien dans une colonne que dans un champ de formulaire — sans modifier la valeur sous-jacente.
+
 Trois méthodes pour contrôler la valeur affichée, souvent confondues :
 
 | Méthode                                    | Contexte         | Usage                                                            |
@@ -415,6 +450,8 @@ TextInput::make('name')
 ```
 
 ## 9. La page `SettingsPage`
+
+> **En résumé** : `SettingsPage` est une page Filament qui remplace le modèle Eloquent par une classe de settings (typiquement via le package `spatie/laravel-settings`). On déclare `protected static string $settings = MySettings::class` et Filament prend en charge hydratation/déhydratation automatiquement. Tout ce qu'on sait faire dans un formulaire de Resource (validation, `dehydrateStateUsing`…) fonctionne de la même façon ici.
 
 Ci dessous un exemple de `SettingsPage` - une page Filament spéciale qui lit/écrit dans une classe de settings (souvent via `spatie/laravel-settings`) plutôt qu'un modèle Eloquent.
 

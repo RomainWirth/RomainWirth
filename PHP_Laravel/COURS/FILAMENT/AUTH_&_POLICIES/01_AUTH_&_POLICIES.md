@@ -2,7 +2,28 @@
 
 Doc officielle : [https://filamentphp.com/docs/3.x/panels/resources/getting-started#authorization](https://filamentphp.com/docs/3.x/panels/resources/getting-started#authorization)
 
+---
+
+## Sommaire
+
+| N° | Section | En une phrase |
+| -- | ------- | ------------- |
+| 1 | [Comment Filament gère les autorisations](#1-comment-filament-gère-les-autorisations) | Filament consulte automatiquement la Policy Eloquent du modèle avant chaque action. |
+| 2 | [Créer et enregistrer une Policy](#2-créer-et-enregistrer-une-policy) | Convention de nommage `{Model}Policy` ou enregistrement manuel dans `AuthServiceProvider`. |
+| 3 | [Anatomie d'une Policy](#3-anatomie-dune-policy-filament) | Les 7 méthodes standard et leurs effets visuels dans Filament. |
+| 4 | [Overrides dans la Resource](#4-overrides-dans-la-resource) | Surcharger les méthodes `can*()` pour affiner ou remplacer la Policy. |
+| 5 | [Accès au panel : FilamentUser](#5-accès-au-panel--filamentuser) | Contrôler qui peut accéder au panel via `canAccessPanel()` sur le modèle User. |
+| 6 | [Spatie Laravel Permission](#6-intégration-avec-spatie-laravel-permission) | Package de rôles/permissions le plus courant avec Filament. |
+| 7 | [Navigation conditionnelle](#7-masquer-des-éléments-de-navigation-conditionnellement) | Masquer un item de navigation ou une page selon le rôle. |
+| 8 | [Autorisation sur les Actions custom](#8-autorisation-sur-les-actions-custom) | `->authorize()` bloque, `->visible()` masque — les deux ensemble pour une sécurité correcte. |
+| 9 | [Super Admin](#9-super-admin---contourner-toutes-les-vérifications) | `Gate::before()` court-circuite toutes les vérifications pour un rôle privilégié. |
+| — | [Récapitulatif](#récapitulatif) | Vue d'ensemble des 5 niveaux d'autorisation. |
+
+---
+
 ## 1. Comment Filament gère les autorisations
+
+> **En résumé** : Filament ne réinvente pas la roue — il s'appuie directement sur les **Policies Eloquent** de Laravel. Si une Policy est enregistrée pour un modèle, Filament la consulte silencieusement avant chaque opération (affichage du bouton, accès à la page, exécution de l'action). Aucune configuration supplémentaire n'est nécessaire. Si une méthode de Policy retourne `false`, Filament masque ou bloque l'élément concerné automatiquement.
 
 Filament s'appuie sur le système de Policies Eloquent de Laravel. Quand une Policy existe pour un modèle, Filament la consulte automatiquement avant d'afficher ou exécuter chaque action. Aucune configuration supplémentaire n'est requise : si la Policy est enregistrée, elle est respectée.
 
@@ -17,6 +38,9 @@ Filament s'appuie sur le système de Policies Eloquent de Laravel. Quand une Pol
 | Force delete          | `forceDelete()`            |
 
 ## 2. Créer et enregistrer une Policy
+
+> **En résumé** : Laravel détecte automatiquement `PostPolicy` pour le modèle `Post` — c'est la convention `{Model}Policy` dans `app/Policies/`. Si le nom diffère ou si la Policy est ailleurs, il faut l'enregistrer manuellement dans `$policies` de l'`AuthServiceProvider`. Une fois enregistrée, Filament la prend en compte sans autre configuration.
+
 ```bash
 php artisan make:policy PostPolicy --model=Post
 ```
@@ -31,6 +55,9 @@ protected $policies = [
 ```
 
 ## 3. Anatomie d'une Policy Filament
+
+> **En résumé** : Une Policy Filament suit la structure Laravel standard. Les méthodes sans `$record` (`viewAny`, `create`) reçoivent uniquement `$user`. Celles avec `$record` (`view`, `update`, `delete`…) reçoivent aussi le modèle concerné. L'effet est immédiat dans l'UI : si `create()` retourne `false`, le bouton « Créer » disparaît ; si `update()` retourne `false` pour un record, le bouton « Éditer » de cette ligne est masqué.
+
 ```PHP
 <?php
 
@@ -90,6 +117,8 @@ Filament appelle ces méthodes automatiquement. Si `create()` retourne `false`, 
 
 ## 4. Overrides dans la Resource
 
+> **En résumé** : Les méthodes `can*()` de la Resource permettent de **remplacer ou affiner** la Policy sans la modifier. C'est utile quand la logique est simple et ne justifie pas une Policy complète, ou pour désactiver une action pour tout le monde (`return false`). Attention : la surcharge dans la Resource **prend le dessus** sur la Policy — si les deux existent, c'est la Resource qui gagne.
+
 Si on veut affiner ou remplacer le comportement de la Policy directement dans la Resource, on surcharge les méthodes `can*()` :
 ```PHP
 <?php
@@ -131,6 +160,8 @@ class PostResource extends Resource
 > **Important** : si une Policy est enregistrée et qu'on surcharge `canCreate()` dans la Resource, c'est la `surcharge dans la Resource qui prend le dessus`.
 
 ## 5. Accès au panel : `FilamentUser`
+
+> **En résumé** : `canAccessPanel()` est une garde-barrière au niveau du panel entier — avant même d'arriver à une Resource. Si elle retourne `false`, l'utilisateur est renvoyé vers le login. Avec plusieurs panels (`admin`, `app`…), `$panel->getId()` permet de différencier les règles d'accès selon le panel concerné.
 
 Pour contrôler qui peut accéder au panel (indépendamment des permissions sur les Resources), le modèle `User` doit implémenter `FilamentUser` :
 ```PHP
@@ -175,6 +206,8 @@ public function canAccessPanel(Panel $panel): bool
 ```
 
 ## 6. Intégration avec Spatie Laravel Permission
+
+> **En résumé** : `spatie/laravel-permission` est le package standard pour gérer rôles et permissions dans Laravel. Il ajoute le trait `HasRoles` sur `User` et donne accès à `$user->hasRole()`, `$user->can()`, `$user->assignRole()`. Dans les Policies Filament, on utilise ces méthodes pour contrôler les accès. Les rôles et permissions se créent dans un Seeder pour être reproductibles.
 
 Le package `spatie/laravel-permission` est la solution la plus répandue pour gérer les rôles/permissions avec Filament.
 
@@ -242,6 +275,8 @@ $user->assignRole('admin');
 
 ## 7. Masquer des éléments de navigation conditionnellement
 
+> **En résumé** : Pour les **Resources**, `canViewAny()` fait déjà le travail : si elle retourne `false`, l'item disparaît du menu. Pour les **pages custom**, il n'y a pas de Policy associée — on surcharge `shouldRegisterNavigation()` pour le même effet. Dans les deux cas, la route reste accessible directement si on connaît l'URL : `shouldRegisterNavigation` ne protège que l'affichage dans le menu.
+
 `canViewAny()` sur une Resource masque automatiquement l'item de navigation si `false`. Pour des pages custom, on surcharge `shouldRegisterNavigation()` :
 ```PHP
 <?php
@@ -255,6 +290,8 @@ class SettingsPage extends Page
 ```
 
 ## 8. Autorisation sur les Actions custom
+
+> **En résumé** : Les actions CRUD standards (`EditAction`, `DeleteAction`…) sont automatiquement protégées par la Policy. Pour les actions métier custom, c'est à nous de gérer. `->visible()` masque le bouton dans l'UI (expérience utilisateur), `->authorize()` bloque l'exécution même si quelqu'un accède à l'action directement (sécurité). La bonne pratique est d'utiliser les **deux ensemble** : cacher le bouton ET protéger l'action.
 
 Pour les actions non-CRUD, on passe par `->authorize()` ou `->visible()` :
 ```PHP
@@ -280,6 +317,8 @@ Action::make('approve')
 ```
 
 ## 9. Super Admin - contourner toutes les vérifications
+
+> **En résumé** : `Gate::before()` est un hook Laravel qui s'exécute **avant** toute vérification de Policy ou de Gate. Si le callback retourne `true`, toutes les vérifications sont court-circuitées et l'accès est accordé. C'est la façon la plus propre de créer un rôle `super_admin` qui bypass tout — sans avoir à ajouter `$user->hasRole('super_admin')` dans chaque méthode de chaque Policy.
 
 Pour donner un accès total à un rôle admin sans définir chaque permission, on utilise le `Gate::before()` dans un Service Provider :
 ```PHP
