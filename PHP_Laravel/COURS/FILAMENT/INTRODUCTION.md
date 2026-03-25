@@ -18,13 +18,13 @@ Filament v3 est **modulaire** : chaque package peut être utilisé indépendamme
 
 | Package                | Rôle                                   | Cours                                                  |
 | ---------------------- | -------------------------------------- | ------------------------------------------------------ |
-| `filament/filament`    | Le panel complet (admin)               | ------------------------------------------------------ |
-| `filament/forms`       | Constructeur de formulaires            | [Forms](FORMS/01_INTRODUCTION.md)                      |
-| `filament/tables`      | Constructeur de tables                 | [Tables](TABLES/01_LES_TABLES.md)                      |
-| `filament/notifications` | Système de notifications             | [Notifications](NOTIFICATIONS/01_LES_NOTIFICATIONS.md) |
-| `filament/actions`     | Actions (modals, confirmations...)     | [Actions](ACTIONS/01_LES_ACTIONS.md)                   |
-| `filament/infolist`    | Affichage de données en lecture seule  | [Infolist](INFOLIST/01_INFOLIST.md)                    |
-| `filament/widgets`     | Widgets (stats, charts...)             | [Widgets](WIDGETS/01_LES_WIDGETS.md)                   |
+| `filament/filament`    | Le panel complet (admin)               | [Navigation & Panel](VII_PANELS/01_NAVIGATION_&_PANEL.md) |
+| `filament/forms`       | Constructeur de formulaires            | [Forms](I_FORMS/01_INTRODUCTION.md)                        |
+| `filament/tables`      | Constructeur de tables                 | [Tables](II_TABLES/01_LES_TABLES.md)                       |
+| `filament/notifications` | Système de notifications             | [Notifications](IV_NOTIFICATIONS/01_LES_NOTIFICATIONS.md)  |
+| `filament/actions`     | Actions (modals, confirmations...)     | [Actions](III_ACTIONS/01_LES_ACTIONS.md)                   |
+| `filament/infolist`    | Affichage de données en lecture seule  | [Infolist](V_INFOLIST/01_INFOLIST.md)                      |
+| `filament/widgets`     | Widgets (stats, charts...)             | [Widgets](VI_WIDGETS/01_LES_WIDGETS.md)                    |
 
 ---
 
@@ -41,11 +41,11 @@ php artisan make:filament-resource Post --generate
 ```
 
 Une Resource contient :
-* `form()` - le formulaire de création/édition → voir [Forms](FORMS/01_INTRODUCTION.md)
-* `table()` - la table de liste → voir [Tables](TABLES/01_LES_TABLES.md)
-* `infolist()` - la vue lecture seule → voir [Infolist](INFOLIST/01_INFOLIST.md)
+* `form()` - le formulaire de création/édition → voir [Forms](I_FORMS/01_INTRODUCTION.md)
+* `table()` - la table de liste → voir [Tables](II_TABLES/01_LES_TABLES.md)
+* `infolist()` - la vue lecture seule → voir [Infolist](V_INFOLIST/01_INFOLIST.md)
 * `getPages()` - les pages associées (List, Create, Edit, View)
-* `getRelations()` - les RelationManagers (tables imbriquées) → voir [Réactivité avancée](REACTIVITE_AVANCEE/REACTIVITE_AVANCEE.md)
+* `getRelations()` - les RelationManagers (tables imbriquées) → voir [Réactivité avancée](VII_PANELS/04_REACTIVITE_AVANCEE.md)
 
 Structure générée :
 ```
@@ -67,7 +67,7 @@ Des pages Filament **sans modèle associé**, utiles pour des interfaces custom 
 php artisan make:filament-page Settings
 ```
 
-→ Voir le cours complet : [Pages custom](PAGE_CUSTOM/01_PAGES_CUSTOM.md)
+→ Voir le cours complet : [Pages custom](VII_PANELS/03_PAGES_CUSTOM.md)
 
 ### 3. Widgets
 
@@ -79,7 +79,7 @@ Des blocs réutilisables affichés sur le **dashboard** ou dans les pages. Trois
 
 > Les widgets se rafraîchissent automatiquement via polling et peuvent recevoir le `$record` courant dans une page d'édition.
 
-→ Voir le cours complet : [Widgets](WIDGETS/01_LES_WIDGETS.md)
+→ Voir le cours complet : [Widgets](VI_WIDGETS/01_LES_WIDGETS.md)
 
 ### 4. Panels
 
@@ -97,7 +97,7 @@ En v3, tout est organisé en **Panels**. Un panel = une instance d'administratio
 ->databaseNotifications()
 ```
 
-→ Voir le cours complet : [Navigation & Panel](NAVIGATION_&_PANEL/01_NAVIGATION_&_PANEL.md)
+→ Voir le cours complet : [Navigation & Panel](VII_PANELS/01_NAVIGATION_&_PANEL.md)
 
 ---
 
@@ -116,10 +116,10 @@ Forms\Components\DateTimePicker::make('published_at'),
 ```
 
 → Voir les cours :
-- [Forms - Architecture & cycle de vie](FORMS/01_INTRODUCTION.md)
-- [Forms - Block Builder](FORMS/02_BLOC_BUILDER.md)
-- [Forms - Composants custom](FORMS/03_CUSTOM_COMPONENT.md)
-- [Réactivité avancée (hooks, lifecycle, RelationManagers...)](REACTIVITE_AVANCEE/REACTIVITE_AVANCEE.md)
+- [Forms - Architecture & cycle de vie](I_FORMS/01_INTRODUCTION.md)
+- [Forms - Block Builder](I_FORMS/02_BLOC_BUILDER.md)
+- [Forms - Composants custom](I_FORMS/03_CUSTOM_COMPONENT.md)
+- [Réactivité avancée (hooks, lifecycle, RelationManagers...)](VII_PANELS/04_REACTIVITE_AVANCEE.md)
 
 ---
 
@@ -142,7 +142,7 @@ Tables\Actions\EditAction::make(),
 Tables\Actions\DeleteAction::make(),
 ```
 
-→ Voir le cours complet : [Tables](TABLES/01_LES_TABLES.md)
+→ Voir le cours complet : [Tables](II_TABLES/01_LES_TABLES.md)
 
 ---
 
@@ -152,7 +152,7 @@ Une Action est un bouton déclencheur qui peut ouvrir une modale, exécuter du c
 
 > Filament fournit des actions CRUD prêtes à l'emploi (`EditAction`, `DeleteAction`...) et permet d'en créer des custom avec `Action::make()`.
 
-→ Voir le cours complet : [Actions](ACTIONS/01_LES_ACTIONS.md)
+→ Voir le cours complet : [Actions](III_ACTIONS/01_LES_ACTIONS.md)
 
 ---
 
@@ -160,7 +160,7 @@ Une Action est un bouton déclencheur qui peut ouvrir une modale, exécuter du c
 
 Filament propose deux types : les **toasts** (flash visuels éphémères) et les **notifications en base de données** (persistées, accessibles via une cloche dans le header du panel).
 
-→ Voir le cours complet : [Notifications](NOTIFICATIONS/01_LES_NOTIFICATIONS.md)
+→ Voir le cours complet : [Notifications](IV_NOTIFICATIONS/01_LES_NOTIFICATIONS.md)
 
 ---
 
@@ -168,7 +168,7 @@ Filament propose deux types : les **toasts** (flash visuels éphémères) et les
 
 L'Infolist est l'équivalent **lecture seule** d'un formulaire. Il s'utilise sur la page `ViewRecord` d'une Resource pour afficher les données sans champs éditables (`TextEntry`, `BadgeEntry`, `ImageEntry`...).
 
-→ Voir le cours complet : [Infolist](INFOLIST/01_INFOLIST.md)
+→ Voir le cours complet : [Infolist](V_INFOLIST/01_INFOLIST.md)
 
 ---
 
@@ -178,7 +178,7 @@ Filament s'appuie automatiquement sur les **Policies Eloquent** de Laravel. Si u
 
 > L'accès au panel lui-même est contrôlé par `canAccessPanel()` sur le modèle `User`.
 
-→ Voir le cours complet : [Auth & Policies](AUTH_&_POLICIES/01_AUTH_&_POLICIES.md)
+→ Voir le cours complet : [Auth & Policies](VII_PANELS/02_AUTH_&_POLICIES.md)
 
 ---
 
