@@ -57,15 +57,15 @@ L'idée principale est d'avoir des composants (Beans) d'une application (en gén
 Ces composants sont définis par l'interface qu'ils implémentent (contrat) et l'instance effective des composants découle de la configuration de l'application.<br>
 Cela permet de facilement changer les composants de l'application (découplage) pour par exemple :<br>
 * avoir une version avec stockage local, une version avec un stockage web dans une base MongoDB.<br>
-* remplacer un composant qui sera disponible en production par un composant "mimant" son fonctionnement<br> 
-et permettre de tester le reste de l'application (principe des "mock/stub" ou "simulacre/bouchon").<br> 
+* remplacer un composant qui sera disponible en production par un composant "mimant" son fonctionnement<br>
+et permettre de tester le reste de l'application (principe des "mock/stub" ou "simulacre/bouchon").<br>
 cf. : <a href="https://www.test-recette.fr/tests-techniques/deployer-tests-unitaires/simulacres-bouchons/">simulacres et bouchons</a>
 
 ## Spring Boot
 
 ### Différence entre Spring et Spring boot
 
-Spring boot simplifie l'utilisation de Spring.<br> 
+Spring boot simplifie l'utilisation de Spring.<br>
 Spring boot est construit sur le framework Spring conventionnel : il offre toutes les fonctionnalités de Spring et est encore plus facile à utiliser.<br>
 Spring boot est un framework basé sur des microservices et crée une application prête pour la production en très peu de temps.<br>
 
@@ -78,15 +78,15 @@ Pour simplifier la configuration, Spring Boot propose deux fonctionnalités prin
 1. L'auto-configuration.
 2. Les starters.
 
-### L'auto-configuration 
+### L'auto-configuration
 
 Il s'agit de la fonctionnalité la plus importante de Spring Boot.<br>
 Elle permet de configurer automatiquement une application à partir des JAR trouvé dans le classpath.<br>
 Autrement dit : si on a importé des dépendances, Spring Boot ira consulter cette liste puis produira la configuration nécessaire pour que tout fonctionne correctement.<br>
 
 ```
-N.B. : 
-Un fichier JAR (Java archive) est un fichier ZIP utilisé pour distribuer un ensemble de classes Java. 
+N.B. :
+Un fichier JAR (Java archive) est un fichier ZIP utilisé pour distribuer un ensemble de classes Java.
 Ce format est utilisé pour stocker les définitions des classes, ainsi que des métadonnées, constituant l'ensemble d'un programme.
 ```
 
@@ -106,7 +106,7 @@ Il suffit d'ajouter une simple dépendance au starter choisi. Cette dépendance 
 En temps normal, pour créer un microservice, il faut les dépendances suivantes : Spring, Spring MVC, Jackson (pour JSON), Tomcat...<br>
 Avec Spring Boot, on va tout simplement avoir une seule dépendance dans le `pom.xml`.<br>
 
-### En résumé 
+### En résumé
 
 * Spring Boot est un framework qui permet de démarrer rapidement le développement d'applications ou services, en fournissant les dépendances nécessaires et en autoconfigurant celles-ci.
 * Pour activer l'auto-configuration, on utilise l'annotation `@EnableAutoConfiguration`. Si vous écrivez vos propres configurations, celles-ci priment sur celles de Spring Boot.
@@ -120,7 +120,7 @@ Spring Initializr permet de composer une application selon ses besoins.
 
 Pour débuter : <a href="https://start.spring.io/">https://start.spring.io/ </a>
 
-Sélectionner : 
+Sélectionner :
 * le gestionnaire de projet (Maven ou Gradle)
 * le langage Java (Kotlin ou Groovy)
 * la version de SpringBoot
@@ -171,7 +171,7 @@ dans l'arborescence, on retrouve :
     <artifactId>spring-boot-starter-test</artifactId>
     <scope>test</scope>
   </dependency>
-</dependencies> 
+</dependencies>
 ```
 
 On peut retrouver la liste des dépendances importées dans "External Libraries".<br>
@@ -204,7 +204,7 @@ Cette classe lance la classe SpringApplication, responsable du démarrage de l'a
 Elle va créer le fameux _ApplicationContext_ dans lequel iront toutes les configurations générées automatiquement ou qu'on aura ajoutées.<br>
 
 l'annotation **@SpringBootApplication** est l'information la plus importante : elle encapsule 3 annulations :
-1. **@Configuration** : donne à la classe actuelle la possibilité de définir des configurations qui iront remplacer les traditionnels fichiers XML.<br> 
+1. **@Configuration** : donne à la classe actuelle la possibilité de définir des configurations qui iront remplacer les traditionnels fichiers XML.<br>
 Ces configurations se font via des Beans.
 2. **@EnableAutoConfiguration** : cette annotation permet, au démarrage de Spring, de générer automatiquement les configs nécessaires en fonction des dépendances situées dans le classpath.<br>
 3. **@ComponentScan** : indique qu'il faut scanner les classes de ce package afin de trouver des Beans de configuration.<br>
@@ -246,7 +246,7 @@ Dans IntelliJ, si le panneau "Maven" à droite n'apparaît pas, il faudra l'acti
 ```
 
 Cliquer sur le panneau de droite "Maven", puis ouvrir l'arborescence.<br>
-Double-cliquer ensuite sur "Install" sous "LifeCycle". 
+Double-cliquer ensuite sur "Install" sous "LifeCycle".
 
 L'application sera compilée, et on retrouve le JAR sous le nouveau dossier "Target" créé pour l'occasion par Maven.
 
@@ -256,7 +256,7 @@ java -jar Chemin/vers/microservice/target/microservice-0.0.1-SNAPSHOT.jar
 ```
 **Ou par le bouton "RUN" d'IntelliJ dans le fichier `MicroserviceApplication.java` à la ligne de la classe.**
 
-On aura alors un retour du type : 
+On aura alors un retour du type :
 ```
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -292,7 +292,7 @@ On a simplement modifié le port d'écoute.<br>
 
 Le microservice qu'on souhaite développer va devoir être "RESTful" et donc communiquer de cette manière.<br>
 
-#### Définition des besoins 
+#### Définition des besoins
 
 On va avoir besoin d'un **microservice** qui sera capable de gérer les produits.<br>
 Il devra pouvoir exposer une API REST qui propose toutes les opérations CRUD (Create, Read, Update, Delete).<br>
@@ -311,7 +311,7 @@ On voudra donc pouvoir appeler le microservice sur les URL suivantes :
 #### Créer le contrôleur REST
 
 On va créer un contrôleur et le placer dans un package "controller", lui même situé dans un package "web".<br>
-Procéder ainsi :<br> 
+Procéder ainsi :<br>
 * clic droit sur le package principal : **com.ecommerce.microservice**
 * puis : New > Java Class
 * écrire dans la boîte de dialogue : **web.controller.ProductController**
@@ -337,7 +337,7 @@ l'annotation `@RestController` est la combinaison de deux annotations : `@Contro
 => **@RestController** indique que la classe va pouvoir traiter les requêtes qu'on va définir et il indique que chaque méthode va renvoyer une réponse JSON à l'utilisateur.
 
 ```
-N.B. : 
+N.B. :
 par convention, les conventions de nommage des API REST est ainsi :
 * tout en camelCase et au pluriel !
 * en anglais !
@@ -503,7 +503,7 @@ return product = new Product(id, new String("Aspirateur"), 100);
 ```
 
 On indique ici que la méthode va retourner un "Product" au lieu d'une String.<br>
-La réponse dans le navigateur sera formatée au format JSON.<br> 
+La réponse dans le navigateur sera formatée au format JSON.<br>
 Cela est possible car on a indiqué au début de la classe qu'elle est un contrôleur REST grâce à l'annotation @RestController.<br>
 Spring sait alors que les réponses aux requêtes qu'il passe devront être très probablement au format JSON.
 
@@ -512,7 +512,7 @@ Il y a Jackson qui a été importé avec le starter qu'on a utilisé. Le Bean Pr
 
 Voici donc le premier microservice REST sans avoir à manipuler JSON ni a parser les requêtes HTTP.
 
-### Communiquer avec la Base De Données 
+### Communiquer avec la Base De Données
 #### Création du DAO
 
 **DAO = Data Access Object**<br>
@@ -645,7 +645,7 @@ On va ajouter la méthode POST au controller :
         productDao.save(product);
     }
 ```
-* **@PostMapping** = L'URI indiqué est la même que pour la méthode productsList.<br> 
+* **@PostMapping** = L'URI indiqué est la même que pour la méthode productsList.<br>
 Les annotations @PostMapping et @GetMapping permettent à Spring de quel type de requête HTTP la méthode est associée : POST ou GET.<br>
 Si on envoie une requête POST sur "/produits", la méthode annotée avec @PostMapping sera appelée.
 * **@RequestBody** = Cette annotation demande a Spring de convertir le contenu de la party body de la requête HTTP (au format JSON) en objet Java.<br>
@@ -666,7 +666,7 @@ Principales fonctionnalités à connaître :
 ![](./postman.png)
 
 Pour tester l'application dans Postman : ajouter l'URL http://localhost:9090/products avec la méthode "GET".<br>
-le résultat sera le suivant : 
+le résultat sera le suivant :
 
 ![](./postman_get_request.png)
 
@@ -724,14 +724,14 @@ Procédure pour créer une collection :
 
         updateProduct.setFirstName(product.getName());
         updateProduct.setLastName(product.getPrice());
-        
+
         return updateProduct;
     }
 ```
 
 ### Implémenter la méthode DELETE
 
-```java 
+```java
   @ApiOperation("Méthode pour supprimer un produit")
     @DeleteMapping("/products/{id}")
     public Product deleteProduct(@PathVariable int id) {
@@ -747,7 +747,7 @@ Il est donc primordial d'avoir une doc standardisée et de très bonne qualité.
 à partir du code, **Swagger** est capable de générer une documentation détaillée au format **JSON** et répondant aux spécifications OpenAPI.<br>
 On peut également visualiser cette doc dans un format HTML élégant.
 
-Pour bénéficier de Swagger, on va procéder en plusieurs étapes : 
+Pour bénéficier de Swagger, on va procéder en plusieurs étapes :
 1. importer cette dépendance dans le `pom.xml` :
 ```xml
 <dependency>
@@ -758,7 +758,7 @@ Pour bénéficier de Swagger, on va procéder en plusieurs étapes :
 ```
 ```
 Attention ! il faudra importer swagger avec Maven. Dans IntelliJ, une petite icône "Maven" va apparaître en haut à droite,
-il faudra alors cliquer dessus et importer le nécessaire.  
+il faudra alors cliquer dessus et importer le nécessaire.
 ```
 
 2. Pour générer la doc, on doit remplacer l'annotation `@EnableSwagger2` dans la classe contenant avec la méthode Main.<br>
@@ -829,15 +829,15 @@ public class SwaggerConfig {
 Elle donne accès à plusieurs méthodes pour la configuration de Swagger, grâce à la **classe Docket** qui gère toutes les configurations.
 
 * On commence alors par initialiser un objet Docket en précisant que nous souhaitons utiliser Swagger 2.
-* **select** permet d'initialiser une classe du nom de ApiSelectorBuilder qui donne accès aux méthodes de personnalisation suivantes.<br> 
+* **select** permet d'initialiser une classe du nom de ApiSelectorBuilder qui donne accès aux méthodes de personnalisation suivantes.<br>
 Ne pas s'attarder sur cette méthode, elle n'est d'aucune utilité pour la suite.
-* **apis** est la première méthode importante. Elle permet de filtrer la documentation à exposer selon les contrôleurs.<br> 
+* **apis** est la première méthode importante. Elle permet de filtrer la documentation à exposer selon les contrôleurs.<br>
 Ainsi, on peut cacher la documentation d'une partie privée ou interne de votre API. Dans ce cas, nous avons utilisé RequestHandlerSelectors.any().
-* **RequestHandlerSelectors** est un prédicat (introduit depuis Java 8) qui permet de retourner TRUE ou FALSE selon la condition utilisée.<br> 
-Dans ce cas, nous avons utilisé any qui retournera toujours TRUE. En d'autres termes, nous indiquons vouloir documenter toutes les classes dans tous les packages.<br> 
-**RequestHandlerSelectors** offre plusieurs autres méthodes, comme annotationPresent qui vous permet de définir une annotation en paramètre.<br> 
-Swagger ne documente alors que les classes qu'il utilise. La plus utilisée est basePackage qui permet de trier selon le Package. 
-* **paths** : cette méthode donne accès à une autre façon de filtrer : selon l'URI des requêtes.<br> 
+* **RequestHandlerSelectors** est un prédicat (introduit depuis Java 8) qui permet de retourner TRUE ou FALSE selon la condition utilisée.<br>
+Dans ce cas, nous avons utilisé any qui retournera toujours TRUE. En d'autres termes, nous indiquons vouloir documenter toutes les classes dans tous les packages.<br>
+**RequestHandlerSelectors** offre plusieurs autres méthodes, comme annotationPresent qui vous permet de définir une annotation en paramètre.<br>
+Swagger ne documente alors que les classes qu'il utilise. La plus utilisée est basePackage qui permet de trier selon le Package.
+* **paths** : cette méthode donne accès à une autre façon de filtrer : selon l'URI des requêtes.<br>
 Ainsi, on peut par exemple demander à Swagger de ne documenter que les méthodes qui répondent à des requêtes commençant par "/public".
 
 Dans la doc, la première partie ne sert à rien. On va donc l'éliminer en appliquant des filtres :<br>
@@ -850,7 +850,7 @@ L'annotation `@ApiOperation` permet de définir une description pour chaque opé
 
 La documentation complète est disponible <a href="https://springfox.github.io/springfox/docs/current/#docket-spring-java-configuration">ici</a>
 
-## Consommer une API REST 
+## Consommer une API REST
 
 <a href="https://youtu.be/i6ipBFb-5YM?si=O5Oa4RYk9cFd0yAh">cours YouTube</a>
 
@@ -864,13 +864,13 @@ Une version très simple et synthétique de consommer un service RESTful (mais s
 
 ## Connecter une base de données
 
-voir doc : 
+voir doc :
 <a href="https://spring.io/guides/gs/accessing-data-mysql/">ici</a>
 <a href="https://www.tutorialspoint.com/spring_boot_jpa/spring_boot_jpa_overview.htm">tutos</a>
 
 ### Introduction à JPA
 
-JPA = Java Persistence API.<br> 
+JPA = Java Persistence API.<br>
 Il s'agit d'une collection de classes et méthodes pour stocker de manière persistante une large quantité de données dans une BDD.<br>
 JPA Agit comme une couche intermédiaire entre la base de donnée et l'application Java Spring Boot.<br>
 
@@ -880,7 +880,7 @@ Spring Boot offre une intégration transparente avec JPA.<br>
 
 #### Histoire
 
-Les premières versions d'EJB definissaient une couche persistante combinée avec la couche de logique business en utilisant l'interface javax.ejb.EntityBean  
+Les premières versions d'EJB definissaient une couche persistante combinée avec la couche de logique business en utilisant l'interface javax.ejb.EntityBean
 * Pendant l'introduction EJB 3.0, la couche persistante a été séparée et spécifiée en tant que JPA 1.0 (Java Persistence API).<br>
 Les spécifications de cette API ont été sorties en même temps que les spécifications de Java EE5 le 11 mai 2006 en utilisant JSR 220.
 * JPA 2.0 a été sorti avec les spécifications de JAVA EE6 le 10 décembre 2009 comme une part du Java Community Process JSR 317.
@@ -894,7 +894,7 @@ N.B. :
 EJB (Enterprises JavaBeans) = architecture de composants logiciels côté serveur pour la plateforme de développement Java
 ```
 
-### Ajouter une base de données intégrée et générer les tables 
+### Ajouter une base de données intégrée et générer les tables
 
 #### Transformation de la classe Product en entité
 
@@ -931,7 +931,7 @@ Pour commencer, on va intégrer au pom.xml les dependencies :
 	</dependency>
 </dependencies>
 ```
- 
+
 ATTENTION ! Bien penser à "reload" Maven (onglet de droite d'IntelliJ) pour mettre à jour et vérifier que les dépendances ont bien été importées.<br>
 
 On pourra donc ajouter les annotations `@Entity` et `@Id`à notre classe Product :
@@ -957,8 +957,8 @@ public class Product {
 ...
 }
 ```
-_Explication des annotations :_ 
-* **@Entity** = cette annotation permet à la classe d'être scannée et prise en compte.<br> 
+_Explication des annotations :_
+* **@Entity** = cette annotation permet à la classe d'être scannée et prise en compte.<br>
 On aura donc pas besoin de passer par le fichier "persistence.xml".
 * **@Id** = cette annotation permet d'identifier l'attribut sur lequel il est placé en tant qu'entité unique autogénérée.
 * **@GeneratedValue** = Permet d'identifier l'attribut en tant que clé primaire de façon automatique lors de l'insertion en BDD.<br>
@@ -1056,7 +1056,7 @@ Il y a plusieurs étapes à réaliser :
 1. Créer la BDD en MySQL
 2. Modifier le fichier `application.properties`
 3. Créer le modèle `@Entity` (ou le modifier)
-4. Créer le Repository 
+4. Créer le Repository
 5. Puis le Controller (ou le modifier)
 
 ## Les Microservices et l'architecture microservice
@@ -1071,18 +1071,18 @@ Chaque service est spécialisé dans une seule tâche. On parle de service méti
 Par exemple, dans un site de vente en ligne, on aura plusieurs microservices pour :
 * la fonctionnalité panier
 * la fonctionnalité page d'accueil
-* la fonctionnalité d'historique 
+* la fonctionnalité d'historique
 * ou encore la fonctionnalité d'inventaire
 * etc.
 
-### But 
+### But
 
 L'architecture microservice a été inventée pour répondre à la problématique des applications monolithes.
 
 **Application monolithe :**<br>
 Application qui a pour ambition de traiter toutes les demandes possibles et de répondre à un maximum de cas d'usage.<br>
 
-_Problème_ :<br> 
+_Problème_ :<br>
 avec le temps, les applications ont tendance à grossir de plus en plus, car elles intègrent toujours plus de fonctionnalités, sans supprimer les anciennes.<br>
 Certaines de ces fonctionnalités deviennent inutiles ou obsolètes. Avec le temps, les différentes briques développent des interdépendances entre elles.<br>
 Le code devient de plus en plus complexe et il devient alors impossible d'avoir en tête un modèle global du projet.<br>
@@ -1138,7 +1138,7 @@ Techniquement : on procède par une approche en conteneurs (comme docker).<br>
 Chaque unité de microservice aura son propre conteneur. On pourra augmenter ou baisser le nombre d'instances qui hébergent le microservice en question en fonction de la demande.<br>
 Cela rend l'application adaptable selon les besoins.<br>
 
-On gagne en agilité : 
+On gagne en agilité :
 * Chaque microservice est autonome vis-à-vis des autres.
 * On peut plus facilement modifier, mettre à jour et déployer rapidement = déploiement continu.
 
@@ -1146,7 +1146,7 @@ Pour une explication complète, voir cette <a href="https://www.youtube.com/watc
 
 ## Faire communiquer les services grâce à EUREKA
 
-### Qu'est-ce qu'Eureka 
+### Qu'est-ce qu'Eureka
 
 Il s'agit d'une application qui contient l'information à propos de toutes les applications client-service.<br>
 
