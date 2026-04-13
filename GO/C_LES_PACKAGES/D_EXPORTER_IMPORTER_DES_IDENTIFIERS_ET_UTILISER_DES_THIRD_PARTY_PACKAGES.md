@@ -51,10 +51,10 @@ La commande `go get`, utilisée sans chemins après, va examiner le fichier `go.
 ## Résumé
 
 - **Exporter** un identifiant (fonction, variable, type, constante) : commencer son nom par une **majuscule** (`GetBalance`, `WriteToFile`).
-- **Importer** un package custom : ajouter son chemin de module dans le bloc `import` — ex. `"example.com/mon-projet/file-operations"`.
-- L'alias du package à l'appel correspond au nom déclaré dans `package <nom>` du fichier source — ex. `fileoperations.GetFloatFromFile(...)`.
+- **Importer** un package custom : ajouter son chemin de module dans le bloc `import` - ex. `"example.com/mon-projet/file-operations"`.
+- L'alias du package à l'appel correspond au nom déclaré dans `package <nom>` du fichier source - ex. `fileoperations.GetFloatFromFile(...)`.
 - Les **packages tiers** (*third-party*) ne font pas partie de la bibliothèque standard Go.
-- Les trouver sur [pkg.go.dev](https://pkg.go.dev/) — le registre officiel des packages Go.
+- Les trouver sur [pkg.go.dev](https://pkg.go.dev/) - le registre officiel des packages Go.
 - Les installer avec `go get github.com/auteur/repo` : télécharge le code et met à jour `go.mod` et `go.sum`.
 - `go get` (sans argument) ou `go mod download` : télécharge toutes les dépendances listées dans `go.mod`.
 - `go mod tidy` : ajoute les dépendances manquantes et supprime celles inutilisées.

@@ -73,8 +73,8 @@ ATTENTION : Cela peut aussi mener à du code plus difficile à comprendre et des
 
 - Un **pointeur** est une variable qui stocke l'**adresse mémoire** d'une autre valeur, et non la valeur elle-même.
 - Opérateur `&` : récupérer l'adresse d'une variable (`userAge := &age`).
-- Type pointeur : `*int`, `*string`, `*float64`, etc. — le préfixe `*` indique un pointeur vers ce type.
-- **Avantage 1 — performance** : passer un pointeur à une fonction évite de copier la valeur en mémoire (utile pour les grandes structures).
-- **Avantage 2 — mutation** : une fonction recevant un pointeur peut modifier directement la valeur originale.
+- Type pointeur : `*int`, `*string`, `*float64`, etc. - le préfixe `*` indique un pointeur vers ce type.
+- **Avantage 1 - performance** : passer un pointeur à une fonction évite de copier la valeur en mémoire (utile pour les grandes structures).
+- **Avantage 2 - mutation** : une fonction recevant un pointeur peut modifier directement la valeur originale.
 - La **valeur nulle d'un pointeur** est `nil` (absence d'adresse).
 

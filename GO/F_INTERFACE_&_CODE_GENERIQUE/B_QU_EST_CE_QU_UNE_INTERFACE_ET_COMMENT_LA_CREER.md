@@ -106,7 +106,7 @@ Par convention, lorsqu'une interface ne fait référence qu'à une seule méthod
 
 ## Résumé
 
-- Une **interface** est un contrat qui garantit qu'un type possède certaines méthodes — sans implémenter leur logique.
+- Une **interface** est un contrat qui garantit qu'un type possède certaines méthodes - sans implémenter leur logique.
 - Syntaxe : `type nomInterface interface { Methode(params) typeRetour }`.
 - L'interface ne contient **pas de corps de fonction**, seulement les signatures.
 - Elle permet de **passer différents types** à une même fonction, à condition qu'ils respectent le contrat.

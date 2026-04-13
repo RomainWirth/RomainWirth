@@ -72,6 +72,6 @@ Dans le code ci dessus, la fonction `getDataFromFile()`  qui retourne un couple 
 - Par convention, une fonction susceptible d'échouer retourne un **couple** `(valeur, error)`.
 - `error` est une **interface** standard de Go ; on crée une erreur avec `errors.New("message")` (package `errors`).
 - La valeur spéciale **`nil`** signifie *absence de valeur* : `if err != nil` vérifie si une erreur est présente.
-- On gère toujours les erreurs **au plus près de leur origine** — avant de continuer l'exécution.
+- On gère toujours les erreurs **au plus près de leur origine** - avant de continuer l'exécution.
 - Retourner une **valeur par défaut** en cas d'erreur (`return 1000.0, errors.New(...)`) permet à l'application de continuer proprement.
 - Le package **`errors`** fait partie de la bibliothèque standard : pas d'import externe nécessaire.

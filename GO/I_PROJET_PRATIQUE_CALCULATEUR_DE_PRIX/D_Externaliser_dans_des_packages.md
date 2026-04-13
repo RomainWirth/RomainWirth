@@ -10,7 +10,7 @@ Le principe de **responsabilité unique** (Single Responsibility Principle) stip
 
 Externaliser une logique dans son propre package apporte plusieurs avantages :
 
-- **Réutilisabilité** : la fonction `StringsToFloats()` n'est plus liée au domaine des prix — n'importe quel autre package du projet peut l'importer et s'en servir.
+- **Réutilisabilité** : la fonction `StringsToFloats()` n'est plus liée au domaine des prix - n'importe quel autre package du projet peut l'importer et s'en servir.
 - **Testabilité** : une fonction pure, sans dépendance externe (pas de fichier, pas de réseau), est triviale à tester unitairement avec des cas nominaux et des cas d'erreur.
 - **Lisibilité** : `LoadData()` exprime clairement son intention (charger des données) sans noyer le lecteur dans les détails d'une conversion numérique.
 - **Maintenabilité** : si le format des prix change (ex. virgule à la place du point), il suffit de modifier le package `conversion` sans toucher au package `prices`.
@@ -67,7 +67,7 @@ func (job *TaxIncludedPriceJob) LoadData() {
 }
 ```
 
-### Étape 1 — Créer le package `conversion`
+### Étape 1 - Créer le package `conversion`
 
 On crée un nouveau dossier `conversion/` à la racine du module, contenant un fichier `conversion.go`. Ce package n'a qu'une responsabilité : convertir des types de données, sans rien savoir des prix ni des fichiers.
 
@@ -80,9 +80,9 @@ func StringsToFloats(strings []string) ([]float64, error) {
 }
 ```
 
-### Étape 2 — Implémenter `StringsToFloats()`
+### Étape 2 - Implémenter `StringsToFloats()`
 
-On extrait la boucle de conversion depuis `LoadData()` et on l'adapte pour qu'elle soit générique : elle ne dépend plus d'un index ou d'un contexte particulier. En cas d'erreur de parsing, on retourne immédiatement `nil` et une erreur explicite — ce qui est la convention Go pour signaler un échec sans paniquer.
+On extrait la boucle de conversion depuis `LoadData()` et on l'adapte pour qu'elle soit générique : elle ne dépend plus d'un index ou d'un contexte particulier. En cas d'erreur de parsing, on retourne immédiatement `nil` et une erreur explicite - ce qui est la convention Go pour signaler un échec sans paniquer.
 ```GO
 package conversion
 
@@ -106,7 +106,7 @@ func StringsToFloats(strings []string) ([]float64, error) {
 
 > **Note** : on utilise `append` plutôt qu'un `make` avec index. Cela simplifie le code et reste efficace pour des volumes de données raisonnables.
 
-### Étape 3 — Mettre à jour `LoadData()` pour déléguer la conversion
+### Étape 3 - Mettre à jour `LoadData()` pour déléguer la conversion
 
 `LoadData()` n'a plus qu'à appeler `conversion.StringsToFloats()` après la lecture des lignes. Elle reste responsable de l'accès au fichier, et délègue entièrement la conversion à un package spécialisé. Le contrat est clair : si la conversion échoue, on ferme le fichier et on remonte l'erreur.
 ```GO
@@ -167,14 +167,14 @@ func (job *TaxIncludedPriceJob) LoadData() {
 
 Après la section précédente, `LoadData()` délègue désormais la conversion à `conversion.StringsToFloats()`. Mais elle conserve encore une responsabilité qui n'a rien à voir avec les prix : **ouvrir et lire un fichier sur le système de fichiers**.
 
-Ce couplage pose un problème de conception : le package `prices` doit connaître l'existence d'un fichier, son chemin, et les détails de `bufio.Scanner`. Si demain les prix sont lus depuis une base de données ou une API, il faudra modifier `prices` — alors qu'il ne devrait s'occuper que du calcul des prix TTC.
+Ce couplage pose un problème de conception : le package `prices` doit connaître l'existence d'un fichier, son chemin, et les détails de `bufio.Scanner`. Si demain les prix sont lus depuis une base de données ou une API, il faudra modifier `prices` - alors qu'il ne devrait s'occuper que du calcul des prix TTC.
 
 C'est le concept de **Séparation des préoccupations** (Separation of Concerns, SoC) : chaque couche de l'application ne doit connaître que ce dont elle a besoin pour accomplir sa mission. En JavaScript, on retrouve ce même principe avec les modules utilitaires (`utils/`) ou les services dédiés à l'I/O. En Go, on l'exprime via les packages.
 
 En pratique, cela signifie :
 
-- Le package `filemanager` sait lire des fichiers — il ne sait rien des prix.
-- Le package `conversion` sait convertir des chaînes en nombres — il ne sait rien des fichiers.
+- Le package `filemanager` sait lire des fichiers - il ne sait rien des prix.
+- Le package `conversion` sait convertir des chaînes en nombres - il ne sait rien des fichiers.
 - Le package `prices` orchestre ces deux packages pour accomplir sa mission métier.
 
 Chaque package est **atomique** : il fait une seule chose, et il la fait bien.
@@ -183,9 +183,9 @@ Chaque package est **atomique** : il fait une seule chose, et il la fait bien.
 
 Même après le refactoring précédent, `LoadData()` continue d'ouvrir le fichier, d'instancier un scanner et de gérer les erreurs d'I/O. Cette logique d'accès au fichier doit être extraite dans son propre package.
 
-### Étape 1 — Créer le package `filemanager`
+### Étape 1 - Créer le package `filemanager`
 
-On crée un dossier `filemanager/` contenant un fichier `filemanager.go`. Ce package expose une seule fonction publique : `ReadLines()`. On commence par en définir la signature — elle reçoit un chemin de fichier en paramètre, ce qui la rend réutilisable pour n'importe quel fichier texte dans l'application :
+On crée un dossier `filemanager/` contenant un fichier `filemanager.go`. Ce package expose une seule fonction publique : `ReadLines()`. On commence par en définir la signature - elle reçoit un chemin de fichier en paramètre, ce qui la rend réutilisable pour n'importe quel fichier texte dans l'application :
 ```GO
 package filemanager
 
@@ -194,9 +194,9 @@ func ReadLines() {
 }
 ```
 
-### Étape 2 — Implémenter `ReadLines()`
+### Étape 2 - Implémenter `ReadLines()`
 
-On extrait le code d'accès au fichier depuis `LoadData()` et on l'adapte. La fonction accepte maintenant un `path string` en paramètre au lieu d'un nom de fichier codé en dur — c'est ce qui la rend générique. En cas d'erreur, elle retourne `nil` et une erreur (convention Go), sans afficher quoi que ce soit : c'est l'appelant qui décide comment gérer l'erreur.
+On extrait le code d'accès au fichier depuis `LoadData()` et on l'adapte. La fonction accepte maintenant un `path string` en paramètre au lieu d'un nom de fichier codé en dur - c'est ce qui la rend générique. En cas d'erreur, elle retourne `nil` et une erreur (convention Go), sans afficher quoi que ce soit : c'est l'appelant qui décide comment gérer l'erreur.
 
 > **Fermeture du fichier** : on ferme explicitement le fichier avec `file.Close()` à chaque point de sortie (erreur ou succès). Il n'y a pas de `defer file.Close()` ici, car en cas d'erreur lors du scan, on veut fermer avant de retourner.
 ```GO
@@ -237,7 +237,7 @@ func ReadLines(path string) ([]string, error) {
 }
 ```
 
-### Étape 3 — Simplifier `LoadData()` en déléguant la lecture
+### Étape 3 - Simplifier `LoadData()` en déléguant la lecture
 
 `LoadData()` n'a plus qu'une seule ligne d'I/O : l'appel à `filemanager.ReadLines()`. Toute la gestion du fichier (ouverture, scanner, fermeture) a disparu. La méthode est réduite à son essence : récupérer des lignes, les convertir, mettre à jour le job.
 ```GO
@@ -278,7 +278,7 @@ Après ces deux refactorings, chaque package a une responsabilité clairement d�
 
 ### Single Responsibility Principle (SRP)
 
-Chaque unité de code — fonction, fichier, package — ne devrait avoir qu'**une seule raison de changer**. Lorsqu'on détecte qu'une fonction mélange plusieurs préoccupations (lire un fichier, convertir des données, calculer un résultat), c'est le signal qu'il faut découper.
+Chaque unité de code - fonction, fichier, package - ne devrait avoir qu'**une seule raison de changer**. Lorsqu'on détecte qu'une fonction mélange plusieurs préoccupations (lire un fichier, convertir des données, calculer un résultat), c'est le signal qu'il faut découper.
 
 ### Séparation des préoccupations (Separation of Concerns, SoC)
 
@@ -294,7 +294,7 @@ En extrayant une logique dans un package dédié, on la rend disponible à l'ens
 
 ### Testabilité
 
-Une fonction pure — sans effets de bord, sans dépendance au système de fichiers ou au réseau — est directement testable avec des données en mémoire. `StringsToFloats()` peut être testée avec un simple `[]string{"1.5", "2.0"}` sans avoir à créer de fichier. C'est l'un des bénéfices directs de la séparation des préoccupations.
+Une fonction pure - sans effets de bord, sans dépendance au système de fichiers ou au réseau - est directement testable avec des données en mémoire. `StringsToFloats()` peut être testée avec un simple `[]string{"1.5", "2.0"}` sans avoir à créer de fichier. C'est l'un des bénéfices directs de la séparation des préoccupations.
 
 ### Fonction d'orchestration
 

@@ -81,7 +81,7 @@ case 2:
 - `switch variable { case valeur: ... }` est une alternative plus lisible aux longues chaînes `if / else if`.
 - Le bloc `default` est exécuté si aucun `case` ne correspond (équivalent du `else` final).
 - Contrairement à C/Java, **`break` est implicite** en Go : chaque `case` s'arrête automatiquement.
-- `fallthrough` force l'exécution du `case` suivant de manière inconditionnelle — à utiliser avec parcimonie.
+- `fallthrough` force l'exécution du `case` suivant de manière inconditionnelle - à utiliser avec parcimonie.
 - `return` à l'intérieur d'un `switch` sort de la **fonction entière**.
-- `continue` n'a de sens que si le `switch` est à l'intérieur d'une boucle — il relance l'itération.
+- `continue` n'a de sens que si le `switch` est à l'intérieur d'une boucle - il relance l'itération.
 - Un `switch` sans variable (`switch { case condition: ... }`) est un équivalent compact d'un `if / else if` basé sur des expressions booléennes.

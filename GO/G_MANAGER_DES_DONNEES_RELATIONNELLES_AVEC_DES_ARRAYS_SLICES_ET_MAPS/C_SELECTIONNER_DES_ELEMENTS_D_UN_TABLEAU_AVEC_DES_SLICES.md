@@ -14,7 +14,7 @@ On utilisera cette syntaxe : `nameSlice := nameArray[indexA:indexB]`
 | Critère | Array | Slice |
 |---|---|---|
 | **Taille** | Fixe, définie à la déclaration | Dynamique, peut grandir avec `append()` |
-| **Syntaxe de type** | `[N]type` — ex: `[4]float64` | `[]type` — ex: `[]float64` |
+| **Syntaxe de type** | `[N]type` - ex: `[4]float64` | `[]type` - ex: `[]float64` |
 | **Passage en fonction** | Copie du tableau entier (valeur) | Référence vers le tableau sous-jacent |
 | **`append()`** | Impossible | Possible |
 | **Usage typique** | Taille connue et immuable | Cas général, usage courant en Go |
@@ -122,8 +122,8 @@ On constate bien que l'élément modifié de `featuredPrices` affecte l'élémen
 
 ## Résumé
 
-- Une `slice` est une **fenêtre** (référence) sur un tableau — pas une copie.
-- Syntaxe : `slice := array[indexA:indexB]` — `indexA` inclus, `indexB` exclu.
+- Une `slice` est une **fenêtre** (référence) sur un tableau - pas une copie.
+- Syntaxe : `slice := array[indexA:indexB]` - `indexA` inclus, `indexB` exclu.
 - Raccourcis : `[:n]` (du début à n exclu), `[n:]` (de n à la fin), `[:]` (totalité).
 - On peut faire des slices de slices dans la limite de la capacité.
 - **Modification partagée** : modifier un élément dans une slice modifie également l'élément dans le tableau d'origine.

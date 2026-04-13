@@ -179,6 +179,6 @@ Et un nouveau fichier `learn_go.json` contenant ceci :
 - `bufio.NewReader(os.Stdin)` + `ReadString('\n')` permet de lire une ligne complète (contenant des espaces), contrairement à `fmt.Scan()`.
 - `strings.TrimSuffix(text, "\n")` nettoie le caractère de fin de ligne retourné par `ReadString`.
 - Les **struct tags** (`` `json:"title"` ``) contrôlent les noms des clés lors de la sérialisation avec `json.Marshal()`.
-- `json.Marshal(note)` sérialise le struct en `[]byte` au format JSON — à combiner avec `os.WriteFile()` pour persister.
+- `json.Marshal(note)` sérialise le struct en `[]byte` au format JSON - à combiner avec `os.WriteFile()` pour persister.
 - La fonction constructeur `New()` centralise la validation : retourne `(Note, error)` et rejette les champs vides.
 - Bonne pratique : **chaque erreur est gérée immédiatement** après l'appel de la fonction qui peut échouer.

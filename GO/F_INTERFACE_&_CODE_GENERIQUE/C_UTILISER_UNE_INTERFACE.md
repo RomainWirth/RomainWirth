@@ -381,12 +381,12 @@ Cela est particulièrement utile lorsqu'on écrit une librairie qui sera utilis�
 
 ## Résumé
 
-- Une interface est utilisée comme **type de paramètre** : `func saveData(data saver) error` — accepte tout type qui implémente `saver`.
-- **Implémentation implicite** : en Go, un type implémente une interface dès qu'il possède les méthodes requises — aucune déclaration explicite `implements` n'est nécessaire.
-- **Interfaces nestées** : une interface peut embarquer une autre interface pour combiner plusieurs contrats — ex. `type outputtable interface { saver; Display() }`.
-- `interface{}` (ou `any`) accepte **n'importe quel type** — utile pour la flexibilité maximale, mais à utiliser avec précaution.
-- **Type switch** : `switch value.(type) { case int: ... }` — inspecte le type dynamique d'une variable `interface{}`.
-- **Type assertion** : `typedVal, ok := value.(int)` — vérifie et extrait la valeur typée ; `ok` vaut `true` si l'assertion réussit.
-- **Génériques** (`Go 1.18+`) : `func add[T int | float64 | string](a, b T) T` — permet d'écrire des fonctions typées mais flexibles, sans passer par `interface{}`.
-- Le placeholder de type `[T ...]` est résolu à l'appel de la fonction — Go infère le type automatiquement depuis les arguments.
+- Une interface est utilisée comme **type de paramètre** : `func saveData(data saver) error` - accepte tout type qui implémente `saver`.
+- **Implémentation implicite** : en Go, un type implémente une interface dès qu'il possède les méthodes requises - aucune déclaration explicite `implements` n'est nécessaire.
+- **Interfaces nestées** : une interface peut embarquer une autre interface pour combiner plusieurs contrats - ex. `type outputtable interface { saver; Display() }`.
+- `interface{}` (ou `any`) accepte **n'importe quel type** - utile pour la flexibilité maximale, mais à utiliser avec précaution.
+- **Type switch** : `switch value.(type) { case int: ... }` - inspecte le type dynamique d'une variable `interface{}`.
+- **Type assertion** : `typedVal, ok := value.(int)` - vérifie et extrait la valeur typée ; `ok` vaut `true` si l'assertion réussit.
+- **Génériques** (`Go 1.18+`) : `func add[T int | float64 | string](a, b T) T` - permet d'écrire des fonctions typées mais flexibles, sans passer par `interface{}`.
+- Le placeholder de type `[T ...]` est résolu à l'appel de la fonction - Go infère le type automatiquement depuis les arguments.
 - Les génériques sont particulièrement utiles pour écrire des **bibliothèques réutilisables** sans sacrifier la sécurité du typage.

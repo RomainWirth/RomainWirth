@@ -233,9 +233,9 @@ func outputUserDetails(u *user) {
 ## Résumé
 
 - Un `struct` regroupe des données connexes en un seul type personnalisé : `type user struct { ... }`.
-- **Instanciation** : `appUser := user{ firstName: "John", ... }` — notation avec clés (recommandée) ou positionnelle (ordre obligatoire).
+- **Instanciation** : `appUser := user{ firstName: "John", ... }` - notation avec clés (recommandée) ou positionnelle (ordre obligatoire).
 - `struct` vide (`user{}`) = valeur nulle : chaque champ prend sa valeur nulle de type (`""`, `0`, `false`...).
 - **Accès aux champs** : notation pointée `appUser.firstName`.
-- Un struct peut être passé à une **fonction** (`u user`) ou comme **pointeur** (`u *user`) — préférer le pointeur pour les grandes structures.
+- Un struct peut être passé à une **fonction** (`u user`) ou comme **pointeur** (`u *user`) - préférer le pointeur pour les grandes structures.
 - Avec un pointeur vers un struct, Go applique le déréférencement automatiquement : `u.firstName` équivaut à `(*u).firstName`.
 - Un champ peut être de n'importe quel type, y compris un autre `struct` (ex. `createdAt time.Time`).

@@ -167,7 +167,7 @@ Ratio of Expenses to Earnings: 108.33
 - Une **fonction** est un bloc de code réutilisable, déclaré avec le mot clé `func`.
 - La syntaxe de base : `func nom(param type) typeRetour { ... }`.
 - Une fonction peut **retourner plusieurs valeurs** : `func f() (float64, float64) { return a, b }`.
-- Il est possible de **nommer les valeurs de retour** dans la signature : `func f() (result float64, err error)` — un simple `return` suffit alors.
+- Il est possible de **nommer les valeurs de retour** dans la signature : `func f() (result float64, err error)` - un simple `return` suffit alors.
 - La **fonction `main()`** est le point d'entrée unique du programme, dans le package `main`.
 - On appelle une fonction avec `variableUn, variableDeux := nomFonction(args...)`.
 - Les paramètres de même type peuvent être groupés : `func f(a, b, c float64)`.

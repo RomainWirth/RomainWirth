@@ -1,10 +1,10 @@
 # C. LES FONCTIONS `RÉCURSIVES`
 
-Une fonction est `récursive` lorsqu'elle s'appelle elle-même.  
-Un bon exemple pour démontrer ceci est une fonction factorielle :  
+Une fonction est `récursive` lorsqu'elle s'appelle elle-même.
+Un bon exemple pour démontrer ceci est une fonction factorielle :
 `factorial of 5 => 5 * 4 * 3 * 2 * 1 = 120`
 
-Une façon simple d'écrire cette fonction est la suivante : 
+Une façon simple d'écrire cette fonction est la suivante :
 ```Go
 package main
 
@@ -25,7 +25,7 @@ func factorial(number int) int {
 	return result
 }
 ```
-Mais cette fonction n'utilise pas la récursivité.  
+Mais cette fonction n'utilise pas la récursivité.
 Pour ce faire, la fonction `factorial` va s'appeler elle même :
 ```Go
 func factorial(number int) int {
@@ -35,22 +35,22 @@ func factorial(number int) int {
   return number * factorial(number - 1)
 }
 ```
-Voici son fonctionnement :  
-En appelant la fonction `factorial` et en lui passant le chiffre `5` en paramètre,  
-* on vérifie que le nombre n'est pas égal à 0. Comme ce n'est pas le cas,  
+Voici son fonctionnement :
+En appelant la fonction `factorial` et en lui passant le chiffre `5` en paramètre,
+* on vérifie que le nombre n'est pas égal à 0. Comme ce n'est pas le cas,
 * on retourne le nombre, multiplié par le résultat de la fonction factorial de lui-même moins 1 (soit 4).
-* avant de retourner le résultat final de la fonction principale, on va attendre le résultat de la fonction appelée à l'intérieur. 
+* avant de retourner le résultat final de la fonction principale, on va attendre le résultat de la fonction appelée à l'intérieur.
 * Etant donné que la fonction s'appelle elle-même, il va falloir attendre que le résultat soit différent de celui retourné par `return number * factorial(number - 1)`, soit le résultat `return 1`.
 
-Ainsi, le procédé est le suivant :  
-factorial(5) => `return 120`  
-| factorial(4) => return 24  
-| | factorial(3) => return 6  
-| | | factorial(2) => return 2  
-| | | | factorial(1) => return 1  
-| | | | | factorial(0) => return 1   
+Ainsi, le procédé est le suivant :
+factorial(5) => `return 120`
+| factorial(4) => return 24
+| | factorial(3) => return 6
+| | | factorial(2) => return 2
+| | | | factorial(1) => return 1
+| | | | | factorial(0) => return 1
 
-output : 
+output :
 ```
 go run .
 
@@ -59,10 +59,10 @@ Factorial of 5 is: 120
 
 # D. UTILISER DES FONCTIONS `VARIADIQUES`
 
-Une fonction variadique est une fonction qui peut accepter un nombre variable d'arguments du même type.  
-Cela signifie qu'on peut appeler la fonction avec autant de paramètres qu'on le souhaite (de 0 à N) pour cet argument.  
+Une fonction variadique est une fonction qui peut accepter un nombre variable d'arguments du même type.
+Cela signifie qu'on peut appeler la fonction avec autant de paramètres qu'on le souhaite (de 0 à N) pour cet argument.
 
-Prenons l'exemple suivant : 
+Prenons l'exemple suivant :
 ```Go
 package main
 
@@ -85,16 +85,16 @@ func sumup(numbers []int) int {
 ```
 Ici, la fonction `sumup()` va retourner la somme des éléments du tableau passé en paramètres.
 
-Dans certains cas, on ne possède pas de `slice` à passer en paramètres ou alors on ne sait pas à l'avance ce qu'on va passer en paramètre d'une fonction.  
+Dans certains cas, on ne possède pas de `slice` à passer en paramètres ou alors on ne sait pas à l'avance ce qu'on va passer en paramètre d'une fonction.
 
-C'est dans ce cas qu'on pourra utiliser des fonctions variadiques. 
+C'est dans ce cas qu'on pourra utiliser des fonctions variadiques.
 
 Pour déclarer une telle fonction, on va utiliser cette syntaxe : `func name(variable ...type) type {...}`
 * on déclare une fonction `name`
 * qui prends en paramètre `variable`, et on utilise le spread operator avant le type souhaité : `...type`
 * la fonction retournera comme d'habiture un `type` de variable.
 
-Exemple : 
+Exemple :
 ```Go
 package main
 
@@ -117,7 +117,7 @@ func sumup(numbers ...int) int {
 * la fonction `sumup()` prends un nombre indéfini de variables `numbers` de type `int`
 * elle retourne une valeur de type `int`
 
-Il est possible de passer d'autres paramètres en complément : 
+Il est possible de passer d'autres paramètres en complément :
 ```Go
 func sumup(startingValue int, numbers ...int) int {
 	sum := 0
@@ -133,9 +133,9 @@ __ATTENTION : une fonction ne peut avoir qu'`un seul paramètre variadique` et c
 
 ## Séparer des `slices` en valeurs de paramètres
 
-Dans notre exemple, il n'est plus possible d'utiliser une slice pour la passer en paramètre lors de l'appel de la fonction variadique.  
+Dans notre exemple, il n'est plus possible d'utiliser une slice pour la passer en paramètre lors de l'appel de la fonction variadique.
 
-Afin de passer la slice, on va utiliser l'inverse du spread operator de cette manière : 
+Afin de passer la slice, on va utiliser l'inverse du spread operator de cette manière :
 ```Go
 package main
 
@@ -158,8 +158,8 @@ func sumup(numbers ...int) int {
 ```
 * `sliceTotal := sumup(slice...)` : on va `spread` la variable `slice` passée en paramètre dans l'appel de la fonction `sumup()`.
 
-Les trois points (spread operator) peuvent être très utiles pour rendre les fonctions plus dynamiques et flexibles.  
-On peut les utiliser : 
+Les trois points (spread operator) peuvent être très utiles pour rendre les fonctions plus dynamiques et flexibles.
+On peut les utiliser :
 * soit lorsqu'on définit une fonction dans la liste des paramètres (avec `...type`)
 * soit lorsqu'on appelle une fonction variadique en lui passant une slice existante (avec `slice...`)
 
@@ -174,8 +174,8 @@ On peut les utiliser :
 - Utile pour les structures naturellement récursives : arbres, factorielles, Fibonacci, etc.
 
 ### Fonctions variadiques
-- Syntaxe : `func name(values ...type) type` — accepte 0 à N arguments du même type.
+- Syntaxe : `func name(values ...type) type` - accepte 0 à N arguments du même type.
 - À l'intérieur de la fonction, le paramètre variadique est traité comme une **slice**.
 - **Restriction** : une seule paramètre variadique par fonction, et il doit être placé **en dernier**.
-- Pour passer une slice existante : `sumup(mySlice...)` — le spread operator déplie la slice en arguments individuels.
+- Pour passer une slice existante : `sumup(mySlice...)` - le spread operator déplie la slice en arguments individuels.
 * soit lorsqu'on souhaite séparer les variables d'une slice afin de les utiliser lors d'un appel de fonction variadique.

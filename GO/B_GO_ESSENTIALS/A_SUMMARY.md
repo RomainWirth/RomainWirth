@@ -1,10 +1,10 @@
-# GO ESSENTIALS — Sommaire
+# GO ESSENTIALS - Sommaire
 
 > Valeurs, types, fonctions et fonctionnalités fondamentales du langage Go.
 
 ---
 
-## [B — Composants clés d'un programme Go](B_GO_PROGRAM_KEY_COMPONENTS.md)
+## [B - Composants clés d'un programme Go](B_GO_PROGRAM_KEY_COMPONENTS.md)
 
 - Organisation du code en **packages** (`package main`, packages secondaires).
 - Le package **`main`** comme point d'entrée obligatoire de l'application.
@@ -14,7 +14,7 @@
 
 ---
 
-## [C — Valeurs & Types](C_VALUES_&_TYPES.md)
+## [C - Valeurs & Types](C_VALUES_&_TYPES.md)
 
 - Go est un **langage fortement typé** : opérations entre types différents interdites à la compilation.
 - Types de base : `int`, `float64`, `string`, `bool`; types de niche : `int32`, `int64`, `uint`, `rune`.
@@ -27,7 +27,7 @@
 
 ---
 
-## [D — Comprendre les fonctions](D_COMPRENDRE_LES_FONCTIONS.md)
+## [D - Comprendre les fonctions](D_COMPRENDRE_LES_FONCTIONS.md)
 
 - Déclaration avec `func nom(param type) typeRetour { ... }`.
 - **Retour de plusieurs valeurs** : `func f() (float64, float64) { return a, b }`.
@@ -37,40 +37,40 @@
 
 ---
 
-## [E — Structures de contrôle](E_STRUCTURES_DE_CONTROLE.md)
+## [E - Structures de contrôle](E_STRUCTURES_DE_CONTROLE.md)
 
-- `if condition { ... }` — pas de parenthèses autour de la condition en Go.
-- `else if condition { ... }` — enchaînement de conditions.
-- `else { ... }` — cas par défaut.
+- `if condition { ... }` - pas de parenthèses autour de la condition en Go.
+- `else if condition { ... }` - enchaînement de conditions.
+- `else { ... }` - cas par défaut.
 - **Conditions imbriquées** (*nested if*) pour les logiques à plusieurs niveaux.
 - `return` stoppe immédiatement l'exécution de la fonction courante.
 - Variable déclarable directement dans la condition d'un `if`.
 
 ---
 
-## [F — Les boucles `for`](F_LES_BOUCLES_FOR.md)
+## [F - Les boucles `for`](F_LES_BOUCLES_FOR.md)
 
 - Go n'a **qu'un seul type de boucle** : `for` (remplace `while`, `do...while`, etc.).
 - Syntaxe classique : `for i := 0; i < n; i++ { ... }`.
 - Syntaxe simplifiée : `for range n { ... }` (Go 1.22+).
-- Boucle infinie : `for { ... }` — contrôlée par `break` ou `return`.
+- Boucle infinie : `for { ... }` - contrôlée par `break` ou `return`.
 - Boucle conditionnelle : `for condition { ... }` (équivalent du `while`).
 - `break` sort de la boucle ; `continue` relance l'itération suivante.
 
 ---
 
-## [G — Switch Case](G_SWITCH_CASE.md)
+## [G - Switch Case](G_SWITCH_CASE.md)
 
-- `switch variable { case valeur: ... }` — alternative lisible aux longues chaînes `if/else if`.
-- `default` — cas par défaut si aucun `case` ne correspond.
+- `switch variable { case valeur: ... }` - alternative lisible aux longues chaînes `if/else if`.
+- `default` - cas par défaut si aucun `case` ne correspond.
 - **`break` implicite** en Go : pas besoin de l'écrire à la fin de chaque `case`.
-- `fallthrough` — force l'exécution du `case` suivant (inconditionnellement).
+- `fallthrough` - force l'exécution du `case` suivant (inconditionnellement).
 - `return` dans un `switch` sort de la **fonction entière**.
 - `switch` sans variable : équivalent de `if/else if` avec expressions booléennes.
 
 ---
 
-## [H — Faire persister et extraire de la data d'un fichier](H_FAIRE_PERSISTER_ET_EXTRAIRE_DE_LA_DATA_D_UN_FICHIER.md)
+## [H - Faire persister et extraire de la data d'un fichier](H_FAIRE_PERSISTER_ET_EXTRAIRE_DE_LA_DATA_D_UN_FICHIER.md)
 
 - Package **`os`** : `os.WriteFile(nom, []byte(contenu), 0644)` pour écrire dans un fichier.
 - `[]byte()` convertit une `string` en tableau d'octets (format requis par `WriteFile`).
@@ -78,14 +78,14 @@
 - `os.ReadFile(nom)` lit un fichier et retourne `[]byte` → reconvertir en `string(data)`.
 - Package **`strconv`** : `strconv.ParseFloat(str, 64)` convertit une `string` en `float64`.
 - Ces fonctions retournent toujours un **couple** `(valeur, error)`.
-- L'identifiant `_` ignore une valeur de retour — à éviter en production.
+- L'identifiant `_` ignore une valeur de retour - à éviter en production.
 
 ---
 
-## [I — Gestion des erreurs](I_ERROR_HANDLING.md)
+## [I - Gestion des erreurs](I_ERROR_HANDLING.md)
 
 - Pas de `try/catch` en Go : les erreurs sont des **valeurs retournées**.
-- Convention : `func f() (valeur, error)` — retourner l'erreur comme dernier élément.
+- Convention : `func f() (valeur, error)` - retourner l'erreur comme dernier élément.
 - `errors.New("message")` (package `errors`) crée une valeur d'erreur.
 - `nil` signifie *absence de valeur* : `if err != nil` détecte une erreur.
 - Retourner une **valeur par défaut + error** permet à l'application de continuer proprement.
@@ -93,7 +93,7 @@
 
 ---
 
-## [J — Utilisation de `panic`](J_UTILISATION_DE_PANIC.md)
+## [J - Utilisation de `panic`](J_UTILISATION_DE_PANIC.md)
 
 - `panic("message")` arrête **immédiatement** l'exécution et affiche une stack trace.
 - À réserver aux erreurs **irrécupérables** (état incohérent, contrainte métier absolue).

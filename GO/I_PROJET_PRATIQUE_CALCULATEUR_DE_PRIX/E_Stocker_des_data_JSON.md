@@ -23,7 +23,7 @@ func WriteJSON(data interface{}) {}
 
 `any` est un alias de `interface{}` introduit en Go 1.18. Les deux sont **strictement équivalents**. `any` est plus moderne et idiomatique dans le code récent, mais `interface{}` reste très répandu dans les bases de code existantes. Le comportement est identique : ces types acceptent une valeur de **n'importe quel type** en paramètre.
 
-Utiliser `interface{}` (ou `any`) ici rend `WriteJSON()` **générique** : elle peut sérialiser une struct, une map, une slice, ou tout autre type Go — sans avoir besoin d'une fonction différente pour chaque cas. C'est le package `encoding/json` qui se charge d'inspecter la valeur au moment de l'exécution via la **réflexion** (`reflect`) pour produire le JSON correspondant.
+Utiliser `interface{}` (ou `any`) ici rend `WriteJSON()` **générique** : elle peut sérialiser une struct, une map, une slice, ou tout autre type Go - sans avoir besoin d'une fonction différente pour chaque cas. C'est le package `encoding/json` qui se charge d'inspecter la valeur au moment de l'exécution via la **réflexion** (`reflect`) pour produire le JSON correspondant.
 
 ## Implémentation complète de `WriteJSON()`
 
@@ -65,7 +65,7 @@ Plutôt que `json.Marshal()` qui produit un `[]byte` en mémoire, on utilise `js
 
 **4. Fermeture explicite du fichier**
 
-On ferme le fichier manuellement à chaque point de sortie. On aurait pu utiliser `defer file.Close()` après `os.Create`, ce qui est plus idiomatique en Go — mais cela aurait différé la fermeture à la fin de la fonction, y compris en cas d'erreur d'encodage. Le choix explicite ici garantit une libération immédiate de la ressource en cas de problème.
+On ferme le fichier manuellement à chaque point de sortie. On aurait pu utiliser `defer file.Close()` après `os.Create`, ce qui est plus idiomatique en Go - mais cela aurait différé la fermeture à la fin de la fonction, y compris en cas d'erreur d'encodage. Le choix explicite ici garantit une libération immédiate de la ressource en cas de problème.
 
 ## Mise à jour de la struct et de `Process()`
 

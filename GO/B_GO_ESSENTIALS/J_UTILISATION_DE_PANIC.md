@@ -142,6 +142,6 @@ Ratio of Expenses to Earnings: 144.44
 - `panic("message")` **arrête immédiatement** l'exécution du programme et affiche une stack trace détaillée.
 - À utiliser uniquement pour des **erreurs irrécupérables** : état incohérent, configuration manquante, contrainte absolument non respectée.
 - Pour les erreurs *attendues et récupérables* (fichier absent, saisie invalide), préférer le mécanisme `(valeur, error)` décrit dans `I_ERROR_HANDLING`.
-- `panic` s'arrête au niveau du `goroutine` courant et remonte la pile d'appels — ce qui peut être capturé avec `recover()` (fonctionnalité avancée).
+- `panic` s'arrête au niveau du `goroutine` courant et remonte la pile d'appels - ce qui peut être capturé avec `recover()` (fonctionnalité avancée).
 - Dans l'exercice, `panic` est utilisé pour valider les **contraintes métier** : pas de valeur négative, taux d'imposition entre 0 et 100.
 - Les résultats peuvent être persistés dans un fichier `results.txt` via `os.WriteFile()` (voir `H_FAIRE_PERSISTER`).

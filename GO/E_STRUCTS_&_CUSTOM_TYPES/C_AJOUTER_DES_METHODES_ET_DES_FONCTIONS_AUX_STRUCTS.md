@@ -559,11 +559,11 @@ Si notre application retourne un objet json, le type struct retourné aura des c
 ## Résumé
 
 - Une **méthode** est une fonction attachée à un struct via un *receiver argument* : `func (u user) maMethode() { ... }`.
-- **Receiver par valeur** (`u user`) : travaille sur une copie — ne modifie pas l'original.
-- **Receiver par pointeur** (`u *user`) : modifie directement la valeur originale — obligatoire pour muter les données du struct.
-- **Fonction constructeur** : par convention nommée `New()` ou `newUser()`, retourne un pointeur `*user` (et éventuellement une `error`) — centralise la création et la validation.
+- **Receiver par valeur** (`u user`) : travaille sur une copie - ne modifie pas l'original.
+- **Receiver par pointeur** (`u *user`) : modifie directement la valeur originale - obligatoire pour muter les données du struct.
+- **Fonction constructeur** : par convention nommée `New()` ou `newUser()`, retourne un pointeur `*user` (et éventuellement une `error`) - centralise la création et la validation.
 - **Export** : struct et méthodes avec majuscule initiale (`User`, `OutputUserDetails`) sont accessibles hors du package ; minuscule = privé.
 - **Struct dans son propre package** : déplacer le struct dans `user/user.go` avec `package user`, importer via `"example.com/module/user"`, appeler via `User.New(...)`.
 - **Struct embedding** : intégrer un struct dans un autre (`type Admin struct { User }`) permet l'héritage des méthodes ; sans nom de champ (anonyme), les méthodes sont promues directement (`admin.OutputUserDetails()`).
 - **Types custom** : `type str string` crée un alias pour y attacher des méthodes.
-- **Struct tags** : métadonnées de formatage — ex. `` `json:"title"` `` formate les clés lors de la sérialisation JSON.
+- **Struct tags** : métadonnées de formatage - ex. `` `json:"title"` `` formate les clés lors de la sérialisation JSON.

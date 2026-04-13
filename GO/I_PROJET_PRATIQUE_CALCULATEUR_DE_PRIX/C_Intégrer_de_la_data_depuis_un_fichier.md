@@ -85,7 +85,7 @@ func (job TaxIncludedPriceJob) LoadData() {
 }
 ```
 
-> **Note sur la fermeture du fichier** : dans cette version, `file.Close()` est appelé manuellement uniquement en cas d'erreur. Le fichier reste ouvert en fin de fonction normale — cela sera l'occasion d'introduire `defer file.Close()` comme amélioration dans une prochaine version.
+> **Note sur la fermeture du fichier** : dans cette version, `file.Close()` est appelé manuellement uniquement en cas d'erreur. Le fichier reste ouvert en fin de fonction normale - cela sera l'occasion d'introduire `defer file.Close()` comme amélioration dans une prochaine version.
 
 ---
 
@@ -96,13 +96,13 @@ func (job TaxIncludedPriceJob) LoadData() {
 - **`scanner.Scan()`** : avance d'une ligne à chaque appel ; retourne `false` en fin de fichier.
 - **`scanner.Text()`** : retourne la ligne courante sous forme de `string`.
 - **`file.Close()`** : ferme le fichier manuellement en cas d'erreur dans cette version.
-- **`strconv.ParseFloat(s, 64)`** : convertit une `string` en `float64` — utilisé à la section suivante pour traiter les lignes lues.
+- **`strconv.ParseFloat(s, 64)`** : convertit une `string` en `float64` - utilisé à la section suivante pour traiter les lignes lues.
 
 ## Travailler avec le fichier de données
 
 **Objectif** : compléter `LoadData()` pour convertir les lignes lues en `float64` et les stocker dans `job.InputPrices`, puis modifier `Process()` pour appeler `LoadData()` avant les calculs.
 
-### Modifier `LoadData()` — ajout de la conversion
+### Modifier `LoadData()` - ajout de la conversion
 
 Après la lecture des lignes dans `lines []string`, ajouter une deuxième passe  qui alloue une slice de `float64` de la bonne taille et convertit chaque ligne :
 ```GO
@@ -279,6 +279,6 @@ func main() {
 ### Résumé de la section
 
 - `LoadData()` est appelée depuis `Process()` : le chargement des données est encapsulé dans la méthode, `main.go` n'a pas à s'en préoccuper.
-- Les résultats sont stockés dans `job.TaxIncludedPrices` (et non dans une variable locale) — cohérent avec le design du struct.
+- Les résultats sont stockés dans `job.TaxIncludedPrices` (et non dans une variable locale) - cohérent avec le design du struct.
 - Le receiver pointeur `*TaxIncludedPriceJob` est indispensable sur les deux méthodes pour que les modifications des champs (`InputPrices`, `TaxIncludedPrices`) persistent sur le struct d'origine.
 

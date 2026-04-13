@@ -338,4 +338,4 @@ func main() {
 - Les conditions peuvent être **imbriquées** (*nested if*) à l'infini.
 - `return` stoppe immédiatement l'exécution de la fonction courante.
 - Une condition retourne toujours un **booléen** (`true` ou `false`) : `choice == 1`, `balance > 0`, etc.
-- On peut déclarer une variable **directement dans la condition** d'un `if` : `if val := compute(); val > 0 { ... }` — `val` n'est alors visible que dans ce bloc.
+- On peut déclarer une variable **directement dans la condition** d'un `if` : `if val := compute(); val > 0 { ... }` - `val` n'est alors visible que dans ce bloc.

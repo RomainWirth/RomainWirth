@@ -314,10 +314,10 @@ On peut utiliser les `...` à chaque fois qu'on souhaite récupérer les éléme
 ## Résumé
 
 - `len(slice)` retourne le **nombre d'éléments actifs** ; `cap(slice)` retourne la **capacité** (éléments disponibles vers la droite du tableau d'origine).
-- **Slice dynamique** : `prices := []float64{}` — déclarer sans taille crée une slice sans tableau d'origine fixe.
+- **Slice dynamique** : `prices := []float64{}` - déclarer sans taille crée une slice sans tableau d'origine fixe.
 - `append(slice, val1, val2...)` ajoute des éléments et retourne une **nouvelle slice** (réassigner : `prices = append(prices, ...)`).
-- Pour supprimer un élément : réassigner une sous-slice — ex. `prices = prices[1:]` (supprime le premier).
-- `make([]type, length, capacity)` pré-alloue la mémoire — améliore les performances quand la taille approximative est connue.
+- Pour supprimer un élément : réassigner une sous-slice - ex. `prices = prices[1:]` (supprime le premier).
+- `make([]type, length, capacity)` pré-alloue la mémoire - améliore les performances quand la taille approximative est connue.
 - **Spread operator** `...` : `append(slice1, slice2...)` fusionne deux slices en déballant les éléments de la seconde.
 - `make(map[type]type, capacity)` permet de pré-allouer une map de la même façon.
-- **Alias de type** : `type floatMap map[string]float64` — rend le code plus lisible et permet d'y attacher des méthodes.
+- **Alias de type** : `type floatMap map[string]float64` - rend le code plus lisible et permet d'y attacher des méthodes.

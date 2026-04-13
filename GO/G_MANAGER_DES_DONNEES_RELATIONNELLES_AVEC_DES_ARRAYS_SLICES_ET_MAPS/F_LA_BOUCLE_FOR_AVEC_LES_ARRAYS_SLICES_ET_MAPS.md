@@ -83,5 +83,5 @@ key: phi value: 1.618
 - `index`/`key` et `value` peuvent prendre n'importe quel nom de variable.
 - Si seul l'un des deux est nécessaire, utiliser `_` pour ignorer l'autre : `for _, value := range slice`.
 - Pour itérer sans utiliser ni l'index ni la valeur : `for range slice { ... }`.
-- **L'ordre d'itération d'une map n'est pas garanti** en Go — ne pas supposer un ordre particulier.
+- **L'ordre d'itération d'une map n'est pas garanti** en Go - ne pas supposer un ordre particulier.
 - Combiné avec `make()` et `append()`, la boucle `for range` est le moyen standard de traiter des collections dynamiques.

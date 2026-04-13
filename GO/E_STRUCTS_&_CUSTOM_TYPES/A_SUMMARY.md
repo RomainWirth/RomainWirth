@@ -1,21 +1,21 @@
-# STRUCTS & CUSTOM TYPES — Sommaire
+# STRUCTS & CUSTOM TYPES - Sommaire
 
 > Structurer et typer la donnée en Go avec les structs, méthodes, constructeurs et types personnalisés.
 
 ---
 
-## [B — Les Structs](B_LES_STRUCTS.md)
+## [B - Les Structs](B_LES_STRUCTS.md)
 
 - Un `struct` regroupe des données connexes en un type personnalisé : `type user struct { ... }`.
 - **Instanciation** avec la notation clé/valeur (`appUser := user{ firstName: "John", ... }`) ou positionnelle.
-- Valeur nulle d'un struct : `user{}` — chaque champ prend la valeur nulle de son type.
+- Valeur nulle d'un struct : `user{}` - chaque champ prend la valeur nulle de son type.
 - **Accès aux champs** via la notation pointée : `appUser.firstName`.
-- Passage à une fonction par valeur (`u user`) ou par pointeur (`u *user`) — pointeur recommandé pour les grandes structures.
+- Passage à une fonction par valeur (`u user`) ou par pointeur (`u *user`) - pointeur recommandé pour les grandes structures.
 - **Déréférencement automatique** pour les structs : `u.firstName` fonctionne même si `u` est un `*user`.
 
 ---
 
-## [C — Ajouter des méthodes et des fonctions aux Structs](C_AJOUTER_DES_METHODES_ET_DES_FONCTIONS_AUX_STRUCTS.md)
+## [C - Ajouter des méthodes et des fonctions aux Structs](C_AJOUTER_DES_METHODES_ET_DES_FONCTIONS_AUX_STRUCTS.md)
 
 - **Méthode** = fonction avec receiver : `func (u user) maMethode() { ... }`.
 - Receiver par **valeur** → copie ; receiver par **pointeur** (`*user`) → mutation de l'original.
@@ -28,7 +28,7 @@
 
 ---
 
-## [D — Exercice : Application de sauvegarde de notes en JSON](D_EXERCICE.md)
+## [D - Exercice : Application de sauvegarde de notes en JSON](D_EXERCICE.md)
 
 - Projet complet mobilisant structs, méthodes, constructeur, validation, packages et export.
 - Lecture d'entrée complète (avec espaces) via `bufio.NewReader` + `ReadString('\n')`.

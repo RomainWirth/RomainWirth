@@ -161,7 +161,7 @@ Il faudra bien entendu importer le package `"fmt"` afin d'utiliser la fonction `
 
 ## Résumé
 
-- Un programme Go peut s'étaler sur **plusieurs fichiers** appartenant tous au même `package main` — ils sont compilés ensemble automatiquement.
+- Un programme Go peut s'étaler sur **plusieurs fichiers** appartenant tous au même `package main` - ils sont compilés ensemble automatiquement.
 - Déplacer des fonctions dans un fichier séparé (ex. `communication.go`) n'exige **aucun import** supplémentaire tant qu'ils partagent le même package.
 - La déclaration `package main` doit figurer en **tête de chaque fichier** du même package.
 - Cette séparation améliore la **lisibilité** et la **maintenabilité** sans changer le comportement du programme.

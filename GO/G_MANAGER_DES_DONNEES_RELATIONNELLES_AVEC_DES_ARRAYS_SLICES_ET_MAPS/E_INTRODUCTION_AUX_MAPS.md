@@ -236,4 +236,4 @@ Même sans utiliser de méthodes, utiliser des alias permet d'avoir du code plus
 - Contrairement aux arrays, une map est **toujours dynamique** : on peut ajouter des paires à tout moment.
 - `make(map[type]type, capacité)` pré-alloue l'espace mémoire pour de meilleures performances.
 - **Map vs Struct** : map = clés dynamiques et inconnues à l'avance ; struct = champs fixes et typés connus à la compilation.
-- **Alias de type** : `type floatMap map[string]float64` — code plus lisible, possibilité d'attacher des méthodes.
+- **Alias de type** : `type floatMap map[string]float64` - code plus lisible, possibilité d'attacher des méthodes.

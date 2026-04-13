@@ -251,10 +251,10 @@ et écrase la valeur stockée à cette adresse par la valeur saisie par l'utilis
 
 ## Résumé
 
-- `userAge := &age` crée un pointeur `*int` pointant vers `age` — la valeur de `userAge` est une adresse mémoire (ex. `0xc000012110`).
-- **Déréférencement** avec `*` : `*userAge` accède à la valeur stockée à l'adresse — l'affiche ou la modifie.
-- Pour passer un pointeur à une fonction : déclarer le paramètre avec `*type` — ex. `func f(age *int)`.
+- `userAge := &age` crée un pointeur `*int` pointant vers `age` - la valeur de `userAge` est une adresse mémoire (ex. `0xc000012110`).
+- **Déréférencement** avec `*` : `*userAge` accède à la valeur stockée à l'adresse - l'affiche ou la modifie.
+- Pour passer un pointeur à une fonction : déclarer le paramètre avec `*type` - ex. `func f(age *int)`.
 - À l'intérieur de la fonction, utiliser `*age` pour lire ou modifier la valeur pointée.
-- **Mutation via pointeur** : `*age = *age - 18` modifie la valeur originale en mémoire — pas besoin de `return`.
+- **Mutation via pointeur** : `*age = *age - 18` modifie la valeur originale en mémoire - pas besoin de `return`.
 - `fmt.Scan(&choice)` utilise un pointeur pour que `Scan` puisse écrire la valeur lue directement dans `choice`.
 - Les pointeurs sont surtout utiles pour les **grandes structures de données** ou quand on veut **muter** une valeur sans valeur de retour. Pour des types simples (`int`, `float64`), l'avantage en performance est négligeable.

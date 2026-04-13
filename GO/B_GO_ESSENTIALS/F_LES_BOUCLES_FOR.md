@@ -111,10 +111,10 @@ for balance > 0 {
 ## Résumé
 
 - Go n'a qu'**un seul type de boucle** : `for`. Elle remplace `while`, `do...while` et `for` des autres langages.
-- **Boucle classique** : `for i := 0; i < n; i++ { ... }` — initialisation, condition, incrément.
-- **Boucle simplifiée** : `for range n { ... }` — équivalent moderne de la boucle classique (Go 1.22+).
-- **Boucle infinie** : `for { ... }` — s'exécute indéfiniment ; on la contrôle avec `break` ou `return`.
-- **Boucle conditionnelle** : `for condition { ... }` — équivalent du `while` d'autres langages.
+- **Boucle classique** : `for i := 0; i < n; i++ { ... }` - initialisation, condition, incrément.
+- **Boucle simplifiée** : `for range n { ... }` - équivalent moderne de la boucle classique (Go 1.22+).
+- **Boucle infinie** : `for { ... }` - s'exécute indéfiniment ; on la contrôle avec `break` ou `return`.
+- **Boucle conditionnelle** : `for condition { ... }` - équivalent du `while` d'autres langages.
 - `break` **sort immédiatement** de la boucle.
 - `continue` **saute à l'itération suivante** sans exécuter le reste du corps de la boucle.
 - Les boucles sont souvent combinées avec des `if/else if/else` pour créer des menus interactifs ou des traitements répétitifs.
