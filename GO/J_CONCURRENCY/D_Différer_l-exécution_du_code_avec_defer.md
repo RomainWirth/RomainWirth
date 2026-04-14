@@ -4,7 +4,7 @@
 
 `defer` est un mot-clé Go qui permet de **différer l'exécution d'une fonction** : au lieu d'appeler la fonction immédiatement, Go la met en attente et l'exécutera **juste avant que la fonction encapsulante retourne**, qu'elle se termine normalement ou avec une erreur.
 
-C'est un mécanisme de nettoyage (*cleanup*) conçu pour garantir que certaines opérations — fermer un fichier, libérer une ressource, déverrouiller un mutex — seront **toujours exécutées**, même si la fonction se termine prématurément via un `return` anticipé.
+C'est un mécanisme de nettoyage (*cleanup*) conçu pour garantir que certaines opérations - fermer un fichier, libérer une ressource, déverrouiller un mutex - seront **toujours exécutées**, même si la fonction se termine prématurément via un `return` anticipé.
 
 > La devise : **"ouvre une ressource, puis `defer` sa fermeture immédiatement."** Cela évite d'oublier la fermeture, et s'assure qu'elle aura lieu dans tous les cas d'exécution possibles.
 
@@ -42,11 +42,11 @@ func (fm FileManager) ReadLines() ([]string, error) {
 
 	err = scanner.Err()
 	if err != nil {
-		// file.Close() — plus nécessaire : defer s'en charge
+		// file.Close() - plus nécessaire : defer s'en charge
 		return nil, errors.New("Erreur lors de la lecture du fichier")
 	}
 
-	// file.Close() — plus nécessaire : defer s'en charge
+	// file.Close() - plus nécessaire : defer s'en charge
 	return lines, nil
 }
 ```
@@ -69,11 +69,11 @@ func (fm FileManager) WriteResult(data any) error {
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(data)
 	if err != nil {
-		// file.Close() — plus nécessaire : defer s'en charge
+		// file.Close() - plus nécessaire : defer s'en charge
 		return errors.New("Erreur d'écriture dans le fichier")
 	}
 
-	// file.Close() — plus nécessaire : defer s'en charge
+	// file.Close() - plus nécessaire : defer s'en charge
 	return nil
 }
 ```

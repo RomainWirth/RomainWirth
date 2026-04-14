@@ -70,11 +70,11 @@ func main() {
 
 `<-done` bloque la goroutine principale (`main`) jusqu'à ce que la goroutine `slowGreet` envoie une valeur dans le channel. Sans cette ligne, `main` se terminerait immédiatement, sans attendre la fin de la goroutine.
 
-> **Remarque :** si aucune goroutine n'envoie jamais de valeur dans un channel que `main` attend, le programme se bloque indéfiniment — Go détectera cette situation comme un **deadlock** et terminera le programme avec une erreur.
+> **Remarque :** si aucune goroutine n'envoie jamais de valeur dans un channel que `main` attend, le programme se bloque indéfiniment - Go détectera cette situation comme un **deadlock** et terminera le programme avec une erreur.
 
 ## Travailler avec plusieurs channels et goroutines
 
-Un channel n'est pas limité à une seule goroutine émettrice : il peut recevoir des valeurs envoyées par plusieurs goroutines différentes. C'est une propriété fondamentale — un channel est conçu pour être un point de rendez-vous partagé entre plusieurs goroutines.
+Un channel n'est pas limité à une seule goroutine émettrice : il peut recevoir des valeurs envoyées par plusieurs goroutines différentes. C'est une propriété fondamentale - un channel est conçu pour être un point de rendez-vous partagé entre plusieurs goroutines.
 
 ### Approche naïve : un seul `<-done`
 
@@ -186,7 +186,7 @@ for doneChan := range done {
 }
 ```
 
-Cependant, `for ... range` sur un channel boucle **indéfiniment** tant que le channel n'est pas fermé. Les goroutines terminent, plus personne n'envoie de valeur, mais la boucle continue d'attendre — ce qui provoque un deadlock :
+Cependant, `for ... range` sur un channel boucle **indéfiniment** tant que le channel n'est pas fermé. Les goroutines terminent, plus personne n'envoie de valeur, mais la boucle continue d'attendre - ce qui provoque un deadlock :
 
 ```bash
 romainw@fedora:~/Public/perso/go/goroutines-introduction$ go run .
@@ -228,7 +228,7 @@ hello ! Comment ... vas ... tu ... ?
 
 > Reprendre le code du projet de la section [I : price calculator](../I_PROJET_PRATIQUE_CALCULATEUR_DE_PRIX/A_SUMMARY.md)
 
-On va maintenant appliquer les concepts de goroutines et de channels dans un projet réel : le calculateur de prix avec taxes. Dans sa version initiale, les calculs pour chaque taux de TVA sont effectués **séquentiellement** — l'un après l'autre. L'objectif ici est de les rendre **concurrents**, c'est-à-dire de lancer tous les jobs en parallèle et d'attendre que tous aient terminé avant de quitter le programme.
+On va maintenant appliquer les concepts de goroutines et de channels dans un projet réel : le calculateur de prix avec taxes. Dans sa version initiale, les calculs pour chaque taux de TVA sont effectués **séquentiellement** - l'un après l'autre. L'objectif ici est de les rendre **concurrents**, c'est-à-dire de lancer tous les jobs en parallèle et d'attendre que tous aient terminé avant de quitter le programme.
 
 Structure du projet :
 ```
@@ -251,7 +251,7 @@ Structure du projet :
 ```
 ### Intégrer des goroutines et des channels au projet
 
-#### Étape 1 — Simuler une opération lente dans `filemanager`
+#### Étape 1 - Simuler une opération lente dans `filemanager`
 
 Pour rendre la concurrence visible et mesurable, on commence par introduire un délai artificiel dans `WriteResult()`, la méthode qui écrit le résultat dans un fichier JSON. Ce délai simule une opération lente, comme une écriture sur disque réseau ou un appel à une API externe.
 
@@ -279,11 +279,11 @@ func (fm FileManager) WriteResult(data any) error {
 
 Sans concurrence, 5 taux de TVA × 3 secondes = **15 secondes** d'exécution totale. Avec des goroutines, tous les jobs tournant en parallèle, on visera **3 secondes** (le temps du job le plus lent).
 
-#### Étape 2 — Lancer les jobs en goroutines dans `main`
+#### Étape 2 - Lancer les jobs en goroutines dans `main`
 
 On adopte l'approche par **slice de channels** vue précédemment : on crée autant de channels qu'il y a de taux de TVA, on initialise chacun dans la boucle, et on lance `Process()` comme goroutine en lui passant son channel dédié.
 
-À ce stade, `main` ne contient pas encore la boucle d'attente — les goroutines sont lancées mais le programme sortirait immédiatement sans attendre leurs résultats.
+À ce stade, `main` ne contient pas encore la boucle d'attente - les goroutines sont lancées mais le programme sortirait immédiatement sans attendre leurs résultats.
 
 ```Go
 func main() {
@@ -295,7 +295,7 @@ func main() {
 		fm := filemanager.New("./data/prices.txt", fmt.Sprintf("./results_json/tax_included_prices_%.2f.json", taxRate*100))
 		// cmdm := cmdmanager.New()
 		priceJob := prices.NewTaxIncludedPriceJob(fm, taxRate)
-		go priceJob.Process(doneChans[i]) // lancement concurrent — Process() sera modifiée pour accepter le channel
+		go priceJob.Process(doneChans[i]) // lancement concurrent - Process() sera modifiée pour accepter le channel
 
 		// if err != nil {
 		// 	fmt.Println("Erreur lors du traitement des prix : ", err)
@@ -304,7 +304,7 @@ func main() {
 }
 ```
 
-#### Étape 3 — Adapter `Process()` dans `prices.go`
+#### Étape 3 - Adapter `Process()` dans `prices.go`
 
 La signature de `Process()` doit évoluer : elle ne retourne plus d'erreur (les goroutines ne peuvent pas retourner de valeur à leur appelant), et elle accepte désormais un `chan bool` en paramètre. Une fois son travail terminé, elle y envoie `true` pour signaler sa complétion.
 
@@ -323,14 +323,14 @@ func (job *TaxIncludedPriceJob) Process(doneChan chan bool) { // suppression du 
 	}
 
 	job.TaxIncludedPrices = result
-	job.IOManager.WriteResult(job) // écriture du résultat — l'erreur éventuelle n'est plus propagée
+	job.IOManager.WriteResult(job) // écriture du résultat - l'erreur éventuelle n'est plus propagée
 	doneChan <- true               // signal de fin : débloque le <-doneChan correspondant dans main
 }
 ```
 
-> **Important :** le fait que `Process()` soit lancée en goroutine ne rend pas concurrentes les opérations *à l'intérieur* de `Process()`. `LoadData()`, le calcul des prix et `WriteResult()` s'exécutent toujours séquentiellement au sein de chaque goroutine. Ce qui est concurrent, c'est l'exécution simultanée des **différents appels** à `Process()` — un par taux de TVA.
+> **Important :** le fait que `Process()` soit lancée en goroutine ne rend pas concurrentes les opérations *à l'intérieur* de `Process()`. `LoadData()`, le calcul des prix et `WriteResult()` s'exécutent toujours séquentiellement au sein de chaque goroutine. Ce qui est concurrent, c'est l'exécution simultanée des **différents appels** à `Process()` - un par taux de TVA.
 
-#### Étape 4 — Attendre toutes les goroutines dans `main`
+#### Étape 4 - Attendre toutes les goroutines dans `main`
 
 On ajoute une seconde boucle après le lancement des goroutines. Elle itère sur la slice `doneChans` et bloque sur chaque channel jusqu'à recevoir le signal de fin correspondant. La séparation en deux boucles distinctes est essentielle : si on attendait chaque goroutine dans la même boucle que son lancement, on perdrait tout le bénéfice de la concurrence (les goroutines seraient lancées et attendues une par une).
 
@@ -363,7 +363,7 @@ func main() {
 
 #### Résultat
 
-En lançant le programme avec `go run .`, l'exécution prend désormais **3 secondes** — le temps de l'opération `WriteResult()` la plus lente — contre **15 secondes** sans concurrence (5 jobs × 3 secondes). Toutes les goroutines s'exécutent en parallèle, et `main` attend que la dernière soit terminée avant de quitter.
+En lançant le programme avec `go run .`, l'exécution prend désormais **3 secondes** - le temps de l'opération `WriteResult()` la plus lente - contre **15 secondes** sans concurrence (5 jobs × 3 secondes). Toutes les goroutines s'exécutent en parallèle, et `main` attend que la dernière soit terminée avant de quitter.
 
 | Mode | Durée |
 |---|---|
@@ -374,7 +374,7 @@ En lançant le programme avec `go run .`, l'exécution prend désormais **3 seco
 
 Avec la concurrence, la gestion des erreurs devient plus complexe. Dans la version séquentielle, `Process()` retournait une `error` que `main` pouvait inspecter directement. Ce mécanisme ne fonctionne plus avec les goroutines : **une goroutine ne peut pas retourner de valeur à son appelant**.
 
-La solution idiomatique en Go est d'utiliser un **second channel dédié aux erreurs** (`chan error`). Chaque goroutine dispose ainsi de deux channels : `doneChan` pour signaler sa complétion réussie, et `errorChan` pour propager une erreur éventuelle. À tout moment, une goroutine n'émettra que dans **l'un ou l'autre** de ces deux channels — jamais les deux.
+La solution idiomatique en Go est d'utiliser un **second channel dédié aux erreurs** (`chan error`). Chaque goroutine dispose ainsi de deux channels : `doneChan` pour signaler sa complétion réussie, et `errorChan` pour propager une erreur éventuelle. À tout moment, une goroutine n'émettra que dans **l'un ou l'autre** de ces deux channels - jamais les deux.
 
 #### Adapter `Process()` dans `prices.go`
 
@@ -385,7 +385,7 @@ func (job *TaxIncludedPriceJob) Process(doneChan chan bool, errorChan chan error
 	err := job.LoadData()
 
 	if err != nil {
-		errorChan <- err // propagation de l'erreur via le channel dédié — impossible de la retourner depuis une goroutine
+		errorChan <- err // propagation de l'erreur via le channel dédié - impossible de la retourner depuis une goroutine
 		return           // on interrompt immédiatement : doneChan ne recevra rien pour cette goroutine
 	}
 
@@ -413,7 +413,7 @@ func main() {
 
 	for i, taxRate := range taxRates {
 		doneChans[i] = make(chan bool)
-		errorChans[i] = make(chan error) // channel d'erreur individuel — chaque goroutine a le sien
+		errorChans[i] = make(chan error) // channel d'erreur individuel - chaque goroutine a le sien
 		fm := filemanager.New("./data/prices.txt", fmt.Sprintf("./results_json/tax_included_prices_%.2f.json", taxRate*100))
 		// cmdm := cmdmanager.New()
 		priceJob := prices.NewTaxIncludedPriceJob(fm, taxRate)
@@ -444,7 +444,7 @@ Mais ceci provoque un **deadlock**. En effet, dans le cas nominal (aucune erreur
 
 À l'inverse, si une erreur se produit, la goroutine envoie dans `errorChan` mais **pas** dans `doneChan`. La première boucle (`for _, doneChan := range doneChans`) bloquera alors sur le channel de cette goroutine, attendant un signal qui ne viendra pas.
 
-Le problème fondamental est que, pour chaque goroutine, **exactement un seul** des deux channels recevra une valeur — mais on ne sait pas lequel à l'avance. Les deux boucles séparées ne peuvent pas modéliser cette réalité.
+Le problème fondamental est que, pour chaque goroutine, **exactement un seul** des deux channels recevra une valeur - mais on ne sait pas lequel à l'avance. Les deux boucles séparées ne peuvent pas modéliser cette réalité.
 
 Pour gérer cela, Go propose une solution
 
@@ -456,7 +456,7 @@ L'instruction `select` est la solution de Go au problème posé par les deux bou
 
 #### Remplacer les deux boucles par un `select`
 
-On remplace la boucle d'attente sur `doneChans` par une boucle `for` sur le nombre de goroutines (`len(taxRates)`), dans laquelle un `select` écoute à la fois `doneChans[i]` et `errorChans[i]`. Pour chaque goroutine, exactement l'un des deux `case` se déclenchera — selon que la goroutine a réussi ou échoué.
+On remplace la boucle d'attente sur `doneChans` par une boucle `for` sur le nombre de goroutines (`len(taxRates)`), dans laquelle un `select` écoute à la fois `doneChans[i]` et `errorChans[i]`. Pour chaque goroutine, exactement l'un des deux `case` se déclenchera - selon que la goroutine a réussi ou échoué.
 
 ```Go
 for i := range taxRates { // on itère une fois par goroutine lancée
@@ -492,10 +492,10 @@ Pour valider que le `case` d'erreur fonctionne, on peut injecter une erreur fict
 func (job *TaxIncludedPriceJob) Process(doneChan chan bool, errorChan chan error) {
 	err := job.LoadData()
 
-	errorChan <- errors.New("Nouvelle erreur fictive !") // injection d'erreur pour test — à retirer en production
+	errorChan <- errors.New("Nouvelle erreur fictive !") // injection d'erreur pour test - à retirer en production
 
 	if err != nil {
-		errorChan <- err // erreur réelle de LoadData — bloque et stoppe la goroutine
+		errorChan <- err // erreur réelle de LoadData - bloque et stoppe la goroutine
 		return
 	}
 
@@ -533,10 +533,10 @@ Nouvelle erreur fictive !
 | Concept | Description |
 |---|---|
 | `make(chan T)` | Crée un channel non-bufferisé transmettant des valeurs de type `T` |
-| `channel <- valeur` | Envoie une valeur dans un channel — bloque jusqu'à ce qu'un receveur soit prêt |
-| `valeur := <-channel` | Reçoit une valeur depuis un channel — bloque jusqu'à ce qu'un émetteur envoie |
-| `<-channel` | Reçoit et ignore une valeur — utilisé pour la synchronisation (signal de fin) |
-| `close(channel)` | Ferme un channel — signale à `for range` qu'aucune valeur ne sera plus émise |
+| `channel <- valeur` | Envoie une valeur dans un channel - bloque jusqu'à ce qu'un receveur soit prêt |
+| `valeur := <-channel` | Reçoit une valeur depuis un channel - bloque jusqu'à ce qu'un émetteur envoie |
+| `<-channel` | Reçoit et ignore une valeur - utilisé pour la synchronisation (signal de fin) |
+| `close(channel)` | Ferme un channel - signale à `for range` qu'aucune valeur ne sera plus émise |
 
 ### Patterns d'attente de goroutines
 
@@ -554,7 +554,7 @@ Nouvelle erreur fictive !
 - `for range` sur un channel boucle indéfiniment tant que le channel n'est pas fermé avec `close()`.
 - Une goroutine **ne peut pas retourner de valeur** à son appelant : on utilise un channel pour propager résultats et erreurs.
 - La séparation en **deux boucles distinctes** (lancement puis attente) est indispensable pour tirer parti de la concurrence.
-- `select` écoute **simultanément** plusieurs channels et réagit au premier disponible — si plusieurs sont prêts en même temps, Go en choisit un aléatoirement.
+- `select` écoute **simultanément** plusieurs channels et réagit au premier disponible - si plusieurs sont prêts en même temps, Go en choisit un aléatoirement.
 
 ### Schéma de communication goroutine / main
 
