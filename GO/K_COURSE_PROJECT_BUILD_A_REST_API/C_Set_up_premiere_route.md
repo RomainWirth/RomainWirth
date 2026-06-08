@@ -65,7 +65,7 @@ Un handler peut être :
 - une **fonction nommée** déclarée ailleurs dans le code (recommandé pour la lisibilité et la testabilité)
 - une **fonction anonyme** définie directement en ligne dans l'appel
 
-### `*gin.Context` - le cœur du handler
+### `*gin.Context` - le coeur du handler
 
 `gin.Context` est le struct central de Gin. Il encapsule tout ce dont un handler a besoin pour traiter la requête et construire la réponse :
 - **Requête entrante** : méthode HTTP, headers, paramètres d'URL (`:id`), query string, corps de la requête...
@@ -147,4 +147,115 @@ Pour stopper le serveur, utiliser `Ctrl + C` dans le terminal.
 
 ## Set up un modèle `Event`
 
+Une fois qu'on a implémenté la logique d'un serveur de base opérationnel, on souhaite continuer d'ajouter des endpoints.
+On aura besoin d'une logique plus utile qui sera exécutée quand on aura d'autres requêtes entrantes.
+
+### Ajouter une structure de données pour un `Event`
+
+Pour cela, on va créer un nouveau package appelé `models`, dans lequel on aura un fichier `event.go`.
+L'idée est de regrouper toute la logique qui s'occupe :
+* du stockage de données d'événements dans une BDD
+* de fetch de la data
+* etc.
+
+Ce fichier `event` va contenir le struct qui va définirla structure d'un événement.
+Un événement aura un id, un nom, une description, un lieu, une date et devra être liée à un utilisateur par son ID.
+```Go
+package models
+
+import "time"
+
+type Event struct {
+  ID          int
+  Name        string
+  Description string
+  Location    string
+  DateTime    time.Time
+  UserID      int
+}
+```
+
+Il ne restera qu'à ajouter des méthodes qui permettent d'intéragir avec un événement.
+
+### Ajouter des méthodes et fonctions
+
+#### La méthode `save()`
+
+La première méthode servira à enregistrer un événement : `save()`.
+Son objectif sera à terme de stocker les événements en base de données.
+Pour l'instant, on va la stocker dans une variable (une slice d'events) `var events []Event`.
+```Go
+// variable pour stocker les objets de type événements dans une slice initialisée en slice vide
+var events = []Event{}
+
+func (e Event) Save() {
+  events = append(events, e)
+}
+```
+* La variable events est initialisée comme une slice vide de type Event
+* la méthode `Save()` contient un 'receveur', une variable de type Event `(e Event)` sur lequel save est appelé. On peut avoir ce receveur comme une copie ou un pointeur, c'est au choix. (quel avantage de l'un et de l'autre ?)
+* la méthode va simplement ajouter à la variable events le nouvel événement reçu via le receveur.
+
+#### La fonction `GetAllEvents()`
+
+`GetAllEvents()` n'est pas une méthode car on ne l'appelle pas sur un événement existant, mais plutôt pour obtenir tous les événements disponibles.
+Cette fonction devra être disponible en dehors du package, elle va donc commencer par une majuscule.
+Elle va retourner une slice d'events : `[]Event`
+```Go
+func GetAllEvents() []Event {
+  return events
+}
+```
+
 ## Ajouter une route `POST`
+
+Une fois le nouveau modèle créé avec ses méthodes et fonctions associées, on va pouvoir commencer à les utiliser.
+
+### Modifier la route `GET`
+
+Dans notre `main package`, on va d'abord modifier notre route `GET` et la fonction getEvents pour récupérer les événements :
+```Go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/romainw/event-booking-api/models"
+)
+
+func main() {
+	server := gin.Default()
+
+	server.GET("/events", getEvents)
+
+	server.Run(":8080")
+}
+
+func getEvents(context *gin.Context) {
+  // appel de la fonction GetAllEvents
+	events := models.GetAllEvents()
+  // pour passer le résultat
+	context.JSON(http.StatusOK, events)
+}
+```
+
+### Ajout de la route `POST`
+
+On peut également ajouter la route `POST` à laquelle on associe une fonction `createEvent` : `server.POST("/events", createEvent)`
+```Go
+func main() {
+	server := gin.Default()
+
+	server.GET("/events", getEvents)
+  server.POST("/events", createEvent)
+
+	server.Run(":8080")
+}
+
+...
+
+func createEvent(context *gin.Context) {
+
+}
+```
