@@ -1,23 +1,23 @@
-# Projet Donjons & Dragons — Java & POO
-**Cahier de formation — Version apprenant**
+# Projet Donjons & Dragons - Java & POO
+**Cahier de formation - Version apprenant**
 9 itérations progressives | Java 17+ | Campus Numérique in the Alps
 
 ---
 
 ## Sommaire
 
-1. [Règles du jeu — Référence complète](#0-règles-du-jeu--référence-complète)
-2. [Itération 1 — Get Started (Java & IDE)](#itération-1--get-started--java--ide)
-3. [Itération 2 — Personnages et plateau simplifié](#itération-2--personnages-et-plateau-simplifié)
-4. [Itération 3 — Héritage et classes abstraites](#itération-3--héritage-et-classes-abstraites)
-5. [Itération 4 — Plateau complet : ennemis et bonus](#itération-4--plateau-complet--ennemis-et-bonus)
-6. [Itération 5 — Sauvegarde en base de données](#itération-5--sauvegarde-en-base-de-données)
-7. [Itération 6 — Gestion des combats](#itération-6--gestion-des-combats)
-8. [Itération 7 — Remplissage aléatoire du plateau](#itération-7--remplissage-aléatoire-du-plateau)
-9. [Itération 8 — Règles avancées (Version 2)](#itération-8--règles-avancées--version-2)
-10. [Itération 9 — Interface graphique JavaFX ⭐ Bonus](#itération-9--interface-graphique-javafx--bonus)
-11. [Annexe A — Cheat Sheet POO Java](#annexe-a--cheat-sheet-poo-java)
-12. [Annexe B — Conventions & bonnes pratiques](#annexe-b--conventions--bonnes-pratiques)
+1. [Règles du jeu - Référence complète](#0-règles-du-jeu--référence-complète)
+2. [Itération 1 - Get Started (Java & IDE)](#itération-1--get-started--java--ide)
+3. [Itération 2 - Personnages et plateau simplifié](#itération-2--personnages-et-plateau-simplifié)
+4. [Itération 3 - Héritage et classes abstraites](#itération-3--héritage-et-classes-abstraites)
+5. [Itération 4 - Plateau complet : ennemis et bonus](#itération-4--plateau-complet--ennemis-et-bonus)
+6. [Itération 5 - Sauvegarde en base de données](#itération-5--sauvegarde-en-base-de-données)
+7. [Itération 6 - Gestion des combats](#itération-6--gestion-des-combats)
+8. [Itération 7 - Remplissage aléatoire du plateau](#itération-7--remplissage-aléatoire-du-plateau)
+9. [Itération 8 - Règles avancées (Version 2)](#itération-8--règles-avancées--version-2)
+10. [Itération 9 - Interface graphique JavaFX ⭐ Bonus](#itération-9--interface-graphique-javafx--bonus)
+11. [Annexe A - Cheat Sheet POO Java](#annexe-a--cheat-sheet-poo-java)
+12. [Annexe B - Conventions & bonnes pratiques](#annexe-b--conventions--bonnes-pratiques)
 
 > **Comment utiliser ce document**
 > - Chaque itération contient : objectifs, specs, tâches, blocs architecture, placeholders UML.
@@ -27,7 +27,7 @@
 
 ---
 
-## 0. Règles du jeu — Référence complète
+## 0. Règles du jeu - Référence complète
 
 Cette section est la référence officielle du jeu. Consultez-la à chaque itération.
 
@@ -52,15 +52,15 @@ Cette section est la référence officielle du jeu. Consultez-la à chaque itér
 | Gobelin        | 6  | 1       | Tous                                            |
 | Sorcier        | 9  | 2       | Tous                                            |
 | Dragon         | 15 | 4       | Tous                                            |
-| Orc            | 10 | 6       | **Guerriers uniquement** — ignore les Magiciens |
-| Mauvais esprit | 15 | 5       | **Magiciens uniquement** — ignore les Guerriers |
+| Orc            | 10 | 6       | **Guerriers uniquement** - ignore les Magiciens |
+| Mauvais esprit | 15 | 5       | **Magiciens uniquement** - ignore les Guerriers |
 
 > ⚠️ **Cas limites explicites**
 > - Un Orc rencontrant un Magicien n'engage pas le combat : la case est traitée comme vide.
 > - Un Mauvais esprit rencontrant un Guerrier fait de même.
 > - Les PV d'un ennemi sont **persistants** entre les tours : si le joueur repasse, l'ennemi conserve ses blessures.
 
-### Les équipements — Caisses surprises
+### Les équipements - Caisses surprises
 
 **Armes (Guerrier uniquement)**
 
@@ -95,14 +95,14 @@ Cette section est la référence officielle du jeu. Consultez-la à chaque itér
 
 > ⚠️ Si l'inventaire est plein (version avancée) : afficher les 2 équipements actuels et le nouveau. Proposer : remplacer slot 1 / remplacer slot 2 / ignorer.
 
-### Règles de combat — Version de base
+### Règles de combat - Version de base
 
 1. Le personnage frappe l'ennemi : `dégâts = forceBase + bonusÉquipement`
 2. Si PV ennemi ≤ 0 → l'ennemi meurt, **disparaît du plateau**, la case devient vide.
 3. Sinon → l'ennemi contre-attaque → `PV joueur -= attaqueEnnemi` → l'ennemi s'enfuit.
 4. Si PV joueur ≤ 0 → partie perdue.
 
-### Règles de combat — Version avancée (IT.8)
+### Règles de combat - Version avancée (IT.8)
 
 1. Les ennemis ne fuient plus : ils combattent jusqu'à la mort.
 2. Combat **tour par tour**. Le joueur attaque toujours en premier.
@@ -119,7 +119,7 @@ Cette section est la référence officielle du jeu. Consultez-la à chaque itér
 
 ---
 
-## Itération 1 — Get Started : Java & IDE
+## Itération 1 - Get Started : Java & IDE
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -132,7 +132,7 @@ Cette section est la référence officielle du jeu. Consultez-la à chaque itér
 
 ---
 
-### 1.1 — Pourquoi Java ?
+### 1.1 - Pourquoi Java ?
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - Java est **statiquement typé et compilé** : les erreurs de type sont détectées à la compilation, pas à l'exécution.
@@ -140,7 +140,7 @@ Cette section est la référence officielle du jeu. Consultez-la à chaque itér
 > - C'est l'un des langages les plus utilisés en entreprise pour les backends (Spring Boot, microservices).
 > - La POO y est native et stricte : idéal pour apprendre les concepts objet de manière rigoureuse.
 
-### 1.2 — Installation
+### 1.2 - Installation
 
 **JDK 17 LTS**
 - Télécharger depuis https://www.oracle.com/java/technologies/downloads/#java17
@@ -150,13 +150,13 @@ Cette section est la référence officielle du jeu. Consultez-la à chaque itér
 - Télécharger la version Community (gratuite) : https://www.jetbrains.com/idea/download/
 - Guide Hello World : https://www.jetbrains.com/idea/guide/tutorials/hello-world/
 
-### 1.3 — Ressources d'apprentissage
+### 1.3 - Ressources d'apprentissage
 
 - W3Schools Java : https://www.w3schools.com/java/java_getstarted.asp
 - Codecademy : *Introduction to Java*, *Conditionals & Control Flow*, *Object-Oriented Java*
 - OpenClassrooms : https://openclassrooms.com/en/courses/6173501-apprenez-a-programmer-en-java
 
-### 1.4 — Premier programme : le déménagement
+### 1.4 - Premier programme : le déménagement
 
 Votre entreprise déménage. Il y a **34 cartons** à transporter. Le camion peut en porter **9 à la fois**. Afficher pour chaque voyage : `"Voyage X : Y cartons chargés."`
 
@@ -165,7 +165,7 @@ Votre entreprise déménage. Il y a **34 cartons** à transporter. Le camion peu
 > - Ne pas utiliser le mot clé `static` en dehors du `main`.
 > - Utiliser une boucle pour calculer les voyages, pas de calcul manuel.
 
-### 1.5 — Livrable
+### 1.5 - Livrable
 
 - [ ] Code du programme déménagement sur GitHub (repository dédié au projet D&D)
 - [ ] Glossaire personnel : noter les syntaxes découvertes (types, boucles, conditions)
@@ -175,7 +175,7 @@ Votre entreprise déménage. Il y a **34 cartons** à transporter. Le camion peu
 
 ---
 
-## Itération 2 — Personnages et plateau simplifié
+## Itération 2 - Personnages et plateau simplifié
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -188,13 +188,13 @@ Votre entreprise déménage. Il y a **34 cartons** à transporter. Le camion peu
 
 ---
 
-### 2.1 — Architecture à créer
+### 2.1 - Architecture à créer
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - On crée dès maintenant 5 classes distinctes pour poser les bases d'une architecture propre.
 > - **Menu** gère uniquement les interactions console (affichage + saisie). Il ne contient pas de logique métier.
 > - **Game** contient l'état du jeu (plateau, position du joueur). C'est elle qui orchestre.
-> - Cette séparation des responsabilités — chaque classe fait une seule chose — est le premier principe du **Clean Code**.
+> - Cette séparation des responsabilités - chaque classe fait une seule chose - est le premier principe du **Clean Code**.
 
 ### 📐 Diagramme UML à compléter
 
@@ -203,7 +203,7 @@ Indiquer les attributs et méthodes principales, ainsi que les relations (associ
 
 > 💡 Indice : `Personnage` possède (composition) un `EquipementOffensif` et un `EquipementDefensif`. `Game` contient une référence à `Personnage`.
 
-### 2.2 — Classes à implémenter
+### 2.2 - Classes à implémenter
 
 | Classe               | Attributs                                              | Méthodes clés                                            |
 |----------------------|--------------------------------------------------------|----------------------------------------------------------|
@@ -213,14 +213,14 @@ Indiquer les attributs et méthodes principales, ainsi que les relations (associ
 | `Menu`               | *(aucun attribut)*                                     | `afficherAccueil()`, `demanderNom()`, `afficherInfos(Personnage)` |
 | `Game`               | `plateau` (`ArrayList<Case>`), `positionJoueur` (int)  | `initialiser()`, `jouerUnTour()`, `isPartieTerminee()`   |
 
-### 2.3 — Caractéristiques des personnages
+### 2.3 - Caractéristiques des personnages
 
 | Personnage | PV initiaux | Force initiale | Équip. offensif            | Équip. défensif              |
 |------------|-------------|----------------|----------------------------|------------------------------|
 | Guerrier   | 10          | 10             | Arme (`niveauAttaque = 0`) | Bouclier (`niveauDefense = 0`) |
 | Magicien   | 6           | 15             | Sort (`niveauAttaque = 0`) | Philtre (`niveauDefense = 0`)  |
 
-### 2.4 — Menu de démarrage
+### 2.4 - Menu de démarrage
 
 1. Afficher : "Nouveau personnage" ou "Quitter"
 2. Création : choisir le type (Guerrier / Magicien) → saisir le nom via `Scanner`
@@ -228,7 +228,7 @@ Indiquer les attributs et méthodes principales, ainsi que les relations (associ
 4. Option modifier les infos
 5. Option démarrer la partie
 
-### 2.5 — Plateau simplifié
+### 2.5 - Plateau simplifié
 
 - Position de départ : case 1.
 - À chaque tour : lancer un dé virtuel (`Random`, 1–6) → avancer.
@@ -243,7 +243,7 @@ Indiquer les attributs et méthodes principales, ainsi que les relations (associ
 > - Chaque classe dans son propre fichier `.java` portant exactement son nom.
 > - Nommer en anglais : `Warrior`, `Mage`, `OffensiveEquipment`…
 
-### 2.6 — ⚡ Java 17+ (optionnel)
+### 2.6 - ⚡ Java 17+ (optionnel)
 
 ```java
 // Utiliser un enum pour le type de personnage plutôt qu'un String :
@@ -254,7 +254,7 @@ public enum PersonnageType { GUERRIER, MAGICIEN }
 public enum EquipType { ARME, SORT, BOUCLIER, PHILTRE }
 ```
 
-### 2.7 — Livrable
+### 2.7 - Livrable
 
 - [ ] Code sur GitHub avec les 5 classes organisées en packages
 - [ ] Diagramme UML (image ou draw.io) dans le repository
@@ -265,7 +265,7 @@ public enum EquipType { ARME, SORT, BOUCLIER, PHILTRE }
 
 ---
 
-## Itération 3 — Héritage et classes abstraites
+## Itération 3 - Héritage et classes abstraites
 
 ⏱ **Durée estimée : 1 jour**
 
@@ -278,7 +278,7 @@ public enum EquipType { ARME, SORT, BOUCLIER, PHILTRE }
 
 ---
 
-### 3.1 — Pourquoi l'héritage ici ?
+### 3.1 - Pourquoi l'héritage ici ?
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - `Guerrier` et `Magicien` partagent `nom`, `PV`, `force` → factoriser dans `Personnage` évite la duplication.
@@ -295,15 +295,15 @@ Compléter ce diagramme d'héritage :
 
 > 💡 Indice : `Guerrier` et `Magicien` héritent de tous les attributs de `Personnage` via `extends`. Les méthodes `abstract` dans la classe mère doivent obligatoirement être implémentées dans les classes filles.
 
-### 3.2 — Hiérarchie à implémenter
+### 3.2 - Hiérarchie à implémenter
 
 | Classe abstraite       | Classes concrètes filles | Méthode à redéfinir                          |
 |------------------------|--------------------------|----------------------------------------------|
-| `Personnage`           | `Guerrier`, `Magicien`   | `toString()` — format différent par type     |
+| `Personnage`           | `Guerrier`, `Magicien`   | `toString()` - format différent par type     |
 | `EquipementOffensif`   | `Arme`, `Sort`           | `calculerBonus(Ennemi e)` (IT.8)             |
 | `EquipementDefensif`   | `Bouclier`, `Philtre`    | `toString()`                                 |
 
-### 3.3 — Mots-clés Java à maîtriser
+### 3.3 - Mots-clés Java à maîtriser
 
 | Mot-clé      | Rôle                                   | Exemple dans D&D                         |
 |--------------|----------------------------------------|------------------------------------------|
@@ -313,7 +313,7 @@ Compléter ce diagramme d'héritage :
 | `super()`    | Appeler le constructeur parent         | `super(nom, niveauVie, force)`           |
 | `instanceof` | Tester le type à l'exécution           | `if (perso instanceof Guerrier)`         |
 
-### 3.4 — Exception personnalisée
+### 3.4 - Exception personnalisée
 
 Créer `PersonnageHorsPlateauException`, levée si `positionJoueur > 64`.
 
@@ -322,7 +322,7 @@ Créer `PersonnageHorsPlateauException`, levée si `positionJoueur > 64`.
 - La lancer dans `jouerUnTour()` si la position calculée dépasse 64.
 - La capturer (`catch`) dans la méthode appelante et afficher un message adapté.
 
-### 3.5 — ⚡ Java 17+ (optionnel)
+### 3.5 - ⚡ Java 17+ (optionnel)
 
 ```java
 // Utiliser des records pour les équipements (immuables par nature) :
@@ -334,7 +334,7 @@ public record Arme(String nom, int niveauAttaque) {}
 // Note : les records ne peuvent pas extends une classe, mais peuvent implements une interface.
 ```
 
-### 3.6 — 🧪 Tests JUnit (optionnel)
+### 3.6 - 🧪 Tests JUnit (optionnel)
 
 ```java
 // PersonnageTest.java avec JUnit 5 :
@@ -348,7 +348,7 @@ public record Arme(String nom, int niveauAttaque) {}
 // Dépendance Maven : org.junit.jupiter:junit-jupiter:5.10.0
 ```
 
-### 3.7 — Livrable
+### 3.7 - Livrable
 
 - [ ] Hiérarchie complète : `Guerrier`, `Magicien`, `Arme`, `Sort`, `Bouclier`, `Philtre`
 - [ ] Exception `PersonnageHorsPlateauException` gérée
@@ -360,7 +360,7 @@ public record Arme(String nom, int niveauAttaque) {}
 
 ---
 
-## Itération 4 — Plateau complet : ennemis et bonus
+## Itération 4 - Plateau complet : ennemis et bonus
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -373,7 +373,7 @@ public record Arme(String nom, int niveauAttaque) {}
 
 ---
 
-### 4.1 — L'interface Case : pourquoi pas une classe abstraite ?
+### 4.1 - L'interface Case : pourquoi pas une classe abstraite ?
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - Une `Case` peut être une `Arme`, un `Ennemi`, une `Potion`, ou une `CaseVide`. Ces objets n'ont **rien à partager en termes de code commun**.
@@ -390,7 +390,7 @@ Créer le diagramme complet :
 
 > 💡 Indice : le plateau est un `ArrayList<Case>`. Quand le joueur arrive sur une case, on appelle `case.interaction(joueur)`. Chaque classe implémente `interaction()` différemment.
 
-### 4.2 — Interface Case
+### 4.2 - Interface Case
 
 ```java
 public interface Case {
@@ -399,7 +399,7 @@ public interface Case {
 }
 ```
 
-### 4.3 — Classes à créer
+### 4.3 - Classes à créer
 
 | Classe                              | Hérite de / Implémente             | Caractéristiques                           |
 |-------------------------------------|------------------------------------|--------------------------------------------|
@@ -419,26 +419,26 @@ public interface Case {
 > - `Arme.interaction(p)` : ne s'applique qu'aux `Guerrier`. Si `Magicien` → ignorer.
 > - `Sort.interaction(p)` : ne s'applique qu'aux `Magicien`. Si `Guerrier` → ignorer.
 
-### 4.4 — Placement du plateau (64 cases)
+### 4.4 - Placement du plateau (64 cases)
 
 **Ennemis**
-- Gobelins (10) — cases : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30
-- Sorciers (10) — cases : 10, 20, 25, 32, 35, 36, 37, 40, 44, 47
-- Dragons (4)   — cases : 45, 52, 56, 62
+- Gobelins (10) - cases : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30
+- Sorciers (10) - cases : 10, 20, 25, 32, 35, 36, 37, 40, 44, 47
+- Dragons (4)   - cases : 45, 52, 56, 62
 
 **Caisses surprises**
-- Massues (5)          — cases : 2, 5, 11, 22, 38
-- Épées (4)            — cases : 19, 26, 42, 53
-- Éclairs (5)          — cases : 1, 4, 8, 17, 23
-- Boules de feu (2)    — cases : 48, 49
-- Potions standard (6) — cases : 7, 13, 31, 33, 39, 43
-- Grandes potions (2)  — cases : 28, 41
-- Cases restantes      — `CaseVide`
+- Massues (5)          - cases : 2, 5, 11, 22, 38
+- Épées (4)            - cases : 19, 26, 42, 53
+- Éclairs (5)          - cases : 1, 4, 8, 17, 23
+- Boules de feu (2)    - cases : 48, 49
+- Potions standard (6) - cases : 7, 13, 31, 33, 39, 43
+- Grandes potions (2)  - cases : 28, 41
+- Cases restantes      - `CaseVide`
 
-### 4.5 — ⚡ Java 17+ (optionnel)
+### 4.5 - ⚡ Java 17+ (optionnel)
 
 ```java
-// Pattern matching instanceof (Java 16+) — plus concis, pas de cast explicite :
+// Pattern matching instanceof (Java 16+) - plus concis, pas de cast explicite :
 
 // Ancienne façon :
 if (p instanceof Guerrier) {
@@ -452,7 +452,7 @@ if (p instanceof Guerrier g) {
 }
 ```
 
-### 4.6 — 🧪 Tests JUnit (optionnel)
+### 4.6 - 🧪 Tests JUnit (optionnel)
 
 ```java
 @Test void guerrierRamasseArme()   { /* arme ajoutée au guerrier */ }
@@ -461,7 +461,7 @@ if (p instanceof Guerrier g) {
 @Test void caseVideNeFaitRien()    { /* aucun effet */ }
 ```
 
-### 4.7 — Livrable
+### 4.7 - Livrable
 
 - [ ] Toutes les classes créées avec héritage correct
 - [ ] Plateau de 64 cases initialisé dans `Game`
@@ -472,7 +472,7 @@ if (p instanceof Guerrier g) {
 
 ---
 
-## Itération 5 — Sauvegarde en base de données
+## Itération 5 - Sauvegarde en base de données
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -485,7 +485,7 @@ if (p instanceof Guerrier g) {
 
 ---
 
-### 5.1 — Pourquoi séparer la couche données ?
+### 5.1 - Pourquoi séparer la couche données ?
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - `Game` ne doit pas contenir de code SQL. Mélanger logique métier et accès BDD rend le code impossible à maintenir.
@@ -493,13 +493,13 @@ if (p instanceof Guerrier g) {
 > - **Bénéfice** : si on change de base (MySQL → PostgreSQL), on ne touche qu'au DAO, pas à `Game`.
 > - C'est exactement le principe **Repository** que vous retrouverez dans Spring Boot.
 
-### 5.2 — Installation MySQL et JDBC
+### 5.2 - Installation MySQL et JDBC
 
 - Installer MySQL : https://dev.mysql.com/downloads/mysql/
 - Créer la base : `CREATE DATABASE DonjonsEtDragons;`
 - Télécharger le driver JDBC MySQL (`mysql-connector-j`) et l'ajouter au projet dans IntelliJ (dossier `lib/`).
 
-### 5.3 — Structure de la table `hero`
+### 5.3 - Structure de la table `hero`
 
 | Colonne          | Type SQL                        | Description                          |
 |------------------|---------------------------------|--------------------------------------|
@@ -511,22 +511,22 @@ if (p instanceof Guerrier g) {
 | `equip_offensif` | `VARCHAR(255)`                  | Nom de l'équipement offensif         |
 | `equip_json`     | `TEXT`                          | (Optionnel) Objet sérialisé en JSON  |
 
-### 5.4 — Classe `HeroRepository` (DAO)
+### 5.4 - Classe `HeroRepository` (DAO)
 
 Créer dans `fr.campus.dungeon.repository` :
 
-1. `getConnection()` — retourner une `Connection` JDBC
-2. `getHeroes()` — retourner `List<Personnage>` depuis la BDD
-3. `createHero(Personnage p)` — `INSERT INTO hero...`
-4. `editHero(Personnage p)` — `UPDATE hero SET...`
-5. `changeLifePoints(int id, int nouveauxPV)` — `UPDATE hero SET niveau_vie...`
+1. `getConnection()` - retourner une `Connection` JDBC
+2. `getHeroes()` - retourner `List<Personnage>` depuis la BDD
+3. `createHero(Personnage p)` - `INSERT INTO hero...`
+4. `editHero(Personnage p)` - `UPDATE hero SET...`
+5. `changeLifePoints(int id, int nouveauxPV)` - `UPDATE hero SET niveau_vie...`
 6. (Optionnel) `deleteHero(int id)`
 
 > 💡 **À noter**
 > - Toujours fermer `Connection`, `Statement` et `ResultSet` dans un bloc `finally` ou avec **try-with-resources**.
 > - Utiliser `PreparedStatement` plutôt que `Statement` pour éviter les injections SQL.
 
-### 5.5 — ⚡ Java 7+ : try-with-resources (souvent oublié)
+### 5.5 - ⚡ Java 7+ : try-with-resources (souvent oublié)
 
 ```java
 // try-with-resources ferme automatiquement conn et ps
@@ -538,7 +538,7 @@ try (var conn = getConnection();
 // Évite les fuites de connexion, code plus propre.
 ```
 
-### 5.6 — Optionnel : GSON
+### 5.6 - Optionnel : GSON
 
 ```java
 Gson gson = new Gson();
@@ -548,7 +548,7 @@ EquipementOffensif e = gson.fromJson(json, Arme.class); // JSON String → Objet
 
 Dépendance : `com.google.code.gson:gson:2.10.1` (jar à ajouter dans `lib/`)
 
-### 5.7 — Livrable
+### 5.7 - Livrable
 
 - [ ] Base `DonjonsEtDragons` créée avec la table `hero`
 - [ ] `HeroRepository` avec `getHeroes()`, `createHero()`, `changeLifePoints()`
@@ -559,7 +559,7 @@ Dépendance : `com.google.code.gson:gson:2.10.1` (jar à ajouter dans `lib/`)
 
 ---
 
-## Itération 6 — Gestion des combats
+## Itération 6 - Gestion des combats
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -572,16 +572,16 @@ Dépendance : `com.google.code.gson:gson:2.10.1` (jar à ajouter dans `lib/`)
 
 ---
 
-### 6.1 — Où mettre la logique de combat ?
+### 6.1 - Où mettre la logique de combat ?
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
-> - **Option A** : dans `Personnage` (`personnage.attaquer(ennemi)`) — simple mais `Personnage` devient trop gros.
-> - **Option B** : dans `Ennemi` (`ennemi.interaction(personnage)` gère tout) — cohérent avec le pattern `Case`.
-> - **Option C** : dans une classe `CombatEngine` dédiée — meilleure séparation des responsabilités (Single Responsibility Principle).
+> - **Option A** : dans `Personnage` (`personnage.attaquer(ennemi)`) - simple mais `Personnage` devient trop gros.
+> - **Option B** : dans `Ennemi` (`ennemi.interaction(personnage)` gère tout) - cohérent avec le pattern `Case`.
+> - **Option C** : dans une classe `CombatEngine` dédiée - meilleure séparation des responsabilités (Single Responsibility Principle).
 > - **Recommandation** : Option B pour la version de base, Option C pour la version avancée.
 > - En production (Spring Boot), vous verrez souvent des classes `Service` qui jouent ce rôle.
 
-### 6.2 — Combat simple (version de base)
+### 6.2 - Combat simple (version de base)
 
 Dans `Ennemi.interaction(Personnage p)` :
 
@@ -591,7 +591,7 @@ Dans `Ennemi.interaction(Personnage p)` :
 4. Sinon → `p.subirDegats(ennemi.getAttaque())` → l'ennemi s'enfuit.
 5. Si `p.getNiveauVie() <= 0` → fin de partie (exception ou flag).
 
-### 6.3 — Combat au tour par tour
+### 6.3 - Combat au tour par tour
 
 1. Afficher l'état du combat (PV joueur, PV ennemi).
 2. Proposer : `[1] Attaquer   [2] Fuir`
@@ -604,7 +604,7 @@ Dans `Ennemi.interaction(Personnage p)` :
 > - Afficher clairement à chaque tour : PV joueur, PV ennemi, options disponibles.
 > - Mettre à jour les PV en BDD après chaque combat (`changeLifePoints`).
 
-### 6.4 — ⚡ Java 14+ : switch expression (optionnel)
+### 6.4 - ⚡ Java 14+ : switch expression (optionnel)
 
 ```java
 int choix = scanner.nextInt();
@@ -615,7 +615,7 @@ String action = switch (choix) {
 };
 ```
 
-### 6.5 — 🧪 Tests JUnit (optionnel)
+### 6.5 - 🧪 Tests JUnit (optionnel)
 
 ```java
 @Test void guerrierTueGobelin()    { /* PV gobelin 6, force guerrier 10 → mort en 1 coup */ }
@@ -624,7 +624,7 @@ String action = switch (choix) {
 @Test void gameOverSiPVzero()      { /* exception ou flag levé si PV joueur <= 0 */ }
 ```
 
-### 6.6 — Livrable
+### 6.6 - Livrable
 
 - [ ] Combat simple fonctionnel
 - [ ] Combat au tour par tour avec choix Attaquer / Fuir
@@ -636,7 +636,7 @@ String action = switch (choix) {
 
 ---
 
-## Itération 7 — Remplissage aléatoire du plateau
+## Itération 7 - Remplissage aléatoire du plateau
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -649,7 +649,7 @@ String action = switch (choix) {
 
 ---
 
-### 7.1 — Placement aléatoire
+### 7.1 - Placement aléatoire
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - Un plateau fixe est prévisible et ennuyeux après 2 parties. Le rendre aléatoire améliore la **rejouabilité**.
@@ -657,14 +657,14 @@ String action = switch (choix) {
 > - Contrainte : le nombre total d'ennemis et d'équipements doit rester identique à IT.4.
 > - Optionnel : passer une **seed** à `Random` pour rendre le plateau reproductible (utile pour les tests).
 
-### 7.2 — Algorithme de placement
+### 7.2 - Algorithme de placement
 
 1. Créer une liste `objetsAPlacer` avec tous les ennemis et équipements (24 ennemis + 24 caisses).
 2. Mélanger : `Collections.shuffle(objetsAPlacer, new Random())`
 3. Initialiser le plateau de 64 cases avec des `CaseVide`.
 4. Distribuer les objets dans les cases du plateau.
 
-### 7.3 — Table de vérification des interactions finales
+### 7.3 - Table de vérification des interactions finales
 
 | Personnage | Rencontre        | Comportement attendu                           |
 |------------|------------------|------------------------------------------------|
@@ -679,7 +679,7 @@ String action = switch (choix) {
 | Tous       | Potion           | Appliquer l'effet immédiatement.               |
 | Tous       | CaseVide         | Rien. Tour suivant.                            |
 
-### 7.4 — 🧪 Tests JUnit (optionnel)
+### 7.4 - 🧪 Tests JUnit (optionnel)
 
 ```java
 @Test void plateauContient24Ennemis() { /* compter les Ennemi dans le plateau */ }
@@ -688,7 +688,7 @@ String action = switch (choix) {
 // Conseil : passer une seed fixe à Random pour des tests déterministes.
 ```
 
-### 7.5 — Livrable
+### 7.5 - Livrable
 
 - [ ] Plateau aléatoire fonctionnel avec les bonnes proportions
 - [ ] Toutes les interactions implémentées
@@ -700,7 +700,7 @@ String action = switch (choix) {
 
 ---
 
-## Itération 8 — Règles avancées (Version 2)
+## Itération 8 - Règles avancées (Version 2)
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -713,7 +713,7 @@ String action = switch (choix) {
 
 ---
 
-### 8.1 — Gestion de l'inventaire
+### 8.1 - Gestion de l'inventaire
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - Un inventaire à 2 slots change complètement la stratégie : le joueur doit choisir quoi conserver.
@@ -721,14 +721,14 @@ String action = switch (choix) {
 > - Lors d'un combat : afficher les équipements disponibles et laisser le joueur choisir lequel utiliser.
 > - Lors d'un ramassage avec inventaire plein : proposer remplacer slot 1 / slot 2 / ignorer.
 
-### 8.2 — Modifications de Personnage
+### 8.2 - Modifications de Personnage
 
 - Remplacer `equipOffensif` par `List<EquipementOffensif> inventaire` (max 2 éléments).
-- Ajouter `ajouterEquipement(EquipementOffensif e, Scanner sc)` — gère l'inventaire plein.
-- Ajouter `choisirEquipement(Scanner sc)` — affiche l'inventaire et retourne l'équipement choisi.
+- Ajouter `ajouterEquipement(EquipementOffensif e, Scanner sc)` - gère l'inventaire plein.
+- Ajouter `choisirEquipement(Scanner sc)` - affiche l'inventaire et retourne l'équipement choisi.
 - Modifier `toString()` pour afficher les 2 slots.
 
-### 8.3 — Bonus conditionnels
+### 8.3 - Bonus conditionnels
 
 ```java
 // Dans Arc.java
@@ -742,19 +742,19 @@ public int calculerBonus(Ennemi cible) {
 }
 ```
 
-### 8.4 — Potion Coup de tonnerre
+### 8.4 - Potion Coup de tonnerre
 
 - Effet : multiplier par 2 la force d'attaque pour le **prochain combat uniquement**.
 - Ajouter un flag `boolean coupDeTonnerreActif` dans `Personnage`.
 - Dans le calcul des dégâts : `if (coupDeTonnerreActif) { degats *= 2; coupDeTonnerreActif = false; }`
 
-### 8.5 — Nouveaux combats
+### 8.5 - Nouveaux combats
 
 - Les ennemis ne fuient plus : ils combattent jusqu'à la mort.
 - Si le joueur fuit : recul de **2 cases** (fixe en version avancée).
 - Le joueur choisit son équipement à chaque attaque.
 
-### 8.6 — ⚡ Java 8+ : interface fonctionnelle (optionnel)
+### 8.6 - ⚡ Java 8+ : interface fonctionnelle (optionnel)
 
 ```java
 @FunctionalInterface
@@ -766,7 +766,7 @@ public interface BonusCalculator {
 BonusCalculator arc = cible -> (cible instanceof Dragon) ? 6 : 4;
 ```
 
-### 8.7 — 🧪 Tests JUnit (optionnel)
+### 8.7 - 🧪 Tests JUnit (optionnel)
 
 ```java
 @Test void ajouterEquipementSlotLibre()  { /* slot ajouté sans prompt */ }
@@ -776,7 +776,7 @@ BonusCalculator arc = cible -> (cible instanceof Dragon) ? 6 : 4;
 @Test void coupDeTonnerreDoubleAttaque() { /* dégâts doublés puis flag remis à false */ }
 ```
 
-### 8.8 — Livrable
+### 8.8 - Livrable
 
 - [ ] Inventaire à 2 slots fonctionnel avec choix en combat
 - [ ] `Orc`, `MauvaisEsprit` ajoutés
@@ -788,11 +788,11 @@ BonusCalculator arc = cible -> (cible instanceof Dragon) ? 6 : 4;
 
 ---
 
-## Itération 9 — Interface graphique JavaFX ⭐ Bonus
+## Itération 9 - Interface graphique JavaFX ⭐ Bonus
 
 ⏱ **Durée estimée : 2–3 jours**
 
-> ⭐ **Itération bonus** — S'adresse aux apprenants ayant terminé les 8 premières itérations.
+> ⭐ **Itération bonus** - S'adresse aux apprenants ayant terminé les 8 premières itérations.
 > Cette itération **ne modifie pas la logique métier** : on greffe une interface graphique sur le code existant.
 
 ### Objectifs pédagogiques
@@ -804,7 +804,7 @@ BonusCalculator arc = cible -> (cible instanceof Dragon) ? 6 : 4;
 
 ---
 
-### 9.1 — Pourquoi JavaFX ? Pourquoi le pattern MVC ?
+### 9.1 - Pourquoi JavaFX ? Pourquoi le pattern MVC ?
 
 > 🏗️ **Pourquoi ce choix d'architecture ?**
 > - JavaFX est la bibliothèque UI standard pour les applications de bureau Java modernes (remplace Swing).
@@ -823,7 +823,7 @@ Créer le diagramme MVC :
 
 > 💡 Indice : le Controller ne doit pas contenir de logique métier. Il traduit les événements UI en appels sur le Model.
 
-### 9.2 — Installation JavaFX
+### 9.2 - Installation JavaFX
 
 - Télécharger JavaFX 17 SDK : https://gluonhq.com/products/javafx/
 - Dans IntelliJ : `File → Project Structure → Libraries` → ajouter le dossier `lib/` de JavaFX.
@@ -834,7 +834,7 @@ Créer le diagramme MVC :
 --add-modules javafx.controls,javafx.fxml
 ```
 
-### 9.3 — Structure MVC à créer
+### 9.3 - Structure MVC à créer
 
 | Couche       | Package                          | Classes à créer                                |
 |--------------|----------------------------------|------------------------------------------------|
@@ -843,27 +843,27 @@ Créer le diagramme MVC :
 | Controller   | `fr.campus.dungeon.controller`   | `PlateauController`, `CombatController`, `MenuController` |
 | Main         | `fr.campus.dungeon`              | `DndApp.java` (extends `Application`)          |
 
-### 9.4 — Écrans à implémenter
+### 9.4 - Écrans à implémenter
 
-**Écran 1 — Menu principal**
+**Écran 1 - Menu principal**
 - Champ de saisie pour le nom du personnage
 - Boutons : Guerrier / Magicien
 - Bouton : Démarrer la partie
 - Liste des héros sauvegardés (depuis la BDD)
 
-**Écran 2 — Plateau de jeu**
+**Écran 2 - Plateau de jeu**
 - Grille 8×8 représentant les 64 cases (`GridPane` JavaFX)
 - Chaque case colorée selon son contenu : gris = vide, rouge = ennemi, or = caisse, bleu = joueur
 - Panneau de stats à droite : PV joueur, force, équipements
 - Bouton "Lancer le dé" → déplacer le joueur et afficher les événements
 
-**Écran 3 — Combat**
+**Écran 3 - Combat**
 - S'ouvre automatiquement quand le joueur rencontre un ennemi
 - Stats joueur vs stats ennemi
 - Boutons : Attaquer (avec choix d'équipement) / Fuir
 - Log des actions en temps réel (`TextArea`)
 
-### 9.5 — Structure de DndApp.java
+### 9.5 - Structure de DndApp.java
 
 ```java
 public class DndApp extends Application {
@@ -880,7 +880,7 @@ public class DndApp extends Application {
 }
 ```
 
-### 9.6 — ⚡ JavaFX Bindings (optionnel)
+### 9.6 - ⚡ JavaFX Bindings (optionnel)
 
 ```java
 // Synchroniser automatiquement les PV affichés sans code supplémentaire :
@@ -890,7 +890,7 @@ pvLabel.textProperty().bind(
 // Nécessite de transformer niveauVie en IntegerProperty dans Personnage.
 ```
 
-### 9.7 — Suggestions d'améliorations
+### 9.7 - Suggestions d'améliorations
 
 - Animer le déplacement du joueur (`Timeline` JavaFX)
 - Icônes pour les ennemis et équipements (`ImageView`)
@@ -898,7 +898,7 @@ pvLabel.textProperty().bind(
 - Écran de fin stylisé (victoire / défaite) avec score
 - Thème sombre (CSS JavaFX)
 
-### 9.8 — Livrable
+### 9.8 - Livrable
 
 - [ ] Application JavaFX avec les 3 écrans minimum
 - [ ] Code métier non modifié
@@ -909,7 +909,7 @@ pvLabel.textProperty().bind(
 
 ---
 
-## Annexe A — Cheat Sheet POO Java
+## Annexe A - Cheat Sheet POO Java
 
 ### Concepts fondamentaux
 
@@ -964,19 +964,19 @@ pvLabel.textProperty().bind(
 
 ---
 
-## Annexe B — Conventions & bonnes pratiques
+## Annexe B - Conventions & bonnes pratiques
 
 ### Principes SOLID appliqués au projet
 
 | Principe                  | Définition                                      | Application D&D                                                            |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
-| **S** — Single Responsibility | Une classe = une responsabilité             | `Menu` gère l'UI. `Game` gère le jeu. `HeroRepository` gère la BDD.       |
-| **O** — Open/Closed       | Ouvert à l'extension, fermé à la modification  | Ajouter un ennemi = créer une classe. Ne pas modifier `Ennemi`.            |
-| **L** — Liskov Substitution | Une sous-classe remplace sa classe mère      | Partout où `Ennemi` est attendu, `Gobelin`, `Dragon`, `Orc` fonctionnent.  |
-| **I** — Interface Segregation | Interfaces petites et ciblées              | `Case` n'a qu'une méthode : `interaction()`.                               |
-| **D** — Dependency Inversion | Dépendre des abstractions                   | `Game` manipule des `Case`, pas directement des `Gobelin`.                 |
+| **S** - Single Responsibility | Une classe = une responsabilité             | `Menu` gère l'UI. `Game` gère le jeu. `HeroRepository` gère la BDD.       |
+| **O** - Open/Closed       | Ouvert à l'extension, fermé à la modification  | Ajouter un ennemi = créer une classe. Ne pas modifier `Ennemi`.            |
+| **L** - Liskov Substitution | Une sous-classe remplace sa classe mère      | Partout où `Ennemi` est attendu, `Gobelin`, `Dragon`, `Orc` fonctionnent.  |
+| **I** - Interface Segregation | Interfaces petites et ciblées              | `Case` n'a qu'une méthode : `interaction()`.                               |
+| **D** - Dependency Inversion | Dépendre des abstractions                   | `Game` manipule des `Case`, pas directement des `Gobelin`.                 |
 
-### Checklist qualité — avant chaque commit
+### Checklist qualité - avant chaque commit
 
 - [ ] Tous les attributs sont `private`
 - [ ] Chaque classe a ses getters/setters, constructeur(s) et `toString()`
@@ -1031,5 +1031,5 @@ fr.campus.dungeon/
 
 ---
 
-*Fin du document — Version apprenant*
-*Campus Numérique in the Alps — Java & POO — 2024/2025*
+*Fin du document - Version apprenant*
+*Campus Numérique in the Alps - Java & POO - 2024/2025*
