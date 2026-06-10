@@ -147,60 +147,60 @@ Pour stopper le serveur, utiliser `Ctrl + C` dans le terminal.
 
 ## Set up un modèle `Event`
 
-Une fois qu'on a implémenté la logique d'un serveur de base opérationnel, on souhaite continuer d'ajouter des endpoints.
-On aura besoin d'une logique plus utile qui sera exécutée quand on aura d'autres requêtes entrantes.
+Une fois le serveur de base opérationnel, on continue d'ajouter des endpoints avec une logique plus utile.
 
 ### Ajouter une structure de données pour un `Event`
 
-Pour cela, on va créer un nouveau package appelé `models`, dans lequel on aura un fichier `event.go`.
-L'idée est de regrouper toute la logique qui s'occupe :
-* du stockage de données d'événements dans une BDD
-* de fetch de la data
-* etc.
+On crée un nouveau package `models` avec un fichier `event.go`. L'idée est de regrouper toute la logique liée au stockage et à la récupération des données événements.
 
-Ce fichier `event` va contenir le struct qui va définirla structure d'un événement.
-Un événement aura un id, un nom, une description, un lieu, une date et devra être liée à un utilisateur par son ID.
+Ce fichier va contenir le struct qui définit la structure d'un événement. On ajoute des struct tags sur chaque champ pour contrôler deux comportements :
+* `json:"..."` : définit la clé JSON utilisée lors de la sérialisation/désérialisation. Sans ces tags, Go utilise les noms de champs tels quels en PascalCase (`Name`, `UserID`...), ce qui n'est pas idiomatique pour une API REST. Les tags permettent d'obtenir du camelCase ou du snake_case côté JSON.
+* `binding:"required"` : indique à Gin que ce champ est obligatoire lors du parsing d'une requête entrante. Si le champ est absent du body JSON, Gin retourne une erreur.
 ```Go
 package models
 
 import "time"
 
 type Event struct {
-  ID          int
-  Name        string
-  Description string
-  Location    string
-  DateTime    time.Time
-  UserID      int
+    ID          int       `json:"id"`
+    Name        string    `json:"name"        binding:"required"`
+    Description string    `json:"description" binding:"required"`
+    Location    string    `json:"location"    binding:"required"`
+    DateTime    time.Time `json:"dateTime"    binding:"required"`
+    UserID      int       `json:"userId"`
 }
 ```
 
-Il ne restera qu'à ajouter des méthodes qui permettent d'intéragir avec un événement.
-
 ### Ajouter des méthodes et fonctions
 
-#### La méthode `save()`
+#### La méthode `Save()`
 
-La première méthode servira à enregistrer un événement : `save()`.
-Son objectif sera à terme de stocker les événements en base de données.
-Pour l'instant, on va la stocker dans une variable (une slice d'events) `var events []Event`.
+La méthode `Save()` sert à enregistrer un événement. À terme, elle écrira en base de données. Pour l'instant, on stocke les événements dans une **slice de package** `events`.
 ```Go
-// variable pour stocker les objets de type événements dans une slice initialisée en slice vide
 var events = []Event{}
 
 func (e Event) Save() {
   events = append(events, e)
 }
 ```
-* La variable events est initialisée comme une slice vide de type Event
-* la méthode `Save()` contient un 'receveur', une variable de type Event `(e Event)` sur lequel save est appelé. On peut avoir ce receveur comme une copie ou un pointeur, c'est au choix. (quel avantage de l'un et de l'autre ?)
-* la méthode va simplement ajouter à la variable events le nouvel événement reçu via le receveur.
+#### Receveur par valeur vs receveur par pointeur :
+
+|                       | Receveur valeur `(e Event)`               | Receveur pointeur `(e *Event)`      |
+|-----------------------| ----------------------------------------- | ----------------------------------- |
+| Modifie le receveur ?	| Non — travaille sur une copie	            | Oui — modifie l'original en mémoire |
+| Cas d'usage	          | Lecture ou opération sur variable externe	| Modification de l'objet lui-même    |
+| Coût mémoire          |	Copie du struct à chaque appel            | Juste un pointeur, pas de copie     |
+
+
+Ici, un receveur par valeur suffit : `Save()` n'a pas besoin de modifier l'événement lui-même. La modification porte sur la variable de package `events` (via `append`), pas sur le receveur e.
+
+```
+À noter pour la suite : quand on intégrera une vraie base de données, Save() devra probablement utiliser un receveur par pointeur pour mettre à jour le champ ID avec l'ID auto-généré par la BDD, et retourner une error pour gérer les échecs d'écriture.
+```
 
 #### La fonction `GetAllEvents()`
 
-`GetAllEvents()` n'est pas une méthode car on ne l'appelle pas sur un événement existant, mais plutôt pour obtenir tous les événements disponibles.
-Cette fonction devra être disponible en dehors du package, elle va donc commencer par une majuscule.
-Elle va retourner une slice d'events : `[]Event`
+`GetAllEvents()` n'est pas une méthode mais une **fonction de package** : on ne l'appelle pas sur un événement existant, mais pour obtenir l'ensemble des événements stockés. Elle commence par une majuscule pour être exportée hors du package
 ```Go
 func GetAllEvents() []Event {
   return events
@@ -209,11 +209,9 @@ func GetAllEvents() []Event {
 
 ## Ajouter une route `POST`
 
-Une fois le nouveau modèle créé avec ses méthodes et fonctions associées, on va pouvoir commencer à les utiliser.
-
 ### Modifier la route `GET`
 
-Dans notre `main package`, on va d'abord modifier notre route `GET` et la fonction getEvents pour récupérer les événements :
+On modifie le handler `getEvents` pour qu'il utilise `GetAllEvents()` et renvoie la vraie liste des événements :
 ```Go
 package main
 
@@ -233,16 +231,18 @@ func main() {
 }
 
 func getEvents(context *gin.Context) {
-  // appel de la fonction GetAllEvents
 	events := models.GetAllEvents()
-  // pour passer le résultat
 	context.JSON(http.StatusOK, events)
 }
 ```
 
+```
+Rappel sur *gin.Context : tout handler Gin reçoit un *gin.Context en paramètre. C'est l'objet central qui encapsule la requête entrante (méthode HTTP, headers, paramètres d'URL, body...) et expose les méthodes pour construire la réponse (JSON(), String()...). On travaille toujours avec un pointeur pour ne pas copier le contexte à chaque appel — Gin réutilise le même objet tout au long de la chaîne de handlers d'une requête.
+```
+
 ### Ajout de la route `POST`
 
-On peut également ajouter la route `POST` à laquelle on associe une fonction `createEvent` : `server.POST("/events", createEvent)`
+On ajoute `POST /events` dans `main` et on crée le handler `createEvent` :
 ```Go
 func main() {
 	server := gin.Default()
@@ -252,10 +252,47 @@ func main() {
 
 	server.Run(":8080")
 }
+```
 
-...
+#### `shouldBindJSON()` - parser le body de la requête
 
+`ShouldBindJSON()` est une méthode du contexte Gin qui :
+1. Lit le **corps (body) de la requête HTTP** entrante
+2. Le **décode depuis le JSON** vers le struct Go passé en argument (comme `json.Unmarshal()` de la bibliothèque standard, mais intégré au pipeline Gin)
+3. **Valide les champs** marqués `binding:"required"` : si un champ requis est absent ou vide, une erreur est retournée
+4. Retourne une **erreur** si le parsing ou la validation échouent, `nil` sinon
+
+On lui passe un **pointeur** vers la variable à remplir (`&event`) pour que Gin puisse écrire directement dedans. Sans pointeur, les modifications seraient faites sur une copie qui serait aussitôt perdue.
+```Go
 func createEvent(context *gin.Context) {
+    var event models.Event
 
+    err := context.ShouldBindJSON(&event)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request data"})
+        return // indispensable : stoppe l'exécution après l'envoi de la réponse d'erreur
+    }
+
+    event.ID = 1     // valeur fictive provisoire — sera géré par la BDD plus tard
+    event.UserID = 1 // valeur fictive provisoire — sera géré par l'authentification plus tard
+    event.Save()
+
+    context.JSON(http.StatusCreated, gin.H{"message": "Event created successfully", "event": event})
 }
 ```
+#### Points clés :
+
+* `http.StatusBadRequest` (`400`) : le client a envoyé une requête malformée ou incomplète (body manquant, champ requis absent...).
+* `return` après l'envoi de l'erreur : **indispensable**. Sans lui, le handler continue de s'exécuter après avoir déjà envoyé une réponse, ce qui provoquerait une seconde écriture sur la même réponse HTTP.
+* `event.Save()` : ne pas oublier d'appeler la méthode pour que l'événement soit effectivement ajouté à la slice — sans cet appel, la requête `GET /events` ne retournera jamais les événements créés.
+* `http.StatusCreated` (`201`) : code sémantiquement correct pour une création de ressource, à préférer à `200 OK`.
+* On renvoie l'événement créé dans la réponse : bonne pratique qui permet au client de récupérer les champs générés côté serveur (ici l'`id`, à terme depuis la BDD).
+
+### Tester les requêtes et réparer la requête `POST`
+
+Pour tester tous type de requêtes, et particulièrement les requêtes qui ne sont pas des requêtes `GET`, on peut utiliser des outils comme POSTMAN.
+
+// Note sur postman
+
+On peut également utiliser un plugin sur visual studio code : `REST Client`.
+Ce plugin permet de tester directement dans VS Code des routes
