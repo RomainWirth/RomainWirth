@@ -187,7 +187,7 @@ func (e Event) Save() {
 
 |                       | Receveur valeur `(e Event)`               | Receveur pointeur `(e *Event)`      |
 |-----------------------| ----------------------------------------- | ----------------------------------- |
-| Modifie le receveur ?	| Non — travaille sur une copie	            | Oui — modifie l'original en mémoire |
+| Modifie le receveur ?	| Non - travaille sur une copie	            | Oui - modifie l'original en mémoire |
 | Cas d'usage	          | Lecture ou opération sur variable externe	| Modification de l'objet lui-même    |
 | Coût mémoire          |	Copie du struct à chaque appel            | Juste un pointeur, pas de copie     |
 
@@ -227,7 +227,7 @@ func main() {
 
 	server.GET("/events", getEvents)
 
-	server.Run(":8080")
+	server.Run(":8080") // localhost:8080
 }
 
 func getEvents(context *gin.Context) {
@@ -236,9 +236,7 @@ func getEvents(context *gin.Context) {
 }
 ```
 
-```
-Rappel sur *gin.Context : tout handler Gin reçoit un *gin.Context en paramètre. C'est l'objet central qui encapsule la requête entrante (méthode HTTP, headers, paramètres d'URL, body...) et expose les méthodes pour construire la réponse (JSON(), String()...). On travaille toujours avec un pointeur pour ne pas copier le contexte à chaque appel — Gin réutilise le même objet tout au long de la chaîne de handlers d'une requête.
-```
+> **Rappel sur `*gin.Context`** : tout handler Gin reçoit un `*gin.Context` en paramètre. C'est l'objet central qui encapsule la requête entrante (méthode HTTP, headers, paramètres d'URL, body...) et expose les méthodes pour construire la réponse (`JSON()`, `String()`...). On travaille toujours avec un `pointeur` pour ne pas copier le contexte à chaque appel - Gin réutilise le même objet tout au long de la chaîne de handlers d'une requête.
 
 ### Ajout de la route `POST`
 
@@ -273,9 +271,8 @@ func createEvent(context *gin.Context) {
         return // indispensable : stoppe l'exécution après l'envoi de la réponse d'erreur
     }
 
-    event.ID = 1     // valeur fictive provisoire — sera géré par la BDD plus tard
-    event.UserID = 1 // valeur fictive provisoire — sera géré par l'authentification plus tard
-    event.Save()
+    event.ID = 1     // valeur fictive provisoire - sera géré par la BDD plus tard
+    event.UserID = 1 // valeur fictive provisoire - sera géré par l'authentification plus tard
 
     context.JSON(http.StatusCreated, gin.H{"message": "Event created successfully", "event": event})
 }
@@ -284,15 +281,162 @@ func createEvent(context *gin.Context) {
 
 * `http.StatusBadRequest` (`400`) : le client a envoyé une requête malformée ou incomplète (body manquant, champ requis absent...).
 * `return` après l'envoi de l'erreur : **indispensable**. Sans lui, le handler continue de s'exécuter après avoir déjà envoyé une réponse, ce qui provoquerait une seconde écriture sur la même réponse HTTP.
-* `event.Save()` : ne pas oublier d'appeler la méthode pour que l'événement soit effectivement ajouté à la slice — sans cet appel, la requête `GET /events` ne retournera jamais les événements créés.
+* `event.Save()` : **intentionnellement absent** à ce stade - on va constater lors des tests ce que cela implique, puis corriger
 * `http.StatusCreated` (`201`) : code sémantiquement correct pour une création de ressource, à préférer à `200 OK`.
 * On renvoie l'événement créé dans la réponse : bonne pratique qui permet au client de récupérer les champs générés côté serveur (ici l'`id`, à terme depuis la BDD).
 
 ### Tester les requêtes et réparer la requête `POST`
 
-Pour tester tous type de requêtes, et particulièrement les requêtes qui ne sont pas des requêtes `GET`, on peut utiliser des outils comme POSTMAN.
+Pour tester tous types de requêtes - et particulièrement celles qui ne sont pas des requêtes GET - on peut utiliser des outils comme **Postman** (application desktop/web, utile pour des tests manuels ou partagés en équipe) ou directement dans VS Code avec le plugin **REST Client**.
 
-// Note sur postman
+#### le plug-in `REST Client`
 
-On peut également utiliser un plugin sur visual studio code : `REST Client`.
-Ce plugin permet de tester directement dans VS Code des routes
+**REST Client** est une extension VS Code qui permet d'envoyer des requêtes HTTP directement depuis un fichier `.http` ou `.rest`, sans quitter l'éditeur. Il affiche la réponse dans un onglet dédié, avec le statut, les headers et le body.
+
+À installer depuis le marketplace VS Code : chercher `REST Client` (auteur : Huachao Mao).
+
+On ajoutera un dossier `api-test` à la racine du projet pour regrouper les fichiers de test.
+
+#### Test de la route `POST`
+
+Le premier fichier sera `create-event.http`. L'extension `.http` est reconnue automatiquement par REST Client, qui affiche un bouton `Send Request` au-dessus de chaque requête.
+
+Un fichier `.http` contient :
+* la **méthode + URL** : `POST http://localhost:8080/events` - `http://` est obligatoire avec localhost, car `https://` provoquerait une erreur SSL en local.
+* les **headers**, séparés de la méthode par un retour à la ligne : `content-type: application/json` indique au serveur que le body est du JSON.
+* le **body** JSON, séparé des headers par **une ligne vide obligatoire**.
+```http
+POST http://localhost:8080/events
+content-type: application/json
+
+{
+  "name": "Test event",
+  "description": "A test event",
+  "location": "A test location",
+  "dateTime": "2026-07-20T18:00:00.000Z"
+}
+```
+Pour exécuter la requête :lancer le serveur local : `go run .` (ou `go run main.go`), puis cliquer sur `Send Request`.
+
+Terminal :
+```bash
+[GIN] 2026/06/11 - 10:06:16 | 201 | 248.916µs |       127.0.0.1 | POST     "/events"
+```
+Fichier `Response` - statut `201 Created` :
+```Go
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Date: Thu, 11 Jun 2026 14:25:01 GMT
+Content-Length: 180
+Connection: close
+
+{
+  "event": {
+    "id": 1,
+    "name": "Test event",
+    "description": "A test event",
+    "location": "A test location",
+    "dateTime": "2026-07-20T18:00:00Z",
+    "userId": 1
+  },
+  "message": "Event created successfully"
+}
+```
+
+> Les clés JSON sont en camelCase (`id`, `name`, `userId`...) grâce aux tags `json:"..."` définis sur le struct `Event`. Sans ces tags, Go utiliserait les noms de champs PascalCase (`ID`, `Name`, `UserID`...).
+
+#### Test de la route `GET`
+
+On crée un second fichier `get-events.http`. Une requête `GET` n'a ni headers spécifiques ni body : une seule ligne suffit.
+```http
+GET http://localhost:8080/events
+```
+On clique sur `Send Request` avec le serveur toujours en cours d'exécution.
+
+Terminal :
+```bash
+[GIN] 2026/06/11 - 10:20:20 | 200 | 117.732µs |       127.0.0.1 | GET      "/events"
+```
+Fichier `Response` - statut `200 OK` :
+```Go
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Date: Thu, 11 Jun 2026 08:20:20 GMT
+Content-Length: 2
+Connection: close
+
+[]
+```
+La réponse est une **slice vide** `[]` : l'événement créé via `POST` n'a pas été retenu. C'est attendu - `event.Save()` n'est pas encore appelé dans `createEvent`.
+
+#### Réparation de la route `POST`
+
+Pour persister l'événement, il suffit d'appeler `event.Save()` avant d'envoyer la réponse :
+```Go
+func createEvent(context *gin.Context) {
+    var event models.Event
+
+    err := context.ShouldBindJSON(&event)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request data"})
+        return
+    }
+
+    event.ID = 1
+    event.UserID = 1
+
+    event.Save() // ajoute l'événement à la slice events
+
+    context.JSON(http.StatusCreated, gin.H{"message": "Event created successfully", "event": event})
+}
+```
+En relançant le serveur puis en exécutant `create-event` puis `get-events` :
+```Go
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Date: Thu, 11 Jun 2026 14:25:37 GMT
+Content-Length: 133
+Connection: close
+
+[
+  {
+    "id": 1,
+    "name": "Test event",
+    "description": "A test event",
+    "location": "A test location",
+    "dateTime": "2026-07-20T18:00:00Z",
+    "userId": 1
+  }
+]
+```
+L'événement est bien retourné. À noter que la persistance est **en mémoire uniquement** : si on redémarre le serveur et qu'on appelle directement `GET /events`, la slice sera de nouveau vide. La prochaine étape sera de connecter une vraie base de données.
+
+---
+
+## Résumé
+
+| Concept | Ce qu'on a mis en place |
+|---|---|
+| **`gin.Default()`** | Crée le moteur Gin avec les middlewares Logger et Recovery préconfigurés |
+| **`server.Run()`** | Démarre le serveur HTTP en écoute sur un port donné (bloque `main`) |
+| **`server.GET()` / `server.POST()`** | Enregistre une route HTTP et lui associe un ou plusieurs handlers |
+| **`gin.HandlerFunc`** | Signature attendue pour tout handler Gin : `func(ctx *gin.Context)` |
+| **`*gin.Context`** | Objet central encapsulant la requête entrante et les méthodes de réponse |
+| **`ctx.JSON()`** | Sérialise une valeur Go en JSON et l'envoie avec le statut HTTP approprié |
+| **`gin.H`** | Alias `map[string]any` pour construire des objets JSON inline |
+| **Struct `Event` + tags** | Modélise la ressource avec des tags `json:"..."` (sérialisation) et `binding:"required"` (validation) |
+| **`ShouldBindJSON()`** | Décode et valide le body JSON d'une requête vers un struct Go |
+| **`event.Save()`** | Méthode de persistance (en mémoire ici, en BDD à terme) |
+| **REST Client** | Plugin VS Code pour tester des requêtes HTTP depuis des fichiers `.http` |
+
+## Et ensuite ?
+
+L'API fonctionne, mais les données ne survivent pas au redémarrage du serveur : elles sont stockées dans une simple variable en mémoire. Pour une vraie API, il faut une **base de données**.
+
+La prochaine étape consistera à connecter une base de données **SQLite** via le driver Go `go-sqlite3`, et à réécrire les méthodes `Save()` et `GetAllEvents()` pour qu'elles lisent et écrivent en base plutôt que dans une slice. On y abordera :
+
+* la connexion à la base de données et l'initialisation du schéma
+* l'exécution de requêtes SQL depuis Go (`INSERT`, `SELECT`)
+* la gestion des erreurs de base de données
+* l'auto-incrémentation des IDs par la BDD (ce qui justifiera de passer `Save()` en receveur par pointeur pour récupérer l'ID généré)
+
