@@ -284,9 +284,175 @@ main() → db.InitDB() → sql.Open() → SetMaxOpenConns/SetMaxIdleConns → cr
 
 ---
 
-## Intéragir avec la Base de données
+## Interagir avec la Base de données
 
-### Stocker des datas events (INSERT)
+Maintenant que la base de données est initialisée et les tables créées, on va connecter la couche **modèles** (`models/`) à la couche **base de données** (`db/`).
+
+Concrètement, cela signifie mettre à jour les méthodes du struct `Event` pour qu'elles exécutent de vraies requêtes SQL au lieu de manipuler une variable en mémoire. Deux types d'opérations sont nécessaires :
+
+| Opération SQL | Méthode Go | Déclenchée par |
+|---|---|---|
+| `INSERT` | `Save()` | Route `POST /events` |
+| `SELECT` | `GetAllEvents()` | Route `GET /events` |
+| `SELECT ... WHERE id = ?` | `GetEventById()` | Route `GET /events/:id` |
+
+On commence par l'écriture.
+
+### Stocker des données : `Save()` avec INSERT
+
+#### Contexte : passage au receveur par pointeur
+
+La méthode `Save()` existe déjà dans `models/event.go`. Pour l'instant, elle ajoute simplement l'événement dans une slice en mémoire, sans persistance. On va la réécrire entièrement pour qu'elle insère une ligne dans la table `events`.
+
+Avant d'écrire la logique, il faut corriger la signature de la méthode. En section C, on avait noté :
+
+> À noter pour la suite : quand on intégrera une vraie base de données, `Save()` devra probablement utiliser un **receveur par pointeur** pour mettre à jour le champ `ID` avec l'ID auto-généré par la BDD.
+
+C'est exactement ce moment. SQLite génère automatiquement l'`id` lors de l'insertion (`AUTOINCREMENT`). On veut récupérer cet `id` et l'assigner à `e.ID` pour que le code appelant puisse y accéder après l'appel à `Save()`.
+
+Avec un **receveur par valeur** `(e Event)`, Go travaille sur une **copie** du struct : `e.ID = id` modifie la copie locale, l'original n'est pas touché.
+Avec un **receveur par pointeur** `(e *Event)`, Go opère sur le struct **original en mémoire** : `e.ID = id` met bien à jour l'événement passé par l'appelant.
+
+```go
+// Avant (valeur) : e.ID = id ne persiste pas après l'appel
+func (e Event) Save() error { ... }
+
+// Après (pointeur) : e.ID = id est visible pour l'appelant
+func (e *Event) Save() error { ... }
+```
+
+On met également à jour le type du champ `ID` dans le struct, qui doit passer de `int` à `int64` pour correspondre au type retourné par `LastInsertId()` (voir plus bas) :
+
+```go
+type Event struct {
+    ID          int64     `json:"id"`   // int → int64
+    Name        string    `json:"name"        binding:"required"`
+    Description string    `json:"description" binding:"required"`
+    Location    string    `json:"location"    binding:"required"`
+    DateTime    time.Time `json:"dateTime"    binding:"required"`
+    UserID      int64     `json:"userId"`
+}
+```
+
+#### La requête SQL : INSERT avec des paramètres liés
+
+On déclare la requête SQL sous forme de chaîne de caractères multi-lignes (backtick) :
+
+```go
+query := `
+INSERT INTO events (name, description, location, dateTime, user_id)
+VALUES (?, ?, ?, ?, ?)
+`
+```
+
+Les `?` sont des **paramètres liés** (placeholders). Ils ne sont pas remplacés par une simple interpolation de texte : le driver SQL les traite séparément des données. C'est le mécanisme fondamental de protection contre les **injections SQL**.
+
+> **Injection SQL** : une attaque qui consiste à insérer du code SQL malveillant dans les données envoyées par un utilisateur. Par exemple, si on construisait la requête par concaténation de chaînes : `"INSERT INTO events (name) VALUES ('" + userInput + "'")`
+> Un attaquant pourrait passer comme valeur : `'); DROP TABLE events; --`, ce qui exécuterait `DROP TABLE events` sur la base.
+> Avec les paramètres liés `?`, la valeur passée est **toujours traitée comme une donnée**, jamais comme du SQL. Le driver l'échappe ou l'envoie dans un canal séparé selon le protocole. L'attaque devient impossible.
+
+#### `db.DB.Prepare()` : préparer le statement
+
+On prépare le statement via la variable globale `db.DB` (le pool de connexions) :
+
+```go
+stmt, err := db.DB.Prepare(query)
+if err != nil {
+    return err
+}
+defer stmt.Close()
+```
+
+`Prepare()` envoie la requête SQL au moteur de base de données, qui la **compile et l'optimise une fois**. En retour, on obtient un `*sql.Stmt` - un statement prêt à être exécuté avec les valeurs réelles.
+
+Si la préparation échoue (syntaxe SQL invalide, table inexistante...), on retourne l'erreur immédiatement : inutile de continuer.
+
+Le `defer stmt.Close()` est placé **juste après la vérification d'erreur**. Le mot-clé `defer` programme l'exécution de `Close()` pour la fin de la fonction courante (`Save()`), qu'elle se termine normalement ou via un `return` anticipé. Cela garantit que les ressources associées au statement sont toujours libérées, même en cas d'erreur plus loin dans la fonction.
+
+> **`Prepare()` vs `Exec()` direct** : `db.DB.Exec(query, args...)` prépare et exécute en une seule opération - c'est pratique pour les requêtes exécutées une seule fois. `Prepare()` est préférable quand on veut **exécuter le même statement plusieurs fois** (dans une boucle, par exemple) car la phase de compilation n'est faite qu'une seule fois. Ici, pour une insertion unique, les deux fonctionneraient ; on utilise `Prepare()` pour illustrer le mécanisme et par souci de cohérence avec le reste du cours.
+
+#### `stmt.Exec()` : exécuter avec les valeurs
+
+```go
+result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+if err != nil {
+    return err
+}
+```
+
+`stmt.Exec()` remplace les `?` par les valeurs passées **dans l'ordre**. Il exécute la requête et retourne un `sql.Result` et une erreur. En cas d'erreur (contrainte NOT NULL violée, type incompatible...), on la retourne.
+
+#### `result.LastInsertId()` : récupérer l'ID généré
+
+```go
+id, err := result.LastInsertId()
+e.ID = id
+return err
+```
+
+`LastInsertId()` retourne l'`id` généré automatiquement par SQLite lors de l'insertion (`AUTOINCREMENT`). Il est de type `int64` - c'est pour cela que le champ `ID` du struct a été mis à jour en `int64` plus haut.
+
+On assigne cet `id` au champ `e.ID` du receveur - grâce au receveur par pointeur, cette modification est visible pour l'appelant.
+
+Puis on `return err` directement, sans `if err != nil`. Cette écriture courante en Go est équivalente à :
+
+```go
+if err != nil {
+    return err
+}
+return nil
+```
+
+Si `LastInsertId()` réussit, `err` vaut `nil` et `return err` retourne `nil` - ce qui signifie "succès". La fonction `Save()` ne retourne pas l'`id` : il est directement accessible via `event.ID` après l'appel, puisqu'on a utilisé un receveur par pointeur.
+
+#### La fonction `Save()` complète
+
+```go
+func (e *Event) Save() error {
+    query := `
+    INSERT INTO events (name, description, location, dateTime, user_id)
+    VALUES (?, ?, ?, ?, ?)
+    `
+
+    stmt, err := db.DB.Prepare(query)
+    if err != nil {
+        return err
+    }
+    defer stmt.Close()
+
+    result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+    if err != nil {
+        return err
+    }
+
+    id, err := result.LastInsertId()
+    e.ID = id
+    return err
+}
+```
+
+Du côté du handler `createEvent` dans `main.go`, la gestion de l'erreur retournée par `Save()` doit également être mise à jour :
+
+```go
+func createEvent(context *gin.Context) {
+    var event models.Event
+    err := context.ShouldBindJSON(&event)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+        return
+    }
+
+    err = event.Save()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event."})
+        return
+    }
+
+    context.JSON(http.StatusCreated, gin.H{"message": "Event created!", "event": event})
+}
+```
+
+`event.Save()` est maintenant appelé sur un **pointeur** (Go passe automatiquement l'adresse de `event` puisque la méthode a un receveur `*Event`). Après l'appel, `event.ID` contient l'identifiant généré par SQLite, qu'on peut inclure dans la réponse JSON.
 
 ### Récupérer des datas events (SELECT)
 
