@@ -431,7 +431,130 @@ func (e *Event) Save() error {
 }
 ```
 
-Du côté du handler `createEvent` dans `main.go`, la gestion de l'erreur retournée par `Save()` doit également être mise à jour :
+### Récupérer tous les événements : `GetAllEvents()` avec SELECT
+
+La méthode `GetAllEvents()` existe déjà dans `models/event.go`. Pour l'instant, elle retourne simplement la slice en mémoire. On va la réécrire pour qu'elle lise toutes les lignes de la table `events` depuis la base de données.
+
+#### Mettre à jour la signature
+
+`GetAllEvents()` doit maintenant pouvoir signaler un échec. On met à jour sa signature pour qu'elle retourne également une `error` :
+
+```go
+// Avant
+func GetAllEvents() []Event { ... }
+
+// Après
+func GetAllEvents() ([]Event, error) { ... }
+```
+
+Les **retours nommés multiples** se déclarent entre parenthèses. En cas de succès on retournera `events, nil` (pas d'erreur), en cas d'échec `nil, err` (pas de données).
+
+#### La requête SQL : SELECT
+
+La requête est simple — on veut toutes les colonnes de tous les événements :
+
+```go
+query := "SELECT * FROM events"
+```
+
+`SELECT *` sélectionne toutes les colonnes dans l'ordre où elles ont été définies lors du `CREATE TABLE` : `id`, `name`, `description`, `location`, `dateTime`, `user_id`. Cet ordre est important pour `Scan()` plus loin.
+
+#### `db.DB.Query()` vs `db.DB.Exec()`
+
+On utilise `db.DB.Query()` et non `db.DB.Exec()`. La distinction est fondamentale :
+
+| Méthode | Retour | Usage |
+|---|---|---|
+| `Exec()` | `sql.Result` | Requêtes qui **modifient** des données : INSERT, UPDATE, DELETE, CREATE |
+| `Query()` | `*sql.Rows` | Requêtes qui **lisent** des données : SELECT |
+
+`Query()` retourne un curseur `*sql.Rows` — une référence vers les lignes résultat maintenues côté base de données — ainsi qu'une erreur :
+
+```go
+rows, err := db.DB.Query(query)
+if err != nil {
+    return nil, err
+}
+defer rows.Close()
+```
+
+Le `defer rows.Close()` est ici aussi essentiel : `*sql.Rows` maintient une connexion ouverte du pool tant qu'il n'est pas fermé. Sans `Close()`, cette connexion ne serait jamais rendue au pool, ce qui finirait par l'épuiser. On le place juste après la vérification d'erreur pour garantir qu'il sera toujours exécuté.
+
+#### Parcourir les lignes avec `rows.Next()` et `rows.Scan()`
+
+`Query()` ne retourne pas directement une slice : il retourne un curseur qu'on parcourt ligne par ligne.
+
+```go
+var events []Event
+
+for rows.Next() {
+    var event Event
+    err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+    if err != nil {
+        return nil, err
+    }
+    events = append(events, event)
+}
+```
+
+**`rows.Next()`** avance le curseur d'une ligne et retourne `true` tant qu'il reste des lignes à lire. Quand toutes les lignes ont été parcourues (ou en cas d'erreur interne), il retourne `false` et la boucle s'arrête.
+
+**`rows.Scan()`** lit le contenu de la ligne courante et le copie dans les variables passées en argument. Chaque argument doit être un **pointeur** vers la variable à remplir (`&event.ID`, `&event.Name`...), dans le même ordre que les colonnes retournées par la requête SQL.
+
+C'est le même principe que `fmt.Scan()` : on passe des pointeurs pour que la fonction puisse écrire directement dans les variables. Si l'ordre ne correspond pas ou qu'un type est incompatible, `Scan()` retourne une erreur.
+
+On déclare la variable `event` **à l'intérieur** de la boucle : une nouvelle instance est ainsi créée à chaque itération, ce qui évite que les données d'une ligne ne contaminent la suivante.
+
+#### La fonction `GetAllEvents()` complète
+
+```go
+func GetAllEvents() ([]Event, error) {
+    query := "SELECT * FROM events"
+
+    rows, err := db.DB.Query(query)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var events []Event
+    for rows.Next() {
+        var event Event
+        err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+        if err != nil {
+            return nil, err
+        }
+        events = append(events, event)
+    }
+
+    return events, nil
+}
+```
+
+### Mettre à jour `main.go`
+
+Les deux handlers touchés par ces changements doivent être mis à jour pour gérer les erreurs renvoyées par les méthodes du modèle.
+
+#### Mise à jour du handler `getEvents()`
+
+`GetAllEvents()` retourne maintenant deux valeurs. Le handler doit capturer les deux et répondre avec une erreur `500` si la lecture échoue :
+
+```go
+func getEvents(context *gin.Context) {
+    events, err := models.GetAllEvents()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch events. Try again later."})
+        return
+    }
+    context.JSON(http.StatusOK, events)
+}
+```
+
+Si `GetAllEvents()` réussit, `err` vaut `nil`, la condition est ignorée, et on retourne la slice `events` directement sérialisée en JSON par Gin avec un statut `200 OK`.
+
+#### Mise à jour du handler `createEvent()`
+
+`Save()` retourne maintenant une `error`. Le handler doit la capturer et répondre avec une erreur `500` si l'insertion échoue :
 
 ```go
 func createEvent(context *gin.Context) {
@@ -444,7 +567,7 @@ func createEvent(context *gin.Context) {
 
     err = event.Save()
     if err != nil {
-        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event."})
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event. Try again later."})
         return
     }
 
@@ -452,11 +575,78 @@ func createEvent(context *gin.Context) {
 }
 ```
 
-`event.Save()` est maintenant appelé sur un **pointeur** (Go passe automatiquement l'adresse de `event` puisque la méthode a un receveur `*Event`). Après l'appel, `event.ID` contient l'identifiant généré par SQLite, qu'on peut inclure dans la réponse JSON.
+`event.Save()` est appelé avec `=` (et non `:=`) car la variable `err` est déjà déclarée par le premier `ShouldBindJSON`. Go réutilise la même variable. Après l'appel, `event.ID` contient l'identifiant généré par SQLite (grâce au receveur pointeur de `Save()`), et on l'inclut dans la réponse JSON via `"event": event`.
 
-### Récupérer des datas events (SELECT)
+#### Vérifier en local
 
-### Preparing statements vs directly executing queries
+On lance le serveur : `go run .`, puis on envoie une requête `POST /events` via le fichier `create-event.http`. Les données sont maintenant **persistées** dans `api.db`.
+
+On peut couper le serveur (`Ctrl+C`), le relancer, puis envoyer une requête `GET /events` via `get-events.http` : les événements créés précédemment sont bien renvoyés — ils survivent au redémarrage du serveur, ce qui confirme que la persistance fonctionne.
+
+### Récapitulatif : `Prepare()`, `Exec()` et `Query()`
+
+Dans les sections précédentes, on a interagi avec la base de données de trois façons différentes. Voici un tableau de synthèse :
+
+| Méthode utilisée | Où | Opération SQL |
+|---|---|---|
+| `db.DB.Exec(query)` | `createTables()` dans `db.go` | `CREATE TABLE` |
+| `db.DB.Prepare(query)` + `stmt.Exec(...)` | `Save()` dans `models/event.go` | `INSERT` |
+| `db.DB.Query(query)` | `GetAllEvents()` dans `models/event.go` | `SELECT` |
+
+#### La règle de base : `Exec()` vs `Query()`
+
+La distinction fondamentale, indépendamment de `Prepare()`, est la suivante :
+
+| Méthode | Quand l'utiliser |
+|---|---|
+| `Exec()` | La requête **modifie** des données ou la structure : `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP` |
+| `Query()` | La requête **lit** des données et retourne des lignes : `SELECT` |
+
+`Exec()` retourne un `sql.Result` (nombre de lignes affectées, dernier ID inséré...).
+`Query()` retourne un `*sql.Rows` (curseur sur les lignes résultat).
+
+Utiliser `Query()` pour un `INSERT` ou `Exec()` pour un `SELECT` fonctionnerait techniquement dans certains cas, mais c'est une mauvaise pratique : les types de retour ne correspondent pas à l'usage attendu et le code devient trompeur.
+
+#### `Prepare()` : quand est-ce réellement utile ?
+
+`Prepare()` est **toujours optionnel**. On peut toujours appeler directement `db.DB.Exec(query, args...)` ou `db.DB.Query(query, args...)` avec les valeurs en paramètres — la protection contre les injections SQL fonctionne de la même façon dans les deux cas, car `database/sql` utilise des paramètres liés dans tous les cas.
+
+L'avantage de `Prepare()` est la **performance** : le moteur SQL compile et optimise la requête une seule fois lors de l'appel à `Prepare()`. Les appels suivants à `stmt.Exec()` ou `stmt.Query()` réutilisent cette version compilée, sans retraitement.
+
+Cet avantage est **réel uniquement si le statement préparé est réutilisé plusieurs fois sans être fermé** entre les exécutions. Par exemple :
+
+```go
+// Cas où Prepare() apporte un gain réel :
+// on insère 1000 événements en une seule opération batch
+stmt, err := db.DB.Prepare("INSERT INTO events (name) VALUES (?)")
+if err != nil { ... }
+defer stmt.Close() // fermé UNE SEULE FOIS, après la boucle entière
+
+for _, name := range eventNames {
+    _, err = stmt.Exec(name)
+    if err != nil { ... }
+}
+```
+
+#### Le cas de notre `Save()` : pas de gain réel
+
+Dans notre implémentation de `Save()`, on fait :
+
+```go
+stmt, err := db.DB.Prepare(query)
+if err != nil { return err }
+defer stmt.Close()          // ← fermé à la fin de Save()
+
+result, err := stmt.Exec(...) // ← exécuté une seule fois
+```
+
+`stmt.Close()` est exécuté à la fin de `Save()` — c'est-à-dire après un seul `stmt.Exec()`. Le statement est donc préparé, utilisé une fois, puis détruit. Il n'y a **aucun gain de performance** par rapport à un simple `db.DB.Exec(query, args...)`.
+
+On a utilisé `Prepare()` ici pour deux raisons :
+1. **Montrer le mécanisme** — comprendre la séparation entre la préparation et l'exécution est utile pour les cas où elle compte vraiment.
+2. **Cohérence pédagogique** — introduire `*sql.Stmt` et ses méthodes (`Exec`, `Close`) comme des concepts distincts.
+
+En production, pour une insertion unique comme `Save()`, écrire directement `db.DB.Exec(query, args...)` serait tout aussi correct et légèrement plus concis.
 
 ### Récupérer un événement avec son ID
 
