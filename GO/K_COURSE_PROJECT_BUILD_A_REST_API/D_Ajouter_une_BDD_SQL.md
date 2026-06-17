@@ -451,7 +451,7 @@ Les **retours nommés multiples** se déclarent entre parenthèses. En cas de su
 
 #### La requête SQL : SELECT
 
-La requête est simple — on veut toutes les colonnes de tous les événements :
+La requête est simple - on veut toutes les colonnes de tous les événements :
 
 ```go
 query := "SELECT * FROM events"
@@ -468,7 +468,7 @@ On utilise `db.DB.Query()` et non `db.DB.Exec()`. La distinction est fondamental
 | `Exec()` | `sql.Result` | Requêtes qui **modifient** des données : INSERT, UPDATE, DELETE, CREATE |
 | `Query()` | `*sql.Rows` | Requêtes qui **lisent** des données : SELECT |
 
-`Query()` retourne un curseur `*sql.Rows` — une référence vers les lignes résultat maintenues côté base de données — ainsi qu'une erreur :
+`Query()` retourne un curseur `*sql.Rows` - une référence vers les lignes résultat maintenues côté base de données - ainsi qu'une erreur :
 
 ```go
 rows, err := db.DB.Query(query)
@@ -581,7 +581,7 @@ func createEvent(context *gin.Context) {
 
 On lance le serveur : `go run .`, puis on envoie une requête `POST /events` via le fichier `create-event.http`. Les données sont maintenant **persistées** dans `api.db`.
 
-On peut couper le serveur (`Ctrl+C`), le relancer, puis envoyer une requête `GET /events` via `get-events.http` : les événements créés précédemment sont bien renvoyés — ils survivent au redémarrage du serveur, ce qui confirme que la persistance fonctionne.
+On peut couper le serveur (`Ctrl+C`), le relancer, puis envoyer une requête `GET /events` via `get-events.http` : les événements créés précédemment sont bien renvoyés - ils survivent au redémarrage du serveur, ce qui confirme que la persistance fonctionne.
 
 ### Récapitulatif : `Prepare()`, `Exec()` et `Query()`
 
@@ -609,7 +609,7 @@ Utiliser `Query()` pour un `INSERT` ou `Exec()` pour un `SELECT` fonctionnerait 
 
 #### `Prepare()` : quand est-ce réellement utile ?
 
-`Prepare()` est **toujours optionnel**. On peut toujours appeler directement `db.DB.Exec(query, args...)` ou `db.DB.Query(query, args...)` avec les valeurs en paramètres — la protection contre les injections SQL fonctionne de la même façon dans les deux cas, car `database/sql` utilise des paramètres liés dans tous les cas.
+`Prepare()` est **toujours optionnel**. On peut toujours appeler directement `db.DB.Exec(query, args...)` ou `db.DB.Query(query, args...)` avec les valeurs en paramètres - la protection contre les injections SQL fonctionne de la même façon dans les deux cas, car `database/sql` utilise des paramètres liés dans tous les cas.
 
 L'avantage de `Prepare()` est la **performance** : le moteur SQL compile et optimise la requête une seule fois lors de l'appel à `Prepare()`. Les appels suivants à `stmt.Exec()` ou `stmt.Query()` réutilisent cette version compilée, sans retraitement.
 
@@ -640,14 +640,218 @@ defer stmt.Close()          // ← fermé à la fin de Save()
 result, err := stmt.Exec(...) // ← exécuté une seule fois
 ```
 
-`stmt.Close()` est exécuté à la fin de `Save()` — c'est-à-dire après un seul `stmt.Exec()`. Le statement est donc préparé, utilisé une fois, puis détruit. Il n'y a **aucun gain de performance** par rapport à un simple `db.DB.Exec(query, args...)`.
+`stmt.Close()` est exécuté à la fin de `Save()` - c'est-à-dire après un seul `stmt.Exec()`. Le statement est donc préparé, utilisé une fois, puis détruit. Il n'y a **aucun gain de performance** par rapport à un simple `db.DB.Exec(query, args...)`.
 
 On a utilisé `Prepare()` ici pour deux raisons :
-1. **Montrer le mécanisme** — comprendre la séparation entre la préparation et l'exécution est utile pour les cas où elle compte vraiment.
-2. **Cohérence pédagogique** — introduire `*sql.Stmt` et ses méthodes (`Exec`, `Close`) comme des concepts distincts.
+1. **Montrer le mécanisme** - comprendre la séparation entre la préparation et l'exécution est utile pour les cas où elle compte vraiment.
+2. **Cohérence pédagogique** - introduire `*sql.Stmt` et ses méthodes (`Exec`, `Close`) comme des concepts distincts.
 
 En production, pour une insertion unique comme `Save()`, écrire directement `db.DB.Exec(query, args...)` serait tout aussi correct et légèrement plus concis.
 
-### Récupérer un événement avec son ID
+### Récupérer un événement par son ID : `GetEventByID()` avec SELECT WHERE
 
+L'API doit pouvoir retourner un seul événement identifié par son `id`. Cela nécessite trois choses : une nouvelle route dans `main.go`, une nouvelle fonction dans `models/event.go`, et l'import du package `strconv`.
 
+#### Ajouter la route et le handler dans `main.go`
+
+Gin permet de déclarer des **segments dynamiques** dans un chemin de route avec la syntaxe `/:nomDuParametre`. Ce paramètre capture la valeur correspondante dans l'URL et la rend accessible dans le handler.
+
+On enregistre la nouvelle route dans `main()` :
+
+```go
+server.GET("/events/:eventId", getEvent)
+```
+
+La partie `:eventId` définit un paramètre nommé `eventId`. Gin associera automatiquement la valeur de ce segment à ce nom dans le handler. Par exemple, une requête `GET /events/3` donnera `eventId = "3"`.
+
+Le handler `getEvent` doit ensuite :
+1. Lire la valeur du paramètre via `context.Param("eventId")` - qui retourne toujours une `string`
+2. La convertir en `int64` via `strconv.ParseInt()`
+3. Interroger la base de données
+4. Retourner l'événement ou une erreur
+
+`strconv.ParseInt()` prend trois arguments :
+- la chaîne à convertir
+- la **base** de numération (10 = système décimal)
+- la **taille en bits** du type cible (64 pour `int64`)
+
+Elle retourne la valeur convertie et une erreur. Si la chaîne n'est pas un nombre valide (ex. `"abc"`), l'erreur est non-nulle et on répond `400 Bad Request` :
+
+```go
+func getEvent(context *gin.Context) {
+    eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id."})
+        return
+    }
+}
+```
+
+Il faut également ajouter `"strconv"` aux imports de `main.go` :
+
+```go
+import (
+    "net/http"
+    "strconv"
+
+    "github.com/gin-gonic/gin"
+    "github.com/romainw/event-booking-api/db"
+    "github.com/romainw/event-booking-api/models"
+)
+```
+
+#### Ajouter `GetEventByID()` dans `models/event.go`
+
+On ajoute une nouvelle **fonction** (pas une méthode - pas de receveur) dans `models/event.go`. Elle prend un `id int64` et retourne `(*Event, error)`.
+
+**Pourquoi retourner `*Event` et non `Event` ?**
+
+En cas d'erreur (aucun événement trouvé, problème de lecture...), on veut pouvoir retourner `nil` pour signaler l'absence de valeur. Or un struct `Event` ne peut pas être `nil` - sa valeur zéro est `Event{}` (struct vide), qui est une valeur valide.
+
+Un **pointeur** `*Event`, en revanche, a bien `nil` comme valeur zéro : il ne pointe vers rien. C'est donc le type adapté pour exprimer "soit un événement, soit rien".
+
+```go
+// impossible de retourner nil avec ce type
+func GetEventByID(id int64) (Event, error) { ... }
+
+// nil est une valeur valide pour un pointeur
+func GetEventByID(id int64) (*Event, error) { ... }
+```
+
+#### `db.DB.QueryRow()` : lire une seule ligne
+
+On utilise `QueryRow()` plutôt que `Query()`. La différence est essentielle :
+
+| Méthode | Retour | Usage |
+|---|---|---|
+| `Query()` | `*sql.Rows` (curseur multi-lignes) | `SELECT` pouvant retourner plusieurs lignes |
+| `QueryRow()` | `*sql.Row` (une seule ligne) | `SELECT` avec un résultat attendu unique |
+
+`QueryRow()` ne retourne **jamais d'erreur directement** - contrairement à `Query()`. L'erreur éventuelle est conservée dans l'objet `*sql.Row` et n'est surfacée que lors de l'appel à `Scan()`. Si aucune ligne ne correspond à la requête, `Scan()` retourne l'erreur sentinelle `sql.ErrNoRows`.
+
+```go
+query := "SELECT * FROM events WHERE id = ?"
+row := db.DB.QueryRow(query, id)
+```
+
+Le second argument `id` remplace le `?` de la requête - même mécanisme de paramètres liés que pour `Exec()`.
+
+Il n'y a **pas de `defer row.Close()`** ici : `*sql.Row` (au singulier) est automatiquement fermé après l'appel à `Scan()`.
+
+#### `row.Scan()` : lire les données de la ligne
+
+On lit la ligne avec `Scan()`, exactement comme dans `GetAllEvents()`, mais sans boucle :
+
+```go
+var event Event
+err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+if err != nil {
+    return nil, err
+}
+return &event, nil
+```
+
+En cas d'erreur (incluant `sql.ErrNoRows` si l'`id` n'existe pas en base), on retourne `nil, err`. En cas de succès, on retourne `&event` - l'adresse de la variable locale `event` - ce qui en fait un pointeur `*Event`.
+
+> **Note :** retourner `nil, err` sans distinguer `sql.ErrNoRows` des autres erreurs donne un statut `500` même quand l'événement n'existe simplement pas. En production on distinguerait les deux cas pour retourner un `404 Not Found` approprié. Pour ce cours, on simplifie en traitant toutes les erreurs de la même façon.
+
+#### La fonction `GetEventByID()` complète
+
+```go
+func GetEventByID(id int64) (*Event, error) {
+    query := "SELECT * FROM events WHERE id = ?"
+    row := db.DB.QueryRow(query, id)
+
+    var event Event
+    err := row.Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.DateTime, &event.UserID)
+    if err != nil {
+        return nil, err
+    }
+    return &event, nil
+}
+```
+
+#### Finaliser le handler `getEvent()`
+
+On complète le handler en appelant `GetEventByID()` avec l'`id` récupéré depuis la route :
+
+```go
+func getEvent(context *gin.Context) {
+    eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id."})
+        return
+    }
+
+    event, err := models.GetEventByID(eventId)
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch event."})
+        return
+    }
+    context.JSON(http.StatusOK, event)
+}
+```
+
+`event` est ici de type `*Event`. Gin sérialise un pointeur vers un struct comme un **objet JSON** `{...}` - et non comme un tableau `[...]`.
+
+#### Tester la nouvelle route
+
+On crée un fichier `get-single-event.http`. On récupère d'abord un `id` valide via `get-events.http` :
+
+```
+GET http://localhost:8080/events
+```
+
+Réponse :
+```json
+[
+  {
+    "id": 1,
+    "name": "Test event",
+    "description": "A test event",
+    "location": "A test location",
+    "dateTime": "2026-07-20T18:00:00Z",
+    "userId": 1
+  }
+]
+```
+
+L'événement en base a l'`id` `1`. On teste la nouvelle route :
+
+```
+GET http://localhost:8080/events/1
+```
+
+Réponse - un **objet** JSON (et non un tableau, contrairement à `GET /events`) :
+```json
+{
+  "id": 1,
+  "name": "Test event",
+  "description": "A test event",
+  "location": "A test location",
+  "dateTime": "2026-07-20T18:00:00Z",
+  "userId": 1
+}
+```
+
+**Cas d'erreur 1 - paramètre non numérique** : `GET http://localhost:8080/events/abc`
+
+`strconv.ParseInt` échoue, le handler retourne immédiatement :
+```json
+HTTP/1.1 400 Bad Request
+
+{
+  "message": "Could not parse event id."
+}
+```
+
+**Cas d'erreur 2 - ID inexistant en base** : `GET http://localhost:8080/events/99`
+
+`QueryRow()` ne trouve aucune ligne, `Scan()` retourne `sql.ErrNoRows` :
+```json
+HTTP/1.1 500 Internal Server Error
+
+{
+  "message": "Could not fetch event."
+}
+```
