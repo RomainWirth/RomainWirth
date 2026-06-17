@@ -1,290 +1,4 @@
-# Ajouter une base de données SQL
-
-L'objectif de cette section est d'ajouter une base de données locale avec SQLite, qui ne sera en fin de compte qu'un simple fichier ajouté au projet.
-L'avantage est de ne pas avoir à installer d'outils supplémentaires pour disposer d'une base de données.
-
-## Initialiser une base de données SQL
-
-### Ajouter le package sql
-
-La librairie standard de Go contient un package [`database/sql`](https://pkg.go.dev/database/sql).
-Ce package fournit une interface générique pour interagir avec des bases de données SQL. Il est conçu pour fonctionner avec n'importe quel moteur de base de données, à condition d'utiliser conjointement un [driver adapté](https://go.dev/wiki/SQLDrivers).
-
-Pour notre projet, nous allons utiliser le driver [go-sqlite3](https://github.com/mattn/go-sqlite3), qui prend en charge SQLite.
-
-> **Note :** go-sqlite3 est un package **CGo** - il intègre du code C compilé (la bibliothèque SQLite elle-même). Cela signifie qu'il nécessite un compilateur C sur la machine (`gcc` sous Linux/macOS, `mingw` sous Windows). La première compilation sera **notablement plus lente** que pour un projet Go pur, le temps que CGo compile la bibliothèque C intégrée.
-
-Pour ajouter le driver au projet :
-```bash
-go get github.com/mattn/go-sqlite3
-```
-Sortie terminal :
-```bash
-romainw@fedora:~/Public/perso/go/event-booking-api$ go get github.com/mattn/go-sqlite3
-go: downloading github.com/mattn/go-sqlite3 v1.14.45
-go: added github.com/mattn/go-sqlite3 v1.14.45
-```
-
-### Mise en place
-
-On va ajouter un dossier `db/` à la racine du projet, qui contiendra un fichier `db.go`. C'est dans ce fichier que sera centralisé tout le code d'initialisation et de configuration de la base de données.
-
-```
-event-booking-api/
-├── db/
-│   └── db.go       ← nouveau fichier
-├── models/
-│   └── event.go
-├── go.mod
-├── go.sum
-└── main.go
-```
-
-#### Import des packages et import "side-effect"
-
-Le fichier `db.go` commence par déclarer son appartenance au package `db`, puis importer les deux packages nécessaires.
-
-```go
-package db
-
-import (
-    "database/sql"
-    _ "github.com/mattn/go-sqlite3"
-)
-```
-
-Le package `database/sql` est le package standard de Go avec lequel on interagira directement : il expose le type `*sql.DB`, les méthodes de requêtage, etc.
-
-Le package `github.com/mattn/go-sqlite3` ne sera jamais appelé directement dans le code. Son rôle est de s'**enregistrer comme driver SQLite** auprès du package `database/sql` via sa fonction `init()`, qui s'exécute automatiquement au démarrage du programme. C'est suffisant pour que `sql.Open("sqlite3", ...)` fonctionne.
-
-En Go, importer un package sans l'utiliser provoque une **erreur de compilation**. Pour signaler explicitement qu'un import est intentionnel et uniquement pour ses effets de bord (`init()`), on le préfixe d'un **underscore** `_`. Cette convention s'appelle un **blank import** (ou **import side-effect**).
-
-#### Créer la variable globale et la fonction d'initialisation
-
-On déclare une variable globale `DB` de type `*sql.DB`. Déclarée au niveau du package, elle sera accessible depuis toute autre partie de l'application qui importera le package `db`, ce qui permettra à n'importe quel handler ou modèle d'interagir avec la base de données.
-
-```go
-var DB *sql.DB
-```
-
-Puis on crée la fonction `InitDB()` (majuscule = exportée, donc accessible depuis `main`), responsable d'ouvrir la base de données et de configurer le pool de connexions.
-
-On utilise `sql.Open()`, qui prend deux paramètres :
-- le **nom du driver** : `"sqlite3"` - doit correspondre exactement au nom utilisé lors de l'enregistrement dans `init()` du driver
-- la **source de données** (DSN) : pour SQLite, c'est simplement le chemin vers le fichier `.db`. Si le fichier n'existe pas encore, il sera créé automatiquement.
-
-```go
-func InitDB() {
-    var err error
-    DB, err = sql.Open("sqlite3", "api.db")
-}
-```
-
-> **Important :** `sql.Open()` ne crée **pas** de connexion vers la base de données. Elle valide les arguments et initialise l'objet pool `*sql.DB`. Les connexions réelles sont établies **de façon paresseuse** (lazy), à la première requête SQL. On utilise `=` (et non `:=`) car `DB` est déjà déclarée en variable globale - `:=` créerait une variable locale qui masquerait la globale.
-
-#### Gestion de l'erreur
-
-Si `sql.Open()` retourne une erreur (driver inconnu, arguments invalides...), on appelle `panic()` pour interrompre immédiatement l'exécution. Il n'a aucun sens de démarrer l'application si la base de données est inaccessible.
-
-```go
-if err != nil {
-    panic("Could not connect to database.")
-}
-```
-
-> **À noter :** `panic()` est appelé ici **lors du démarrage de l'application**, avant que le serveur Gin ne soit lancé. Le middleware `Recovery` de `gin.Default()` intercepte les panics **pendant le traitement des requêtes HTTP** (dans les handlers), pas pendant l'initialisation. Un `panic()` à ce stade provoquera bien un **crash complet du programme** - ce qui est le comportement voulu : mieux vaut échouer fort et tôt que démarrer silencieusement dans un état cassé.
-
-#### Configurer le pool de connexions
-
-Une fois la base de données ouverte, on configure le **pool de connexions** géré automatiquement par `database/sql`. Le pool évite de créer et détruire une connexion à chaque requête SQL, ce qui serait coûteux.
-
-```go
-DB.SetMaxOpenConns(10)
-DB.SetMaxIdleConns(5)
-```
-
-| Méthode | Rôle |
-|---|---|
-| `SetMaxOpenConns(10)` | Limite à 10 le nombre de connexions **ouvertes simultanément** vers la BDD. Au-delà, les goroutines en attente d'une connexion seront mises en file jusqu'à ce qu'une se libère. |
-| `SetMaxIdleConns(5)` | Autorise le pool à conserver jusqu'à 5 connexions **inactives** (non utilisées) plutôt que de les fermer immédiatement après usage. Elles sont disponibles pour la prochaine requête sans le coût d'ouverture d'une nouvelle connexion. |
-
-Ces valeurs ne forcent pas l'ouverture de connexions à l'avance : le pool crée des connexions à la demande et en recycle jusqu'à 5 en veille.
-
-État du fichier `db.go` à ce stade :
-
-```go
-package db
-
-import (
-    "database/sql"
-    _ "github.com/mattn/go-sqlite3"
-)
-
-var DB *sql.DB
-
-func InitDB() {
-    var err error
-    DB, err = sql.Open("sqlite3", "api.db")
-
-    if err != nil {
-        panic("Could not connect to database.")
-    }
-
-    DB.SetMaxOpenConns(10)
-    DB.SetMaxIdleConns(5)
-}
-```
-
-### Créer les tables dans la base de données
-
-#### Rappel : les tables SQL
-
-Une **table** est la structure de base d'une base de données relationnelle. On peut la concevoir comme un tableau :
-- chaque **colonne** (champ) représente un attribut d'une entité (`name`, `location`...)
-- chaque **ligne** (enregistrement) représente une instance de cette entité - un événement, un utilisateur...
-
-Chaque colonne est déclarée avec un **type SQL** (`TEXT`, `INTEGER`, `DATETIME`...) et des **contraintes** (`NOT NULL`, `PRIMARY KEY`, `AUTOINCREMENT`...).
-
-La table `events` est le reflet SQL du struct `Event` défini dans `models/event.go` :
-
-| Champ Go (`Event`) | Colonne SQL | Type SQL | Contraintes |
-|---|---|---|---|
-| `ID int` | `id` | `INTEGER` | `PRIMARY KEY AUTOINCREMENT` |
-| `Name string` | `name` | `TEXT` | `NOT NULL` |
-| `Description string` | `description` | `TEXT` | `NOT NULL` |
-| `Location string` | `location` | `TEXT` | `NOT NULL` |
-| `DateTime time.Time` | `dateTime` | `DATETIME` | `NOT NULL` |
-| `UserID int` | `user_id` | `INTEGER` | - |
-
-`PRIMARY KEY` identifie chaque ligne de façon unique. `AUTOINCREMENT` délègue à SQLite la génération automatique de cet identifiant à chaque insertion - c'est pour cette raison que `UserID` n'a pas de contrainte `NOT NULL` : il sera renseigné plus tard, lorsqu'on ajoutera l'authentification.
-
-#### La fonction `createTables()`
-
-On ajoute une fonction **non-exportée** `createTables()` (minuscule = privée au package `db`), appelée automatiquement par `InitDB()`. Elle n'a aucune raison d'être exposée à l'extérieur du package.
-
-Les chaînes de caractères multi-lignes s'écrivent en Go avec des **backticks** `` ` `` (raw string literals), exactement comme les template literals en JavaScript.
-
-La requête utilise `CREATE TABLE IF NOT EXISTS` : si la table existe déjà (lors d'un redémarrage du serveur par exemple), elle n'est pas recréée et aucune erreur n'est levée.
-
-```go
-func createTables() {
-    createEventsTable := `
-    CREATE TABLE IF NOT EXISTS events (
-        id          INTEGER  PRIMARY KEY AUTOINCREMENT,
-        name        TEXT     NOT NULL,
-        description TEXT     NOT NULL,
-        location    TEXT     NOT NULL,
-        dateTime    DATETIME NOT NULL,
-        user_id     INTEGER
-    )
-    `
-
-    _, err := DB.Exec(createEventsTable)
-
-    if err != nil {
-        panic("Could not create events table.")
-    }
-}
-```
-
-`DB.Exec()` exécute une requête SQL qui ne retourne pas de lignes (INSERT, UPDATE, DELETE, CREATE...). Elle retourne un `sql.Result` et une erreur. Le résultat (`sql.Result`) ne nous intéresse pas ici - on l'ignore avec `_` - et on gère uniquement l'erreur avec un `panic()` si la création de table échoue.
-
-#### Appeler `createTables()` depuis `InitDB()`
-
-`createTables()` est appelée en fin d'initialisation, après la configuration du pool :
-
-```go
-func InitDB() {
-    var err error
-    DB, err = sql.Open("sqlite3", "api.db")
-
-    if err != nil {
-        panic("Could not connect to database.")
-    }
-
-    DB.SetMaxOpenConns(10)
-    DB.SetMaxIdleConns(5)
-
-    createTables()
-}
-```
-
-### Appeler `InitDB()` depuis `main`
-
-La dernière étape consiste à appeler `db.InitDB()` au démarrage de l'application, **avant** de lancer le serveur Gin, pour s'assurer que la base de données est prête avant de traiter la première requête :
-
-```go
-package main
-
-import (
-    "net/http"
-
-    "github.com/gin-gonic/gin"
-    "github.com/romainw/event-booking-api/db"
-    "github.com/romainw/event-booking-api/models"
-)
-
-func main() {
-    db.InitDB()
-    server := gin.Default()
-
-    server.GET("/events", getEvents)
-    server.POST("/events", createEvent)
-
-    server.Run(":8080")
-}
-```
-
-On démarre ensuite le serveur avec `go run .`. La première compilation sera plus lente que d'habitude en raison de la compilation CGo du package go-sqlite3 :
-
-```bash
-romainw@fedora:~/Public/perso/go/event-booking-api$ go run .
-[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
-
-[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
- - using env:   export GIN_MODE=release
- - using code:  gin.SetMode(gin.ReleaseMode)
-
-[GIN-debug] GET    /events                   --> main.getEvents (3 handlers)
-[GIN-debug] POST   /events                   --> main.createEvent (3 handlers)
-[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
-Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
-[GIN-debug] Listening and serving HTTP on :8080
-```
-
-On peut aussi remarquer la création d'un nouveau fichier `api.db` à la racine du projet. Ce fichier **est** la base de données SQLite : il contient la définition des tables créées et, plus tard, toutes les données persistées. On interagit avec lui exclusivement via le package `database/sql` et des requêtes SQL.
-
----
-
-### Récapitulatif : initialisation de la base de données
-
-Voici ce qui a été mis en place dans cette section :
-
-| Étape | Fichier | Ce qui a été fait |
-|---|---|---|
-| Ajout du driver | `go.mod` / `go.sum` | `go get github.com/mattn/go-sqlite3` ajoute le driver CGo SQLite |
-| Package `db` | `db/db.go` | Nouveau package dédié à la base de données |
-| Blank import `_` | `db/db.go` | Enregistre le driver SQLite auprès de `database/sql` via son `init()` |
-| Variable globale `DB` | `db/db.go` | `*sql.DB` accessible depuis toute l'application |
-| `InitDB()` | `db/db.go` | Ouvre la BDD (lazy), configure le pool, crée les tables |
-| Pool de connexions | `db/db.go` | Max 10 connexions ouvertes, 5 connexions inactives en veille |
-| `createTables()` | `db/db.go` | Crée la table `events` si elle n'existe pas (`IF NOT EXISTS`) |
-| Appel au démarrage | `main.go` | `db.InitDB()` appelé avant `server.Run()` |
-| Fichier BDD | `api.db` | Créé automatiquement par SQLite à la première ouverture |
-
-Le flux d'exécution au démarrage est le suivant :
-
-```
-main() → db.InitDB() → sql.Open() → SetMaxOpenConns/SetMaxIdleConns → createTables() → DB.Exec(CREATE TABLE IF NOT EXISTS)
-                    ↓
-             gin.Default() → server.Run(":8080")
-```
-
-À ce stade, la base de données est opérationnelle et les tables sont créées. L'étape suivante est d'y **lire et écrire des données** depuis les handlers et les modèles.
-
----
-
-## Interagir avec la Base de données
+# Interagir avec la Base de données
 
 Maintenant que la base de données est initialisée et les tables créées, on va connecter la couche **modèles** (`models/`) à la couche **base de données** (`db/`).
 
@@ -298,9 +12,9 @@ Concrètement, cela signifie mettre à jour les méthodes du struct `Event` pour
 
 On commence par l'écriture.
 
-### Stocker des données : `Save()` avec INSERT
+## Stocker des données : `Save()` avec INSERT
 
-#### Contexte : passage au receveur par pointeur
+### Contexte : passage au receveur par pointeur
 
 La méthode `Save()` existe déjà dans `models/event.go`. Pour l'instant, elle ajoute simplement l'événement dans une slice en mémoire, sans persistance. On va la réécrire entièrement pour qu'elle insère une ligne dans la table `events`.
 
@@ -334,7 +48,7 @@ type Event struct {
 }
 ```
 
-#### La requête SQL : INSERT avec des paramètres liés
+### La requête SQL : INSERT avec des paramètres liés
 
 On déclare la requête SQL sous forme de chaîne de caractères multi-lignes (backtick) :
 
@@ -351,7 +65,7 @@ Les `?` sont des **paramètres liés** (placeholders). Ils ne sont pas remplacé
 > Un attaquant pourrait passer comme valeur : `'); DROP TABLE events; --`, ce qui exécuterait `DROP TABLE events` sur la base.
 > Avec les paramètres liés `?`, la valeur passée est **toujours traitée comme une donnée**, jamais comme du SQL. Le driver l'échappe ou l'envoie dans un canal séparé selon le protocole. L'attaque devient impossible.
 
-#### `db.DB.Prepare()` : préparer le statement
+### `db.DB.Prepare()` : préparer le statement
 
 On prépare le statement via la variable globale `db.DB` (le pool de connexions) :
 
@@ -371,7 +85,7 @@ Le `defer stmt.Close()` est placé **juste après la vérification d'erreur**. L
 
 > **`Prepare()` vs `Exec()` direct** : `db.DB.Exec(query, args...)` prépare et exécute en une seule opération - c'est pratique pour les requêtes exécutées une seule fois. `Prepare()` est préférable quand on veut **exécuter le même statement plusieurs fois** (dans une boucle, par exemple) car la phase de compilation n'est faite qu'une seule fois. Ici, pour une insertion unique, les deux fonctionneraient ; on utilise `Prepare()` pour illustrer le mécanisme et par souci de cohérence avec le reste du cours.
 
-#### `stmt.Exec()` : exécuter avec les valeurs
+### `stmt.Exec()` : exécuter avec les valeurs
 
 ```go
 result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
@@ -382,7 +96,7 @@ if err != nil {
 
 `stmt.Exec()` remplace les `?` par les valeurs passées **dans l'ordre**. Il exécute la requête et retourne un `sql.Result` et une erreur. En cas d'erreur (contrainte NOT NULL violée, type incompatible...), on la retourne.
 
-#### `result.LastInsertId()` : récupérer l'ID généré
+### `result.LastInsertId()` : récupérer l'ID généré
 
 ```go
 id, err := result.LastInsertId()
@@ -405,7 +119,7 @@ return nil
 
 Si `LastInsertId()` réussit, `err` vaut `nil` et `return err` retourne `nil` - ce qui signifie "succès". La fonction `Save()` ne retourne pas l'`id` : il est directement accessible via `event.ID` après l'appel, puisqu'on a utilisé un receveur par pointeur.
 
-#### La fonction `Save()` complète
+### La fonction `Save()` complète
 
 ```go
 func (e *Event) Save() error {
@@ -431,11 +145,11 @@ func (e *Event) Save() error {
 }
 ```
 
-### Récupérer tous les événements : `GetAllEvents()` avec SELECT
+## Récupérer tous les événements : `GetAllEvents()` avec SELECT
 
 La méthode `GetAllEvents()` existe déjà dans `models/event.go`. Pour l'instant, elle retourne simplement la slice en mémoire. On va la réécrire pour qu'elle lise toutes les lignes de la table `events` depuis la base de données.
 
-#### Mettre à jour la signature
+### Mettre à jour la signature
 
 `GetAllEvents()` doit maintenant pouvoir signaler un échec. On met à jour sa signature pour qu'elle retourne également une `error` :
 
@@ -449,7 +163,7 @@ func GetAllEvents() ([]Event, error) { ... }
 
 Les **retours nommés multiples** se déclarent entre parenthèses. En cas de succès on retournera `events, nil` (pas d'erreur), en cas d'échec `nil, err` (pas de données).
 
-#### La requête SQL : SELECT
+### La requête SQL : SELECT
 
 La requête est simple - on veut toutes les colonnes de tous les événements :
 
@@ -459,7 +173,7 @@ query := "SELECT * FROM events"
 
 `SELECT *` sélectionne toutes les colonnes dans l'ordre où elles ont été définies lors du `CREATE TABLE` : `id`, `name`, `description`, `location`, `dateTime`, `user_id`. Cet ordre est important pour `Scan()` plus loin.
 
-#### `db.DB.Query()` vs `db.DB.Exec()`
+### `db.DB.Query()` vs `db.DB.Exec()`
 
 On utilise `db.DB.Query()` et non `db.DB.Exec()`. La distinction est fondamentale :
 
@@ -480,7 +194,7 @@ defer rows.Close()
 
 Le `defer rows.Close()` est ici aussi essentiel : `*sql.Rows` maintient une connexion ouverte du pool tant qu'il n'est pas fermé. Sans `Close()`, cette connexion ne serait jamais rendue au pool, ce qui finirait par l'épuiser. On le place juste après la vérification d'erreur pour garantir qu'il sera toujours exécuté.
 
-#### Parcourir les lignes avec `rows.Next()` et `rows.Scan()`
+### Parcourir les lignes avec `rows.Next()` et `rows.Scan()`
 
 `Query()` ne retourne pas directement une slice : il retourne un curseur qu'on parcourt ligne par ligne.
 
@@ -505,7 +219,7 @@ C'est le même principe que `fmt.Scan()` : on passe des pointeurs pour que la fo
 
 On déclare la variable `event` **à l'intérieur** de la boucle : une nouvelle instance est ainsi créée à chaque itération, ce qui évite que les données d'une ligne ne contaminent la suivante.
 
-#### La fonction `GetAllEvents()` complète
+### La fonction `GetAllEvents()` complète
 
 ```go
 func GetAllEvents() ([]Event, error) {
@@ -531,11 +245,11 @@ func GetAllEvents() ([]Event, error) {
 }
 ```
 
-### Mettre à jour `main.go`
+## Mettre à jour `main.go`
 
 Les deux handlers touchés par ces changements doivent être mis à jour pour gérer les erreurs renvoyées par les méthodes du modèle.
 
-#### Mise à jour du handler `getEvents()`
+### Mise à jour du handler `getEvents()`
 
 `GetAllEvents()` retourne maintenant deux valeurs. Le handler doit capturer les deux et répondre avec une erreur `500` si la lecture échoue :
 
@@ -552,7 +266,7 @@ func getEvents(context *gin.Context) {
 
 Si `GetAllEvents()` réussit, `err` vaut `nil`, la condition est ignorée, et on retourne la slice `events` directement sérialisée en JSON par Gin avec un statut `200 OK`.
 
-#### Mise à jour du handler `createEvent()`
+### Mise à jour du handler `createEvent()`
 
 `Save()` retourne maintenant une `error`. Le handler doit la capturer et répondre avec une erreur `500` si l'insertion échoue :
 
@@ -577,7 +291,7 @@ func createEvent(context *gin.Context) {
 
 `event.Save()` est appelé avec `=` (et non `:=`) car la variable `err` est déjà déclarée par le premier `ShouldBindJSON`. Go réutilise la même variable. Après l'appel, `event.ID` contient l'identifiant généré par SQLite (grâce au receveur pointeur de `Save()`), et on l'inclut dans la réponse JSON via `"event": event`.
 
-#### Vérifier en local
+### Vérifier en local
 
 On lance le serveur : `go run .`, puis on envoie une requête `POST /events` via le fichier `create-event.http`. Les données sont maintenant **persistées** dans `api.db`.
 
@@ -593,7 +307,7 @@ Dans les sections précédentes, on a interagi avec la base de données de trois
 | `db.DB.Prepare(query)` + `stmt.Exec(...)` | `Save()` dans `models/event.go` | `INSERT` |
 | `db.DB.Query(query)` | `GetAllEvents()` dans `models/event.go` | `SELECT` |
 
-#### La règle de base : `Exec()` vs `Query()`
+### La règle de base : `Exec()` vs `Query()`
 
 La distinction fondamentale, indépendamment de `Prepare()`, est la suivante :
 
@@ -607,7 +321,7 @@ La distinction fondamentale, indépendamment de `Prepare()`, est la suivante :
 
 Utiliser `Query()` pour un `INSERT` ou `Exec()` pour un `SELECT` fonctionnerait techniquement dans certains cas, mais c'est une mauvaise pratique : les types de retour ne correspondent pas à l'usage attendu et le code devient trompeur.
 
-#### `Prepare()` : quand est-ce réellement utile ?
+### `Prepare()` : quand est-ce réellement utile ?
 
 `Prepare()` est **toujours optionnel**. On peut toujours appeler directement `db.DB.Exec(query, args...)` ou `db.DB.Query(query, args...)` avec les valeurs en paramètres - la protection contre les injections SQL fonctionne de la même façon dans les deux cas, car `database/sql` utilise des paramètres liés dans tous les cas.
 
@@ -628,7 +342,7 @@ for _, name := range eventNames {
 }
 ```
 
-#### Le cas de notre `Save()` : pas de gain réel
+### Le cas de notre `Save()` : pas de gain réel
 
 Dans notre implémentation de `Save()`, on fait :
 
@@ -648,11 +362,11 @@ On a utilisé `Prepare()` ici pour deux raisons :
 
 En production, pour une insertion unique comme `Save()`, écrire directement `db.DB.Exec(query, args...)` serait tout aussi correct et légèrement plus concis.
 
-### Récupérer un événement par son ID : `GetEventByID()` avec SELECT WHERE
+## Récupérer un événement par son ID : `GetEventByID()` avec SELECT WHERE
 
 L'API doit pouvoir retourner un seul événement identifié par son `id`. Cela nécessite trois choses : une nouvelle route dans `main.go`, une nouvelle fonction dans `models/event.go`, et l'import du package `strconv`.
 
-#### Ajouter la route et le handler dans `main.go`
+### Ajouter la route et le handler dans `main.go`
 
 Gin permet de déclarer des **segments dynamiques** dans un chemin de route avec la syntaxe `/:nomDuParametre`. Ce paramètre capture la valeur correspondante dans l'URL et la rend accessible dans le handler.
 
@@ -700,7 +414,7 @@ import (
 )
 ```
 
-#### Ajouter `GetEventByID()` dans `models/event.go`
+### Ajouter `GetEventByID()` dans `models/event.go`
 
 On ajoute une nouvelle **fonction** (pas une méthode - pas de receveur) dans `models/event.go`. Elle prend un `id int64` et retourne `(*Event, error)`.
 
@@ -718,7 +432,7 @@ func GetEventByID(id int64) (Event, error) { ... }
 func GetEventByID(id int64) (*Event, error) { ... }
 ```
 
-#### `db.DB.QueryRow()` : lire une seule ligne
+### `db.DB.QueryRow()` : lire une seule ligne
 
 On utilise `QueryRow()` plutôt que `Query()`. La différence est essentielle :
 
@@ -738,7 +452,7 @@ Le second argument `id` remplace le `?` de la requête - même mécanisme de par
 
 Il n'y a **pas de `defer row.Close()`** ici : `*sql.Row` (au singulier) est automatiquement fermé après l'appel à `Scan()`.
 
-#### `row.Scan()` : lire les données de la ligne
+### `row.Scan()` : lire les données de la ligne
 
 On lit la ligne avec `Scan()`, exactement comme dans `GetAllEvents()`, mais sans boucle :
 
@@ -755,7 +469,7 @@ En cas d'erreur (incluant `sql.ErrNoRows` si l'`id` n'existe pas en base), on re
 
 > **Note :** retourner `nil, err` sans distinguer `sql.ErrNoRows` des autres erreurs donne un statut `500` même quand l'événement n'existe simplement pas. En production on distinguerait les deux cas pour retourner un `404 Not Found` approprié. Pour ce cours, on simplifie en traitant toutes les erreurs de la même façon.
 
-#### La fonction `GetEventByID()` complète
+### La fonction `GetEventByID()` complète
 
 ```go
 func GetEventByID(id int64) (*Event, error) {
@@ -771,7 +485,7 @@ func GetEventByID(id int64) (*Event, error) {
 }
 ```
 
-#### Finaliser le handler `getEvent()`
+### Finaliser le handler `getEvent()`
 
 On complète le handler en appelant `GetEventByID()` avec l'`id` récupéré depuis la route :
 
@@ -794,7 +508,7 @@ func getEvent(context *gin.Context) {
 
 `event` est ici de type `*Event`. Gin sérialise un pointeur vers un struct comme un **objet JSON** `{...}` - et non comme un tableau `[...]`.
 
-#### Tester la nouvelle route
+### Tester la nouvelle route
 
 On crée un fichier `get-single-event.http`. On récupère d'abord un `id` valide via `get-events.http` :
 
@@ -855,3 +569,33 @@ HTTP/1.1 500 Internal Server Error
   "message": "Could not fetch event."
 }
 ```
+
+---
+
+## Récapitulatif : interactions avec la base de données
+
+Voici ce qui a été mis en place dans cette section :
+
+| Opération | Méthode Go | Fichier | Méthode SQL utilisée |
+|---|---|---|---|
+| Créer un événement | `Save()` sur `*Event` | `models/event.go` | `Prepare()` + `stmt.Exec()` |
+| Lire tous les événements | `GetAllEvents()` | `models/event.go` | `db.DB.Query()` + `rows.Scan()` |
+| Lire un événement par ID | `GetEventByID(id)` | `models/event.go` | `db.DB.QueryRow()` + `row.Scan()` |
+| Handler POST /events | `createEvent()` | `main.go` | appelle `event.Save()` |
+| Handler GET /events | `getEvents()` | `main.go` | appelle `models.GetAllEvents()` |
+| Handler GET /events/:id | `getEvent()` | `main.go` | appelle `models.GetEventByID(id)` |
+
+**Concepts clés abordés :**
+
+| Concept | Où il intervient |
+|---|---|
+| Receveur par pointeur `(e *Event)` | `Save()` - pour que `e.ID = id` soit visible après l'appel |
+| Paramètres liés `?` | Toutes les requêtes - protection contre l'injection SQL |
+| `defer rows.Close()` / `stmt.Close()` | Libère les ressources du pool de connexions |
+| `Exec()` vs `Query()` vs `QueryRow()` | Écriture / lecture multi-lignes / lecture une ligne |
+| Retour `*Event` vs `Event` | `GetEventByID()` - `nil` n'est possible que pour un pointeur |
+| `strconv.ParseInt()` | Handler `getEvent()` - convertit le paramètre URL `string` en `int64` |
+
+L'état de `models/event.go` à la fin de cette section reflète un struct `Event` avec des champs `int64`, trois opérations SQL fonctionnelles, et aucune donnée en mémoire - tout passe par la base de données.
+
+La prochaine section ajoute les opérations manquantes du CRUD : **UPDATE** et **DELETE**, ainsi qu'un refactoring de la structure des routes dans `main.go`.
