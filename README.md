@@ -3,7 +3,7 @@
 
 <p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=romainwirth" alt="romainwirth" /></a> </p>
 
-- 🔭 I’m currently working on [gloobles](gloobles.com)
+- 🔭 I’m currently a freelancer, I used to work on [gloobles](gloobles.com)
 
 - 🌱 I’m currently learning **Golang**
 
