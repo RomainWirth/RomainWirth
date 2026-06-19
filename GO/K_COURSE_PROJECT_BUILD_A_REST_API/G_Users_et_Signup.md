@@ -6,8 +6,8 @@ On va donc devoir ajouter des routes pour implémenter ces features :
 
 | Méthode | Route | Action |
 |---|---|---|
-| `POST` | `/users/signup` | Créer un nouveau compte utilisateur |
-| `POST` | `/users/login` | Authentifier un utilisateur et recevoir un token |
+| `POST` | `/signup` | Créer un nouveau compte utilisateur |
+| `POST` | `/login` | Authentifier un utilisateur et recevoir un token |
 | `POST` | `/events/:id/register` | Inscrire l'utilisateur connecté à un événement |
 | `DELETE` | `/events/:id/register` | Annuler l'inscription de l'utilisateur connecté à un événement |
 
@@ -223,12 +223,12 @@ Dans le package `routes`, on crée un nouveau fichier `users.go` dédié aux han
 Avant d'écrire le handler, il faut enregistrer la route dans la fonction qui configure le routeur (ex. `RegisterRoutes`) :
 
 ```go
-router.POST("/users/signup", signup)
+router.POST("/signup", signup)
 ```
 
 #### La fonction `signup()`
 
-`signup` est un handler Gin standard : elle reçoit `*gin.Context` et ne retourne rien. Gin l'appelle automatiquement lors d'un `POST /users/signup`.
+`signup` est un handler Gin standard : elle reçoit `*gin.Context` et ne retourne rien. Gin l'appelle automatiquement lors d'un `POST /signup`.
 
 **Étape 1 - Désérialiser le body JSON**
 
@@ -265,7 +265,7 @@ context.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 
 `201 Created` est le code HTTP sémantiquement correct pour une création de ressource. On ne renvoie **pas** l'objet `user` dans la réponse : il contient le mot de passe (même haché), qu'il vaut mieux ne pas exposer inutilement.
 
-#### Code complet de `routes/users.go`
+#### Code complet de `routes.go`
 
 ```go
 package routes
@@ -300,7 +300,7 @@ func signup(context *gin.Context) {
 On ajoute un fichier `create-user.http` dans le dossier `api-test`. L'extension **REST Client** de VS Code permet d'envoyer la requête directement depuis l'éditeur en cliquant sur *Send Request*.
 
 ```http
-POST http://localhost:8080/users/signup
+POST http://localhost:8080/signup
 Content-Type: application/json
 
 {
@@ -411,7 +411,7 @@ On ne modifie **pas** `u.Password` : le struct en mémoire conserve le mot de pa
 On relance le serveur (après avoir supprimé `api.db` si nécessaire) et on envoie une requête de signup :
 
 ```http
-POST http://localhost:8080/users/signup
+POST http://localhost:8080/signup
 Content-Type: application/json
 
 {
@@ -453,8 +453,8 @@ Ce module a posé les bases de la gestion des utilisateurs dans l'API.
 - Struct avec tags `binding:"required"` sur `Email` et `Password` pour la validation automatique par Gin.
 - Méthode `Save()` sur receveur **pointeur** `*User` pour que l'assignation de `u.ID` soit visible par l'appelant.
 
-**Route `POST /users/signup`**
-- Handler `signup()` dans `routes/users.go` : désérialisation du body avec `ShouldBindJSON`, appel de `Save()`, réponse `201 Created`.
+**Route `POST /signup`**
+- Handler `signup()` dans `routes.go` : désérialisation du body avec `ShouldBindJSON`, appel de `Save()`, réponse `201 Created`.
 - La réponse ne retourne pas l'objet `user` pour ne pas exposer le mot de passe.
 
 **Sécurité - hashage bcrypt**
