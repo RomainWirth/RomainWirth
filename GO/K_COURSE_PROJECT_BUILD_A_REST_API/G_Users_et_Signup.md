@@ -294,3 +294,36 @@ func signup(context *gin.Context) {
     context.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 ```
+
+#### Tester la nouvelle route
+
+On ajoute un fichier `create-user.http` dans le dossier `api-test`. L'extension **REST Client** de VS Code permet d'envoyer la requête directement depuis l'éditeur en cliquant sur *Send Request*.
+
+```http
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "testpassword"
+}
+```
+
+Réponse attendue :
+
+```
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "message": "User created successfully"
+}
+```
+
+Points à vérifier :
+- Le statut est bien `201 Created`, pas `200 OK`.
+- Le body ne contient **pas** le champ `user` — le mot de passe ne doit pas transiter en clair dans la réponse.
+- Renvoyer la même requête une seconde fois doit retourner `500 Internal Server Error` : la contrainte `UNIQUE` sur `email` dans SQLite bloque l'insertion d'un doublon.
+
+#### Ne pas stocker de mot de passe en `Plain Text` en base de données
+
