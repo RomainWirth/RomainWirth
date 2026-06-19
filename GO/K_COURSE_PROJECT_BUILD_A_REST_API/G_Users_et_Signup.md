@@ -136,3 +136,82 @@ type User struct {
 Les tags `binding:"required"` permettent à `ShouldBindJSON()` de retourner une erreur si ces champs sont absents du body JSON de la requête - exactement comme pour le struct `Event`.
 
 ### Ajouter la méthode `Save()`
+
+À la suite du struct, on ajoute une méthode `Save()` pour persister un utilisateur en base de données. Elle suit le même pattern que `Event.Save()`.
+
+#### Receveur pointeur : `*User`
+
+Le receveur doit être un **pointeur** `*User`, pas une valeur `User` :
+
+```go
+func (u *User) Save() error { ... }
+```
+
+Avec un receveur valeur (`u User`), Go travaille sur une **copie** du struct. L'assignation `u.ID = userId` modifierait la copie locale, et l'appelant ne verrait jamais l'ID mis à jour. Avec `*User`, on modifie directement le struct original - l'appelant récupère bien l'ID généré par la base de données.
+
+#### La query
+
+```go
+query := `INSERT INTO users (email, password) VALUES (?, ?)`
+```
+
+On n'insère pas `id` : SQLite le génère automatiquement via `AUTOINCREMENT`.
+
+#### Préparer et exécuter la requête
+
+```go
+stmt, err := db.DB.Prepare(query)
+if err != nil {
+    return err
+}
+defer stmt.Close()
+
+result, err := stmt.Exec(u.Email, u.Password)
+if err != nil {
+    return err
+}
+```
+
+`Prepare()` compile la requête SQL à l'avance. `defer stmt.Close()` garantit que le statement est libéré quoi qu'il arrive.
+
+#### Récupérer l'ID généré
+
+```go
+userId, err := result.LastInsertId()
+if err != nil {
+    return err
+}
+u.ID = userId
+return nil
+```
+
+`LastInsertId()` retourne `(int64, error)` - il faut gérer l'erreur **avant** d'assigner `u.ID`. On retourne `nil` explicitement pour indiquer que tout s'est bien passé.
+
+#### Code complet
+
+```go
+func (u *User) Save() error {
+	query := `INSERT INTO users (email, password) VALUES (?, ?)`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(u.Email, u.Password)
+	if err != nil {
+		return err
+	}
+
+	userId, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	u.ID = userId
+	return nil
+}
+```
+
+
