@@ -230,7 +230,7 @@ router.POST("/users/signup", signup)
 
 `signup` est un handler Gin standard : elle reçoit `*gin.Context` et ne retourne rien. Gin l'appelle automatiquement lors d'un `POST /users/signup`.
 
-**Étape 1 — Désérialiser le body JSON**
+**Étape 1 - Désérialiser le body JSON**
 
 ```go
 var user models.User
@@ -241,11 +241,11 @@ if err != nil {
 }
 ```
 
-`ShouldBindJSON` lit le body de la requête et tente de le mapper sur `user`. Grâce aux tags `binding:"required"` du struct `User`, il retourne une erreur si `email` ou `password` est absent. On répond `400 Bad Request` et on sort avec `return` — sans `return`, l'exécution continuerait malgré l'erreur.
+`ShouldBindJSON` lit le body de la requête et tente de le mapper sur `user`. Grâce aux tags `binding:"required"` du struct `User`, il retourne une erreur si `email` ou `password` est absent. On répond `400 Bad Request` et on sort avec `return` - sans `return`, l'exécution continuerait malgré l'erreur.
 
 On passe `&user` (pointeur) et non `user` (valeur) : `ShouldBindJSON` a besoin de l'adresse mémoire pour modifier le struct.
 
-**Étape 2 — Sauvegarder l'utilisateur**
+**Étape 2 - Sauvegarder l'utilisateur**
 
 ```go
 err = user.Save()
@@ -257,7 +257,7 @@ if err != nil {
 
 On réutilise la variable `err` (déjà déclarée, donc `=` sans `:`). Si la base de données retourne une erreur (ex. email déjà utilisé - contrainte `UNIQUE`), on répond `500 Internal Server Error`. On pourrait affiner avec `409 Conflict` pour un doublon, mais `500` est suffisant pour l'instant.
 
-**Étape 3 — Répondre au client**
+**Étape 3 - Répondre au client**
 
 ```go
 context.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
@@ -322,20 +322,20 @@ Content-Type: application/json; charset=utf-8
 
 Points à vérifier :
 - Le statut est bien `201 Created`, pas `200 OK`.
-- Le body ne contient **pas** le champ `user` — le mot de passe ne doit pas transiter dans la réponse.
+- Le body ne contient **pas** le champ `user` - le mot de passe ne doit pas transiter dans la réponse.
 - Renvoyer la même requête une seconde fois doit retourner `500 Internal Server Error` : la contrainte `UNIQUE` sur `email` dans SQLite bloque l'insertion d'un doublon.
 
 ### Ne pas stocker les mots de passe en clair
 
-Notre méthode `Save()` pose un problème de sécurité critique : le mot de passe est stocké en **plain text** dans la base de données. Si un attaquant accède à `api.db`, il obtient directement les mots de passe de tous les utilisateurs — et comme beaucoup de personnes réutilisent leurs mots de passe, cela compromet aussi leurs autres comptes.
+Notre méthode `Save()` pose un problème de sécurité critique : le mot de passe est stocké en **plain text** dans la base de données. Si un attaquant accède à `api.db`, il obtient directement les mots de passe de tous les utilisateurs - et comme beaucoup de personnes réutilisent leurs mots de passe, cela compromet aussi leurs autres comptes.
 
 La solution est de **hasher** le mot de passe avant de le stocker. Un hash est une transformation à sens unique : on peut vérifier qu'un mot de passe correspond à un hash, mais on ne peut pas retrouver le mot de passe original à partir du hash.
 
 #### Pourquoi bcrypt et pas SHA-256 ou MD5 ?
 
-MD5 et SHA-256 sont des fonctions de hachage cryptographiques **rapides** — c'est une qualité pour vérifier l'intégrité de fichiers, mais un défaut pour les mots de passe. Un attaquant peut tester des milliards de combinaisons par seconde avec du matériel moderne (attaque par dictionnaire ou force brute).
+MD5 et SHA-256 sont des fonctions de hachage cryptographiques **rapides** - c'est une qualité pour vérifier l'intégrité de fichiers, mais un défaut pour les mots de passe. Un attaquant peut tester des milliards de combinaisons par seconde avec du matériel moderne (attaque par dictionnaire ou force brute).
 
-**bcrypt** est conçu spécifiquement pour les mots de passe : il est intentionnellement **lent**, grâce à un paramètre de coût (cost) qui contrôle le nombre d'itérations. Plus le coût est élevé, plus le hashage prend du temps — ce qui ralentit drastiquement les attaques par force brute tout en restant imperceptible pour un utilisateur légitime.
+**bcrypt** est conçu spécifiquement pour les mots de passe : il est intentionnellement **lent**, grâce à un paramètre de coût (cost) qui contrôle le nombre d'itérations. Plus le coût est élevé, plus le hashage prend du temps - ce qui ralentit drastiquement les attaques par force brute tout en restant imperceptible pour un utilisateur légitime.
 
 bcrypt intègre aussi automatiquement un **salt** : une valeur aléatoire ajoutée avant le hashage pour que deux mots de passe identiques produisent des hashs différents. Cela neutralise les attaques par rainbow table (tables de correspondance pré-calculées).
 
@@ -367,7 +367,7 @@ func HashPassword(password string) (string, error) {
 Points à noter :
 
 - `[]byte(password)` : `GenerateFromPassword` attend un `[]byte`, pas une `string`. La conversion est explicite en Go.
-- `bcrypt.DefaultCost` : constante définie à `10` dans le package. Elle représente $2^{10} = 1024$ itérations — suffisant pour résister aux attaques actuelles tout en restant rapide (~100ms). On peut utiliser un coût plus élevé (12, 14) pour plus de sécurité au prix de performances réduites.
+- `bcrypt.DefaultCost` : constante définie à `10` dans le package. Elle représente $2^{10} = 1024$ itérations - suffisant pour résister aux attaques actuelles tout en restant rapide (~100ms). On peut utiliser un coût plus élevé (12, 14) pour plus de sécurité au prix de performances réduites.
 - La fonction retourne `(string, error)` : `GenerateFromPassword` peut échouer (ex. coût invalide), il faut donc propager l'erreur.
 
 #### Mettre à jour `Save()` dans `models/user.go`
@@ -437,3 +437,28 @@ $2a$10$i9.FMJdVM4AU1Q06CNB9puMVT2qvwK1zV2jisIUz6NQv5nQ8x3VRe
 ```
 
 Le préfixe `$2a$10$` indique : algorithme bcrypt version 2a, coût 10. Le mot de passe original est irrécupérable depuis cette valeur.
+
+---
+
+## Résumé
+
+Ce module a posé les bases de la gestion des utilisateurs dans l'API.
+
+**Base de données**
+- Ajout de la table `users` (`id`, `email UNIQUE`, `password`) créée avant `events` pour respecter la contrainte de clé étrangère.
+- Ajout de `FOREIGN KEY(user_id) REFERENCES users(id)` dans la table `events` pour formaliser l'appartenance d'un événement à un utilisateur.
+- Suppression de `api.db` nécessaire à chaque modification de schéma (`CREATE TABLE IF NOT EXISTS` ne modifie jamais une table existante).
+
+**Modèle `User`**
+- Struct avec tags `binding:"required"` sur `Email` et `Password` pour la validation automatique par Gin.
+- Méthode `Save()` sur receveur **pointeur** `*User` pour que l'assignation de `u.ID` soit visible par l'appelant.
+
+**Route `POST /users/signup`**
+- Handler `signup()` dans `routes/users.go` : désérialisation du body avec `ShouldBindJSON`, appel de `Save()`, réponse `201 Created`.
+- La réponse ne retourne pas l'objet `user` pour ne pas exposer le mot de passe.
+
+**Sécurité - hashage bcrypt**
+- Les mots de passe ne sont jamais stockés en clair.
+- bcrypt est préféré à MD5/SHA car il est intentionnellement lent (résistance à la force brute) et intègre un salt automatique (résistance aux rainbow tables).
+- Fonction utilitaire `utils.HashPassword()` encapsulant `bcrypt.GenerateFromPassword` avec `bcrypt.DefaultCost` (coût 10).
+- `Save()` hache le mot de passe avant `stmt.Exec` ; `u.Password` n'est pas modifié en mémoire.
