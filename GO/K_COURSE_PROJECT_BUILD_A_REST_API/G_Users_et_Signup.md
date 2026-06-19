@@ -322,8 +322,118 @@ Content-Type: application/json; charset=utf-8
 
 Points à vérifier :
 - Le statut est bien `201 Created`, pas `200 OK`.
-- Le body ne contient **pas** le champ `user` — le mot de passe ne doit pas transiter en clair dans la réponse.
+- Le body ne contient **pas** le champ `user` — le mot de passe ne doit pas transiter dans la réponse.
 - Renvoyer la même requête une seconde fois doit retourner `500 Internal Server Error` : la contrainte `UNIQUE` sur `email` dans SQLite bloque l'insertion d'un doublon.
 
-#### Ne pas stocker de mot de passe en `Plain Text` en base de données
+### Ne pas stocker les mots de passe en clair
 
+Notre méthode `Save()` pose un problème de sécurité critique : le mot de passe est stocké en **plain text** dans la base de données. Si un attaquant accède à `api.db`, il obtient directement les mots de passe de tous les utilisateurs — et comme beaucoup de personnes réutilisent leurs mots de passe, cela compromet aussi leurs autres comptes.
+
+La solution est de **hasher** le mot de passe avant de le stocker. Un hash est une transformation à sens unique : on peut vérifier qu'un mot de passe correspond à un hash, mais on ne peut pas retrouver le mot de passe original à partir du hash.
+
+#### Pourquoi bcrypt et pas SHA-256 ou MD5 ?
+
+MD5 et SHA-256 sont des fonctions de hachage cryptographiques **rapides** — c'est une qualité pour vérifier l'intégrité de fichiers, mais un défaut pour les mots de passe. Un attaquant peut tester des milliards de combinaisons par seconde avec du matériel moderne (attaque par dictionnaire ou force brute).
+
+**bcrypt** est conçu spécifiquement pour les mots de passe : il est intentionnellement **lent**, grâce à un paramètre de coût (cost) qui contrôle le nombre d'itérations. Plus le coût est élevé, plus le hashage prend du temps — ce qui ralentit drastiquement les attaques par force brute tout en restant imperceptible pour un utilisateur légitime.
+
+bcrypt intègre aussi automatiquement un **salt** : une valeur aléatoire ajoutée avant le hashage pour que deux mots de passe identiques produisent des hashs différents. Cela neutralise les attaques par rainbow table (tables de correspondance pré-calculées).
+
+#### Installer le package `bcrypt`
+
+Le package [`golang.org/x/crypto/bcrypt`](https://pkg.go.dev/golang.org/x/crypto/bcrypt) est développé par l'équipe Go mais ne fait pas partie de la librairie standard. On l'installe avec :
+
+```bash
+go get -u golang.org/x/crypto
+```
+
+#### Créer `utils/hash.go`
+
+On crée un package `utils` à la racine du projet avec un fichier `hash.go` dédié au hashage.
+
+La fonction `HashPassword` prend un mot de passe en clair et retourne sa version hashée :
+
+```go
+package utils
+
+import "golang.org/x/crypto/bcrypt"
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+```
+
+Points à noter :
+
+- `[]byte(password)` : `GenerateFromPassword` attend un `[]byte`, pas une `string`. La conversion est explicite en Go.
+- `bcrypt.DefaultCost` : constante définie à `10` dans le package. Elle représente $2^{10} = 1024$ itérations — suffisant pour résister aux attaques actuelles tout en restant rapide (~100ms). On peut utiliser un coût plus élevé (12, 14) pour plus de sécurité au prix de performances réduites.
+- La fonction retourne `(string, error)` : `GenerateFromPassword` peut échouer (ex. coût invalide), il faut donc propager l'erreur.
+
+#### Mettre à jour `Save()` dans `models/user.go`
+
+On appelle `HashPassword` avant d'exécuter la requête, et on passe le hash à `stmt.Exec` à la place du mot de passe en clair :
+
+```go
+func (u *User) Save() error {
+	  query := `INSERT INTO users (email, password) VALUES (?, ?)`
+
+	  stmt, err := db.DB.Prepare(query)
+	  if err != nil {
+	  	return err
+	  }
+	  defer stmt.Close()
+
+	  hashedPassword, err := utils.HashPassword(u.Password)
+	  if err != nil {
+	  	return err
+	  }
+
+	  result, err := stmt.Exec(u.Email, hashedPassword)
+	  if err != nil {
+	  	return err
+	  }
+
+	  userId, err := result.LastInsertId()
+	  if err != nil {
+	  	return err
+	  }
+
+	  u.ID = userId
+	  return nil
+}
+```
+
+On ne modifie **pas** `u.Password` : le struct en mémoire conserve le mot de passe original, seul le hash est persisté en base.
+
+#### Vérifier le résultat
+
+On relance le serveur (après avoir supprimé `api.db` si nécessaire) et on envoie une requête de signup :
+
+```http
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "testpassword2"
+}
+```
+
+Réponse :
+```
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "message": "User created successfully"
+}
+```
+
+En inspectant directement la base de données (ex. avec `sqlite3 api.db "SELECT * FROM users;"`), on constate que le mot de passe stocké est un hash bcrypt :
+
+```
+$2a$10$i9.FMJdVM4AU1Q06CNB9puMVT2qvwK1zV2jisIUz6NQv5nQ8x3VRe
+```
+
+Le préfixe `$2a$10$` indique : algorithme bcrypt version 2a, coût 10. Le mot de passe original est irrécupérable depuis cette valeur.
