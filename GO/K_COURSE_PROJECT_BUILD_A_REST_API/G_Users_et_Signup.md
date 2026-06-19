@@ -214,4 +214,83 @@ func (u *User) Save() error {
 }
 ```
 
+### Ajouter des routes handlers
 
+Dans le package `routes`, on crée un nouveau fichier `users.go` dédié aux handlers liés aux utilisateurs. Le séparer de `events.go` garde le code organisé par domaine.
+
+#### Enregistrer la route dans `routes.go`
+
+Avant d'écrire le handler, il faut enregistrer la route dans la fonction qui configure le routeur (ex. `RegisterRoutes`) :
+
+```go
+router.POST("/users/signup", signup)
+```
+
+#### La fonction `signup()`
+
+`signup` est un handler Gin standard : elle reçoit `*gin.Context` et ne retourne rien. Gin l'appelle automatiquement lors d'un `POST /users/signup`.
+
+**Étape 1 — Désérialiser le body JSON**
+
+```go
+var user models.User
+err := context.ShouldBindJSON(&user)
+if err != nil {
+    context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
+    return
+}
+```
+
+`ShouldBindJSON` lit le body de la requête et tente de le mapper sur `user`. Grâce aux tags `binding:"required"` du struct `User`, il retourne une erreur si `email` ou `password` est absent. On répond `400 Bad Request` et on sort avec `return` — sans `return`, l'exécution continuerait malgré l'erreur.
+
+On passe `&user` (pointeur) et non `user` (valeur) : `ShouldBindJSON` a besoin de l'adresse mémoire pour modifier le struct.
+
+**Étape 2 — Sauvegarder l'utilisateur**
+
+```go
+err = user.Save()
+if err != nil {
+    context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create user. Try again later."})
+    return
+}
+```
+
+On réutilise la variable `err` (déjà déclarée, donc `=` sans `:`). Si la base de données retourne une erreur (ex. email déjà utilisé - contrainte `UNIQUE`), on répond `500 Internal Server Error`. On pourrait affiner avec `409 Conflict` pour un doublon, mais `500` est suffisant pour l'instant.
+
+**Étape 3 — Répondre au client**
+
+```go
+context.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+```
+
+`201 Created` est le code HTTP sémantiquement correct pour une création de ressource. On ne renvoie **pas** l'objet `user` dans la réponse : il contient le mot de passe (même haché), qu'il vaut mieux ne pas exposer inutilement.
+
+#### Code complet de `routes/users.go`
+
+```go
+package routes
+
+import (
+    "net/http"
+
+    "github.com/<username>/<project>/models"
+    "github.com/gin-gonic/gin"
+)
+
+func signup(context *gin.Context) {
+    var user models.User
+    err := context.ShouldBindJSON(&user)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
+        return
+    }
+
+    err = user.Save()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create user. Try again later."})
+        return
+    }
+
+    context.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+}
+```
