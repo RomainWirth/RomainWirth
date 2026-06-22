@@ -226,3 +226,172 @@ Content-Type: application/json; charset=utf-8
   "message": "Could not authenticate user."
 }
 ```
+
+Maintenant que nous sommes en mesure de valider les informations d'un utilisateur, il est temps de s'assurer que nous pouvons générer un token et le renvoyer au client qui s'est connecté afin qu'il puisse utiliser ce token pour les requêtes qui sont envoyées aux routes protégées et prouver qu'il s'est authentifié avec succès.
+
+## Générer un JWT
+
+Pour générer le token, on utilise le package [golang-jwt/jwt](https://github.com/golang-jwt/jwt) :
+
+```bash
+go get -u github.com/golang-jwt/jwt/v5
+```
+
+On crée un nouveau fichier `utils/jwt.go` qui contiendra toute la logique de génération et de vérification des tokens.
+
+### Les deux concepts clés : méthode de signature et claims
+
+Avant d'écrire le code, il faut comprendre les deux paramètres que prend `jwt.NewWithClaims()`.
+
+**La méthode de signature — `jwt.SigningMethodHS256`**
+
+La signature d'un JWT garantit qu'il n'a pas été falsifié. Pour la produire, il faut choisir un algorithme et une clé secrète.
+
+`HS256` signifie **HMAC-SHA256** : c'est un algorithme de signature **symétrique** — la même clé secrète est utilisée pour signer le token lors de sa création, et pour vérifier la signature quand le client renvoie le token. Si quelqu'un modifie le payload du token sans connaître la clé, la signature ne correspondra plus et le serveur rejettera le token.
+
+On définit donc une constante `secretKey` connue uniquement du serveur :
+
+```go
+const secretKey = "supersecret"
+```
+
+> En production, cette clé ne doit pas être dans le code source — elle doit venir d'une variable d'environnement. Pour le cours, une constante suffit. Elle doit être longue et difficile à deviner : si un attaquant la connaît, il peut forger des tokens valides.
+
+**Les claims — `jwt.MapClaims`**
+
+Les "claims" sont les données embarquées dans le payload du JWT. Le mot vient du fait qu'on "affirme" (claims) des choses sur l'utilisateur : "j'affirme que cet utilisateur a l'ID 42 et que ce token expire à telle heure."
+
+`jwt.MapClaims` est simplement une `map[string]any` — un dictionnaire dont les clés sont des strings et les valeurs peuvent être n'importe quel type. C'est la façon la plus directe de définir des claims sans créer un struct dédié.
+
+On y inclut :
+- `"email"` et `"userId"` : des données sur l'utilisateur (custom claims)
+- `"exp"` : la date d'expiration du token, en timestamp Unix. C'est une claim **standard** reconnue par le package jwt — il vérifiera automatiquement que le token n'est pas expiré. On le règle à maintenant + 2 heures.
+
+> Le payload d'un JWT est encodé en Base64, **pas chiffré**. N'importe qui peut le décoder. Ne jamais y inclure de mot de passe ou de données sensibles.
+
+### La fonction `GenerateToken()`
+
+```go
+package utils
+
+import (
+    "time"
+
+    "github.com/golang-jwt/jwt/v5"
+)
+
+const secretKey = "supersecret"
+
+func GenerateToken(email string, userId int64) (string, error) {
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+        "email":  email,
+        "userId": userId,
+        "exp":    time.Now().Add(time.Hour * 2).Unix(),
+    })
+
+    return token.SignedString([]byte(secretKey))
+}
+```
+
+Points à noter :
+
+- `jwt.NewWithClaims()` retourne un `*jwt.Token` — un objet token non encore signé.
+- `token.SignedString([]byte(secretKey))` finalise le token : il assemble header + payload, calcule la signature HMAC-SHA256, et retourne la chaîne JWT finale sous la forme `header.payload.signature`. L'argument doit être `[]byte` — pour HS256, passer une `string` compile mais provoque une erreur à l'exécution. La conversion `[]byte(secretKey)` est donc obligatoire.
+- `SignedString` retourne `(string, error)` — on propage directement le retour avec `return token.SignedString(...)`.
+
+### Appeler `GenerateToken()` dans le handler `login()`
+
+Maintenant que `GenerateToken` existe, on met à jour le handler `login()` pour générer le token après validation des credentials et le retourner au client :
+
+```go
+func login(context *gin.Context) {
+    var user models.User
+
+    err := context.ShouldBindJSON(&user)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+        return
+    }
+
+    err = user.ValidateCredentials()
+    if err != nil {
+        context.JSON(http.StatusUnauthorized, gin.H{"message": "Could not authenticate user."})
+        return
+    }
+
+    token, err := utils.GenerateToken(user.Email, user.ID)
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not authenticate user."})
+        return
+    }
+
+    context.JSON(http.StatusOK, gin.H{"message": "Login successful!", "token": token})
+}
+```
+
+> **Pourquoi `user.ID` est disponible ici ?** La méthode `ValidateCredentials()` doit avoir récupéré l'ID depuis la base de données et l'avoir assigné à `u.ID`. C'est une modification à apporter à `ValidateCredentials()` : en plus du `password`, la query doit aussi sélectionner `id`, et le scan doit l'assigner sur le receveur. Pour que cette modification soit visible par l'appelant, `ValidateCredentials()` doit utiliser un **receveur pointeur** `*User`.
+
+Dans ValidateCredentials, deux modifications sont nécessaires :
+
+**1. Passer au receveur pointeur `*User`**
+
+La query sélectionne maintenant aussi `id`, et `Scan` doit l'assigner dans `u.ID`. Avec un receveur valeur `(u User)`, Go travaille sur une **copie** du struct — `Scan(&u.ID)` écrit dans la copie locale, et l'appelant (le handler `login()`) ne verra jamais l'ID mis à jour. Avec `(u *User)`, on modifie directement le struct original.
+
+C'est le même raisonnement que pour `Save()` : dès qu'une méthode a besoin d'écrire dans le struct et que l'appelant doit voir le résultat, le receveur doit être un pointeur.
+
+**2. Sélectionner `id` en plus de `password`**
+
+- Query : `"SELECT id, password FROM users WHERE email = ?"` 
+- Scan : `row.Scan(&u.ID, &retrievedPassword)` — l'ordre des arguments doit correspondre exactement à l'ordre des colonnes dans `SELECT`
+
+```go
+func (u *User) ValidateCredentials() error {
+    query := "SELECT id, password FROM users WHERE email = ?"
+    row := db.DB.QueryRow(query, u.Email)
+
+    var retrievedPassword string
+    err := row.Scan(&u.ID, &retrievedPassword)
+    if err != nil {
+        return errors.New("Invalid credentials")
+    }
+
+    passwordIsValid := utils.CheckPasswordHash(u.Password, retrievedPassword)
+    if !passwordIsValid {
+        return errors.New("Invalid credentials")
+    }
+
+    return nil
+}
+```
+
+Après l'appel à `user.ValidateCredentials()` dans le handler `login()`, `user.ID` contient maintenant l'ID récupéré en base — `utils.GenerateToken(user.Email, user.ID)` peut donc l'embarquer dans le token.
+```
+
+### Tester la génération du token
+
+On relance le serveur et on envoie une requête de login avec des credentials valides :
+
+```http
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "testpassword"
+}
+```
+
+Réponse attendue :
+
+```json
+HTTP/1.1 200 OK
+
+{
+  "message": "Login successful!",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3MjA0NzIwMDAsInVzZXJJZCI6MX0.xxxx"
+}
+```
+
+Le token est une chaîne en trois parties séparées par des points. On peut le coller sur [jwt.io](https://jwt.io) pour décoder le payload et voir les claims en clair — ce qui confirme que le payload n'est pas chiffré.
+
+## Finaliser la logique JWT
