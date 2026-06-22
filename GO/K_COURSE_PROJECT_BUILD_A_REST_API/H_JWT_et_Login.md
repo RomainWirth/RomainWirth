@@ -364,8 +364,7 @@ func (u *User) ValidateCredentials() error {
 }
 ```
 
-Après l'appel à `user.ValidateCredentials()` dans le handler `login()`, `user.ID` contient maintenant l'ID récupéré en base - `utils.GenerateToken(user.Email, user.ID)` peut donc l'embarquer dans le token.
-```
+Après l'appel à `user.ValidateCredentials()` dans le handler `login()`, `user.ID` contient maintenant l'ID récupéré en base — `utils.GenerateToken(user.Email, user.ID)` peut donc l'embarquer dans le token.
 
 ### Tester la génération du token
 
@@ -395,3 +394,174 @@ HTTP/1.1 200 OK
 Le token est une chaîne en trois parties séparées par des points. On peut le coller sur [jwt.io](https://jwt.io) pour décoder le payload et voir les claims en clair - ce qui confirme que le payload n'est pas chiffré.
 
 ## Finaliser la logique JWT
+
+Maintenant qu'on sait générer des tokens, on va les utiliser pour protéger certaines routes : elles ne doivent répondre avec succès qu'aux requêtes qui portent un token valide.
+
+Les **3 routes à protéger** dans `routes/routes.go` :
+- `server.POST("/events", createEvent)` — créer un événement
+- `server.PUT("/events/:eventId", updateEvent)` — modifier un événement
+- `server.DELETE("/events/:eventId", deleteEvent)` — supprimer un événement
+
+### La fonction `VerifyToken()` dans `utils/jwt.go`
+
+On ajoute `VerifyToken()` dans `utils/jwt.go`. Son rôle : analyser un token reçu, vérifier sa signature et sa validité, et retourner une erreur si quelque chose ne va pas.
+
+Elle utilise `jwt.Parse()` qui prend deux arguments :
+1. Le token à analyser (string)
+2. Une **fonction de clé** (*Keyfunc*) — son rôle est de retourner la clé secrète à utiliser pour vérifier la signature
+
+#### La fonction de clé et la vérification de méthode
+
+La fonction de clé reçoit le token en cours d'analyse (avant vérification). Avant de retourner la clé, on vérifie que la méthode de signature utilisée est bien celle qu'on attend — pour se prémunir contre une attaque qui enverrait un token signé avec un algorithme différent (ex. l'algorithme `none` qui ne signe rien).
+
+```go
+func(token *jwt.Token) (interface{}, error) {
+    _, ok := token.Method.(*jwt.SigningMethodHMAC)
+    if !ok {
+        return nil, errors.New("Unexpected signing method")
+    }
+    return []byte(secretKey), nil
+}
+```
+
+`token.Method.(*jwt.SigningMethodHMAC)` est une **assertion de type** Go — elle teste si la valeur stockée dans `token.Method` est du type `*jwt.SigningMethodHMAC`. Elle retourne deux valeurs : la valeur castée et un boolean `ok`. On n'utilise que le boolean (d'où le `_`). Si la méthode est inattendue, `ok` est `false` et on retourne une erreur.
+
+La fonction retourne `[]byte(secretKey)` — pas `secretKey` directement. C'est la même contrainte que pour `SignedString` : HS256 attend `[]byte`. Retourner une `string` compile mais provoque une erreur à l'exécution.
+
+#### Code complet de `VerifyToken()`
+
+```go
+func VerifyToken(token string) error {
+    parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+        _, ok := token.Method.(*jwt.SigningMethodHMAC)
+        if !ok {
+            return nil, errors.New("Unexpected signing method")
+        }
+        return []byte(secretKey), nil
+    })
+
+    if err != nil {
+        return errors.New("Could not parse token.")
+    }
+
+    if !parsedToken.Valid {
+        return errors.New("Invalid token")
+    }
+
+    return nil
+}
+```
+
+> **`parsedToken.Valid`** — dans jwt/v5, si `jwt.Parse` ne retourne pas d'erreur, le token est garanti valide (signature correcte, non expiré). La vérification de `parsedToken.Valid` est donc redondante mais sert de filet de sécurité explicite.
+
+#### La claims extraction (commentée pour l'instant)
+
+Une fois le token validé, on pourrait extraire les données embarquées pour identifier l'utilisateur. Cette logique sera utilisée dans le middleware de la section suivante :
+
+```go
+// claims, ok := parsedToken.Claims.(jwt.MapClaims)
+// if !ok {
+//     return errors.New("Invalid token claims")
+// }
+// email := claims["email"].(string)
+// userId := int64(claims["userId"].(float64))
+```
+
+> **Piège important — `float64`, pas `int64`** : `claims["userId"].(int64)` **provoquerait un panic**. Quand un JWT est décodé depuis JSON, les nombres deviennent `float64` dans une `map[string]any` — c'est le comportement de `encoding/json` en Go. Le `userId` stocké comme `int64` dans `GenerateToken` est réencodé en JSON comme un nombre flottant lors du décodage. La conversion correcte est `int64(claims["userId"].(float64))`. Les strings, elles, restent bien `string` : `claims["email"].(string)` est correct.
+
+### Utiliser `VerifyToken()` dans le handler `createEvent()`
+
+Pour l'instant, on ajoute la vérification directement dans le handler — cette approche sera remplacée par un middleware réutilisable dans la section suivante, pour ne pas répéter ce code dans chaque handler protégé.
+
+On récupère le token depuis le header `Authorization` et on le valide avant d'exécuter quoi que ce soit d'autre :
+
+```go
+func createEvent(context *gin.Context) {
+    token := context.Request.Header.Get("Authorization")
+    if token == "" {
+        context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
+        return
+    }
+
+    err := utils.VerifyToken(token)
+    if err != nil {
+        context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
+        return
+    }
+
+    var event models.Event
+    err = context.ShouldBindJSON(&event)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+        return
+    }
+
+    event.UserID = 1
+    err = event.Save()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event. Try again later."})
+        return
+    }
+
+    context.JSON(http.StatusCreated, gin.H{"message": "Event created successfully!", "event": event})
+}
+```
+
+> **Note sur le header `Authorization`** : par convention REST, ce header contient `Bearer <token>`. Dans ce cours, on passe directement la valeur du token sans le préfixe `Bearer ` pour simplifier les tests. Dans une vraie API, il faudrait extraire le token avec `strings.TrimPrefix(token, "Bearer ")`.
+
+---
+
+## Récapitulatif : JWT & Login
+
+**Le flux complet d'authentification :**
+
+```
+POST /login
+    ↓ ShouldBindJSON        → user.Email + user.Password
+    ↓ ValidateCredentials() → SELECT id, password WHERE email = ?
+    ↓ CheckPasswordHash()   → bcrypt.CompareHashAndPassword
+    ↓ GenerateToken()       → jwt.NewWithClaims + SignedString([]byte(secretKey))
+    → { "token": "eyJ..." }
+
+POST /events (protégé)
+    ↓ Header Authorization  → token string
+    ↓ VerifyToken()         → jwt.Parse + vérification SigningMethodHMAC + Valid
+    → 401 si token absent ou invalide
+    → suite du handler si token valide
+```
+
+**Concepts clés abordés :**
+
+| Concept | Détail |
+|---|---|
+| JWT stateless | Toutes les infos sont dans le token — pas de session côté serveur |
+| Payload non chiffré | Base64URL lisible — ne jamais y stocker de données sensibles |
+| HS256 symétrique | Même `secretKey` pour signer et vérifier — doit rester secrète |
+| `SignedString([]byte(...))` | HS256 attend `[]byte`, pas `string` — compile mais crashe à l'exécution sinon |
+| `return []byte(secretKey), nil` | Même contrainte dans la Keyfunc de `jwt.Parse` |
+| Assertion de type `x.(T)` | Teste et caste le type dynamique d'une valeur `any` — retourne `(valeur, bool)` |
+| `int64(claims["userId"].(float64))` | Les nombres JSON sont `float64` après décodage — assertion directe en `int64` paniquerait |
+| Receveur `*User` sur `ValidateCredentials` | `Scan` écrit dans `u.ID` — doit être visible par l'appelant |
+| Message d'erreur générique | "Invalid credentials" sans préciser email ou mot de passe — évite l'énumération |
+
+**État du projet à la fin de cette section :**
+
+```
+event-booking-api/
+├── db/
+│   └── db.go
+├── models/
+│   ├── event.go
+│   └── user.go          ← Save(*User), ValidateCredentials(*User)
+├── routes/
+│   ├── routes.go        ← POST /users/signup, POST /users/login, routes événements
+│   ├── events.go        ← createEvent protégé par VerifyToken
+│   └── users.go         ← signup(), login()
+├── utils/
+│   ├── hash.go          ← HashPassword, CheckPasswordHash
+│   └── jwt.go           ← GenerateToken, VerifyToken
+├── go.mod
+└── main.go
+```
+
+La prochaine section extrait la vérification du token dans un **middleware Gin** réutilisable, pour ne pas dupliquer ce code dans chaque handler protégé.
