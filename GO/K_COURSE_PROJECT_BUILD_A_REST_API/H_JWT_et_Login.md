@@ -521,7 +521,7 @@ rm api.db
 
 Au prochain démarrage du serveur (`go run .`), `createTables()` recrée les deux tables avec la bonne structure.
 
-**Étape 1 — Créer un utilisateur**
+**Étape 1 - Créer un utilisateur**
 
 ```http
 POST http://localhost:8080/users/signup
@@ -533,9 +533,9 @@ Content-Type: application/json
 }
 ```
 
-Réponse attendue : `201 Created` — `{ "message": "User created successfully" }`
+Réponse attendue : `201 Created` - `{ "message": "User created successfully" }`
 
-**Étape 2 — Se connecter et récupérer un token**
+**Étape 2 - Se connecter et récupérer un token**
 
 ```http
 POST http://localhost:8080/users/login
@@ -547,9 +547,9 @@ Content-Type: application/json
 }
 ```
 
-Réponse attendue : `200 OK` — `{ "message": "Login successful!", "token": "eyJ..." }`
+Réponse attendue : `200 OK` - `{ "message": "Login successful!", "token": "eyJ..." }`
 
-**Étape 3 — Créer un événement avec le token**
+**Étape 3 - Créer un événement avec le token**
 
 ```http
 POST http://localhost:8080/events
@@ -566,11 +566,11 @@ Authorization: eyJ...
 
 Réponse attendue : `201 Created`
 
-**Étape 4 — Créer un événement sans token**
+**Étape 4 - Créer un événement sans token**
 
 Même requête, sans le header `Authorization` :
 
-Réponse attendue : `401 Unauthorized` — `{ "message": "Not authorized." }`
+Réponse attendue : `401 Unauthorized` - `{ "message": "Not authorized." }`
 
 ---
 
