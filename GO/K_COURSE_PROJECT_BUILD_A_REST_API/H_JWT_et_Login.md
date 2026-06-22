@@ -511,6 +511,69 @@ func createEvent(context *gin.Context) {
 
 ---
 
+## Tester le flux complet
+
+La table `users` ayant été ajoutée en cours de route, la base de données existante (`api.db`) ne la contient pas. On la supprime pour repartir sur une structure propre :
+
+```bash
+rm api.db
+```
+
+Au prochain démarrage du serveur (`go run .`), `createTables()` recrée les deux tables avec la bonne structure.
+
+**Étape 1 — Créer un utilisateur**
+
+```http
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "testpassword"
+}
+```
+
+Réponse attendue : `201 Created` — `{ "message": "User created successfully" }`
+
+**Étape 2 — Se connecter et récupérer un token**
+
+```http
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "testpassword"
+}
+```
+
+Réponse attendue : `200 OK` — `{ "message": "Login successful!", "token": "eyJ..." }`
+
+**Étape 3 — Créer un événement avec le token**
+
+```http
+POST http://localhost:8080/events
+Content-Type: application/json
+Authorization: eyJ...
+
+{
+  "name": "Test event",
+  "description": "A test event",
+  "location": "A test location",
+  "dateTime": "2026-07-20T18:00:00.000Z"
+}
+```
+
+Réponse attendue : `201 Created`
+
+**Étape 4 — Créer un événement sans token**
+
+Même requête, sans le header `Authorization` :
+
+Réponse attendue : `401 Unauthorized` — `{ "message": "Not authorized." }`
+
+---
+
 ## Récapitulatif : JWT & Login
 
 **Le flux complet d'authentification :**
