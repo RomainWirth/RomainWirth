@@ -364,7 +364,7 @@ func (u *User) ValidateCredentials() error {
 }
 ```
 
-Après l'appel à `user.ValidateCredentials()` dans le handler `login()`, `user.ID` contient maintenant l'ID récupéré en base — `utils.GenerateToken(user.Email, user.ID)` peut donc l'embarquer dans le token.
+Après l'appel à `user.ValidateCredentials()` dans le handler `login()`, `user.ID` contient maintenant l'ID récupéré en base - `utils.GenerateToken(user.Email, user.ID)` peut donc l'embarquer dans le token.
 
 ### Tester la génération du token
 
@@ -398,9 +398,9 @@ Le token est une chaîne en trois parties séparées par des points. On peut le 
 Maintenant qu'on sait générer des tokens, on va les utiliser pour protéger certaines routes : elles ne doivent répondre avec succès qu'aux requêtes qui portent un token valide.
 
 Les **3 routes à protéger** dans `routes/routes.go` :
-- `server.POST("/events", createEvent)` — créer un événement
-- `server.PUT("/events/:eventId", updateEvent)` — modifier un événement
-- `server.DELETE("/events/:eventId", deleteEvent)` — supprimer un événement
+- `server.POST("/events", createEvent)` - créer un événement
+- `server.PUT("/events/:eventId", updateEvent)` - modifier un événement
+- `server.DELETE("/events/:eventId", deleteEvent)` - supprimer un événement
 
 ### La fonction `VerifyToken()` dans `utils/jwt.go`
 
@@ -408,11 +408,11 @@ On ajoute `VerifyToken()` dans `utils/jwt.go`. Son rôle : analyser un token re�
 
 Elle utilise `jwt.Parse()` qui prend deux arguments :
 1. Le token à analyser (string)
-2. Une **fonction de clé** (*Keyfunc*) — son rôle est de retourner la clé secrète à utiliser pour vérifier la signature
+2. Une **fonction de clé** (*Keyfunc*) - son rôle est de retourner la clé secrète à utiliser pour vérifier la signature
 
 #### La fonction de clé et la vérification de méthode
 
-La fonction de clé reçoit le token en cours d'analyse (avant vérification). Avant de retourner la clé, on vérifie que la méthode de signature utilisée est bien celle qu'on attend — pour se prémunir contre une attaque qui enverrait un token signé avec un algorithme différent (ex. l'algorithme `none` qui ne signe rien).
+La fonction de clé reçoit le token en cours d'analyse (avant vérification). Avant de retourner la clé, on vérifie que la méthode de signature utilisée est bien celle qu'on attend - pour se prémunir contre une attaque qui enverrait un token signé avec un algorithme différent (ex. l'algorithme `none` qui ne signe rien).
 
 ```go
 func(token *jwt.Token) (interface{}, error) {
@@ -424,9 +424,9 @@ func(token *jwt.Token) (interface{}, error) {
 }
 ```
 
-`token.Method.(*jwt.SigningMethodHMAC)` est une **assertion de type** Go — elle teste si la valeur stockée dans `token.Method` est du type `*jwt.SigningMethodHMAC`. Elle retourne deux valeurs : la valeur castée et un boolean `ok`. On n'utilise que le boolean (d'où le `_`). Si la méthode est inattendue, `ok` est `false` et on retourne une erreur.
+`token.Method.(*jwt.SigningMethodHMAC)` est une **assertion de type** Go - elle teste si la valeur stockée dans `token.Method` est du type `*jwt.SigningMethodHMAC`. Elle retourne deux valeurs : la valeur castée et un boolean `ok`. On n'utilise que le boolean (d'où le `_`). Si la méthode est inattendue, `ok` est `false` et on retourne une erreur.
 
-La fonction retourne `[]byte(secretKey)` — pas `secretKey` directement. C'est la même contrainte que pour `SignedString` : HS256 attend `[]byte`. Retourner une `string` compile mais provoque une erreur à l'exécution.
+La fonction retourne `[]byte(secretKey)` - pas `secretKey` directement. C'est la même contrainte que pour `SignedString` : HS256 attend `[]byte`. Retourner une `string` compile mais provoque une erreur à l'exécution.
 
 #### Code complet de `VerifyToken()`
 
@@ -452,7 +452,7 @@ func VerifyToken(token string) error {
 }
 ```
 
-> **`parsedToken.Valid`** — dans jwt/v5, si `jwt.Parse` ne retourne pas d'erreur, le token est garanti valide (signature correcte, non expiré). La vérification de `parsedToken.Valid` est donc redondante mais sert de filet de sécurité explicite.
+> **`parsedToken.Valid`** - dans jwt/v5, si `jwt.Parse` ne retourne pas d'erreur, le token est garanti valide (signature correcte, non expiré). La vérification de `parsedToken.Valid` est donc redondante mais sert de filet de sécurité explicite.
 
 #### La claims extraction (commentée pour l'instant)
 
@@ -467,11 +467,11 @@ Une fois le token validé, on pourrait extraire les données embarquées pour id
 // userId := int64(claims["userId"].(float64))
 ```
 
-> **Piège important — `float64`, pas `int64`** : `claims["userId"].(int64)` **provoquerait un panic**. Quand un JWT est décodé depuis JSON, les nombres deviennent `float64` dans une `map[string]any` — c'est le comportement de `encoding/json` en Go. Le `userId` stocké comme `int64` dans `GenerateToken` est réencodé en JSON comme un nombre flottant lors du décodage. La conversion correcte est `int64(claims["userId"].(float64))`. Les strings, elles, restent bien `string` : `claims["email"].(string)` est correct.
+> **Piège important - `float64`, pas `int64`** : `claims["userId"].(int64)` **provoquerait un panic**. Quand un JWT est décodé depuis JSON, les nombres deviennent `float64` dans une `map[string]any` - c'est le comportement de `encoding/json` en Go. Le `userId` stocké comme `int64` dans `GenerateToken` est réencodé en JSON comme un nombre flottant lors du décodage. La conversion correcte est `int64(claims["userId"].(float64))`. Les strings, elles, restent bien `string` : `claims["email"].(string)` est correct.
 
 ### Utiliser `VerifyToken()` dans le handler `createEvent()`
 
-Pour l'instant, on ajoute la vérification directement dans le handler — cette approche sera remplacée par un middleware réutilisable dans la section suivante, pour ne pas répéter ce code dans chaque handler protégé.
+Pour l'instant, on ajoute la vérification directement dans le handler - cette approche sera remplacée par un middleware réutilisable dans la section suivante, pour ne pas répéter ce code dans chaque handler protégé.
 
 On récupère le token depuis le header `Authorization` et on le valide avant d'exécuter quoi que ce soit d'autre :
 
@@ -534,15 +534,15 @@ POST /events (protégé)
 
 | Concept | Détail |
 |---|---|
-| JWT stateless | Toutes les infos sont dans le token — pas de session côté serveur |
-| Payload non chiffré | Base64URL lisible — ne jamais y stocker de données sensibles |
-| HS256 symétrique | Même `secretKey` pour signer et vérifier — doit rester secrète |
-| `SignedString([]byte(...))` | HS256 attend `[]byte`, pas `string` — compile mais crashe à l'exécution sinon |
+| JWT stateless | Toutes les infos sont dans le token - pas de session côté serveur |
+| Payload non chiffré | Base64URL lisible - ne jamais y stocker de données sensibles |
+| HS256 symétrique | Même `secretKey` pour signer et vérifier - doit rester secrète |
+| `SignedString([]byte(...))` | HS256 attend `[]byte`, pas `string` - compile mais crashe à l'exécution sinon |
 | `return []byte(secretKey), nil` | Même contrainte dans la Keyfunc de `jwt.Parse` |
-| Assertion de type `x.(T)` | Teste et caste le type dynamique d'une valeur `any` — retourne `(valeur, bool)` |
-| `int64(claims["userId"].(float64))` | Les nombres JSON sont `float64` après décodage — assertion directe en `int64` paniquerait |
-| Receveur `*User` sur `ValidateCredentials` | `Scan` écrit dans `u.ID` — doit être visible par l'appelant |
-| Message d'erreur générique | "Invalid credentials" sans préciser email ou mot de passe — évite l'énumération |
+| Assertion de type `x.(T)` | Teste et caste le type dynamique d'une valeur `any` - retourne `(valeur, bool)` |
+| `int64(claims["userId"].(float64))` | Les nombres JSON sont `float64` après décodage - assertion directe en `int64` paniquerait |
+| Receveur `*User` sur `ValidateCredentials` | `Scan` écrit dans `u.ID` - doit être visible par l'appelant |
+| Message d'erreur générique | "Invalid credentials" sans préciser email ou mot de passe - évite l'énumération |
 
 **État du projet à la fin de cette section :**
 
