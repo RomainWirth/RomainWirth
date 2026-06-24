@@ -395,12 +395,7 @@ Le token est une chaîne en trois parties séparées par des points. On peut le 
 
 ## Finaliser la logique JWT
 
-Maintenant qu'on sait générer des tokens, on va les utiliser pour protéger certaines routes : elles ne doivent répondre avec succès qu'aux requêtes qui portent un token valide.
-
-Les **3 routes à protéger** dans `routes/routes.go` :
-- `server.POST("/events", createEvent)` - créer un événement
-- `server.PUT("/events/:eventId", updateEvent)` - modifier un événement
-- `server.DELETE("/events/:eventId", deleteEvent)` - supprimer un événement
+Pour compléter la logique JWT, on ajoute `VerifyToken()` — la fonction chargée de valider un token reçu. Son utilisation concrète dans les handlers et le middleware sera couverte dans la section suivante.
 
 ### La fonction `VerifyToken()` dans `utils/jwt.go`
 
@@ -585,12 +580,6 @@ POST /login
     ↓ CheckPasswordHash()   → bcrypt.CompareHashAndPassword
     ↓ GenerateToken()       → jwt.NewWithClaims + SignedString([]byte(secretKey))
     → { "token": "eyJ..." }
-
-POST /events (protégé)
-    ↓ Header Authorization  → token string
-    ↓ VerifyToken()         → jwt.Parse + vérification SigningMethodHMAC + Valid
-    → 401 si token absent ou invalide
-    → suite du handler si token valide
 ```
 
 **Concepts clés abordés :**
@@ -618,7 +607,7 @@ event-booking-api/
 │   └── user.go          ← Save(*User), ValidateCredentials(*User)
 ├── routes/
 │   ├── routes.go        ← POST /users/signup, POST /users/login, routes événements
-│   ├── events.go        ← createEvent protégé par VerifyToken
+│   ├── events.go        ← handlers événements
 │   └── users.go         ← signup(), login()
 ├── utils/
 │   ├── hash.go          ← HashPassword, CheckPasswordHash
@@ -627,4 +616,4 @@ event-booking-api/
 └── main.go
 ```
 
-La prochaine section extrait la vérification du token dans un **middleware Gin** réutilisable, pour ne pas dupliquer ce code dans chaque handler protégé.
+La prochaine section couvre l'extraction des claims du token, la création du middleware Gin, et la mise en place des autorisations.
