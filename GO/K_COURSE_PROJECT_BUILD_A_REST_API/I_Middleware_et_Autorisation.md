@@ -393,3 +393,309 @@ Le même raisonnement s'applique à `User.ValidateCredentials()` : avec `(u User
 ---
 
 La prochaine section extrait cette vérification de token dans un **middleware Gin** réutilisable, appliqué en une fois à toutes les routes protégées via un groupe de routes.
+
+## Ajouter un middleware d'authentification
+
+À ce stade, seule la route `POST /events` est protégée : `updateEvent` et `deleteEvent` acceptent encore n'importe quelle requête sans vérification de token. Copier-coller la logique de vérification dans chaque handler violerait le principe **DRY** (_Don't Repeat Yourself_). La solution est un **middleware**.
+
+### Qu'est-ce qu'un middleware Gin ?
+
+Un middleware est une fonction avec la signature `func(*gin.Context)`, identique à un handler standard. La différence : il est conçu pour s'intercaler dans la **chaîne de traitement** d'une requête — il s'exécute avant le handler final et peut soit interrompre la chaîne, soit la laisser continuer.
+
+Gin enregistre les handlers sous forme de chaîne pour chaque route. Un middleware dispose de deux comportements :
+
+- **Interrompre** : `context.AbortWithStatusJSON(...)` — envoie la réponse et stoppe tous les handlers suivants dans la chaîne
+- **Continuer** : `context.Next()` — passe la main au handler suivant
+
+### Créer le package `middlewares`
+
+Nouveau dossier : `middlewares/`, nouveau fichier : `auth.go`.
+
+La fonction `Authenticate()` reprend la logique extraite de `createEvent` :
+
+```go
+package middlewares
+
+import (
+    "net/http"
+
+    "github.com/gin-gonic/gin"
+    "github.com/romainw/event-booking-api/utils"
+)
+
+func Authenticate(context *gin.Context) {
+    token := context.Request.Header.Get("Authorization")
+    if token == "" {
+        context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
+        return
+    }
+
+    _, err := utils.VerifyToken(token)
+    if err != nil {
+        context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
+        return
+    }
+
+    context.Next()
+}
+```
+
+**Pourquoi `AbortWithStatusJSON` et non `context.JSON(...) + return` ?**
+
+Dans un middleware, `return` ne fait que sortir de la fonction middleware — les autres handlers enregistrés après dans la chaîne s'exécuteraient quand même. `AbortWithStatusJSON` envoie la réponse **et** marque la chaîne comme interrompue : aucun handler suivant ne s'exécute.
+
+### Transmettre le `userId` au handler via le contexte
+
+`VerifyToken()` retourne maintenant le `userId`. Il faut le rendre disponible aux handlers qui suivent dans la chaîne.
+
+`context` est un **pointeur** : c'est la même instance en mémoire tout au long du traitement de la requête. `context.Set(key, value)` attache une donnée à ce contexte partagé, accessible depuis n'importe quel handler ou middleware ultérieur.
+
+Version finale de `Authenticate()` :
+
+```go
+func Authenticate(context *gin.Context) {
+    token := context.Request.Header.Get("Authorization")
+    if token == "" {
+        context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
+        return
+    }
+
+    userId, err := utils.VerifyToken(token)
+    if err != nil {
+        context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
+        return
+    }
+
+    context.Set("userId", userId)
+    context.Next()
+}
+```
+
+Dans `createEvent`, la vérification du token est entièrement supprimée — c'est le rôle du middleware. `context.GetInt64("userId")` récupère la valeur définie par `Authenticate` :
+
+```go
+func createEvent(context *gin.Context) {
+    var event models.Event
+    err := context.ShouldBindJSON(&event)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+        return
+    }
+
+    userId := context.GetInt64("userId")
+    event.UserID = userId
+
+    err = event.Save()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event. Try again later."})
+        return
+    }
+
+    context.JSON(http.StatusCreated, gin.H{"message": "Event created successfully!", "event": event})
+}
+```
+
+> Gin fournit des getters typés pour les données du contexte : `GetInt64`, `GetString`, `GetBool`, `GetInt`, etc. Chacun retourne la valeur castée ou la valeur zéro du type si la clé est absente.
+
+### Enregistrer le middleware sur les routes protégées
+
+**Option 1 — par route** : passer le middleware en premier argument avant le handler. Gin exécute les fonctions de gauche à droite :
+
+```go
+server.POST("/events", middlewares.Authenticate, createEvent)
+server.PUT("/events/:eventId", middlewares.Authenticate, updateEvent)
+server.DELETE("/events/:eventId", middlewares.Authenticate, deleteEvent)
+```
+
+Fonctionnel, mais répétitif si le nombre de routes protégées augmente.
+
+**Option 2 — groupe de routes** (préféré) : `server.Group(prefix)` crée un sous-routeur. `Use()` enregistre un middleware pour toutes les routes de ce groupe. `Use()` doit être appelé **avant** d'ajouter les routes :
+
+```go
+package routes
+
+import (
+    "github.com/gin-gonic/gin"
+    "github.com/romainw/event-booking-api/middlewares"
+)
+
+func RegisterRoutes(server *gin.Engine) {
+    server.GET("/events", getEvents)
+    server.GET("/events/:eventId", getEvent)
+
+    authenticated := server.Group("/")
+    authenticated.Use(middlewares.Authenticate)
+    authenticated.POST("/events", createEvent)
+    authenticated.PUT("/events/:eventId", updateEvent)
+    authenticated.DELETE("/events/:eventId", deleteEvent)
+
+    server.POST("/signup", signup)
+    server.POST("/login", login)
+}
+```
+
+Les routes `GET`, `/signup` et `/login` sont enregistrées directement sur `server` — elles ne passent pas par `Authenticate`.
+
+---
+
+## Ajouter une autorisation par propriétaire d'événement
+
+**Authentification** (qui es-tu ?) ≠ **Autorisation** (que peux-tu faire ?). Le middleware `Authenticate` vérifie qu'un token valide est présent, mais n'importe quel utilisateur connecté peut encore modifier ou supprimer les événements d'un autre.
+
+Pour les routes `PUT` et `DELETE`, on compare l'`userId` extrait du token (`context.GetInt64("userId")`) avec le `UserID` de l'événement stocké en base.
+
+### Modifier `updateEvent()`
+
+Jusqu'ici, le résultat de `GetEventByID` était ignoré (`_, err := ...`) — on vérifiait seulement que l'événement existe. Maintenant on en a besoin pour accéder à `event.UserID` :
+
+```go
+func updateEvent(context *gin.Context) {
+    eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id."})
+        return
+    }
+
+    userId := context.GetInt64("userId")
+    event, err := models.GetEventByID(eventId)
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch event."})
+        return
+    }
+
+    if event.UserID != userId {
+        context.JSON(http.StatusForbidden, gin.H{"message": "You are not authorized to update this event."})
+        return
+    }
+
+    err = context.ShouldBindJSON(&event)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+        return
+    }
+    event.ID = eventId
+
+    err = event.Update()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not update event."})
+        return
+    }
+
+    context.JSON(http.StatusOK, gin.H{"message": "Event updated successfully!", "event": event})
+}
+```
+
+> **401 vs 403** : `401 Unauthorized` = non authentifié (pas de token ou token invalide). `403 Forbidden` = authentifié mais non autorisé (token valide, ressource appartenant à un autre utilisateur). `http.StatusForbidden` est sémantiquement correct ici.
+
+**Test** — récupérer tous les événements :
+
+```
+HTTP/1.1 200 OK
+...
+
+[
+  { "id": 1, "name": "Test event 1", ..., "userId": 2 },
+  { "id": 2, "name": "Test event 2", ..., "userId": 2 },
+  { "id": 3, "name": "Test event 3", ..., "userId": 1 }
+]
+```
+
+Connexion avec l'utilisateur `userId = 1` :
+
+```
+HTTP/1.1 200 OK
+...
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3ODIzODMyNjcsInVzZXJJZCI6MX0.qBy41kY92BdaPgQd-ra7FeHF4--Z_ozuM0ryspUNmIk"
+}
+```
+
+Tentative de modification de l'événement `id=2` (appartient à `userId=2`) avec le token de `userId=1` :
+
+```
+HTTP/1.1 403 Forbidden
+Content-Type: application/json; charset=utf-8
+Date: Thu, 25 Jun 2026 08:30:12 GMT
+Content-Length: 58
+Connection: close
+
+{
+  "message": "You are not authorized to update this event."
+}
+```
+
+Avec le token de `userId=2`, la mise à jour retourne `200 OK`.
+
+### Modifier `deleteEvent()`
+
+Même logique qu'`updateEvent`, seul le message d'erreur diffère :
+
+```go
+func deleteEvent(context *gin.Context) {
+    eventId, err := strconv.ParseInt(context.Param("eventId"), 10, 64)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse event id."})
+        return
+    }
+
+    userId := context.GetInt64("userId")
+    event, err := models.GetEventByID(eventId)
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch event."})
+        return
+    }
+
+    if event.UserID != userId {
+        context.JSON(http.StatusForbidden, gin.H{"message": "You are not authorized to delete this event."})
+        return
+    }
+
+    err = event.Delete()
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not delete event. Try again later."})
+        return
+    }
+
+    context.JSON(http.StatusOK, gin.H{"message": "Event deleted successfully!"})
+}
+```
+
+**Test** — suppression de l'événement `id=2` avec le token de `userId=1` :
+
+```
+HTTP/1.1 403 Forbidden
+Content-Type: application/json; charset=utf-8
+Date: Thu, 25 Jun 2026 08:38:15 GMT
+Content-Length: 58
+Connection: close
+
+{
+  "message": "You are not authorized to delete this event."
+}
+```
+
+---
+
+## Résumé
+
+### Récupérer et stocker les IDs utilisateur
+
+- `VerifyToken()` modifiée : signature `(int64, error)` pour retourner le `userId` extrait des claims
+- **Piège `float64`** : `encoding/json` décode les nombres JSON en `float64` — `.(int64)` panique à l'exécution. Conversion correcte : `int64(claims["userId"].(float64))`
+- `createEvent` mis à jour : `userId, err := utils.VerifyToken(token)` → `event.UserID = userId`
+- **Receveurs pointeurs** : `Save()` (`*Event`) et `ValidateCredentials()` (`*User`) nécessitent des receveurs pointeurs pour que les assignations `e.ID = id` et `u.ID = scannedId` soient visibles par l'appelant
+
+### Middleware d'authentification
+
+- **Middleware Gin** : `func(*gin.Context)` intercalée dans la chaîne de traitement. Se termine par `context.Next()` (continue) ou `context.AbortWithStatusJSON(...)` (interrompt)
+- **`AbortWithStatusJSON` vs `JSON + return`** : `return` ne stoppe pas la chaîne Gin — `Abort` est obligatoire dans un middleware pour bloquer les handlers suivants
+- **`context.Set / GetInt64`** : partage de données entre middleware et handlers via le contexte partagé (pointeur unique pour toute la chaîne)
+- **Groupe de routes** : `server.Group("/")` + `authenticated.Use(middlewares.Authenticate)` — protège plusieurs routes sans duplication
+
+### Autorisation par propriétaire
+
+- **Authentification ≠ Autorisation** : un token valide prouve l'identité, pas le droit sur une ressource spécifique
+- `updateEvent` et `deleteEvent` : comparaison `event.UserID != userId` → `http.StatusForbidden` (403)
+- **401 vs 403** : 401 = non authentifié, 403 = authentifié mais non autorisé
+- `GetEventByID` : résultat précédemment ignoré (`_`), maintenant utilisé pour accéder à `event.UserID`
