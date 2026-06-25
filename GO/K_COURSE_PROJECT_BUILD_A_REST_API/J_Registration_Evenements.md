@@ -360,3 +360,30 @@ func cancelRegistration(context *gin.Context) {
 - `var event models.Event; event.ID = eventId` : évite un `SELECT` inutile — `CancelRegistration` n'utilise que l'ID dans sa requête SQL
 - Méthode `CancelRegistration(userId int64) error` sur `Event` : `DELETE FROM registrations WHERE event_id = ? AND user_id = ?`
 - **`201 Created` vs `200 OK`** : `201` signifie création d'une ressource — sémantiquement incorrect pour une suppression, `200 OK` est juste
+
+## Pour aller plus loin
+
+L'API couvre les cas de base, mais plusieurs fonctionnalités manquent encore :
+
+**Gestion des sessions**
+- `POST /logout` — invalider le token côté client (supprimer le token du stockage local). Les JWT étant stateless, une vraie révocation côté serveur nécessite une blocklist (table `revoked_tokens` ou cache Redis).
+
+**Inscriptions**
+- `GET /events/:eventId/registrations` — lister tous les participants d'un événement (route admin/organisateur)
+- `GET /users/me/registrations` — lister tous les événements auxquels l'utilisateur connecté est inscrit
+- Vérification de doublons dans `Register()` : renvoyer `409 Conflict` si l'utilisateur est déjà inscrit
+
+**Événements**
+- `GET /events?from=2026-01-01&to=2026-12-31` — filtrer les événements par date
+- `GET /events?location=Paris` — filtrer par lieu
+- Pagination : `GET /events?page=1&limit=20`
+
+**Utilisateurs**
+- `GET /users/me` — profil de l'utilisateur connecté
+- `PUT /users/me` — modifier son email ou mot de passe
+- `DELETE /users/me` — supprimer son compte (et ses inscriptions, via `ON DELETE CASCADE`)
+
+**Robustesse**
+- Validation des champs à l'entrée (email valide, mot de passe min. 8 caractères, date future pour un événement)
+- Gestion des contraintes de capacité : champ `maxAttendees` sur `events`, vérification avant `Register()`
+- Transactions SQL pour grouper `Register()` et une vérification de capacité atomiquement
