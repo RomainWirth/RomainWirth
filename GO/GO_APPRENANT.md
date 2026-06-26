@@ -1,6 +1,6 @@
 # Projet Adventure Quest - Apprendre Go par la pratique
 **Cahier de formation - Version apprenant**
-9 itérations progressives | Go 1.21+ | Apprentissage par le projet
+10 itérations progressives | Go 1.21+ | Apprentissage par le projet | 21 jours
 
 ---
 
@@ -13,11 +13,12 @@
 5. [Slices et maps - inventaire et quêtes](#itération-5--slices-et-maps--inventaire-et-quêtes)
 6. [Interfaces - différents types de quêtes](#itération-6--interfaces--différents-types-de-quêtes)
 7. [Packages - organiser le code](#itération-7--packages--organiser-le-code)
-8. [Fichiers - sauvegarder et charger les données](#itération-8--fichiers--sauvegarder-et-charger-les-données)
-9. [Goroutines et channels - concurrence](#itération-9--goroutines-et-channels--concurrence)
-10. [Bonus - API REST](#itération-10-bonus--api-rest)
-11. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
-12. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
+8. [Tests unitaires - valider le comportement du jeu](#itération-8---tests-unitaires---valider-le-comportement-du-jeu)
+9. [Fichiers - sauvegarder et charger les données](#itération-9--fichiers--sauvegarder-et-charger-les-données)
+10. [Goroutines et channels - concurrence](#itération-10--goroutines-et-channels--concurrence)
+11. [Bonus - API REST](#itération-11-bonus--api-rest)
+12. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
+13. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
 
 > **Comment utiliser ce document**
 > - Chaque itération contient : objectifs, contexte du projet, tâches à réaliser et points de vigilance.
