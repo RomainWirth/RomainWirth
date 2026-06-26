@@ -4,6 +4,7 @@
 
 > **Version débutant — Option B**
 > Ce document propose un projet différent du cahier complet : **TaskFlow**, un gestionnaire de tâches en ligne de commande. Le domaine est volontairement simple (pas de mécanique de jeu, pas de combat, pas de concurrence) pour se concentrer sur les bases du langage. Recommandé si tu n'as jamais programmé ou si tu arrives d'un langage très différent (PHP, Python, JS).
+> Les tests unitaires sont traités dans une **itération bonus** (J11) — fortement recommandés mais pas obligatoires pour compléter le projet.
 
 ---
 
@@ -865,6 +866,19 @@ func main() {
 - [ ] Logique de gestion dans `manager/operations.go`
 - [ ] Fonctions fichier dans `manager/save.go`
 - [ ] `go run main.go` fonctionne après refactorisation
+- [ ] Aucun import circulaire
+
+---
+
+> ✅ **Ce que tu sais maintenant faire**
+> - Écrire un programme Go complet avec entrée utilisateur
+> - Modéliser des données avec des structs et des méthodes
+> - Gérer une liste dynamique avec des slices
+> - Persister des données en JSON
+> - Organiser son code en packages
+>
+> **Ton projet TaskFlow est terminé et fonctionnel.** L'itération suivante (bonus) t'apprendra à le tester automatiquement.
+> **La suite naturelle** : découvrir les **interfaces** (version condensée, itération 5) et la **concurrence** avec les goroutines (version complète, itération 10).
 
 ---
 
@@ -1068,15 +1082,28 @@ type Task struct {
     Done  bool   `json:"done"`
 }
 
-// ⚠️ En production, toujours vérifier les erreurs (ne pas utiliser _)
-// Écrire
-data, _ := json.MarshalIndent(tasks, "", "  ")
-os.WriteFile("tasks.json", data, 0644)
+// Écrire (toujours vérifier l'erreur en production)
+data, err := json.MarshalIndent(tasks, "", "  ")
+if err != nil {
+    fmt.Println("Erreur de sérialisation :", err)
+    return
+}
+if err := os.WriteFile("tasks.json", data, 0644); err != nil {
+    fmt.Println("Erreur d'écriture :", err)
+    return
+}
 
-// Lire
-data, _ := os.ReadFile("tasks.json")
+// Lire (toujours vérifier l'erreur en production)
+data, err := os.ReadFile("tasks.json")
+if err != nil {
+    fmt.Println("Erreur de lecture :", err)
+    return
+}
 var tasks []Task
-json.Unmarshal(data, &tasks)
+if err := json.Unmarshal(data, &tasks); err != nil {
+    fmt.Println("Fichier corrompu :", err)
+    return
+}
 ```
 
 ### Gestion d'erreurs
@@ -1146,7 +1173,7 @@ taskflow/
 ├── main.go
 ├── models/
 │   ├── task.go
-│   └── task_test.go
+│   └── task_test.go     ← Itération 8 (bonus)
 └── manager/
     ├── operations.go
     └── save.go
