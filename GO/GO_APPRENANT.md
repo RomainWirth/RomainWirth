@@ -730,7 +730,294 @@ func main() {
 
 ---
 
-## Itération 8 - Fichiers - sauvegarder et charger les données
+## Itération 8 - Tests unitaires - valider le comportement du jeu
+
+⏱ **Durée estimée : 2 jours**
+
+---
+
+#### Objectifs pédagogiques
+
+- Comprendre pourquoi et quand tester son code
+- Écrire des tests unitaires avec le package `testing` de la stdlib Go
+- Maîtriser le pattern **table-driven tests** — le pattern de test idiomatique en Go
+- Utiliser `go test` et interpréter ses résultats
+- Organiser ses fichiers de test (`_test.go`)
+
+---
+
+> 🏗️ **Pourquoi ce moment ?**
+> Tu viens d'organiser ton code en packages (`models/`, `game/`). Tes fonctions sont maintenant **isolées et indépendantes** — c'est exactement ce qu'on veut tester.
+> Tester du code non structuré, c'est difficile. Tester des fonctions pures dans des packages bien séparés, c'est naturel.
+> Un test unitaire répond à une question simple : *"Si je donne cette entrée à ma fonction, est-ce qu'elle me retourne bien ce que j'attends ?"*
+
+---
+
+### 8.1 - Pourquoi tester ?
+
+Imagine que tu modifies la formule de `LevelUp()` pour équilibrer le jeu. Comment tu sais que tu n'as pas cassé autre chose ?
+
+Sans tests : tu relances le programme, tu joues manuellement, tu espères.
+Avec tests : tu lances `go test ./...` en une seconde et tu as la réponse.
+
+Les tests sont un **filet de sécurité** — ils te permettent de modifier le code avec confiance.
+
+> 💡 **En Go, les tests font partie du langage**
+> Pas de framework externe à installer. Le package `testing` est dans la stdlib.
+> La convention est simple : un fichier `hero_test.go` teste le fichier `hero.go` dans le même package.
+
+---
+
+### 8.2 - Structure d'un test Go
+
+```go
+// models/hero_test.go
+package models
+
+import "testing"
+
+func TestIsAlive(t *testing.T) {
+    hero := NewHero("Thorin")
+
+    if !hero.IsAlive() {
+        t.Error("Un héros avec 100 HP devrait être en vie")
+    }
+
+    hero.HP = 0
+    if hero.IsAlive() {
+        t.Error("Un héros avec 0 HP ne devrait pas être en vie")
+    }
+}
+```
+
+> 💡 **Les règles d'un test Go**
+> - Le fichier doit se terminer par `_test.go`
+> - La fonction doit commencer par `Test` (majuscule)
+> - Elle reçoit `*testing.T` en paramètre — c'est l'objet de test
+> - `t.Error("message")` : signale un échec mais **continue** le test
+> - `t.Fatal("message")` : signale un échec et **arrête** le test immédiatement
+> - `t.Errorf("format", args...)` : comme `t.Error` avec formatage `fmt.Sprintf`
+
+---
+
+### 8.3 - Lancer les tests
+
+```bash
+# Lancer tous les tests du projet
+go test ./...
+
+# Lancer les tests d'un package spécifique
+go test ./models/...
+
+# Avec détail de chaque test
+go test -v ./...
+
+# Avec couverture de code
+go test -cover ./...
+```
+
+Résultat attendu :
+```
+ok      adventure-quest/models    0.003s
+ok      adventure-quest/game      0.002s
+```
+
+En cas d'échec :
+```
+--- FAIL: TestIsAlive (0.00s)
+    hero_test.go:12: Un héros avec 0 HP ne devrait pas être en vie
+FAIL
+```
+
+---
+
+### 8.4 - Tâche : premiers tests unitaires
+
+Créer le fichier `models/hero_test.go` et écrire les tests suivants :
+
+#### Test 1 — `NewHero()`
+
+Vérifier que le constructeur initialise correctement le héros :
+
+```
+Étant donné NewHero("Thorin")
+Alors hero.Name == "Thorin"
+Et   hero.HP == 100
+Et   hero.Level == 1
+Et   hero.Gold == 0
+```
+
+#### Test 2 — `IsAlive()`
+
+Vérifier deux cas :
+- Un héros avec HP > 0 est en vie
+- Un héros avec HP == 0 n'est pas en vie
+
+#### Test 3 — `TakeDamage()`
+
+Vérifier trois cas :
+- Après `TakeDamage(30)` sur un héros à 100 HP → HP == 70
+- Après `TakeDamage(200)` sur un héros à 100 HP → HP == 0 (pas de valeur négative)
+- Après `TakeDamage(0)` → HP inchangé
+
+#### Test 4 — `Heal()`
+
+Vérifier deux cas :
+- Un héros à 50 HP qui reçoit `Heal(30)` → HP == 80
+- Un héros à 90 HP qui reçoit `Heal(50)` → HP == MaxHP (pas de dépassement)
+
+> 💡 **À noter**
+> `t.Errorf` est ton meilleur ami pour des messages d'erreur clairs :
+> ```go
+> if hero.HP != 70 {
+>     t.Errorf("HP attendu : 70, obtenu : %d", hero.HP)
+> }
+> ```
+> Un bon message d'erreur dit **ce qui était attendu** et **ce qui a été obtenu**.
+
+---
+
+### 8.5 - Le pattern Table-Driven Tests
+
+Imagine que tu veuilles tester `xpToNextLevel()` pour les niveaux 1 à 5. Tu pourrais écrire 5 fonctions de test... ou utiliser le pattern **table-driven** :
+
+```go
+func TestXpToNextLevel(t *testing.T) {
+    tests := []struct {
+        name     string
+        level    int
+        expected int
+    }{
+        {"niveau 1", 1, 100},
+        {"niveau 2", 2, 200},
+        {"niveau 3", 3, 300},
+        {"niveau 4", 4, 400},
+        {"niveau 5", 5, 500},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            result := XpToNextLevel(tt.level)
+            if result != tt.expected {
+                t.Errorf("niveau %d : attendu %d, obtenu %d", tt.level, tt.expected, result)
+            }
+        })
+    }
+}
+```
+
+Résultat avec `go test -v` :
+```
+--- PASS: TestXpToNextLevel (0.00s)
+    --- PASS: TestXpToNextLevel/niveau_1 (0.00s)
+    --- PASS: TestXpToNextLevel/niveau_2 (0.00s)
+    --- PASS: TestXpToNextLevel/niveau_3 (0.00s)
+    --- PASS: TestXpToNextLevel/niveau_4 (0.00s)
+    --- PASS: TestXpToNextLevel/niveau_5 (0.00s)
+```
+
+> 💡 **Pourquoi ce pattern ?**
+> - Un seul endroit pour ajouter un nouveau cas de test → ajouter une ligne dans le tableau
+> - Les sous-tests (`t.Run`) sont nommés → facile à identifier lequel échoue
+> - C'est le pattern utilisé dans la **stdlib Go elle-même** — c'est du Go idiomatique
+> - Quand un cas échoue, les autres continuent de s'exécuter
+
+---
+
+### 8.6 - Tâche : table-driven tests sur les quêtes
+
+Créer le fichier `models/quest_test.go` et écrire un test table-driven pour la fonction qui calcule les récompenses selon le type de quête.
+
+Les cas à couvrir :
+
+| Nom du test | Type de quête | Niveau héros | Récompense attendue |
+|---|---|---|---|
+| "combat niveau 1" | `Combat` | 1 | XP et or selon ta formule |
+| "combat niveau 5" | `Combat` | 5 | XP et or × 5 |
+| "exploration niveau 1" | `Exploration` | 1 | XP et or selon ta formule |
+| "collecte niveau 1" | `Collecte` | 1 | XP et or selon ta formule |
+| "type inconnu" | `""` | 1 | 0, 0 (ou erreur selon ton implémentation) |
+
+> 💡 **Tester les cas limites**
+> Les bugs se cachent aux extrêmes : niveau 0, valeur négative, chaîne vide, nil...
+> Un bon test couvre toujours au moins un **cas nominal**, un **cas limite** et un **cas d'erreur**.
+
+---
+
+### 8.7 - Tâche : tester `simulateFight()`
+
+La fonction `simulateFight()` de l'itération 3 retourne `(bool, int)`. Elle est parfaite pour un test table-driven.
+
+Écrire `game/combat_test.go` avec les cas suivants :
+
+| Nom du test | heroHP | enemyHP | heroAttack | enemyAttack | héros gagne ? |
+|---|---|---|---|---|---|
+| "héros écrase l'ennemi" | 100 | 10 | 50 | 5 | true |
+| "héros perd" | 10 | 100 | 5 | 50 | false |
+| "combat équilibré" | 100 | 100 | 10 | 10 | true (héros attaque en premier) |
+| "ennemi à 0 HP" | 100 | 0 | 10 | 10 | true |
+
+> 💡 **À noter**
+> Un test ne doit pas afficher de texte dans le terminal (les `fmt.Println` dans `simulateFight` s'afficheront quand même).
+> Pour les tests silencieux, utiliser `go test -v` montre les prints — c'est acceptable à ce stade.
+> En production, on passerait par un logger injectable, mais c'est hors périmètre de cette itération.
+
+---
+
+### 8.8 - Points de vigilance
+
+- **Ne tester que ce que tu possèdes** — teste tes fonctions, pas les fonctions de la stdlib (`fmt`, `os`, etc.)
+- **Un test = un comportement** — si ton test a 15 assertions sans rapport, découpe-le
+- **Les tests doivent être déterministes** — un test qui passe une fois sur deux n'est pas un test. Si tu testes `rollDice()`, teste la plage de valeurs, pas la valeur exacte :
+  ```go
+  result := rollDice(6)
+  if result < 1 || result > 6 {
+      t.Errorf("rollDice(6) doit retourner entre 1 et 6, obtenu : %d", result)
+  }
+  ```
+- **Les tests font partie du code** — ils se commitent sur Git, ils s'exécutent en CI/CD
+
+---
+
+### 8.9 - ⚡ Pour aller plus loin
+
+- Utiliser `t.Helper()` dans une fonction d'assertion réutilisable :
+  ```go
+  func assertInt(t *testing.T, got, want int, msg string) {
+      t.Helper() // Pointe vers l'appelant dans les logs d'erreur
+      if got != want {
+          t.Errorf("%s : attendu %d, obtenu %d", msg, want, got)
+      }
+  }
+  ```
+- Mesurer la couverture de code avec `go test -coverprofile=coverage.out ./...` puis `go tool cover -html=coverage.out`
+- Découvrir `testify/assert` (package externe très populaire) : `github.com/stretchr/testify`
+
+---
+
+### 8.10 - Livrable
+
+- [ ] `models/hero_test.go` avec les 4 tests unitaires (`NewHero`, `IsAlive`, `TakeDamage`, `Heal`)
+- [ ] `models/quest_test.go` avec un test table-driven sur les récompenses (minimum 4 cas)
+- [ ] `game/combat_test.go` avec un test table-driven sur `simulateFight()` (minimum 4 cas)
+- [ ] `go test ./...` passe avec 0 échec
+- [ ] `go test -v ./...` affiche le détail de chaque sous-test
+- [ ] Tous les tests sont déterministes (pas de dépendance à `rand` sans contrôle)
+
+---
+
+> ✅ **Ce que tu sais maintenant faire**
+> - Écrire des tests unitaires avec `testing.T`
+> - Appliquer le pattern table-driven pour tester plusieurs cas proprement
+> - Lancer et interpréter les résultats de `go test`
+> - Distinguer `t.Error` (continue) et `t.Fatal` (arrête)
+> - Tester les cas nominaux, limites et d'erreur
+>
+> À partir de maintenant, chaque nouvelle fonction que tu écris mérite son test. C'est un réflexe à construire.
+
+---
+
+## Itération 9 - Fichiers - sauvegarder et charger les données
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -743,7 +1030,7 @@ func main() {
 
 ---
 
-### 8.1 - Sérialisation JSON
+### 9.1 - Sérialisation JSON
 
 > 💡 **Tags JSON sur les structs**
 > ```go
@@ -764,7 +1051,7 @@ func main() {
 > ```
 > Les champs non exportés (minuscule) sont ignorés par `json.Marshal`.
 
-### 8.2 - Struct de sauvegarde
+### 9.2 - Struct de sauvegarde
 
 Créer un struct `SaveData` qui contient tout ce qui doit persister :
 
@@ -778,7 +1065,7 @@ type SaveData struct {
 
 > 💡 **Note** : les interfaces ne se sérialisent pas directement en JSON (le type concret est perdu). Pour la sauvegarde, utiliser le struct `Quest` de l'itération 5, plus simple et sérialisable.
 
-### 8.3 - Fonctions à implémenter
+### 9.3 - Fonctions à implémenter
 
 Dans `game/save.go` :
 
@@ -800,7 +1087,7 @@ Progression sauvegardée dans save.json ✓
 Partie chargée - Bienvenue de retour, Thorin !
 ```
 
-### 8.4 - Gestion des erreurs de fichier
+### 9.4 - Gestion des erreurs de fichier
 
 | Erreur | Comportement attendu |
 |--------|---------------------|
@@ -815,12 +1102,12 @@ Partie chargée - Bienvenue de retour, Thorin !
 > }
 > ```
 
-### 8.5 - ⚡ Pour aller plus loin
+### 9.5 - ⚡ Pour aller plus loin
 
 - Ajouter un horodatage (`time.Now().Format(time.RFC3339)`) dans `SaveData.Timestamp`.
 - Permettre plusieurs slots de sauvegarde : `"sauvegarder <nom>"` / `"charger <nom>"`.
 
-### 8.6 - Livrable
+### 9.6 - Livrable
 
 - [ ] Struct `SaveData` avec tags JSON
 - [ ] Fonctions `Save()` et `Load()` dans `game/save.go`
@@ -829,7 +1116,7 @@ Partie chargée - Bienvenue de retour, Thorin !
 
 ---
 
-## Itération 9 - Goroutines et channels - concurrence
+## Itération 10 - Goroutines et channels - concurrence
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -842,7 +1129,7 @@ Partie chargée - Bienvenue de retour, Thorin !
 
 ---
 
-### 9.1 - Goroutines
+### 10.1 - Goroutines
 
 > 💡 **Goroutine**
 > Une goroutine est une **fonction exécutée de manière concurrente**. Elle est bien plus légère qu'un thread OS (quelques Ko vs plusieurs Mo). Go peut gérer des milliers de goroutines simultanément.
@@ -859,7 +1146,7 @@ Partie chargée - Bienvenue de retour, Thorin !
 > wg.Wait()
 > ```
 
-### 9.2 - Channels
+### 10.2 - Channels
 
 > 💡 **Channel**
 > Un channel est un **tuyau typé** pour envoyer des valeurs entre goroutines.
@@ -873,7 +1160,7 @@ Partie chargée - Bienvenue de retour, Thorin !
 > close(ch)  // Fermer le channel quand on n'envoie plus
 > ```
 
-### 9.3 - Tâche : timer de quête en arrière-plan
+### 10.3 - Tâche : timer de quête en arrière-plan
 
 Ajouter un système de timer : certaines quêtes ont une durée limitée. Lancer un compte à rebours en goroutine pendant que le joueur continue de jouer.
 
@@ -901,7 +1188,7 @@ done <- true
 > ```
 > `select` attend sur plusieurs channels simultanément et traite le premier qui reçoit une valeur.
 
-### 9.4 - Tâche : sauvegarde automatique
+### 10.4 - Tâche : sauvegarde automatique
 
 Implémenter une sauvegarde automatique toutes les 30 secondes en arrière-plan :
 
@@ -919,13 +1206,13 @@ go func() {
 
 > 💡 **`time.NewTicker`** : envoie une valeur sur son channel `.C` à intervalle régulier.
 
-### 9.5 - Points de vigilance
+### 10.5 - Points de vigilance
 
 - **Race condition** : si plusieurs goroutines accèdent au même struct `Hero`, utiliser un `sync.Mutex`.
 - Ne jamais envoyer sur un channel fermé - panic immédiat.
 - Fermer un channel depuis **l'émetteur**, jamais depuis le récepteur.
 
-### 9.6 - Livrable
+### 10.6 - Livrable
 
 - [ ] Fonction `StartQuestTimer()` avec goroutine + `select`
 - [ ] Sauvegarde automatique toutes les 30 secondes en arrière-plan
@@ -933,7 +1220,7 @@ go func() {
 
 ---
 
-## Itération 10 (Bonus) - API REST
+## Itération 11 (Bonus) - API REST
 
 ⏱ **Durée estimée : 3 jours**
 
@@ -945,7 +1232,7 @@ go func() {
 
 ---
 
-### 10.1 - Routes à implémenter
+### 11.1 - Routes à implémenter
 
 | Méthode | Route | Action |
 |---------|-------|--------|
@@ -955,7 +1242,7 @@ go func() {
 | `POST` | `/quests/:id/complete` | Complète une quête |
 | `GET` | `/quests/:id` | Détail d'une quête |
 
-### 10.2 - Setup
+### 11.2 - Setup
 
 ```bash
 go get github.com/gin-gonic/gin
@@ -963,7 +1250,7 @@ go get github.com/gin-gonic/gin
 
 Créer `api/server.go` qui initialise Gin et enregistre les routes. Appeler `api.StartServer()` depuis `main.go` (en goroutine pour ne pas bloquer la boucle CLI).
 
-### 10.3 - Livrable
+### 11.3 - Livrable
 
 - [ ] Serveur Gin démarré sur `:8080`
 - [ ] `GET /hero` retourne le JSON du héros
