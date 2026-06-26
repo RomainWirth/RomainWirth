@@ -1,24 +1,23 @@
 # Projet Adventure Quest - Apprendre Go par la pratique
-**Cahier de formation - Version apprenant**
-10 itérations progressives | Go 1.21+ | Apprentissage par le projet | 21 jours
+**Cahier de formation - Version condensée**
+7 itérations | Go 1.21+ | 10 jours
+
+> **Version condensée — Option A**
+> Ce document est une variante du cahier complet (21 jours). Les itérations sur les goroutines/channels et l'API REST ont été supprimées. Deux fusions ont été opérées : Environnement+Variables (J1) et Packages+Fichiers (J9). Recommandé pour les apprenants ayant déjà des bases dans un autre langage.
 
 ---
 
 ## Sommaire
 
-1. [Mise en place de l'environnement](#itération-1--mise-en-place-de-lenvironnement)
-2. [Variables, types et premier programme](#itération-2--variables-types-et-premier-programme)
-3. [Fonctions et contrôle du flux](#itération-3--fonctions-et-contrôle-du-flux)
-4. [Structs et méthodes - modéliser le héros](#itération-4--structs-et-méthodes--modéliser-le-héros)
-5. [Slices et maps - inventaire et quêtes](#itération-5--slices-et-maps--inventaire-et-quêtes)
-6. [Interfaces - différents types de quêtes](#itération-6--interfaces--différents-types-de-quêtes)
-7. [Packages - organiser le code](#itération-7--packages--organiser-le-code)
-8. [Tests unitaires - valider le comportement du jeu](#itération-8---tests-unitaires---valider-le-comportement-du-jeu)
-9. [Fichiers - sauvegarder et charger les données](#itération-9--fichiers--sauvegarder-et-charger-les-données)
-10. [Goroutines et channels - concurrence](#itération-10--goroutines-et-channels--concurrence)
-11. [Bonus - API REST](#itération-11-bonus--api-rest)
-12. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
-13. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
+1. [Environnement & premiers pas](#itération-1--environnement--premiers-pas)
+2. [Fonctions et contrôle du flux](#itération-2--fonctions-et-contrôle-du-flux)
+3. [Structs et méthodes - modéliser le héros](#itération-3--structs-et-méthodes--modéliser-le-héros)
+4. [Slices et maps - inventaire et quêtes](#itération-4--slices-et-maps--inventaire-et-quêtes)
+5. [Interfaces - différents types de quêtes](#itération-5--interfaces--différents-types-de-quêtes)
+6. [Packages & persistance JSON](#itération-6--packages--persistance-json)
+7. [Tests unitaires - valider le comportement du jeu](#itération-7--tests-unitaires--valider-le-comportement-du-jeu)
+8. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
+9. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
 
 > **Comment utiliser ce document**
 > - Chaque itération contient : objectifs, contexte du projet, tâches à réaliser et points de vigilance.
@@ -38,22 +37,24 @@ Tu vas construire **Adventure Quest**, un gestionnaire de quêtes RPG en ligne d
 - Afficher la liste des quêtes actives et terminées
 - Calculer les récompenses selon le type de quête
 - Sauvegarder et charger la progression depuis un fichier
-- (Bonus) Exposer le tout via une API REST
 
 Chaque itération ajoute une brique. Tu commenceras avec un simple `Hello, World!` et tu termineras avec un programme complet.
 
 ---
 
-## Itération 1 - Mise en place de l'environnement
+## Itération 1 - Environnement & premiers pas
 
 ⏱ **Durée estimée : 1 jour**
+
+> 🗓️ **Journée dense** : cette itération couvre l'installation ET les bases du langage. Prends le temps de tester chaque exemple dans le playground (https://go.dev/play/) avant de passer à la suite.
 
 ### Objectifs pédagogiques
 
 - Installer Go et configurer son environnement
 - Comprendre la structure d'un programme Go minimal
-- Créer et exécuter un premier programme
-- Comprendre le rôle de `go mod init`
+- Déclarer des variables avec `:=` et `var`
+- Comprendre les types de base (`string`, `int`, `float64`, `bool`)
+- Utiliser `fmt.Scan()` pour lire une saisie utilisateur
 
 ---
 
@@ -113,28 +114,7 @@ Tape 'aide' pour commencer.
 > - `fmt.Println()` affiche une ligne. `fmt.Printf()` permet le formatage (`%s`, `%d`, `%v`...).
 > - Pour exécuter : `go run main.go`. Pour compiler : `go build -o adventure-quest`.
 
-### 1.6 - Livrable
-
-- [ ] `go.mod` créé avec `go mod init adventure-quest`
-- [ ] `main.go` avec la fonction `main()` qui affiche le message de bienvenue
-- [ ] Programme exécutable avec `go run main.go`
-
----
-
-## Itération 2 - Variables, types et premier programme
-
-⏱ **Durée estimée : 2 jours**
-
-### Objectifs pédagogiques
-
-- Déclarer des variables avec `:=` et `var`
-- Comprendre les types de base (`string`, `int`, `float64`, `bool`)
-- Utiliser `fmt.Scan()` pour lire une saisie utilisateur
-- Comprendre la **déclaration courte** et ses limites
-
----
-
-### 2.1 - Les types de base en Go
+### 1.6 - Les types de base en Go
 
 | Type | Exemple | Notes |
 |------|---------|-------|
@@ -142,7 +122,6 @@ Tape 'aide' pour commencer.
 | `int` | `42` | Entier signé (64 bits sur la plupart des machines) |
 | `float64` | `3.14` | Flottant 64 bits (type flottant par défaut) |
 | `bool` | `true` / `false` | |
-| `int64` | `int64(42)` | Entier 64 bits explicite |
 
 > 💡 **`:=` vs `var`**
 > ```go
@@ -152,7 +131,7 @@ Tape 'aide' pour commencer.
 > ```
 > Go n'autorise pas les variables déclarées mais non utilisées - le compilateur refuse.
 
-### 2.2 - Tâche : créer le héros
+### 1.7 - Tâche : créer le héros
 
 Modifier `main.go` pour :
 
@@ -190,7 +169,7 @@ Les variables à utiliser :
 > ```
 > Pour lire une ligne entière (avec des espaces), `bufio.NewReader` est nécessaire.
 
-### 2.3 - Tâche : mini-calculateur de niveau
+### 1.8 - Tâche : mini-calculateur de niveau
 
 Écrire une fonction `xpToNextLevel(level int) int` qui retourne le XP nécessaire pour passer au niveau suivant selon la formule : `level * 100`.
 
@@ -207,13 +186,15 @@ Niveau 3 → 300 XP pour progresser
 > - En Go, une fonction retourne un type explicitement déclaré dans sa signature.
 > - Pas de `return` implicite : chaque chemin d'exécution doit retourner une valeur.
 
-### 2.4 - ⚡ Pour aller plus loin
+### 1.9 - ⚡ Pour aller plus loin
 
 - Ajouter un type `heroClass` de type `string` avec une constante `const` pour les classes disponibles (`"Guerrier"`, `"Mage"`, `"Rôdeur"`).
 - Utiliser `iota` pour définir les classes comme constantes numériques.
 
-### 2.5 - Livrable
+### 1.10 - Livrable
 
+- [ ] `go.mod` créé avec `go mod init adventure-quest`
+- [ ] `main.go` avec la fonction `main()` qui affiche le message de bienvenue
 - [ ] Variable `heroName` lue depuis le terminal
 - [ ] Affichage des stats initiales
 - [ ] Fonction `xpToNextLevel(level int) int` correcte
@@ -221,7 +202,7 @@ Niveau 3 → 300 XP pour progresser
 
 ---
 
-## Itération 3 - Fonctions et contrôle du flux
+## Itération 2 - Fonctions et contrôle du flux
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -234,7 +215,7 @@ Niveau 3 → 300 XP pour progresser
 
 ---
 
-### 3.1 - Les valeurs de retour multiples
+### 2.1 - Les valeurs de retour multiples
 
 Go permet de retourner plusieurs valeurs depuis une fonction :
 
@@ -256,7 +237,7 @@ fmt.Println(result) // 5
 
 Le pattern `result, err` est au cœur de Go. Il n'y a pas d'exceptions : les erreurs sont des valeurs comme les autres.
 
-### 3.2 - Tâche : menu de jeu en boucle
+### 2.2 - Tâche : menu de jeu en boucle
 
 Implémenter une boucle de jeu (`for` infini) qui :
 
@@ -297,7 +278,7 @@ Commandes disponibles :
 > ```
 > Il n'existe pas de `while` en Go - tout se fait avec `for`.
 
-### 3.3 - Tâche : simuler un lancer de dé
+### 2.3 - Tâche : simuler un lancer de dé
 
 Écrire une fonction `rollDice(sides int) int` qui retourne un entier aléatoire entre 1 et `sides` inclus.
 
@@ -316,7 +297,7 @@ Tu lances le dé... et obtiens un 4 !
 > ```
 > Depuis Go 1.20, le générateur est automatiquement initialisé - pas besoin de `rand.Seed()`.
 
-### 3.4 - Tâche : fonction de combat rapide
+### 2.4 - Tâche : fonction de combat rapide
 
 Écrire `simulateFight(heroHP int, enemyHP int, heroAttack int, enemyAttack int) (bool, int)` qui :
 - Simule un combat tour par tour (le héros attaque en premier)
@@ -327,12 +308,12 @@ Tu lances le dé... et obtiens un 4 !
 > - Utiliser une boucle `for` avec condition.
 > - Vérifier après chaque attaque si les PV tombent à 0 ou en dessous.
 
-### 3.5 - ⚡ Pour aller plus loin
+### 2.5 - ⚡ Pour aller plus loin
 
 - Ajouter une fonction `clamp(value, min, max int) int` qui s'assure qu'une valeur reste dans un intervalle.
 - Utiliser des **named return values** : `func rollDice(sides int) (result int)`.
 
-### 3.6 - Livrable
+### 2.6 - Livrable
 
 - [ ] Boucle de jeu avec `switch` sur les commandes
 - [ ] Commande `"quitter"` qui sort proprement du programme
@@ -341,7 +322,7 @@ Tu lances le dé... et obtiens un 4 !
 
 ---
 
-## Itération 4 - Structs et méthodes - modéliser le héros
+## Itération 3 - Structs et méthodes - modéliser le héros
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -354,14 +335,14 @@ Tu lances le dé... et obtiens un 4 !
 
 ---
 
-### 4.1 - Architecture à créer
+### 3.1 - Architecture à créer
 
 > 🏗️ **Pourquoi ce choix ?**
 > - Remplacer les variables `heroName`, `heroHP`, etc. par un **struct `Hero`** regroupe les données liées dans une seule entité.
 > - Les **méthodes** (`func (h Hero) DisplayStats()`) associent le comportement à la donnée - c'est l'équivalent Go des méthodes de classe en Java/Python, sans l'héritage.
 > - Go n'a pas de constructeurs : la convention est une fonction `NewXxx()` qui retourne une valeur initialisée.
 
-### 4.2 - Le struct `Hero`
+### 3.2 - Le struct `Hero`
 
 Créer le struct `Hero` avec les champs suivants :
 
@@ -377,7 +358,7 @@ Créer le struct `Hero` avec les champs suivants :
 
 Créer une fonction `NewHero(name string) Hero` qui retourne un `Hero` initialisé avec des valeurs par défaut (HP=100, MaxHP=100, Level=1, Attack=10...).
 
-### 4.3 - Les méthodes à implémenter
+### 3.3 - Les méthodes à implémenter
 
 | Méthode | Receveur | Rôle |
 |---------|----------|------|
@@ -404,7 +385,7 @@ Créer une fonction `NewHero(name string) Hero` qui retourne un `Hero` initialis
 > **Règle simple** : si la méthode modifie le struct → receveur pointeur. Sinon → receveur valeur.
 > **Cohérence** : si un seul des méthodes a un receveur pointeur, mettre toutes les méthodes en pointeur.
 
-### 4.4 - Créer le struct `Enemy`
+### 3.4 - Créer le struct `Enemy`
 
 | Champ | Type | Description |
 |-------|------|-------------|
@@ -416,18 +397,18 @@ Créer une fonction `NewHero(name string) Hero` qui retourne un `Hero` initialis
 
 Ajouter les méthodes `IsAlive() bool` et `TakeDamage(dmg int)` sur `Enemy`.
 
-### 4.5 - Mettre à jour la boucle de jeu
+### 3.5 - Mettre à jour la boucle de jeu
 
 Remplacer les variables séparées par une instance `hero := NewHero(heroName)`. Mettre à jour les commandes `"stats"` et `"dé"` pour utiliser les méthodes du struct.
 
 Ajouter la commande `"combat"` : créer un ennemi (`Gobelin`, HP=30, Attack=5, XP=20, Gold=10) et appeler la fonction `simulateFight` mise à jour pour utiliser les structs.
 
-### 4.6 - ⚡ Pour aller plus loin
+### 3.6 - ⚡ Pour aller plus loin
 
 - Ajouter un champ `Class` de type `string` avec une constante pour chaque classe (`"Guerrier"`, `"Mage"`, `"Rôdeur"`).
 - Créer des fonctions `NewWarrior(name string) Hero`, `NewMage(name string) Hero` avec des stats différentes.
 
-### 4.7 - Livrable
+### 3.7 - Livrable
 
 - [ ] Struct `Hero` avec tous les champs listés
 - [ ] Fonction `NewHero(name string) Hero`
@@ -437,9 +418,11 @@ Ajouter la commande `"combat"` : créer un ennemi (`Gobelin`, HP=30, Attack=5, X
 
 ---
 
-## Itération 5 - Slices et maps - inventaire et quêtes
+## Itération 4 - Slices et maps - inventaire et quêtes
 
-⏱ **Durée estimée : 2 jours**
+⏱ **Durée estimée : 1 jour**
+
+> 🗓️ **Journée dense** : cette itération couvre deux structures de données en une seule journée. Concentre-toi sur les tâches essentielles — les sections "Pour aller plus loin" sont à remettre à plus tard.
 
 ### Objectifs pédagogiques
 
@@ -450,7 +433,7 @@ Ajouter la commande `"combat"` : créer un ennemi (`Gobelin`, HP=30, Attack=5, X
 
 ---
 
-### 5.1 - Arrays vs Slices
+### 4.1 - Arrays vs Slices
 
 > 💡 **Array vs Slice**
 > ```go
@@ -466,7 +449,7 @@ Ajouter la commande `"combat"` : créer un ennemi (`Gobelin`, HP=30, Attack=5, X
 > ```
 > Un `slice` est une **vue** sur un array sous-jacent. Il gère lui-même sa capacité via `append`.
 
-### 5.2 - Le struct `Quest`
+### 4.2 - Le struct `Quest`
 
 Créer le struct `Quest` :
 
@@ -479,7 +462,7 @@ Créer le struct `Quest` :
 | `GoldReward` | `int` | Récompense en or |
 | `Completed` | `bool` | Quête terminée ou non |
 
-### 5.3 - Ajouter l'inventaire au héros
+### 4.3 - Ajouter l'inventaire au héros
 
 Ajouter un champ `Inventory []string` au struct `Hero`.
 
@@ -504,7 +487,7 @@ Implémenter les méthodes :
 > }
 > ```
 
-### 5.4 - Gérer une liste de quêtes avec une map
+### 4.4 - Gérer une liste de quêtes avec une map
 
 Créer une **map** `questBook map[int]Quest` dans la fonction `main` pour stocker les quêtes disponibles :
 
@@ -532,13 +515,12 @@ Ajouter les commandes :
 > }
 > ```
 
-### 5.5 - ⚡ Pour aller plus loin
+### 4.5 - ⚡ Pour aller plus loin
 
 - Trier l'affichage des quêtes par `ID` croissant avec `sort.Slice()`.
 - Ajouter une commande `"inventaire"` qui affiche les items du héros.
-- Ajouter des items en récompense quand une quête est terminée.
 
-### 5.6 - Livrable
+### 4.6 - Livrable
 
 - [ ] Struct `Quest` avec tous les champs
 - [ ] Champ `Inventory []string` dans `Hero` avec les méthodes associées
@@ -548,7 +530,7 @@ Ajouter les commandes :
 
 ---
 
-## Itération 6 - Interfaces - différents types de quêtes
+## Itération 5 - Interfaces - différents types de quêtes
 
 ⏱ **Durée estimée : 2 jours**
 
@@ -561,14 +543,14 @@ Ajouter les commandes :
 
 ---
 
-### 6.1 - Pourquoi les interfaces ?
+### 5.1 - Pourquoi les interfaces ?
 
 > 🏗️ **Pourquoi ce choix ?**
 > - Jusqu'ici, toutes les quêtes sont du même type `Quest`. Mais les quêtes de combat, d'exploration et de collecte ont des comportements différents : calcul de récompense, condition de complétion, description de l'action.
 > - En Java, on utiliserait l'héritage. En Go, on utilise des **interfaces**.
 > - Une interface en Go est **implicite** : un type implémente une interface s'il possède toutes ses méthodes. Pas de mot-clé `implements`.
 
-### 6.2 - Définir l'interface `Questable`
+### 5.2 - Définir l'interface `Questable`
 
 ```go
 type Questable interface {
@@ -579,7 +561,7 @@ type Questable interface {
 }
 ```
 
-### 6.3 - Implémenter 3 types de quêtes
+### 5.3 - Implémenter 3 types de quêtes
 
 Créer trois structs, chacun implémentant `Questable` :
 
@@ -611,7 +593,7 @@ Créer trois structs, chacun implémentant `Questable` :
 
 `Complete()` : attribue l'or, affiche le message.
 
-### 6.4 - Utiliser l'interface
+### 5.4 - Utiliser l'interface
 
 Modifier la liste des quêtes pour utiliser `[]Questable` :
 
@@ -634,12 +616,12 @@ La commande `"terminer <id>"` appelle `quests[id].Complete(&hero)` sans connaît
 > ```
 > Utiliser le pattern `value, ok` pour éviter un panic si l'assertion échoue.
 
-### 6.5 - ⚡ Pour aller plus loin
+### 5.5 - ⚡ Pour aller plus loin
 
 - Ajouter une méthode `Difficulty() string` à l'interface qui retourne `"Facile"`, `"Moyen"` ou `"Difficile"`.
 - Afficher la difficulté dans la liste des quêtes.
 
-### 6.6 - Livrable
+### 5.6 - Livrable
 
 - [ ] Interface `Questable` définie
 - [ ] Structs `CombatQuest`, `ExploreQuest`, `GatherQuest` implémentant `Questable`
@@ -648,20 +630,22 @@ La commande `"terminer <id>"` appelle `quests[id].Complete(&hero)` sans connaît
 
 ---
 
-## Itération 7 - Packages - organiser le code
+## Itération 6 - Packages & persistance JSON
 
 ⏱ **Durée estimée : 1 jour**
+
+> 🗓️ **Journée en deux temps** : matin → refactoriser en packages, après-midi → ajouter la sauvegarde JSON. Les deux sujets sont indépendants dans leur apprentissage mais liés dans le projet : les packages doivent être en place avant d'ajouter `game/save.go`.
 
 ### Objectifs pédagogiques
 
 - Organiser le code en packages séparés
 - Comprendre les règles d'exportation (majuscule = public)
-- Faire communiquer plusieurs packages
-- Comprendre le rôle de chaque package
+- Sérialiser et désérialiser des données en JSON avec `encoding/json`
+- Gérer les erreurs de fichier proprement
 
 ---
 
-### 7.1 - Architecture cible
+### 6.1 - Architecture cible (matin)
 
 ```
 adventure-quest/
@@ -673,7 +657,8 @@ adventure-quest/
 │   └── quest.go         ← interface Questable + types de quêtes
 └── game/
     ├── combat.go        ← logique de combat
-    └── commands.go      ← traitement des commandes
+    ├── commands.go      ← traitement des commandes
+    └── save.go          ← sauvegarde JSON
 ```
 
 > 🏗️ **Pourquoi ce choix ?**
@@ -682,7 +667,7 @@ adventure-quest/
 > - `main.go` orchestre : il crée le héros, initialise les quêtes, lance la boucle. Il ne contient pas de logique.
 > - Cette séparation facilite les tests et la maintenance.
 
-### 7.2 - Règles d'exportation
+### 6.2 - Règles d'exportation
 
 > 💡 **Majuscule = exporté (public)**
 > ```go
@@ -697,7 +682,7 @@ adventure-quest/
 > ```
 > Il n'y a pas de `public`/`private`/`protected` en Go : la casse de la première lettre suffit.
 
-### 7.3 - Tâche : refactoriser
+### 6.3 - Tâche : refactoriser (matin)
 
 Déplacer chaque struct et fonction dans le package correspondant. Adapter les imports dans `main.go` et `game/`.
 
@@ -715,33 +700,101 @@ func main() {
 }
 ```
 
-### 7.4 - Points de vigilance
+> 💡 **Points de vigilance**
+> - Un package ne peut pas importer un package qui l'importe lui-même (**import circulaire** - erreur de compilation).
+> - Les structs dans `models/` ne doivent pas importer `game/`.
+> - `main.go` peut importer tous les packages.
 
-- Un package ne peut pas importer un package qui l'importe lui-même (**import circulaire** - erreur de compilation).
-- Les structs dans `models/` ne doivent pas importer `game/`.
-- `main.go` peut importer tous les packages.
+### 6.4 - Sérialisation JSON (après-midi)
 
-### 7.5 - Livrable
+> 💡 **Tags JSON sur les structs**
+> ```go
+> type Hero struct {
+>     Name  string `json:"name"`
+>     HP    int    `json:"hp"`
+>     Level int    `json:"level"`
+> }
+>
+> // Sérialiser
+> data, err := json.Marshal(hero)         // []byte
+> // ou avec indentation :
+> data, err := json.MarshalIndent(hero, "", "  ")
+>
+> // Désérialiser
+> var hero Hero
+> err = json.Unmarshal(data, &hero)
+> ```
+> Les champs non exportés (minuscule) sont ignorés par `json.Marshal`.
+
+### 6.5 - Struct de sauvegarde
+
+Créer un struct `SaveData` qui contient tout ce qui doit persister :
+
+```go
+type SaveData struct {
+    Hero      models.Hero `json:"hero"`
+    Quests    []Quest     `json:"quests"`
+    Timestamp string      `json:"saved_at"`
+}
+```
+
+> 💡 **Note** : les interfaces ne se sérialisent pas directement en JSON (le type concret est perdu). Utiliser le struct `Quest` simple (de l'itération 4) pour la sauvegarde.
+
+### 6.6 - Fonctions à implémenter dans `game/save.go`
+
+| Fonction | Signature | Rôle |
+|----------|-----------|------|
+| `Save` | `(hero models.Hero, quests []Quest, path string) error` | Écrit la sauvegarde en JSON |
+| `Load` | `(path string) (models.Hero, []Quest, error)` | Charge la sauvegarde depuis le fichier |
+
+Ajouter les commandes :
+
+- `"sauvegarder"` → appelle `game.Save(hero, quests, "save.json")`
+- `"charger"` → appelle `game.Load("save.json")` et remplace le héros et les quêtes courants
+
+### 6.7 - Gestion des erreurs de fichier
+
+| Erreur | Comportement attendu |
+|--------|---------------------|
+| Fichier inexistant au chargement | Afficher `"Aucune sauvegarde trouvée."` - ne pas crasher |
+| Erreur d'écriture | Afficher l'erreur et continuer |
+| JSON invalide | Afficher `"Fichier de sauvegarde corrompu."` |
+
+> 💡 **Vérifier si un fichier existe**
+> ```go
+> if _, err := os.Stat(path); os.IsNotExist(err) {
+>     // Le fichier n'existe pas
+> }
+> ```
+
+### 6.8 - ⚡ Pour aller plus loin
+
+- Ajouter un horodatage (`time.Now().Format(time.RFC3339)`) dans `SaveData.Timestamp`.
+- Permettre plusieurs slots de sauvegarde : `"sauvegarder <nom>"` / `"charger <nom>"`.
+
+### 6.9 - Livrable
 
 - [ ] Dossiers `models/` et `game/` créés
 - [ ] Structs et interfaces dans `models/`
 - [ ] Logique de combat et de commandes dans `game/`
-- [ ] `main.go` réduit à l'initialisation et à la boucle principale
 - [ ] `go run main.go` fonctionne toujours après refactorisation
+- [ ] Struct `SaveData` avec tags JSON
+- [ ] Fonctions `Save()` et `Load()` dans `game/save.go`
+- [ ] Commandes `"sauvegarder"` et `"charger"` fonctionnelles
+- [ ] Erreurs de fichier gérées sans crash
 
 ---
 
-## Itération 8 - Tests unitaires - valider le comportement du jeu
+## Itération 7 - Tests unitaires - valider le comportement du jeu
 
-⏱ **Durée estimée : 2 jours**
+⏱ **Durée estimée : 1 jour**
 
----
+> 🗓️ **Journée ciblée** : cette itération couvre les tests de base. L'objectif est d'écrire les 4 tests essentiels et de maîtriser la commande `go test`. Le pattern table-driven tests est en "Pour aller plus loin" — ne l'aborde que si tu as du temps.
 
-#### Objectifs pédagogiques
+### Objectifs pédagogiques
 
 - Comprendre pourquoi et quand tester son code
 - Écrire des tests unitaires avec le package `testing` de la stdlib Go
-- Maîtriser le pattern **table-driven tests** — le pattern de test idiomatique en Go
 - Utiliser `go test` et interpréter ses résultats
 - Organiser ses fichiers de test (`_test.go`)
 
@@ -750,11 +803,10 @@ func main() {
 > 🏗️ **Pourquoi ce moment ?**
 > Tu viens d'organiser ton code en packages (`models/`, `game/`). Tes fonctions sont maintenant **isolées et indépendantes** — c'est exactement ce qu'on veut tester.
 > Tester du code non structuré, c'est difficile. Tester des fonctions pures dans des packages bien séparés, c'est naturel.
-> Un test unitaire répond à une question simple : *"Si je donne cette entrée à ma fonction, est-ce qu'elle me retourne bien ce que j'attends ?"*
 
 ---
 
-### 8.1 - Pourquoi tester ?
+### 7.1 - Pourquoi tester ?
 
 Imagine que tu modifies la formule de `LevelUp()` pour équilibrer le jeu. Comment tu sais que tu n'as pas cassé autre chose ?
 
@@ -769,7 +821,7 @@ Les tests sont un **filet de sécurité** — ils te permettent de modifier le c
 
 ---
 
-### 8.2 - Structure d'un test Go
+### 7.2 - Structure d'un test Go
 
 ```go
 // models/hero_test.go
@@ -801,7 +853,7 @@ func TestIsAlive(t *testing.T) {
 
 ---
 
-### 8.3 - Lancer les tests
+### 7.3 - Lancer les tests
 
 ```bash
 # Lancer tous les tests du projet
@@ -817,22 +869,9 @@ go test -v ./...
 go test -cover ./...
 ```
 
-Résultat attendu :
-```
-ok      adventure-quest/models    0.003s
-ok      adventure-quest/game      0.002s
-```
-
-En cas d'échec :
-```
---- FAIL: TestIsAlive (0.00s)
-    hero_test.go:12: Un héros avec 0 HP ne devrait pas être en vie
-FAIL
-```
-
 ---
 
-### 8.4 - Tâche : premiers tests unitaires
+### 7.4 - Tâche : tests unitaires essentiels
 
 Créer le fichier `models/hero_test.go` et écrire les tests suivants :
 
@@ -874,13 +913,26 @@ Vérifier deux cas :
 >     t.Errorf("HP attendu : 70, obtenu : %d", hero.HP)
 > }
 > ```
-> Un bon message d'erreur dit **ce qui était attendu** et **ce qui a été obtenu**.
 
 ---
 
-### 8.5 - Le pattern Table-Driven Tests
+### 7.5 - Points de vigilance
 
-Imagine que tu veuilles tester `xpToNextLevel()` pour les niveaux 1 à 5. Tu pourrais écrire 5 fonctions de test... ou utiliser le pattern **table-driven** :
+- **Ne tester que ce que tu possèdes** — teste tes fonctions, pas les fonctions de la stdlib (`fmt`, `os`, etc.)
+- **Un test = un comportement** — si ton test a 15 assertions sans rapport, découpe-le
+- **Les tests doivent être déterministes** — un test qui passe une fois sur deux n'est pas un test. Si tu testes `rollDice()`, teste la plage de valeurs, pas la valeur exacte :
+  ```go
+  result := rollDice(6)
+  if result < 1 || result > 6 {
+      t.Errorf("rollDice(6) doit retourner entre 1 et 6, obtenu : %d", result)
+  }
+  ```
+
+---
+
+### 7.6 - ⚡ Pour aller plus loin — Table-Driven Tests
+
+Le pattern idiomatique Go pour tester plusieurs cas d'un coup :
 
 ```go
 func TestXpToNextLevel(t *testing.T) {
@@ -892,8 +944,6 @@ func TestXpToNextLevel(t *testing.T) {
         {"niveau 1", 1, 100},
         {"niveau 2", 2, 200},
         {"niveau 3", 3, 300},
-        {"niveau 4", 4, 400},
-        {"niveau 5", 5, 500},
     }
 
     for _, tt := range tests {
@@ -907,357 +957,23 @@ func TestXpToNextLevel(t *testing.T) {
 }
 ```
 
-Résultat avec `go test -v` :
-```
---- PASS: TestXpToNextLevel (0.00s)
-    --- PASS: TestXpToNextLevel/niveau_1 (0.00s)
-    --- PASS: TestXpToNextLevel/niveau_2 (0.00s)
-    --- PASS: TestXpToNextLevel/niveau_3 (0.00s)
-    --- PASS: TestXpToNextLevel/niveau_4 (0.00s)
-    --- PASS: TestXpToNextLevel/niveau_5 (0.00s)
-```
-
-> 💡 **Pourquoi ce pattern ?**
-> - Un seul endroit pour ajouter un nouveau cas de test → ajouter une ligne dans le tableau
-> - Les sous-tests (`t.Run`) sont nommés → facile à identifier lequel échoue
-> - C'est le pattern utilisé dans la **stdlib Go elle-même** — c'est du Go idiomatique
-> - Quand un cas échoue, les autres continuent de s'exécuter
+Appliquer ce pattern pour tester `simulateFight()` et les récompenses de quêtes.
 
 ---
 
-### 8.6 - Tâche : table-driven tests sur les quêtes
-
-Créer le fichier `models/quest_test.go` et écrire un test table-driven pour la fonction qui calcule les récompenses selon le type de quête.
-
-Les cas à couvrir :
-
-| Nom du test | Type de quête | Niveau héros | Récompense attendue |
-|---|---|---|---|
-| "combat niveau 1" | `Combat` | 1 | XP et or selon ta formule |
-| "combat niveau 5" | `Combat` | 5 | XP et or × 5 |
-| "exploration niveau 1" | `Exploration` | 1 | XP et or selon ta formule |
-| "collecte niveau 1" | `Collecte` | 1 | XP et or selon ta formule |
-| "type inconnu" | `""` | 1 | 0, 0 (ou erreur selon ton implémentation) |
-
-> 💡 **Tester les cas limites**
-> Les bugs se cachent aux extrêmes : niveau 0, valeur négative, chaîne vide, nil...
-> Un bon test couvre toujours au moins un **cas nominal**, un **cas limite** et un **cas d'erreur**.
-
----
-
-### 8.7 - Tâche : tester `simulateFight()`
-
-La fonction `simulateFight()` de l'itération 3 retourne `(bool, int)`. Elle est parfaite pour un test table-driven.
-
-Écrire `game/combat_test.go` avec les cas suivants :
-
-| Nom du test | heroHP | enemyHP | heroAttack | enemyAttack | héros gagne ? |
-|---|---|---|---|---|---|
-| "héros écrase l'ennemi" | 100 | 10 | 50 | 5 | true |
-| "héros perd" | 10 | 100 | 5 | 50 | false |
-| "combat équilibré" | 100 | 100 | 10 | 10 | true (héros attaque en premier) |
-| "ennemi à 0 HP" | 100 | 0 | 10 | 10 | true |
-
-> 💡 **À noter**
-> Un test ne doit pas afficher de texte dans le terminal (les `fmt.Println` dans `simulateFight` s'afficheront quand même).
-> Pour les tests silencieux, utiliser `go test -v` montre les prints — c'est acceptable à ce stade.
-> En production, on passerait par un logger injectable, mais c'est hors périmètre de cette itération.
-
----
-
-### 8.8 - Points de vigilance
-
-- **Ne tester que ce que tu possèdes** — teste tes fonctions, pas les fonctions de la stdlib (`fmt`, `os`, etc.)
-- **Un test = un comportement** — si ton test a 15 assertions sans rapport, découpe-le
-- **Les tests doivent être déterministes** — un test qui passe une fois sur deux n'est pas un test. Si tu testes `rollDice()`, teste la plage de valeurs, pas la valeur exacte :
-  ```go
-  result := rollDice(6)
-  if result < 1 || result > 6 {
-      t.Errorf("rollDice(6) doit retourner entre 1 et 6, obtenu : %d", result)
-  }
-  ```
-- **Les tests font partie du code** — ils se commitent sur Git, ils s'exécutent en CI/CD
-
----
-
-### 8.9 - ⚡ Pour aller plus loin
-
-- Utiliser `t.Helper()` dans une fonction d'assertion réutilisable :
-  ```go
-  func assertInt(t *testing.T, got, want int, msg string) {
-      t.Helper() // Pointe vers l'appelant dans les logs d'erreur
-      if got != want {
-          t.Errorf("%s : attendu %d, obtenu %d", msg, want, got)
-      }
-  }
-  ```
-- Mesurer la couverture de code avec `go test -coverprofile=coverage.out ./...` puis `go tool cover -html=coverage.out`
-- Découvrir `testify/assert` (package externe très populaire) : `github.com/stretchr/testify`
-
----
-
-### 8.10 - Livrable
+### 7.7 - Livrable
 
 - [ ] `models/hero_test.go` avec les 4 tests unitaires (`NewHero`, `IsAlive`, `TakeDamage`, `Heal`)
-- [ ] `models/quest_test.go` avec un test table-driven sur les récompenses (minimum 4 cas)
-- [ ] `game/combat_test.go` avec un test table-driven sur `simulateFight()` (minimum 4 cas)
 - [ ] `go test ./...` passe avec 0 échec
-- [ ] `go test -v ./...` affiche le détail de chaque sous-test
-- [ ] Tous les tests sont déterministes (pas de dépendance à `rand` sans contrôle)
+- [ ] `go test -v ./...` affiche le détail de chaque test
 
 ---
 
 > ✅ **Ce que tu sais maintenant faire**
 > - Écrire des tests unitaires avec `testing.T`
-> - Appliquer le pattern table-driven pour tester plusieurs cas proprement
 > - Lancer et interpréter les résultats de `go test`
 > - Distinguer `t.Error` (continue) et `t.Fatal` (arrête)
 > - Tester les cas nominaux, limites et d'erreur
->
-> À partir de maintenant, chaque nouvelle fonction que tu écris mérite son test. C'est un réflexe à construire.
-
----
-
-## Itération 9 - Fichiers - sauvegarder et charger les données
-
-⏱ **Durée estimée : 2 jours**
-
-### Objectifs pédagogiques
-
-- Lire et écrire des fichiers avec le package `os`
-- Sérialiser et désérialiser des données en JSON avec `encoding/json`
-- Gérer les erreurs de fichier proprement
-- Comprendre les tags de struct JSON
-
----
-
-### 9.1 - Sérialisation JSON
-
-> 💡 **Tags JSON sur les structs**
-> ```go
-> type Hero struct {
->     Name  string `json:"name"`
->     HP    int    `json:"hp"`
->     Level int    `json:"level"`
-> }
->
-> // Sérialiser
-> data, err := json.Marshal(hero)         // []byte
-> // ou avec indentation :
-> data, err := json.MarshalIndent(hero, "", "  ")
->
-> // Désérialiser
-> var hero Hero
-> err = json.Unmarshal(data, &hero)
-> ```
-> Les champs non exportés (minuscule) sont ignorés par `json.Marshal`.
-
-### 9.2 - Struct de sauvegarde
-
-Créer un struct `SaveData` qui contient tout ce qui doit persister :
-
-```go
-type SaveData struct {
-    Hero      Hero      `json:"hero"`
-    Quests    []Quest   `json:"quests"`   // Version simplifiée sans interface
-    Timestamp string    `json:"saved_at"`
-}
-```
-
-> 💡 **Note** : les interfaces ne se sérialisent pas directement en JSON (le type concret est perdu). Pour la sauvegarde, utiliser le struct `Quest` de l'itération 5, plus simple et sérialisable.
-
-### 9.3 - Fonctions à implémenter
-
-Dans `game/save.go` :
-
-| Fonction | Signature | Rôle |
-|----------|-----------|------|
-| `Save` | `(hero models.Hero, quests []Quest, path string) error` | Écrit la sauvegarde en JSON |
-| `Load` | `(path string) (models.Hero, []Quest, error)` | Charge la sauvegarde depuis le fichier |
-
-Ajouter les commandes :
-
-- `"sauvegarder"` → appelle `game.Save(hero, quests, "save.json")`
-- `"charger"` → appelle `game.Load("save.json")` et remplace le héros et les quêtes courants
-
-```
-> sauvegarder
-Progression sauvegardée dans save.json ✓
-
-> charger
-Partie chargée - Bienvenue de retour, Thorin !
-```
-
-### 9.4 - Gestion des erreurs de fichier
-
-| Erreur | Comportement attendu |
-|--------|---------------------|
-| Fichier inexistant au chargement | Afficher `"Aucune sauvegarde trouvée."` - ne pas crasher |
-| Erreur d'écriture | Afficher l'erreur et continuer |
-| JSON invalide | Afficher `"Fichier de sauvegarde corrompu."` |
-
-> 💡 **Vérifier si un fichier existe**
-> ```go
-> if _, err := os.Stat(path); os.IsNotExist(err) {
->     // Le fichier n'existe pas
-> }
-> ```
-
-### 9.5 - ⚡ Pour aller plus loin
-
-- Ajouter un horodatage (`time.Now().Format(time.RFC3339)`) dans `SaveData.Timestamp`.
-- Permettre plusieurs slots de sauvegarde : `"sauvegarder <nom>"` / `"charger <nom>"`.
-
-### 9.6 - Livrable
-
-- [ ] Struct `SaveData` avec tags JSON
-- [ ] Fonctions `Save()` et `Load()` dans `game/save.go`
-- [ ] Commandes `"sauvegarder"` et `"charger"` fonctionnelles
-- [ ] Erreurs de fichier gérées sans crash
-
----
-
-## Itération 10 - Goroutines et channels - concurrence
-
-⏱ **Durée estimée : 2 jours**
-
-### Objectifs pédagogiques
-
-- Comprendre le modèle de concurrence de Go (goroutines et channels)
-- Lancer une goroutine avec `go`
-- Communiquer entre goroutines via des channels
-- Utiliser `select` pour gérer plusieurs channels
-
----
-
-### 10.1 - Goroutines
-
-> 💡 **Goroutine**
-> Une goroutine est une **fonction exécutée de manière concurrente**. Elle est bien plus légère qu'un thread OS (quelques Ko vs plusieurs Mo). Go peut gérer des milliers de goroutines simultanément.
-> ```go
-> go doSomething()   // Lance doSomething() en concurrence
->
-> // Attendre la fin avec un WaitGroup :
-> var wg sync.WaitGroup
-> wg.Add(1)
-> go func() {
->     defer wg.Done()
->     // ...
-> }()
-> wg.Wait()
-> ```
-
-### 10.2 - Channels
-
-> 💡 **Channel**
-> Un channel est un **tuyau typé** pour envoyer des valeurs entre goroutines.
-> ```go
-> ch := make(chan string)        // Channel non bufferisé
-> ch := make(chan string, 10)    // Channel bufferisé (capacité 10)
->
-> go func() { ch <- "message" }()  // Envoi (bloquant si non bufferisé)
-> msg := <-ch                       // Réception (bloquant)
->
-> close(ch)  // Fermer le channel quand on n'envoie plus
-> ```
-
-### 10.3 - Tâche : timer de quête en arrière-plan
-
-Ajouter un système de timer : certaines quêtes ont une durée limitée. Lancer un compte à rebours en goroutine pendant que le joueur continue de jouer.
-
-Implémenter la fonction `StartQuestTimer(questTitle string, duration time.Duration, done chan bool)` :
-- Lance un compte à rebours en arrière-plan
-- Si `duration` s'écoule sans signal sur `done` → afficher `"⏰ Temps écoulé pour la quête '[titre]' !"`
-- Si un signal `true` est envoyé sur `done` → la goroutine s'arrête silencieusement
-
-```go
-done := make(chan bool)
-go game.StartQuestTimer("La Tour du Sorcier", 60*time.Second, done)
-
-// Plus tard, quand la quête est terminée :
-done <- true
-```
-
-> 💡 **`select`**
-> ```go
-> select {
-> case <-time.After(duration):
->     fmt.Println("Temps écoulé !")
-> case <-done:
->     // Quête terminée à temps
-> }
-> ```
-> `select` attend sur plusieurs channels simultanément et traite le premier qui reçoit une valeur.
-
-### 10.4 - Tâche : sauvegarde automatique
-
-Implémenter une sauvegarde automatique toutes les 30 secondes en arrière-plan :
-
-```go
-go func() {
-    ticker := time.NewTicker(30 * time.Second)
-    defer ticker.Stop()
-    for {
-        <-ticker.C
-        game.Save(hero, quests, "autosave.json")
-        fmt.Println("[Autosave] Progression sauvegardée automatiquement.")
-    }
-}()
-```
-
-> 💡 **`time.NewTicker`** : envoie une valeur sur son channel `.C` à intervalle régulier.
-
-### 10.5 - Points de vigilance
-
-- **Race condition** : si plusieurs goroutines accèdent au même struct `Hero`, utiliser un `sync.Mutex`.
-- Ne jamais envoyer sur un channel fermé - panic immédiat.
-- Fermer un channel depuis **l'émetteur**, jamais depuis le récepteur.
-
-### 10.6 - Livrable
-
-- [ ] Fonction `StartQuestTimer()` avec goroutine + `select`
-- [ ] Sauvegarde automatique toutes les 30 secondes en arrière-plan
-- [ ] Aucune race condition (utiliser `go run -race main.go` pour vérifier)
-
----
-
-## Itération 11 (Bonus) - API REST
-
-⏱ **Durée estimée : 3 jours**
-
-### Objectifs pédagogiques
-
-- Exposer le gestionnaire de quêtes via une API HTTP
-- Utiliser le framework **Gin**
-- Appliquer les concepts du module K_COURSE_PROJECT_BUILD_A_REST_API
-
----
-
-### 11.1 - Routes à implémenter
-
-| Méthode | Route | Action |
-|---------|-------|--------|
-| `GET` | `/hero` | Retourne les stats du héros |
-| `PUT` | `/hero/heal` | Soigne le héros |
-| `GET` | `/quests` | Liste toutes les quêtes |
-| `POST` | `/quests/:id/complete` | Complète une quête |
-| `GET` | `/quests/:id` | Détail d'une quête |
-
-### 11.2 - Setup
-
-```bash
-go get github.com/gin-gonic/gin
-```
-
-Créer `api/server.go` qui initialise Gin et enregistre les routes. Appeler `api.StartServer()` depuis `main.go` (en goroutine pour ne pas bloquer la boucle CLI).
-
-### 11.3 - Livrable
-
-- [ ] Serveur Gin démarré sur `:8080`
-- [ ] `GET /hero` retourne le JSON du héros
-- [ ] `GET /quests` retourne la liste des quêtes
-- [ ] `POST /quests/:id/complete` complète la quête et retourne les récompenses
-- [ ] CLI et API fonctionnent simultanément (goroutines)
 
 ---
 
@@ -1377,29 +1093,23 @@ func (e *NotFoundError) Error() string {
 }
 ```
 
-### Goroutines et Channels
+### JSON
 
 ```go
-// Goroutine
-go func() { fmt.Println("concurrent") }()
+import "encoding/json"
 
-// Channel
-ch := make(chan int)
-go func() { ch <- 42 }()
-val := <-ch
-
-// Select
-select {
-case msg := <-ch1: fmt.Println(msg)
-case msg := <-ch2: fmt.Println(msg)
-case <-time.After(1 * time.Second): fmt.Println("timeout")
+// Tags sur struct
+type Hero struct {
+    Name string `json:"name"`
+    HP   int    `json:"hp"`
 }
 
-// WaitGroup
-var wg sync.WaitGroup
-wg.Add(1)
-go func() { defer wg.Done(); /* ... */ }()
-wg.Wait()
+// Sérialiser
+data, err := json.MarshalIndent(hero, "", "  ")
+
+// Désérialiser
+var hero Hero
+err = json.Unmarshal(data, &hero)
 ```
 
 ---
@@ -1418,7 +1128,8 @@ wg.Wait()
 | `go fmt ./...` | Formater tout le code |
 | `go vet ./...` | Analyser les erreurs courantes |
 | `go test ./...` | Lancer tous les tests |
-| `go run -race main.go` | Détecter les race conditions |
+| `go test -v ./...` | Tests avec détail |
+| `go test -cover ./...` | Tests avec couverture de code |
 
 ### Outils recommandés
 
@@ -1440,10 +1151,8 @@ adventure-quest/
 │   ├── hero.go
 │   ├── enemy.go
 │   └── quest.go
-├── game/
-│   ├── combat.go
-│   ├── commands.go
-│   └── save.go
-└── api/          ← Bonus
-    └── server.go
+└── game/
+    ├── combat.go
+    ├── commands.go
+    └── save.go
 ```
