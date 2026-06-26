@@ -1,6 +1,6 @@
 # TaskFlow - Apprendre Go par la pratique
 **Cahier de formation - Version débutant**
-7 itérations | Go 1.21+ | 10 jours | Aucun prérequis
+8 itérations | Go 1.21+ | 11 jours | Aucun prérequis
 
 > **Version débutant — Option B**
 > Ce document propose un projet différent du cahier complet : **TaskFlow**, un gestionnaire de tâches en ligne de commande. Le domaine est volontairement simple (pas de mécanique de jeu, pas de combat, pas de concurrence) pour se concentrer sur les bases du langage. Recommandé si tu n'as jamais programmé ou si tu arrives d'un langage très différent (PHP, Python, JS).
@@ -15,9 +15,10 @@
 4. [Structs - modéliser une tâche](#itération-4--structs--modéliser-une-tâche)
 5. [Slices & maps - gérer la liste](#itération-5--slices--maps--gérer-la-liste)
 6. [Fichiers JSON - persister les données](#itération-6--fichiers-json--persister-les-données)
-7. [Packages & tests](#itération-7--packages--tests)
-8. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
-9. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
+7. [Packages & organisation du code](#itération-7--packages--organisation-du-code)
+8. [Tests unitaires *(bonus)*](#itération-8--tests-unitaires-bonus)
+9. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
+10. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
 
 > **Comment utiliser ce document**
 > - Chaque itération contient : objectifs, explication des concepts, tâches à réaliser et points de vigilance.
@@ -798,18 +799,14 @@ if _, err := os.Stat(path); os.IsNotExist(err) {
 
 ---
 
-## Itération 7 - Packages & tests
+## Itération 7 - Packages & organisation du code
 
 ⏱ **Durée estimée : 1 jour**
-
-> 🗓️ **Journée en deux temps** : matin → organiser le code en packages, après-midi → écrire les premiers tests.
 
 ### Objectifs pédagogiques
 
 - Organiser le code en packages séparés
 - Comprendre la règle d'exportation (majuscule = public)
-- Écrire des tests unitaires simples avec `testing`
-- Lancer `go test` et interpréter les résultats
 
 ---
 
@@ -840,7 +837,7 @@ taskflow/
 > ```
 > Pas de mot-clé `public` ou `private` en Go : la première lettre suffit.
 
-### 7.3 - Tâche : refactoriser (matin)
+### 7.3 - Tâche : refactoriser
 
 Déplacer le struct `Task` et ses méthodes dans `models/task.go`. Déplacer la logique de gestion (add, complete, remove) dans `manager/operations.go`. Déplacer les fonctions de fichier dans `manager/save.go`.
 
@@ -861,7 +858,31 @@ func main() {
 > 💡 **Import circulaire — à éviter**
 > `models` ne doit pas importer `manager`, et `manager` ne doit pas importer `main`. Seul `main.go` peut importer tous les packages. Si tu as une erreur `import cycle`, c'est que deux packages s'importent mutuellement.
 
-### 7.4 - Les tests unitaires (après-midi)
+### 7.4 - Livrable
+
+- [ ] Dossiers `models/` et `manager/` créés
+- [ ] Struct `Task` et méthodes dans `models/task.go`
+- [ ] Logique de gestion dans `manager/operations.go`
+- [ ] Fonctions fichier dans `manager/save.go`
+- [ ] `go run main.go` fonctionne après refactorisation
+
+---
+
+## Itération 8 - Tests unitaires *(bonus)*
+
+⏱ **Durée estimée : 1 jour**
+
+> 💡 **Pourquoi cette itération en bonus ?** Les tests sont une bonne pratique indispensable, mais leur mise en place demande d'avoir bien assimilé la structuration en packages (itération 7). En consacrant une journée entière aux tests, tu peux les explorer sans la fatigue de la refactorisation.
+
+### Objectifs pédagogiques
+
+- Écrire des tests unitaires simples avec `testing`
+- Lancer `go test` et interpréter les résultats
+- Comprendre pourquoi et comment tester son code
+
+---
+
+### 8.1 - Les tests unitaires en Go
 
 > 💡 **En Go, les tests font partie du langage**
 > Pas de framework externe. La convention : créer un fichier `task_test.go` à côté de `task.go`.
@@ -892,7 +913,7 @@ go test ./...       # Lancer tous les tests
 go test -v ./...    # Avec le détail de chaque test
 ```
 
-### 7.5 - Tâche : écrire les tests
+### 8.2 - Tâche : écrire les tests
 
 Créer `models/task_test.go` avec les tests suivants :
 
@@ -912,7 +933,9 @@ Créer `models/task_test.go` avec les tests suivants :
 - Vérifier que `Summary()` contient le titre
 - Vérifier que `Summary()` contient `"[x]"` après `Complete()`
 
-### 7.6 - ⚡ Pour aller plus loin
+> Exemple de résultat attendu pour `Summary()` : `"[x] Écrire la doc (Haute)"`
+
+### 8.3 - ⚡ Pour aller plus loin
 
 - Utiliser le pattern **table-driven tests** pour tester `priorityLabel()` sur toutes les valeurs possibles :
   ```go
@@ -929,10 +952,8 @@ Créer `models/task_test.go` avec les tests suivants :
   }
   ```
 
-### 7.7 - Livrable
+### 8.4 - Livrable
 
-- [ ] Dossiers `models/` et `manager/` créés
-- [ ] `go run main.go` fonctionne après refactorisation
 - [ ] `models/task_test.go` avec les 4 tests
 - [ ] `go test ./...` passe avec 0 échec
 
@@ -1047,6 +1068,7 @@ type Task struct {
     Done  bool   `json:"done"`
 }
 
+// ⚠️ En production, toujours vérifier les erreurs (ne pas utiliser _)
 // Écrire
 data, _ := json.MarshalIndent(tasks, "", "  ")
 os.WriteFile("tasks.json", data, 0644)
@@ -1130,13 +1152,3 @@ taskflow/
     └── save.go
 ```
 
-### Comparaison des trois versions
-
-| | Débutant (ce fichier) | Condensé | Complet |
-|---|---|---|---|
-| Projet | TaskFlow (tâches) | Adventure Quest | Adventure Quest |
-| Durée | 10 jours | 10 jours | 21 jours |
-| Interfaces | ❌ | ✅ | ✅ |
-| Goroutines | ❌ | ❌ | ✅ |
-| API REST | ❌ | ❌ | ✅ (bonus) |
-| Public cible | Débutants complets | Développeurs d'un autre langage | Profils intermédiaires |
