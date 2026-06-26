@@ -1,9 +1,9 @@
 # Projet Adventure Quest - Apprendre Go par la pratique
 **Cahier de formation - Version condensée**
-7 itérations | Go 1.21+ | 10 jours
+8 itérations | Go 1.21+ | 11 jours
 
 > **Version condensée — Option A**
-> Ce document est une variante du cahier complet (21 jours). Les itérations sur les goroutines/channels et l'API REST ont été supprimées. Deux fusions ont été opérées : Environnement+Variables (J1) et Packages+Fichiers (J9). Recommandé pour les apprenants ayant déjà des bases dans un autre langage.
+> Ce document est une variante du cahier complet (21 jours). L'API REST a été supprimée. Deux fusions ont été opérées : Environnement+Variables (J1) et Packages+Fichiers (J6). Les goroutines/channels sont abordés en itération 8 sous une forme ciblée et pratique. Recommandé pour les apprenants ayant déjà des bases dans un autre langage.
 
 ---
 
@@ -16,8 +16,9 @@
 5. [Interfaces - différents types de quêtes](#itération-5--interfaces--différents-types-de-quêtes)
 6. [Packages & persistance JSON](#itération-6--packages--persistance-json)
 7. [Tests unitaires - valider le comportement du jeu](#itération-7--tests-unitaires--valider-le-comportement-du-jeu)
-8. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
-9. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
+8. [Goroutines & channels - concurrence ciblée](#itération-8--goroutines--channels---concurrence-ciblée)
+9. [Annexe A - Cheat Sheet Go](#annexe-a--cheat-sheet-go)
+10. [Annexe B - Commandes et outils](#annexe-b--commandes-et-outils)
 
 > **Comment utiliser ce document**
 > - Chaque itération contient : objectifs, contexte du projet, tâches à réaliser et points de vigilance.
@@ -37,6 +38,7 @@ Tu vas construire **Adventure Quest**, un gestionnaire de quêtes RPG en ligne d
 - Afficher la liste des quêtes actives et terminées
 - Calculer les récompenses selon le type de quête
 - Sauvegarder et charger la progression depuis un fichier
+- Lancer des tâches concurrentes : timer de quête et sauvegarde automatique en arrière-plan
 
 Chaque itération ajoute une brique. Tu commenceras avec un simple `Hello, World!` et tu termineras avec un programme complet.
 
@@ -977,6 +979,198 @@ Appliquer ce pattern pour tester `simulateFight()` et les récompenses de quête
 
 ---
 
+## Itération 8 - Goroutines & channels - concurrence ciblée
+
+⏱ **Durée estimée : 1 jour**
+
+> 🗓️ **Journée ciblée** : cette itération n'a pas pour ambition de couvrir toute la concurrence Go — c'est un sujet vaste. L'objectif est de comprendre le modèle mental (goroutine + channel) et d'appliquer deux cas d'usage concrets directement dans Adventure Quest. Le reste (WaitGroup, Mutex, patterns avancés) est en "Pour aller plus loin".
+
+### Objectifs pédagogiques
+
+- Comprendre le modèle de concurrence de Go (goroutines et channels)
+- Lancer une goroutine avec `go`
+- Communiquer entre goroutines via des channels
+- Utiliser `select` pour gérer plusieurs channels simultanément
+- Appliquer la concurrence sur deux cas réels du projet
+
+---
+
+> 🏗️ **Pourquoi ce moment ?**
+> Tu as maintenant un projet structuré en packages, avec une sauvegarde JSON fonctionnelle. C'est le bon moment pour ajouter des comportements **en arrière-plan** — sans bloquer la boucle principale du jeu.
+> La concurrence Go repose sur une philosophie simple : *"Ne communique pas en partageant de la mémoire — partage de la mémoire en communiquant."* Les channels sont le mécanisme de cette communication.
+
+---
+
+### 8.1 - Goroutines
+
+> 💡 **Goroutine**
+> Une goroutine est une **fonction exécutée de manière concurrente**. Elle est bien plus légère qu'un thread OS (quelques Ko vs plusieurs Mo). Go peut en gérer des milliers simultanément.
+> ```go
+> go doSomething()        // Lance doSomething() en concurrence - non bloquant
+>
+> go func() {            // Fonction anonyme en goroutine
+>     fmt.Println("concurrent")
+> }()
+> ```
+> **Important** : une goroutine lancée avec `go` n'attend pas la fin du programme. Si `main()` se termine, toutes les goroutines s'arrêtent immédiatement.
+
+### 8.2 - Channels
+
+> 💡 **Channel**
+> Un channel est un **tuyau typé** pour envoyer et recevoir des valeurs entre goroutines.
+> ```go
+> ch := make(chan string)        // Channel non bufferisé
+> ch := make(chan string, 10)    // Channel bufferisé (capacité 10)
+>
+> go func() { ch <- "message" }()  // Envoi (bloquant si non bufferisé et pas de récepteur)
+> msg := <-ch                       // Réception (bloquant jusqu'à réception)
+>
+> close(ch)  // Fermer depuis l'émetteur quand on n'envoie plus
+> ```
+> Un channel non bufferisé **synchronise** émetteur et récepteur — les deux attendent l'un l'autre.
+
+### 8.3 - Select
+
+> 💡 **`select`**
+> `select` attend sur plusieurs channels simultanément et traite le **premier qui reçoit une valeur**.
+> ```go
+> select {
+> case msg := <-ch1:
+>     fmt.Println("reçu depuis ch1 :", msg)
+> case msg := <-ch2:
+>     fmt.Println("reçu depuis ch2 :", msg)
+> case <-time.After(5 * time.Second):
+>     fmt.Println("timeout - aucun message reçu")
+> }
+> ```
+> `time.After(d)` retourne un channel qui reçoit une valeur après la durée `d` — parfait pour implémenter des timeouts.
+
+---
+
+### 8.4 - Tâche : timer de quête en arrière-plan
+
+Certaines quêtes ont une durée limitée. L'objectif est de lancer un compte à rebours **en arrière-plan** pendant que le joueur continue d'utiliser la boucle de jeu.
+
+Implémenter dans `game/timer.go` la fonction :
+
+```go
+func StartQuestTimer(questTitle string, duration time.Duration, done chan bool)
+```
+
+Comportement attendu :
+- Lance un compte à rebours en arrière-plan via une goroutine
+- Si `duration` s'écoule sans signal sur `done` → afficher `"⏰ Temps écoulé pour la quête '[titre]' !"`
+- Si un signal est reçu sur `done` → la goroutine s'arrête silencieusement
+
+Utilisation depuis `main.go` :
+
+```go
+done := make(chan bool)
+go game.StartQuestTimer("La Tour du Sorcier", 30*time.Second, done)
+
+// Plus tard, quand la quête est terminée :
+done <- true
+```
+
+> 💡 **Squelette de la fonction**
+> ```go
+> func StartQuestTimer(questTitle string, duration time.Duration, done chan bool) {
+>     select {
+>     case <-time.After(duration):
+>         fmt.Printf("⏰ Temps écoulé pour la quête '%s' !\n", questTitle)
+>     case <-done:
+>         // Quête terminée à temps - sortie silencieuse
+>     }
+> }
+> ```
+> `select` bloque jusqu'à ce que l'un des deux channels reçoive une valeur — le timeout ou le signal de complétion.
+
+Ajouter la commande `"timer <id>"` dans la boucle de jeu : lance un timer de 60 secondes pour la quête correspondante.
+
+---
+
+### 8.5 - Tâche : sauvegarde automatique en arrière-plan
+
+Implémenter une sauvegarde automatique toutes les 30 secondes, **sans bloquer la boucle de jeu**.
+
+Dans `main.go`, lancer au démarrage :
+
+```go
+go func() {
+    ticker := time.NewTicker(30 * time.Second)
+    defer ticker.Stop()
+    for {
+        <-ticker.C
+        if err := game.Save(hero, quests, "autosave.json"); err != nil {
+            fmt.Println("[Autosave] Erreur :", err)
+        } else {
+            fmt.Println("[Autosave] Progression sauvegardée automatiquement.")
+        }
+    }
+}()
+```
+
+> 💡 **`time.NewTicker`**
+> `time.NewTicker(d)` envoie une valeur sur son channel `.C` à intervalle régulier de durée `d`.
+> Différence avec `time.After` : `After` ne s'active qu'**une fois**, `Ticker` se répète indéfiniment.
+> Toujours appeler `ticker.Stop()` avec `defer` pour libérer les ressources.
+
+---
+
+### 8.6 - Points de vigilance
+
+- **Race condition** : si plusieurs goroutines lisent et écrivent le même struct `Hero` simultanément, le comportement est indéfini. Dans ce projet, la boucle de jeu est **mono-goroutine** — seule la sauvegarde lit le héros depuis une goroutine séparée. C'est acceptable ici, mais en production il faudrait un `sync.Mutex` ou passer une copie.
+- **Ne jamais envoyer sur un channel fermé** — panic immédiat. Ferme toujours depuis l'émetteur, jamais depuis le récepteur.
+- **Une goroutine qui "fuit"** (goroutine leak) : si personne ne lit depuis un channel, la goroutine qui envoie est bloquée indéfiniment. Toujours prévoir une sortie.
+
+---
+
+### 8.7 - ⚡ Pour aller plus loin
+
+- Utiliser `sync.WaitGroup` pour attendre la fin de plusieurs goroutines :
+  ```go
+  var wg sync.WaitGroup
+  wg.Add(2)
+  go func() { defer wg.Done(); /* tâche 1 */ }()
+  go func() { defer wg.Done(); /* tâche 2 */ }()
+  wg.Wait() // Attend que les 2 goroutines soient terminées
+  ```
+- Protéger l'accès concurrent au struct `Hero` avec `sync.Mutex` :
+  ```go
+  type SafeHero struct {
+      mu   sync.Mutex
+      hero models.Hero
+  }
+  func (s *SafeHero) UpdateHP(dmg int) {
+      s.mu.Lock()
+      defer s.mu.Unlock()
+      s.hero.TakeDamage(dmg)
+  }
+  ```
+- Détecter les race conditions avec `go run -race main.go`
+
+---
+
+### 8.8 - Livrable
+
+- [ ] Fonction `StartQuestTimer()` dans `game/timer.go`
+- [ ] Commande `"timer <id>"` dans la boucle de jeu
+- [ ] Sauvegarde automatique toutes les 30 secondes en arrière-plan
+- [ ] Boucle de jeu non bloquée par les goroutines
+- [ ] Aucun panic au lancement ou à l'arrêt du programme
+
+---
+
+> ✅ **Ce que tu sais maintenant faire**
+> - Lancer une fonction en arrière-plan avec `go`
+> - Créer un channel et l'utiliser pour synchroniser des goroutines
+> - Utiliser `select` pour gérer plusieurs événements concurrents
+> - Implémenter un timer et une tâche périodique sans bloquer le programme principal
+>
+> La concurrence Go est un sujet profond — ce que tu viens d'apprendre est le cœur du modèle. Les patterns avancés (pipelines, fan-out, context) viendront naturellement avec la pratique.
+
+---
+
 ## Annexe A - Cheat Sheet Go
 
 ### Déclarations
@@ -1112,6 +1306,42 @@ var hero Hero
 err = json.Unmarshal(data, &hero)
 ```
 
+### Goroutines et Channels
+
+```go
+// Goroutine
+go func() { fmt.Println("concurrent") }()
+
+// Channel non bufferisé
+ch := make(chan int)
+go func() { ch <- 42 }()
+val := <-ch
+
+// Channel bufferisé
+ch := make(chan string, 10)
+
+// Select
+select {
+case msg := <-ch1: fmt.Println(msg)
+case msg := <-ch2: fmt.Println(msg)
+case <-time.After(1 * time.Second): fmt.Println("timeout")
+}
+
+// Ticker (répétitif)
+ticker := time.NewTicker(30 * time.Second)
+defer ticker.Stop()
+for {
+    <-ticker.C
+    // exécuté toutes les 30 secondes
+}
+
+// WaitGroup
+var wg sync.WaitGroup
+wg.Add(1)
+go func() { defer wg.Done(); /* ... */ }()
+wg.Wait()
+```
+
 ---
 
 ## Annexe B - Commandes et outils
@@ -1130,6 +1360,7 @@ err = json.Unmarshal(data, &hero)
 | `go test ./...` | Lancer tous les tests |
 | `go test -v ./...` | Tests avec détail |
 | `go test -cover ./...` | Tests avec couverture de code |
+| `go run -race main.go` | Détecter les race conditions |
 
 ### Outils recommandés
 
@@ -1154,5 +1385,6 @@ adventure-quest/
 └── game/
     ├── combat.go
     ├── commands.go
-    └── save.go
+    ├── save.go
+    └── timer.go     ← Itération 8
 ```
