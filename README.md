@@ -35,9 +35,9 @@ For a complete overview, see:
 Main sections:
 
 - [culture_numerique](./culture_numerique/)
-- [Algorithmique](./Algorithmique/)
+- [Algorithmique](./algorithmique/)
 - [POO](./POO/)
-- [HTML-CSS](./HTML-CSS/)
+- [HTML-CSS](./html-css/)
 - [JS](./JS/)
 - [TypeScript](./TypeScript/)
 - [REACT](./REACT/)

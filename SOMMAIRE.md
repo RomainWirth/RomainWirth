@@ -43,11 +43,14 @@ Premieres notions sur les tests logiciels, le TDD et les grandes familles de tes
 
 ## Frontend
 
-### [HTML-CSS](./HTML-CSS/)
+### [HTML-CSS](./html-css/)
 
 Bases de l'integration web avec HTML et CSS.
 
-- [Cours HTML / CSS](./HTML-CSS/html-css.md)
+- [Sommaire HTML/CSS](./html-css/00-sommaire.md)
+- [HTML fondamentaux](./html-css/01-html-fondamentaux.md)
+- [CSS fondamentaux](./html-css/02-css-fondamentaux.md)
+- [Integrer HTML et CSS](./html-css/03-integrer-html-et-css.md)
 
 ### [JS](./JS/)
 
