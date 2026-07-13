@@ -12,7 +12,7 @@ Cela signifie qu'un appel à `fetch()` retourne un objet JS de constructeur `Pro
 Quelques précisions :
 1. fetch n'est pas uniquement une fonction. On peut parler d'API (c'est-à-dire d'interface avec le réseau).<br>
 Les différents objets qui composent l'Api fetch :<br>
-![](./assets/api-fetch.png)
+![](../assets/api-fetch.png)
 
 2. Ajax ne se contente pas d'aller chercher des données, on peut aussi en envoyer (cf. CRUD avec les verbes HTTP) :<br>
    * `GET` permet d'aller chercher des données.
@@ -146,7 +146,7 @@ Cette callback reçoit en premier argument la réponse fournie par `fetch()`.<br
 Cela correspond au cas de l'appel du `resolve` (voir promises).<br>
 
 Voici l'objet response fourni par fetch :<br>
-![](./assets/first-fetch-1.png)
+![](../assets/first-fetch-1.png)
 
 Dans la réponse fournie par `fetch()`, nous avons :
 1. Un booléen **ok** qui nous indique si la réponse est correcte ou pas. Ok est **true** pour des valeurs de retour de 200 à 299 inclus. 
@@ -172,7 +172,7 @@ Dans la réalité :<br>
 La première opération asynchrone est faite par l'appel `fetch()`. Cet appel retourne un accès a la ligne status et aux en-têtes de la réponse.<br>
 La deuxième opération asynchrone doit être faite par nous. C'est celle-ci qui nous permet d'accéder aux données.<br>
 
-![](./assets/principe-fetch.png)
+![](../assets/principe-fetch.png)
 
 En transformant le code de manière à coder soi-même l'opération asynchrone, on peut non seulement aller chercher les données,<br>
 mais aussi les parser. C'est-à-dire que l'appel à `.json()` fera en plus l'équilvalent d'un `JSON.parse()`.<br>
@@ -256,10 +256,10 @@ exemple d'une erreur provoquée au niveau de l'url :
 ```
 
 le retour du `catch` va montrer ceci dans la console :<br>
-![](./assets/fetch-error-url-1.png)
+![](../assets/fetch-error-url-1.png)
 
 En cliquant dans le navigateur à sur "hide network", on constate qu'il s'agit bien d'une erreur et non pas d'une exception qui n'a pas été traitée :<br>
-![](./assets/fetch-error-url-2.png)
+![](../assets/fetch-error-url-2.png)
 
 Lorsqu'une erreur se déclenche pour une raison quelconque dans une des méthodes `.then()`, JS considère que<br>
 **le déclenchement d'une exception est équivalent à l'échec d'une promesse** et le script ira au `catch` :<br>
@@ -285,7 +285,7 @@ Lorsqu'une erreur se déclenche pour une raison quelconque dans une des méthode
 </html>
 ```
 ce qui donne une exception récupérée par le catch :<br>
-![](./assets/fetch-exception.png)
+![](../assets/fetch-exception.png)
 
 ## DEUX FETCH EN CASCADE : UN GET SUIVI D'UN PUT
 
@@ -298,7 +298,7 @@ Pour rappel, une promesse est un objet constructeur `Promise` doté des méthode
 Si la promesse est tenue, c'est le `.then()` suivant qui s'exécutera.<br>
 Si la promesse est rompue, c'est le `.catch()` qui s'exécutera (le catch commun à tous les then).<br>
 
-![](./assets/chainage-operation-asynchrone.png)
+![](../assets/chainage-operation-asynchrone.png)
 1. Dans le deuxième `.then()`, je doit faire la copie de la donnée que me renvoie le premier `.fetch()` pour la modifier.<br> 
 C'est réalisé dans `newData` en utilisant le spread operator. 
 2. Ensuite, on modifie les propriétés **title** et **body** de l'objet **newData**. 
@@ -356,4 +356,4 @@ Attention ! Il ne faut pas oublier le return devant le fetch de manière à reto
 ```
 Le site <a href="https://jsonplaceholder.typicode.com/">https://jsonplaceholder.typicode.com/ </a> renvoie la donnée modifiée.<br>
 **Attention ! ce n'est qu'une simulation**.<br>
-![](./assets/fetch-full.png)
+![](../assets/fetch-full.png)
