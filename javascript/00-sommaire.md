@@ -92,13 +92,22 @@ Syntaxe `async`/`await`, réécriture d'enchaînements de promesses, **séquenti
 
 Les deux opérations asynchrones, **distinction erreur réseau vs erreur HTTP**, `response.ok`, exemple POST (method/body/Content-Type), `AbortController`, CORS, exemple GET+PUT enchaînés en `.then()` et en `async`/`await`.
 
+## Kits apprenants (pratique)
+
+En complément du cours théorique, deux kits guident la construction d'un projet concret — *Explorateur*, une application web qui récupère des données d'une API publique et les affiche de façon interactive (recherche, filtres, tri, vue détail).
+
+- [kit-apprenants/](./kit-apprenants/README.md) — page de choix entre les deux versions
+  - [Version complète — 11 jours](./kit-apprenants/javascript-11j/README.md) : pour débutant complet, progressif
+  - [Version compacte — 5 jours](./kit-apprenants/javascript-5j/README.md) : pour qui a déjà des bases ou veut aller vite
+
 ## Logique du dossier
 
 Ce cours peut servir :
 
 - de parcours complet pour apprendre JavaScript des bases à l'asynchrone ;
 - de référence rapide sur un concept précis (closures, destructuring, promesses...) ;
-- de base avant d'aborder des frameworks JS (React, Vue, Astro).
+- de base avant d'aborder des frameworks JS (React, Vue, Astro) ;
+- de support théorique aux **kits apprenants** ci-dessus, à consulter pour approfondir une notion pendant la pratique.
 
 ## Remarque
 
