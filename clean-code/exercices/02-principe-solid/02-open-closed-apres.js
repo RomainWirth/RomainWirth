@@ -1,3 +1,5 @@
+// Correction
+
 class PriceStrategy {
   calculatePrice(basePrice) {
     return basePrice; // Implémentation par défaut
@@ -49,16 +51,6 @@ class PriceCalculator {
     return product.getFinalPrice();
   }
 }
-/**
- * AVANTAGES DE CETTE APPROCHE:
- * 
- * 1. La classe Produit est fermée à la modification, mais ouverte à l'extension
- * 2. Pour ajouter un nouveau type de produit, il suffit de créer une nouvelle stratégie
- *    sans modifier le code existant
- * 3. Chaque stratégie a une seule responsabilité
- * 4. Le code est plus modulaire et plus facile à tester
- * 5. Le comportement peut être changé à l'exécution en changeant la stratégie
- */
 
 // Exemple d'utilisation de la bonne approche
 function demonstrateGoodApproach() {
@@ -80,14 +72,13 @@ function demonstrateGoodApproach() {
   class PriceStrategyClothing extends PriceStrategy {
     calculatePrice(basePrice) {
       return basePrice + (basePrice * 0.15); // Taxe de 15%
-    }
-  }
+    };
+  };
   
   const strategieVetement = new PriceStrategyClothing();
   const vetement = new Product('T-shirt', 50, strategieVetement);
 
   console.log(`Prix du vêtement: ${calculateur.calculatePrice(vetement)}`);
-}
+};
 
-console.log("\n==== Exemple qui respecte le principe ====");
 demonstrateGoodApproach();

@@ -1,3 +1,4 @@
+// Correction
 class Animal {
   eat() {
     return "Je mange de la nourriture !";
@@ -25,16 +26,6 @@ class OstrichRefactore extends NonFlyingBird {
     return "Je cours très vite !";
   }
 }
-
-/**
- * AVANTAGES DE CETTE APPROCHE:
- * 
- * 1. Chaque classe ne promet que ce qu'elle peut réellement fournir.
- * 2. Les sous-classes peuvent être utilisées partout où leur classe de base est attendue.
- * 3. Le code client n'a pas besoin de connaître le type spécifique de l'objet.
- * 4. La hiérarchie de classes est plus précise et reflète mieux le monde réel.
- * 5. Pas d'exceptions ou de comportements inattendus lors de la substitution.
- */
 
 // Fonction qui utilise uniquement les oiseaux qui peuvent voler
 function makeFlyingBirdFly(flyingBird) {
@@ -67,5 +58,4 @@ function demonstrateGoodApproach() {
   });
 }
 
-console.log("\n==== Exemple qui respecte le principe ====");
 demonstrateGoodApproach();

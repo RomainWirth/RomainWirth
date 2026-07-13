@@ -1,14 +1,4 @@
-/**
- * PRINCIPE OUVERT/FERMÉ (Open/Closed Principle)
- * 
- * "Les entités logicielles (classes, modules, fonctions, etc.) doivent être 
- * ouvertes à l'extension, mais fermées à la modification."
- * - Bertrand Meyer
- * 
- * Ce principe stipule qu'une classe doit être conçue de manière à ce qu'on 
- * puisse étendre son comportement sans avoir à la modifier.
- */
-
+// Identifier les problèmes dans le code ci-dessous et proposer une solution pour respecter le principe ouvert/fermé (Open/Closed) du SOLID.
 class PriceCalculator {
   calculatePrice(product) {
     if (product.type === 'livre') {
@@ -28,18 +18,6 @@ class PriceCalculator {
   }
 }
 
-/**
- * PROBLÈMES AVEC CET EXEMPLE:
- * 
- * 1. Si nous ajoutons un nouveau type de produit (par exemple "vêtement"),
-  nous devons modifier la classe PriceCalculator.
- * 2. Plus on ajoute de types de produits, plus la méthode calculerPrix devient longue et complexe.
- * 3. Risque d'introduire des bugs dans du code existant lors de l'ajout de nouveaux types.
- * 4. Violation du principe de responsabilité unique car la classe gère le calcul de prix
- *    pour tous les types de produits.
- */
-
-// Exemple d'utilisation du mauvais exemple
 function demonstrateBadApproach() {
   const calculator = new PriceCalculator();
   
@@ -56,5 +34,4 @@ function demonstrateBadApproach() {
   console.log(`Prix du vêtement: ${calculator.calculatePrice(vetement)}`); // Retournera le prix de base
 }
 
-console.log("==== Exemple qui ne respecte pas le principe ====");
 demonstrateBadApproach();

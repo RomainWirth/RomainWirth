@@ -1,4 +1,4 @@
-// Responsabilité: Gérer les données de l'utilisateur
+// Correction - Responsabilité: Gérer les données de l'utilisateur
 class User {
   constructor(name, email) {
     this.name = name;
@@ -64,18 +64,4 @@ function demonstrateUser() {
   }
 }
 
-/**
-* AVANTAGES DE CETTE APPROCHE:
-* 
-* 1. Chaque classe a une seule responsabilité bien définie
-* 2. Les changements dans une responsabilité n'affectent qu'une seule classe
-* 3. Plus facile à tester car chaque composant peut être testé isolément
-* 4. Plus facile à maintenir et à étendre
-* 5. Meilleure réutilisation du code
-* 
-* Si nous devons changer la façon dont les emails sont envoyés, nous ne modifions que EmailService.
-* Si nous devons changer la méthode de persistance, nous ne modifions que UserRepository.
-*/
-
-console.log("\n==== Exemple qui respecte le principe ====");
 demonstrateUser();

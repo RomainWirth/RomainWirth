@@ -1,3 +1,4 @@
+// Identifier les problèmes dans le code ci-dessous et proposer une solution pour respecter le principe de responsabilité unique (Single Responsibility Principle) du SOLID.
 class User {
   constructor(name, email) {
     this.name = name;
@@ -29,23 +30,8 @@ class User {
     // Code d'envoi d'email
   }
 }
-  
-/**
- * PROBLÈMES AVEC CET EXEMPLE:
- * 
- * 1. La classe User a au moins 3 responsabilités différentes:
- *    - Gérer les données de l'utilisateur
- *    - Gérer la persistance en base de données
- *    - Gérer l'envoi d'emails
- * 
- * 2. Si la méthode d'envoi d'emails change, nous devons modifier cette classe.
- * 3. Si la méthode de persistance change, nous devons également modifier cette classe.
- * 4. Difficile à tester car les responsabilités sont mélangées.
- */
 
-// exemple :
-console.log("==== Exemple qui ne respecte pas le principe ====");
-const mauvaisUtilisateur = new User("Pierre Martin", "pierre.martin@exemple.fr");
-mauvaisUtilisateur.validateEmail();
-mauvaisUtilisateur.saveToDatabase();
-mauvaisUtilisateur.sendEmail("Test", "Contenu du message");
+const badUser = new User("Pierre Martin", "pierre.martin@exemple.fr");
+badUser.validateEmail();
+badUser.saveToDatabase();
+badUser.sendEmail("Test", "Contenu du message");
