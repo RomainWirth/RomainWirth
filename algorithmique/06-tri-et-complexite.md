@@ -6,9 +6,9 @@ Le tri est un probleme central en algorithmique.
 
 Trier consiste a reorganiser des donnees selon un ordre donne :
 
-- alphabetique ;
-- numerique ;
-- chronologique ;
+- alphabetique;
+- numerique;
+- chronologique;
 - ou base sur un critere metier.
 
 ## Le tri a bulles
@@ -62,7 +62,7 @@ Deux algorithmes peuvent produire le meme resultat avec des couts tres different
 
 La complexite sert a mesurer ce cout, principalement en :
 
-- temps ;
+- temps;
 - espace memoire.
 
 ## La notation Big O
@@ -71,11 +71,11 @@ La notation `O(...)` permet d'estimer la croissance du cout d'un algorithme quan
 
 Quelques ordres de grandeur frequents :
 
-- `O(1)` : temps constant ;
-- `O(log n)` : logarithmique ;
-- `O(n)` : lineaire ;
-- `O(n log n)` : quasi-lineaire ;
-- `O(n^2)` : quadratique ;
+- `O(1)` : temps constant;
+- `O(log n)` : logarithmique;
+- `O(n)` : lineaire;
+- `O(n log n)` : quasi-lineaire;
+- `O(n^2)` : quadratique;
 - `O(2^n)` : exponentielle.
 
 ## Complexite temporelle
@@ -84,8 +84,8 @@ La complexite temporelle mesure l'evolution du nombre d'operations necessaires.
 
 Exemples :
 
-- lire une case connue d'un tableau : souvent `O(1)` ;
-- parcourir tout un tableau : `O(n)` ;
+- lire une case connue d'un tableau : souvent `O(1)`;
+- parcourir tout un tableau : `O(n)`;
 - double boucle imbriquee sur un tableau : souvent `O(n^2)`.
 
 ## Complexite spatiale
@@ -100,8 +100,8 @@ Exemple :
 
 La complexite permet de :
 
-- comparer plusieurs solutions ;
-- anticiper les limites d'un algorithme ;
+- comparer plusieurs solutions;
+- anticiper les limites d'un algorithme;
 - choisir l'approche la plus adaptee au volume de donnees.
 
 En algorithmique, une solution correcte n'est pas toujours suffisante : on cherche aussi une solution raisonnablement efficace.
