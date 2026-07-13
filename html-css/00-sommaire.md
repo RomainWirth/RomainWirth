@@ -20,3 +20,11 @@ Ce module sert a apprendre progressivement :
 - refaire les exemples a la main ;
 - faire les mini-exercices ;
 - passer au chapitre suivant seulement apres validation.
+
+## Kits apprenants (pratique)
+
+En complement du cours, deux kits guident la construction d'un projet concret : *Ma Vitrine*, un site web d'une page responsive (mini-portfolio).
+
+- [kit-apprenants/](kit-apprenants/README.md) - page de choix entre les deux versions
+  - [Version complete - 5 jours](kit-apprenants/html-css-5j/README.md) : pour debutant complet
+  - [Version compacte - 3 jours](kit-apprenants/html-css-3j/README.md) : pour qui a deja des bases ou veut aller vite
