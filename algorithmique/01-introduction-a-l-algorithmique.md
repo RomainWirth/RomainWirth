@@ -10,15 +10,15 @@ Un algorithme est une suite finie d'instructions ordonnees permettant de resoudr
 
 On peut voir un algorithme comme une recette :
 
-- il prend des informations en entree ;
-- il applique une suite d'etapes ;
+- il prend des informations en entree;
+- il applique une suite d'etapes;
 - il produit un resultat en sortie.
 
 Exemples du quotidien :
 
-- une recette de cuisine ;
-- une notice de montage ;
-- un itineraire GPS ;
+- une recette de cuisine;
+- une notice de montage;
+- un itineraire GPS;
 - le tri de resultats sur un moteur de recherche.
 
 En informatique, un algorithme sert a transformer des donnees d'entree en donnees de sortie de maniere fiable, reproductible et efficace.
@@ -29,15 +29,15 @@ Un programme informatique est une implementation concrete d'un ou plusieurs algo
 
 On peut resumer ainsi :
 
-- l'algorithme decrit la logique ;
+- l'algorithme decrit la logique;
 - le programme traduit cette logique dans un langage executable par la machine.
 
 ## Les grandes familles d'instructions
 
 La plupart des algorithmes reposent sur trois grandes familles d'instructions :
 
-- les operations de base : addition, soustraction, multiplication, division ;
-- les conditions : faire une action si une condition est vraie ;
+- les operations de base : addition, soustraction, multiplication, division;
+- les conditions : faire une action si une condition est vraie;
 - les repetitions : executer plusieurs fois une meme action.
 
 ## Comment construire un algorithme ?
@@ -59,8 +59,8 @@ Le pseudo-code est une maniere de decrire un algorithme sans dependre d'un langa
 
 Il sert a :
 
-- raisonner sur la logique ;
-- preparer l'implementation ;
+- raisonner sur la logique;
+- preparer l'implementation;
 - communiquer une solution de maniere lisible.
 
 Exemple :
@@ -76,7 +76,7 @@ Fin
 
 Un bon algorithme doit etre :
 
-- correct : il produit le bon resultat ;
-- fini : il se termine ;
-- lisible : on comprend sa logique ;
+- correct : il produit le bon resultat;
+- fini : il se termine;
+- lisible : on comprend sa logique;
 - efficace : il n'utilise pas inutilement du temps ou de la memoire.
