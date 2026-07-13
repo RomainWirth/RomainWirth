@@ -28,10 +28,33 @@ exemple :
 <!-- exemple à vérifier si pas meilleurs de mettre avec une class -->
 ```js
 function calculatePriceWithAddedValueTax (priceWithoutTax: number) {
-    const tax = 20%
-    return priceWithoutTax + (priceWithoutTax*tax)  
-}
+    const tax = 20%;
+    return priceWithoutTax + (priceWithoutTax*tax);
+};
 ```
  
 ## Principe Ouvert/Fermé (Open/Closed)
+
+"Les entités logicielles (classes, modules, fonctions, etc.) doivent être ouvertes à l'extension, mais fermées à la modification." - Bertrand Meyer
+
+Ce principe stipule qu'une classe doit être conçue de manière à ce qu'on puisse étendre son comportement sans avoir à la modifier.
+
+Une entité applicative (classe, fonction, module ...) doit être fermée à la modification directe mais ouverte à l'extension. L'objectif est de permettre l'ajout de nouvelles fonctionnalités sans altérer le code existant.
+
+<!-- exemple avec une classe personnage générique, et ajouter le contenu : points de vie, etc. -->
+```js
+class character {
+    constructor () {
+
+    }
+}
+
+class hero extends character {
+
+}
+
+class vilain extends character {
+
+}
+```
 
