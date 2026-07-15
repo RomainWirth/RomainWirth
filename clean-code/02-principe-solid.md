@@ -674,3 +674,196 @@ Conclusion :
 La ségrégation des interfaces nous permet de créer des systèmes plus modulaires,
 plus flexibles et plus faciles à maintenir.
 
+## Dependency inversion : principle d´Inversion des dépendances
+
+"A. Les modules de haut niveau ne devraient pas dépendre des modules de bas niveau. Les deux devraient dépendre d'abstractions. B. Les abstractions ne devraient pas dépendre des détails. Les détails devraient dépendre des abstractions." - Robert C. Martin
+
+Ce principe vise à découpler les composants logiciels en faisant dépendre les modules de haut et de bas niveau d'abstractions plutôt que de détails concrets.
+
+il faut dépendre des abstractions, pas des implémentations. Cela favorise la modularité, la flexibilité et la réutilisabilité en réduisant les dépendances directes entre les modules. 
+
+```js
+// Classe de bas niveau: gère les détails spécifiques de la sauvegarde en base de données MySQL
+class MySQLDatabase {
+    save(donnees) {
+      console.log(`Sauvegarde des données dans MySQL: ${JSON.stringify(donnees)}`);
+      return true;
+    }
+}
+
+// Classe de haut niveau: service utilisateur qui dépend directement de MySQLDatabase
+class UserService {
+  constructor() {
+    // Dépendance directe sur une implémentation concrète
+    this.database = new MySQLDatabase();
+  }
+  
+  registerUser(name, email) {
+    const user = { name, email };
+    
+    // La logique métier est directement couplée à l'implémentation MySQL
+    return this.database.save(user);
+  }
+}
+
+function demonstrateBadApproach() {
+  const service = new UserService();
+  service.registerUser("Jean Dupont", "jean@exemple.fr");
+  
+  console.log("Pour changer de base de données, il faut modifier la classe ServiceUtilisateur.");
+}
+
+// Si nous voulons utiliser MongoDB, nous devons créer une nouvelle classe
+class MongoDB {
+  save(donnees) {
+    console.log(`Sauvegarde des données dans MongoDB: ${JSON.stringify(donnees)}`);
+    return true;
+  }
+}
+
+// Et nous devrions créer une nouvelle version du service ou modifier l'existant
+class UserServiceWithMongoDB {
+  constructor() {
+    // Nouvelle dépendance directe
+    this.database = new MongoDB();
+  }
+  
+  registerUser(name, email) {
+    const user = { name, email };
+    return this.database.save(user);
+  }
+}
+
+demonstrateBadApproach();
+```
+Problèmes : 
+1. Le ServiceUtilisateur dépend directement de l'implémentation concrète de MySQLDatabase.
+2. Si nous voulons changer de base de données (par exemple, passer à MongoDB), nous devons modifier la classe ServiceUtilisateur.
+3. Difficile à tester car nous ne pouvons pas facilement remplacer la dépendance par un mock ou une autre implémentation.
+4. Le couplage fort limite la flexibilité et la réutilisabilité du code.
+
+```js
+// 1. Définir une abstraction (interface) pour la base de données
+class DatabaseInterface {
+  save(data) {
+    throw new Error("Cette méthode doit être implémentée");
+  }
+}
+
+// 2. Implémentations concrètes qui respectent l'interface
+class MySQLDatabase extends DatabaseInterface {
+  save(data) {
+    console.log(`Sauvegarde des données dans MySQL: ${JSON.stringify(data)}`);
+    return true;
+  }
+}
+
+class MongoDB extends DatabaseInterface {
+  save(data) {
+    console.log(`Sauvegarde des données dans MongoDB: ${JSON.stringify(data)}`);
+    return true;
+  }
+}
+
+// 3. Service de haut niveau qui dépend de l'abstraction, pas de l'implémentation
+class UserService {
+  // Injection de dépendance: la base de données est passée en paramètre
+  constructor(database) {
+    if (!(database instanceof DatabaseInterface)) {
+      throw new Error("La base de données doit implémenter l'interface DatabaseInterface");
+    }
+    this.database = database;
+  }
+  
+  registerUser(name, email) {
+    const user = { name, email };
+    return this.database.save(user);
+  }
+}
+
+function demonstrateGoodApproach() {
+  // Utiliser MySQL
+  const mysqlDB = new MySQLDatabase();
+  const serviceMySQL = new UserService(mysqlDB);
+  serviceMySQL.registerUser("Jean Dupont", "jean@exemple.fr");
+  
+  // Changer pour MongoDB sans modifier le service
+  const mongoDB = new MongoDB();
+  const serviceMongo = new UserService(mongoDB);
+  serviceMongo.registerUser("Marie Martin", "marie@exemple.fr");
+  
+  // Facilité de test avec un mock
+  class MockDatabase extends DatabaseInterface {
+    constructor() {
+      super();
+      this.saved = [];
+    }
+    
+    save(data) {
+      console.log("Utilisation de la base de données mock pour les tests");
+      this.saved.push(data);
+      return true;
+    }
+  }
+  
+  const mockDB = new MockDatabase();
+  const serviceTest = new UserService(mockDB);
+  serviceTest.registerUser("Test Utilisateur", "test@exemple.fr");
+  
+  console.log("Données enregistrées dans le mock:", mockDB.saved);
+}
+
+demonstrateGoodApproach();
+``` 
+Avantages :
+1. Le ServiceUtilisateur ne dépend que de l'abstraction (IBaseDeDonnees), pas des détails d'implémentation.
+2. On peut facilement changer l'implémentation de la base de données sans modifier le service.
+3. Facilite les tests car on peut injecter des mocks ou des stubs.
+4. Les modules sont faiblement couplés, ce qui améliore la flexibilité et la réutilisabilité.
+5. Les composants de haut et de bas niveau dépendent tous deux de l'abstraction.
+
+Pour aller plus loin : Factory pour créer des dépendances
+```js
+// Une factory pour créer des instances de base de données
+class DataBaseFactory {
+  static createDataBase(type) {
+    switch (type) {
+      case 'mysql':
+        return new MySQLDatabase();
+      case 'mongodb':
+        return new MongoDB();
+      default:
+        throw new Error(`Type de base de données non supporté: ${type}`);
+    }
+  }
+}
+
+// Configuration par injection de dépendance
+function configureApp(typeDB) {
+  const database = DataBaseFactory.createDataBase(typeDB);
+  const service = new UserService(database);
+  
+  return service;
+}
+
+function demonstrateFactoryPattern() {
+  console.log("\nUtilisation d'une Factory pour l'inversion de dépendance:");
+  
+  // Configuration basée sur l'environnement ou les paramètres
+  const serviceMySQL = configureApp('mysql');
+  serviceMySQL.registerUser("Pierre Durand", "pierre@exemple.fr");
+  
+  const serviceMongo = configureApp('mongodb');
+  serviceMongo.registerUser("Sophie Leroy", "sophie@exemple.fr");
+}
+
+demonstrateFactoryPattern();
+```
+Conclusion : 
+1. Les modules de haut niveau (logique métier) et de bas niveau (détails techniques) devraient dépendre d'abstractions (interfaces).
+2. L'inversion de dépendance est facilitée par l'injection de dépendance.
+3. Ce principe améliore la testabilité, la maintenabilité et la flexibilité du code.
+4. En JavaScript, où les interfaces ne sont pas natives, on simule ce comportement avec des classes abstraites et des conventions.
+5. Les patterns comme Factory et Service Locator peuvent aider à gérer les dépendances.
+
+L'inversion de dépendance est un principe fondamental pour construire des systèmes modulaires et évolutifs avec des composants faiblement couplés.
