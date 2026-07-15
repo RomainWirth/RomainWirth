@@ -2,30 +2,36 @@
 
 ## Introduction
 
-Cet acronyme est un moyen mnémotechnique pour aider à se souvenir des principes.
+**SOLID** est un moyen mnémotechnique regroupant cinq principes de conception orientée objet. Les principes eux-mêmes ont été formalisés par Robert C. Martin (« Uncle Bob ») au début des années 2000 ; l'acronyme, lui, a été proposé par Michael Feathers.
 
-Le fait de respecter ces principes permettent de produire des applications/logiciels plus maintenable, evolutif, avec une meilleure structure et une architecturé.
+Respecter ces principes permet de produire des logiciels plus **maintenables**, **évolutifs** et **testables**, avec une meilleure structure et une architecture plus claire. L'objectif commun est de **limiter le couplage** (les dépendances entre composants) et d'**augmenter la cohésion** (chaque composant a un rôle clair), afin que le code puisse évoluer sans se casser.
 
-SOLID est un acronyme qui signifie : 
-* Single responsibility principle : Responsabilité unique
-* Open/closed principle : Ouvert/fermé
-* Liskov substitution principle : Substitution de liskov
-* Interface segregation principle : Ségrégation des interfaces
-* Dependency inversion principle : Inversion des dépendances
+SOLID est l'acronyme de :
 
-## Single Responsibility : Principe de Responsabilité Unique
+| Lettre | Principe | Idée en une phrase |
+| --- | --- | --- |
+| **S** | Single Responsibility | Une classe n'a qu'une seule raison de changer. |
+| **O** | Open/Closed | Ouvert à l'extension, fermé à la modification. |
+| **L** | Liskov Substitution | Une sous-classe doit pouvoir remplacer sa classe parente. |
+| **I** | Interface Segregation | Plusieurs interfaces spécifiques valent mieux qu'une interface générale. |
+| **D** | Dependency Inversion | Dépendre d'abstractions, pas d'implémentations concrètes. |
 
-"Une classe ne devrait avoir qu'une seule raison de changer." - Robert C. Martin
+> Les exemples de ce chapitre sont en JavaScript. Comme le langage n'a pas d'interfaces natives, on les simule avec des classes « abstraites » et des conventions.
 
-Ce principe stipule qu'une classe ou module doit avoir une seule responsabilité, c'est-à-dire qu'elle ne devrait s'occuper que d'une seule tâche ou préoccupation : une classe, une fonction ou une méthode doit avoir une et une seule unique raison d'être. 
+## S — Single Responsibility : Principe de Responsabilité Unique
 
-Cela favorise la modularité et facilite la maintenance en évitant les classes surchargées de responsabilités.
+> « Une classe ne devrait avoir qu'une seule raison de changer. » — Robert C. Martin
 
-Cela rejoint le principe DRY (Don't Repeat Yourself) : on crée par exemple une fonction unique qui a sa propre "raison d'être" qu'on peut réutiliser partout où on en a besoin. 
-<!-- à vérifier ce que j'ai écrit ici si vraiment logique.  -->
+Une classe (ou un module, une fonction) ne doit avoir **qu'une seule responsabilité**, c'est-à-dire ne s'occuper que d'une seule préoccupation. La bonne question à se poser est : « **qui**, ou quel type de changement, pourrait m'obliger à modifier cette classe ? ». S'il y a plusieurs réponses (l'équipe base de données, l'équipe métier, l'équipe emailing…), c'est que la classe porte trop de responsabilités.
 
-exemple : 
-<!-- exemple à vérifier si pas meilleurs de mettre avec une class -->
+En pratique, ce principe pousse à **découper** les grosses classes « fourre-tout » en composants spécialisés. On le confond parfois avec DRY (*Don't Repeat Yourself*) : les deux sont complémentaires mais distincts. DRY vise à éviter la duplication ; SRP vise à isoler les raisons de changer. Une classe bien centrée sur une responsabilité est d'ailleurs plus facile à réutiliser sans se répéter.
+
+**Signes d'alerte :** une classe dont le nom contient « Manager », « Helper » ou « Utils », des méthodes sans rapport entre elles, ou une classe qu'on modifie pour des raisons très différentes.
+
+### Mauvais exemple
+
+Ici, la classe `User` gère à la fois les données, la validation, la persistance et l'envoi d'emails :
+
 ```js
 class User {
   constructor(name, email) {
@@ -72,6 +78,10 @@ Problèmes :
 2. Si la méthode d'envoi d'emails change, nous devons modifier cette classe.
 3. Si la méthode de persistance change, nous devons également modifier cette classe.
 4. Difficile à tester car les responsabilités sont mélangées.
+
+### Bon exemple (refactorisé)
+
+On sépare chaque responsabilité dans sa propre classe : `User` (données), `EmailValidator` (validation), `UserRepository` (persistance) et `EmailService` (emails).
 
 ```js
 class User {
@@ -151,13 +161,17 @@ Avantages :
 Si nous devons changer la façon dont les emails sont envoyés, nous ne modifions que EmailService.
 Si nous devons changer la méthode de persistance, nous ne modifions que UserRepository.
 
-## Open/Closed : Principe Ouvert/Fermé
+## O — Open/Closed : Principe Ouvert/Fermé
 
-"Les entités logicielles (classes, modules, fonctions, etc.) doivent être ouvertes à l'extension, mais fermées à la modification." - Bertrand Meyer
+> « Les entités logicielles (classes, modules, fonctions…) doivent être ouvertes à l'extension, mais fermées à la modification. » — Bertrand Meyer
 
-Ce principe stipule qu'une classe doit être conçue de manière à ce qu'on puisse étendre son comportement sans avoir à la modifier.
+On doit pouvoir **ajouter** un nouveau comportement sans **modifier** le code existant. Pourquoi ? Parce que modifier du code déjà écrit, testé et en production risque d'introduire des régressions. À la place, on conçoit des points d'extension (héritage, interfaces, stratégies injectées) qui permettent de brancher de nouvelles fonctionnalités.
 
-Une entité applicative (classe, fonction, module ...) doit être fermée à la modification directe mais ouverte à l'extension. L'objectif est de permettre l'ajout de nouvelles fonctionnalités sans altérer le code existant.
+Le symptôme typique d'une violation d'OCP est la **longue série de `if/else` ou de `switch`** sur un « type » : chaque nouveau cas oblige à rouvrir la même fonction. La solution passe souvent par le **polymorphisme** (une classe/stratégie par cas), comme dans le *design pattern* Strategy utilisé ci-dessous.
+
+### Mauvais exemple
+
+Chaque nouveau type de produit oblige à modifier la méthode `calculatePrice` :
 
 ```js
 class PriceCalculator {
@@ -203,6 +217,10 @@ Problèmes :
 3. Risque d'introduire des bugs dans du code existant lors de l'ajout de nouveaux types.
 4. Violation du principe de responsabilité unique car la classe gère le calcul de prix pour tous les types de produits.
 
+### Bon exemple (refactorisé)
+
+On isole chaque règle de calcul dans une **stratégie** dédiée. Ajouter un type revient à créer une nouvelle classe, sans toucher aux existantes (pattern Strategy) :
+
 ```js
 class PriceStrategy {
   calculatePrice(basePrice) {
@@ -228,11 +246,6 @@ class PriceStrategyElectronic extends PriceStrategy {
 class PriceStrategyFood extends PriceStrategy {
   calculatePrice(basePrice) {
     return basePrice + (basePrice * 0.05); // Taxe de 5%
-  };
-};
-class PriceStrategyV extends PriceStrategy {
-  calculatePrice(basePrice) {
-    return basePrice + (basePrice * 0.08); // Taxe de 8%
   };
 };
 
@@ -294,15 +307,21 @@ Avantages :
 5. Le comportement peut être changé à l'exécution en changeant la stratégie
 
 
-## Liskov Substitution : Principe de Substitution de Liskov
+## L — Liskov Substitution : Principe de Substitution de Liskov
 
-"Si S est un sous-type de T, alors les objets de type T peuvent être remplacés par des objets de type S sans altérer les propriétés désirables du programme." - Barbara Liskov
+> « Si S est un sous-type de T, alors les objets de type T peuvent être remplacés par des objets de type S sans altérer les propriétés du programme. » — Barbara Liskov
 
-Ce principe stipule que les objets d'une classe dérivée doivent pouvoir remplacer les objets de la classe de base sans affecter la cohérence du programme.
+Une sous-classe doit pouvoir **remplacer** sa classe parente **partout** où celle-ci est attendue, sans provoquer d'erreur ni de comportement inattendu. Autrement dit, hériter ne suffit pas : la sous-classe doit **respecter le contrat** de la classe parente.
 
-une instance de type T doit pouvoir être remplacée par une instance de type G, tel que G sous-type de T, sans que cela ne modifie la cohérence du programme. Cela garantit que les sous-classes peuvent être utilisées de manière interchangeable avec leurs classes de base.
+C'est le principe le plus subtil de SOLID. La relation « **est-un** » du langage courant est trompeuse : une autruche *est un* oiseau, mais si `Bird` promet de savoir voler, alors `Ostrich` ne peut pas tenir ce contrat — la hiérarchie est donc mal conçue. Concrètement, une sous-classe respecte LSP si :
+* elle **ne renforce pas** les préconditions (elle n'exige pas plus que le parent) ;
+* elle **n'affaiblit pas** les postconditions (elle ne promet pas moins que le parent) ;
+* elle **ne lève pas** d'exception là où le parent réussissait.
 
-<!-- ajouter exemple  -->
+### Mauvais exemple
+
+`Ostrich` hérite de `Bird` mais ne peut pas voler : elle casse le contrat en levant une erreur.
+
 ```JS
 class Bird {
   fly() {
@@ -345,6 +364,10 @@ Problèmes :
 1. Une instance d'Autruche ne peut pas être utilisée partout où une instance d'Oiseau est attendue sans causer d'erreurs.
 2. Le code qui utilise la classe Oiseau doit connaître les spécificités de ses sous-classes pour éviter des erreurs.
 3. Si nous remplaçons un Oiseau par une Autruche, le comportement change de façon inattendue (erreur plutôt que vol).
+
+### Bon exemple (refactorisé)
+
+On revoit la hiérarchie : la capacité de voler n'est portée que par les classes qui la possèdent réellement (`FlyingBird`), séparée des oiseaux non-volants (`NonFlyingBird`).
 
 ```js
 class Animal {
@@ -424,13 +447,17 @@ Conclusion :
 
 Une conception qui respecte le principe de substitution de Liskov rend le code plus robuste, plus facile à comprendre et plus réutilisable.
 
-## Interface segregation : Principe de ségrégation d'interface
+## I — Interface Segregation : Principe de Ségrégation des Interfaces
 
-"Les clients ne devraient pas être forcés de dépendre d'interfaces qu'ils n'utilisent pas." - Robert C. Martin
+> « Les clients ne devraient pas être forcés de dépendre d'interfaces qu'ils n'utilisent pas. » — Robert C. Martin
 
-Ce principe stipule qu'il vaut mieux avoir plusieurs interfaces spécifiques qu'une seule interface générale. Les classes ne devraient pas être obligées d'implémenter des méthodes dont elles n'ont pas besoin.
+Mieux vaut **plusieurs interfaces spécifiques** qu'une seule grosse interface générale. Une classe ne devrait jamais être obligée d'implémenter des méthodes dont elle n'a pas l'usage.
 
-préférer plusieurs interfaces spécifiques pour chaque client plutôt qu'une seule interface générale. Cela évite aux classes de dépendre de méthodes dont elles n'ont pas besoin, réduisant ainsi les couplages inutiles.
+Le symptôme d'une violation est une classe qui implémente une méthode « pour rien » — souvent en la laissant vide ou en levant une erreur « non supporté ». C'est SRP appliqué aux **contrats** : on découpe les grosses interfaces en petits contrats cohérents (`Imprimable`, `Scannable`, `FaxEnvoyable`…), et une classe n'implémente que ceux qui la concernent. Un appareil multifonction combine alors ces contrats, idéalement par **composition** plutôt que par un héritage géant.
+
+### Mauvais exemple
+
+`MultifunctionDevice` impose `print`, `scan`, `photocopy` et `sendFax` à toutes ses sous-classes, même à une simple imprimante :
 
 ```js
 class MultifunctionDevice {
@@ -530,6 +557,10 @@ Problèmes :
 2. Les classes lèvent des exceptions pour des fonctionnalités qu'elles ne supportent pas, ce qui peut causer des problèmes à l'exécution.
 3. Les clients qui utilisent ces classes doivent connaître les limitations spécifiques de chaque implémentation.
 4. Le code est moins lisible et plus difficile à maintenir.
+
+### Bon exemple (refactorisé)
+
+On découpe en interfaces spécifiques (`Imprimable`, `Scannable`, `FaxEnvoyable`). Chaque appareil n'implémente que ce qu'il sait faire, et le multifonction s'appuie sur la composition.
 
 ```js
 // Interface pour l'impression
@@ -674,13 +705,21 @@ Conclusion :
 La ségrégation des interfaces nous permet de créer des systèmes plus modulaires,
 plus flexibles et plus faciles à maintenir.
 
-## Dependency inversion : principle d´Inversion des dépendances
+## D — Dependency Inversion : Principe d'Inversion des Dépendances
 
-"A. Les modules de haut niveau ne devraient pas dépendre des modules de bas niveau. Les deux devraient dépendre d'abstractions. B. Les abstractions ne devraient pas dépendre des détails. Les détails devraient dépendre des abstractions." - Robert C. Martin
+> « Les modules de haut niveau ne devraient pas dépendre des modules de bas niveau : les deux devraient dépendre d'abstractions. Les abstractions ne devraient pas dépendre des détails ; les détails devraient dépendre des abstractions. » — Robert C. Martin
 
-Ce principe vise à découpler les composants logiciels en faisant dépendre les modules de haut et de bas niveau d'abstractions plutôt que de détails concrets.
+Les modules de **haut niveau** (la logique métier) ne doivent pas dépendre directement des modules de **bas niveau** (les détails techniques : base de données, API, fichiers…). Les deux doivent dépendre d'une **abstraction** commune (une interface).
 
-il faut dépendre des abstractions, pas des implémentations. Cela favorise la modularité, la flexibilité et la réutilisabilité en réduisant les dépendances directes entre les modules. 
+Il faut distinguer deux notions liées :
+* l'**inversion de dépendance** (DIP) est le *principe* : on programme contre une interface, pas contre une implémentation concrète ;
+* l'**injection de dépendance** est une *technique* qui met en œuvre ce principe : on **passe** la dépendance depuis l'extérieur (souvent via le constructeur) au lieu de la créer soi-même avec `new`.
+
+Le bénéfice majeur est la **testabilité** : on peut remplacer la vraie base de données par un *mock* sans rien changer à la logique métier.
+
+### Mauvais exemple
+
+`UserService` crée lui-même une `MySQLDatabase` : il est soudé à une implémentation précise.
 
 ```js
 // Classe de bas niveau: gère les détails spécifiques de la sauvegarde en base de données MySQL
@@ -741,6 +780,10 @@ Problèmes :
 2. Si nous voulons changer de base de données (par exemple, passer à MongoDB), nous devons modifier la classe ServiceUtilisateur.
 3. Difficile à tester car nous ne pouvons pas facilement remplacer la dépendance par un mock ou une autre implémentation.
 4. Le couplage fort limite la flexibilité et la réutilisabilité du code.
+
+### Bon exemple (refactorisé)
+
+On définit une abstraction `DatabaseInterface`, et `UserService` reçoit sa base de données par **injection de dépendance**. On peut alors brancher MySQL, MongoDB ou un mock sans modifier le service.
 
 ```js
 // 1. Définir une abstraction (interface) pour la base de données
@@ -816,7 +859,7 @@ function demonstrateGoodApproach() {
 demonstrateGoodApproach();
 ``` 
 Avantages :
-1. Le ServiceUtilisateur ne dépend que de l'abstraction (IBaseDeDonnees), pas des détails d'implémentation.
+1. Le `UserService` ne dépend que de l'abstraction (`DatabaseInterface`), pas des détails d'implémentation.
 2. On peut facilement changer l'implémentation de la base de données sans modifier le service.
 3. Facilite les tests car on peut injecter des mocks ou des stubs.
 4. Les modules sont faiblement couplés, ce qui améliore la flexibilité et la réutilisabilité.
@@ -867,3 +910,32 @@ Conclusion :
 5. Les patterns comme Factory et Service Locator peuvent aider à gérer les dépendances.
 
 L'inversion de dépendance est un principe fondamental pour construire des systèmes modulaires et évolutifs avec des composants faiblement couplés.
+
+## Relations entre les principes
+
+Les cinq principes ne sont pas isolés : ils se renforcent mutuellement.
+
+- **SRP** est la base : des composants bien découpés facilitent tous les autres principes.
+- **OCP** s'appuie sur le polymorphisme (héritage / interfaces) pour éviter de modifier l'existant.
+- **LSP** est la condition pour que ce polymorphisme soit fiable : une sous-classe qui casse le contrat casse aussi l'extension prévue par OCP.
+- **ISP** applique l'idée de SRP aux interfaces : des contrats fins évitent les dépendances inutiles.
+- **DIP** relie le tout : en dépendant d'abstractions, les modules restent découplés et interchangeables.
+
+Le fil conducteur commun : **réduire le couplage** et **dépendre d'abstractions stables** plutôt que de détails concrets.
+
+## Résumé
+
+| Principe | Ce qu'il évite | Outil / technique clé |
+| --- | --- | --- |
+| **S**ingle Responsibility | Les classes « fourre-tout » | Découpage par responsabilité |
+| **O**pen/Closed | Les `if/else` / `switch` qui gonflent | Polymorphisme, pattern Strategy |
+| **L**iskov Substitution | Les sous-classes qui trahissent le contrat | Hiérarchies fondées sur le comportement |
+| **I**nterface Segregation | Les interfaces obèses | Interfaces fines + composition |
+| **D**ependency Inversion | Le couplage à une implémentation | Abstractions + injection de dépendance |
+
+**À retenir :**
+
+- SOLID est un ensemble de **lignes directrices**, pas de règles absolues : le but est un code souple et testable, pas d'ajouter de la complexité inutile.
+- Le point commun des cinq principes est de **maîtriser les dépendances** : peu de couplage, beaucoup de cohésion.
+- Attention à la sur-ingénierie : n'introduis une abstraction que lorsqu'un besoin réel de variation ou de test le justifie (principe YAGNI — *You Aren't Gonna Need It*).
+- Ces principes se combinent naturellement avec les autres bonnes pratiques du clean code : DRY, nommage explicite, tests unitaires et *design patterns*.
