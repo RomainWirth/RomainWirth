@@ -11,10 +11,13 @@ C'est un modèle de programmation qui repose sur le concept de `class` et `d'obj
 On mettra l'accent sur la donnée et les objets, et leur représentation
 ```
 
-La POO s'articule autour de plusieurs grands concepts :
-* Les objets
-* Les class
-* L'héritage
+La POO s'articule autour de deux briques de base - **les objets** et **les classes** - et de quatre grands principes, souvent appelés les **4 piliers de la POO** :
+* **L'encapsulation** : regrouper les données et les traitements dans un objet, et protéger l'accès aux données.
+* **L'abstraction** : ne modéliser que ce qui est utile au programme, en masquant les détails internes.
+* **L'héritage** : réutiliser et spécialiser une classe existante à partir d'une autre.
+* **Le polymorphisme** : permettre à des objets différents de répondre à une même fonction, chacun à sa manière.
+
+Ces principes sont introduits progressivement tout au long du cours (voir la [synthèse](./08-synthese.md) pour la vue d'ensemble).
 
 ## Rappels de la programmation 
 
