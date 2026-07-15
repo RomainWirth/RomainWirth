@@ -1,3 +1,5 @@
+// Identifier les problèmes dans le code ci-dessous et proposer une solution pour respecter le principe de ségrégation des interfaces du SOLID.
+
 class MultifunctionDevice {
   constructor() {
     if (this.constructor === MultifunctionDevice) {
