@@ -37,37 +37,28 @@ class User {
   constructor(name, email) {
     this.name = name;
     this.email = email;
-  };
+  }
 
-  getCompleteName() {
-    return this.name;
-  };
-
-  getEmail() {
-    return this.email;
-  };
-
-  // Cette méthode gère la validation de l'email (responsabilité 1)
+  // Responsabilité 1 : validation
   validateEmail() {
     return this.email.includes('@') && this.email.includes('.');
-  };
+  }
 
-  // Cette méthode gère la persistance des données (responsabilité 2)
+  // Responsabilité 2 : persistance
   saveToDatabase() {
-    console.log(`Sauvegarde de l'utilisateur ${this.name} dans la base de données`);
-    // Code de sauvegarde en base de données
-  };
+    console.log(`Sauvegarde de ${this.name} en base de données`);
+  }
 
-  // Cette méthode gère l'envoi d'emails (responsabilité 3)
-  sendEmail(subject, content) {
-    console.log(`Envoi d'un email à ${this.email} avec le sujet: ${subject}`);
-  };
-};
+  // Responsabilité 3 : envoi d'emails
+  sendEmail(subject) {
+    console.log(`Envoi d'un email à ${this.email} : ${subject}`);
+  }
+}
 
-const badUser = new User("Pierre Martin", "pierre.martin@exemple.fr");
-badUser.validateEmail();
-badUser.saveToDatabase();
-badUser.sendEmail("Test", "Contenu du message");
+const user = new User("Pierre Martin", "pierre.martin@exemple.fr");
+user.validateEmail();
+user.saveToDatabase();
+user.sendEmail("Bienvenue");
 ```
 Problèmes : 
 1. La classe User a au moins 3 responsabilités différentes:
@@ -88,68 +79,36 @@ class User {
   constructor(name, email) {
     this.name = name;
     this.email = email;
-  };
+  }
+}
 
-  getCompleteName() {
-    return this.name;
-  };
-
-  getEmail() {
-    return this.email;
-  };
-};
-
-// Responsabilité: Valider les données
+// Responsabilité : valider les données
 class EmailValidator {
   static validate(email) {
     return email.includes('@') && email.includes('.');
-  };
-};
+  }
+}
 
-// Responsabilité: Gérer la persistance des utilisateurs
+// Responsabilité : persistance
 class UserRepository {
   save(user) {
-    console.log(`Sauvegarde de l'utilisateur ${user.getCompleteName()} dans la base de données`);
-    // Code de sauvegarde en base de données
-  };
+    console.log(`Sauvegarde de ${user.name} en base de données`);
+  }
+}
 
-  load(id) {
-    // Code pour charger un utilisateur depuis la base de données
-    console.log(`Chargement de l'utilisateur avec l'ID ${id}`);
-    return new User("Utilisateur chargé", "exemple@email.com");
-  };
-};
-
-// Responsabilité: Gérer l'envoi d'emails
+// Responsabilité : envoi d'emails
 class EmailService {
-  send(recipient, subject, content) {
-    console.log(`Envoi d'un email à ${recipient} avec le sujet: ${subject}`);
-    // Code d'envoi d'email
-  };
-};
+  send(recipient, subject) {
+    console.log(`Envoi d'un email à ${recipient} : ${subject}`);
+  }
+}
 
-// Exemple d'utilisation
-function demonstrateUser() {
-  // Création d'un utilisateur
-  const utilisateur = new User("Jean Dupont", "jean.dupont@exemple.fr");
-  
-  // Validation de l'email
-  if (EmailValidator.validate(utilisateur.getEmail())) {
-    // Sauvegarde de l'utilisateur
-    const repo = new UserRepository();
-    repo.save(utilisateur);
-    
-    // Envoi d'un email de bienvenue
-    const emailService = new EmailService();
-    emailService.send(
-      utilisateur.getEmail(),
-      "Bienvenue !",
-      `Bonjour ${utilisateur.getCompleteName()}, bienvenue sur notre plateforme !`,
-    );
-  };
-};
-
-demonstrateUser();
+// Chaque classe est utilisée indépendamment
+const user = new User("Jean Dupont", "jean.dupont@exemple.fr");
+if (EmailValidator.validate(user.email)) {
+  new UserRepository().save(user);
+  new EmailService().send(user.email, "Bienvenue !");
+}
 ```
 Avantages : 
 1. Chaque classe a une seule responsabilité bien définie
@@ -176,40 +135,18 @@ Chaque nouveau type de produit oblige à modifier la méthode `calculatePrice` :
 ```js
 class PriceCalculator {
   calculatePrice(product) {
-    if (product.type === 'livre') {
-      // Calcul du prix pour un livre
-      return product.basePrice - (product.basePrice * 0.10); // 10% de réduction
-    } 
-    else if (product.type === 'electronique') {
-      // Calcul du prix pour un produit électronique
-      return product.basePrice + (product.basePrice * 0.20); // Taxe de 20%
-    } 
-    else if (product.type === 'alimentaire') {
-      // Calcul du prix pour un produit alimentaire
-      return product.basePrice + (product.basePrice * 0.05); // Taxe de 5%
-    }
-    // Prix par défaut
-    return product.basePrice;
-  };
-};
+    if (product.type === 'livre')        return product.basePrice * 0.90; // -10%
+    if (product.type === 'electronique') return product.basePrice * 1.20; // +20%
+    if (product.type === 'alimentaire')  return product.basePrice * 1.05; // +5%
+    return product.basePrice; // prix par défaut
+  }
+}
 
-function demonstrateBadApproach() {
-  const calculator = new PriceCalculator();
-  
-  const book = { type: 'livre', basePrice: 20 };
-  const electronic = { type: 'electronique', basePrice: 100 };
-  const food = { type: 'alimentaire', basePrice: 5 };
-  
-  console.log(`Prix du livre: ${calculator.calculatePrice(book)}`);
-  console.log(`Prix de l'électronique: ${calculator.calculatePrice(electronic)}`);
-  console.log(`Prix du produit alimentaire: ${calculator.calculatePrice(food)}`);
-  
-  // Si on veut ajouter un nouveau type, il faut modifier la classe PriceCalculator
-  const vetement = { type: 'vetement', basePrice: 50 };
-  console.log(`Prix du vêtement: ${calculator.calculatePrice(vetement)}`); // Retournera le prix de base
-};
+const calculator = new PriceCalculator();
+console.log(calculator.calculatePrice({ type: 'livre', basePrice: 20 }));         // 18
+console.log(calculator.calculatePrice({ type: 'electronique', basePrice: 100 })); // 120
 
-demonstrateBadApproach();
+// Ajouter un type (ex. 'vetement') oblige à rouvrir et modifier cette classe.
 ```
 Problèmes : 
 1. Si nous ajoutons un nouveau type de produit (par exemple "vêtement"), nous devons modifier la classe PriceCalculator.
@@ -223,81 +160,36 @@ On isole chaque règle de calcul dans une **stratégie** dédiée. Ajouter un ty
 
 ```js
 class PriceStrategy {
-  calculatePrice(basePrice) {
-    return basePrice; // Implémentation par défaut
-  };
-};
+  calculatePrice(basePrice) { return basePrice; } // par défaut
+}
 
-// Stratégie pour les livres
-class PriceStrategyBook extends PriceStrategy {
-  calculatePrice(basePrice) {
-    return basePrice - (basePrice * 0.10); // 10% de réduction
-  };
-};
+class BookStrategy extends PriceStrategy {
+  calculatePrice(basePrice) { return basePrice * 0.90; } // -10%
+}
+class ElectronicStrategy extends PriceStrategy {
+  calculatePrice(basePrice) { return basePrice * 1.20; } // +20%
+}
+class FoodStrategy extends PriceStrategy {
+  calculatePrice(basePrice) { return basePrice * 1.05; } // +5%
+}
 
-// Stratégie pour les produits électroniques
-class PriceStrategyElectronic extends PriceStrategy {
-  calculatePrice(basePrice) {
-    return basePrice + (basePrice * 0.20); // Taxe de 20%
-  };
-};
-
-// Stratégie pour les produits alimentaires
-class PriceStrategyFood extends PriceStrategy {
-  calculatePrice(basePrice) {
-    return basePrice + (basePrice * 0.05); // Taxe de 5%
-  };
-};
-
-// Classe Produit qui utilise une stratégie de prix
+// La classe Product délègue le calcul à sa stratégie
 class Product {
-  constructor(name, basePrice, priceStrategy) {
+  constructor(name, basePrice, strategy) {
     this.name = name;
     this.basePrice = basePrice;
-    this.priceStrategy = priceStrategy;
-  };
+    this.strategy = strategy;
+  }
+  getFinalPrice() { return this.strategy.calculatePrice(this.basePrice); }
+}
 
-  getFinalPrice() {
-    return this.priceStrategy.calculatePrice(this.basePrice);
-  };
-};
+console.log(new Product('Le Petit Prince', 20, new BookStrategy()).getFinalPrice()); // 18
 
-// Nouveau calculateur de prix qui respecte le principe OCP
-class PriceCalculator {
-  calculatePrice(product) {
-    return product.getFinalPrice();
-  };
-};
-
-function demonstrateGoodApproach() {
-  const strategieLivre = new PriceStrategyBook();
-  const strategieElectronique = new PriceStrategyElectronic();
-  const strategieAlimentaire = new PriceStrategyFood();
-  
-  const livre = new Product('Le Petit Prince', 20, strategieLivre);
-  const electronique = new Product('Téléphone', 100, strategieElectronique);
-  const alimentaire = new Product('Pommes', 5, strategieAlimentaire);
-  
-  const calculateur = new PriceCalculator();
-
-  console.log(`Prix du livre: ${calculateur.calculatePrice(livre)}`);
-  console.log(`Prix de l'électronique: ${calculateur.calculatePrice(electronique)}`);
-  console.log(`Prix du produit alimentaire: ${calculateur.calculatePrice(alimentaire)}`);
-  
-  // Ajout d'un nouveau type de produit sans modifier les classes existantes
-  class PriceStrategyClothing extends PriceStrategy {
-    calculatePrice(basePrice) {
-      return basePrice + (basePrice * 0.15); // Taxe de 15%
-    };
-  };
-  
-  const strategieVetement = new PriceStrategyClothing();
-  const vetement = new Product('T-shirt', 50, strategieVetement);
-
-  console.log(`Prix du vêtement: ${calculateur.calculatePrice(vetement)}`);
-};
-
-demonstrateGoodApproach();
+// Nouveau type : une nouvelle classe suffit, sans toucher aux existantes
+class ClothingStrategy extends PriceStrategy {
+  calculatePrice(basePrice) { return basePrice * 1.15; } // +15%
+}
+console.log(new Product('T-shirt', 50, new ClothingStrategy()).getFinalPrice()); // 57.5
 ```
 Avantages :
 1. La classe Produit est fermée à la modification, mais ouverte à l'extension
@@ -322,43 +214,22 @@ C'est le principe le plus subtil de SOLID. La relation « **est-un** » du langa
 
 `Ostrich` hérite de `Bird` mais ne peut pas voler : elle casse le contrat en levant une erreur.
 
-```JS
+```js
 class Bird {
-  fly() {
-    return "Je vole dans les airs !";
-  };
-
-  eat() {
-    return "Je mange des graines !";
-  };
-};
+  fly() { return "Je vole !"; }
+}
 
 class Ostrich extends Bird {
-  // Une autruche est un oiseau qui ne peut pas voler
-  // Cela viole le principe de substitution de Liskov, car on s'attend
-  // à ce que tous les oiseaux puissent voler
-  fly() {
-    throw new Error("Je ne peux pas voler !");
-  };
-};
+  // Une autruche est un oiseau... mais ne vole pas : elle casse le contrat
+  fly() { throw new Error("Je ne peux pas voler !"); }
+}
 
 function makeBirdFly(bird) {
-  return bird.fly(); // Ceci fonctionnera pour Bird mais pas pour Ostrich
-};
+  return bird.fly();
+}
 
-function demonstrateBadApproach() {
-  try {
-    const bird = new Bird();
-    console.log(`Bird: ${makeBirdFly(bird)}`);
-    
-    const ostrich = new Ostrich();
-    console.log(`Ostrich: ${makeBirdFly(ostrich)}`); // Ceci lancera une erreur
-  } catch (error) {
-    console.log(`Erreur avec l'autruche: ${error.message}`);
-  }
-};
-
-demonstrateBadApproach();
+makeBirdFly(new Bird());    // OK
+makeBirdFly(new Ostrich()); // Erreur : le contrat de Bird est rompu
 ```
 Problèmes : 
 1. Une instance d'Autruche ne peut pas être utilisée partout où une instance d'Oiseau est attendue sans causer d'erreurs.
@@ -371,65 +242,28 @@ On revoit la hiérarchie : la capacité de voler n'est portée que par les class
 
 ```js
 class Animal {
-  eat() {
-    return "Je mange de la nourriture !";
-  };
-};
+  eat() { return "Je mange."; }
+}
 
+// La capacité de voler n'existe que pour les oiseaux qui volent réellement
 class FlyingBird extends Animal {
-  fly() {
-    return "Je vole dans les airs !";
-  };
-};
+  fly() { return "Je vole !"; }
+}
 
 class NonFlyingBird extends Animal {
-  // Pas de méthode fly() ici car cette classe représente les oiseaux qui ne volent pas
-};
-
-class Canary extends FlyingBird {
-  sing() {
-    return "Je chante une belle mélodie !";
-  };
-};
-
-class OstrichRefactore extends NonFlyingBird {
-  run() {
-    return "Je cours très vite !";
-  };
-};
-
-// Fonction qui utilise uniquement les oiseaux qui peuvent voler
-function makeFlyingBirdFly(flyingBird) {
-  return flyingBird.fly();
+  run() { return "Je cours !"; }
 }
 
-// Fonction générique qui fonctionne avec n'importe quel animal
-function feedAnimal(animal) {
-  return animal.eat();
+class Canary extends FlyingBird {}
+class Ostrich extends NonFlyingBird {}
+
+// N'accepte que des oiseaux réellement capables de voler
+function makeFlyingBirdFly(bird) {
+  return bird.fly();
 }
 
-function demonstrateGoodApproach() {
-  const canary = new Canary();
-  const ostrich = new OstrichRefactore();
-  
-  // Tous les animaux peuvent manger
-  console.log(`Canari mange: ${feedAnimal(canary)}`);
-  console.log(`Autruche mange: ${feedAnimal(ostrich)}`);
-  
-  // Seuls les oiseaux qui peuvent voler sont passés à cette fonction
-  console.log(`Canari vole: ${makeFlyingBirdFly(canary)}`);
-  
-  // On ne tente pas de faire voler l'autruche car son type n'implique pas cette capacité
-  console.log(`Autruche court: ${ostrich.run()}`);
-  
-  // La substitution fonctionne correctement sans erreurs
-  const flyingBirds = [new FlyingBird(), new Canary()];
-  flyingBirds.forEach(bird => {
-    console.log(makeFlyingBirdFly(bird));
-  });
-}
-
-demonstrateGoodApproach();
+makeFlyingBirdFly(new Canary()); // OK, aucune exception surprise
+new Ostrich().run();             // l'autruche fait ce qu'elle sait faire
 ```
 Avantages :
 1. Chaque classe ne promet que ce qu'elle peut réellement fournir.
@@ -457,100 +291,24 @@ Le symptôme d'une violation est une classe qui implémente une méthode « pour
 
 ### Mauvais exemple
 
-`MultifunctionDevice` impose `print`, `scan`, `photocopy` et `sendFax` à toutes ses sous-classes, même à une simple imprimante :
+`MultifunctionDevice` impose `print`, `scan` et `sendFax` à toutes ses sous-classes, même à une simple imprimante :
 
 ```js
+// Une seule interface « obèse » : toute machine doit tout implémenter
 class MultifunctionDevice {
-  constructor() {
-    if (this.constructor === MultifunctionDevice) {
-      throw new Error("Cette classe est abstraite et ne peut pas être instanciée directement");
-    };
-  };
+  print(doc)   { throw new Error("non implémenté"); }
+  scan(doc)    { throw new Error("non implémenté"); }
+  sendFax(doc) { throw new Error("non implémenté"); }
+}
 
-  print(document) {
-    throw new Error("La méthode imprimer doit être implémentée");
-  };
-
-  scan(document) {
-    throw new Error("La méthode scan doit être implémentée");
-  };
-
-  photocopy(document) {
-    throw new Error("La méthode photocopy doit être implémentée");
-  };
-
-  sendFax(document) {
-    throw new Error("La méthode sendFax doit être implémentée");
-  };
-};
-
-// Une imprimante simple n'a pas besoin de scanner, photocopier ou envoyer des fax
+// Une imprimante simple est forcée d'implémenter scan et fax... pour rien
 class SimplePrinter extends MultifunctionDevice {
-  print(document) {
-    console.log(`Impression du document: ${document}`);
-    return true;
-  };
+  print(doc)   { console.log(`Impression : ${doc}`); }
+  scan(doc)    { throw new Error("Cette imprimante ne peut pas scanner"); }
+  sendFax(doc) { throw new Error("Cette imprimante ne peut pas faxer"); }
+}
 
-  // Obligé d'implémenter ces méthodes même si elles ne sont pas utilisées
-  scan(document) {
-    throw new Error("Cette imprimante ne peut pas scanner");
-  };
-
-  photocopy(document) {
-    throw new Error("Cette imprimante ne peut pas photocopier");
-  };
-
-  sendFax(document) {
-    throw new Error("Cette imprimante ne peut pas envoyer de fax");
-  };
-};
-
-// Un scanner simple n'a pas besoin d'imprimer, photocopier ou envoyer des fax
-class SimpleScanner extends MultifunctionDevice {
-  scan(document) {
-    console.log(`Numérisation du document: ${document}`);
-    return `${document}_scanned`;
-  };
-
-  // Obligé d'implémenter ces méthodes même si elles ne sont pas utilisées
-  print(document) {
-    throw new Error("Ce scanner ne peut pas imprimer");
-  };
-
-  photocopy(document) {
-    throw new Error("Ce scanner ne peut pas photocopier");
-  };
-
-  sendFax(document) {
-    throw new Error("Ce scanner ne peut pas envoyer de fax");
-  };
-};
-
-function demonstrateBadApproach() {
-  try {
-    const printer = new SimplePrinter();
-    printer.print("rapport.pdf"); // Fonctionne bien
-    
-    try {
-      printer.scan("rapport.pdf"); // Lancera une erreur
-    } catch (error) {
-      console.log(`Erreur: ${error.message}`);
-    }
-    
-    const scanner = new SimpleScanner();
-    scanner.scan("facture.pdf"); // Fonctionne bien
-    
-    try {
-      scanner.print("facture.pdf"); // Lancera une erreur
-    } catch (error) {
-      console.log(`Erreur: ${error.message}`);
-    }
-  } catch (error) {
-    console.log(`Erreur inattendue: ${error.message}`);
-  }
-};
-
-demonstrateBadApproach();
+new SimplePrinter().scan("rapport.pdf"); // Erreur : méthode imposée mais non supportée
 ```
 Problèmes :
 1. Les classes sont forcées d'implémenter des méthodes qu'elles n'utilisent pas.
@@ -563,128 +321,37 @@ Problèmes :
 On découpe en interfaces spécifiques (`Imprimable`, `Scannable`, `FaxEnvoyable`). Chaque appareil n'implémente que ce qu'il sait faire, et le multifonction s'appuie sur la composition.
 
 ```js
-// Interface pour l'impression
-class Imprimable {
+// Des contrats fins et séparés
+class Imprimable   { imprimer(doc)   { throw new Error("non implémenté"); } }
+class Scannable    { scanner(doc)    { throw new Error("non implémenté"); } }
+class FaxEnvoyable { envoyerFax(doc) { throw new Error("non implémenté"); } }
+
+// Chaque appareil n'implémente que le contrat qui le concerne
+class Imprimante extends Imprimable {
+  imprimer(doc) { console.log(`Impression : ${doc}`); }
+}
+class Scanner extends Scannable {
+  scanner(doc) { console.log(`Numérisation : ${doc}`); }
+}
+class Telecopieur extends FaxEnvoyable {
+  envoyerFax(doc) { console.log(`Fax : ${doc}`); }
+}
+
+// Le multifonction combine ces capacités par composition (et non par héritage géant)
+class Multifonction {
   constructor() {
-    if (this.constructor === Imprimable) {
-      throw new Error("Cette classe est abstraite et ne peut pas être instanciée directement");
-    }
-  };
+    this.imprimante = new Imprimante();
+    this.scanner = new Scanner();
+    this.fax = new Telecopieur();
+  }
+  imprimer(doc)   { this.imprimante.imprimer(doc); }
+  scanner(doc)    { this.scanner.scanner(doc); }
+  envoyerFax(doc) { this.fax.envoyerFax(doc); }
+}
 
-  imprimer(document) {
-    throw new Error("La méthode imprimer doit être implémentée");
-  };
-};
-
-// Interface pour la numérisation
-class Scannable {
-  constructor() {
-    if (this.constructor === Scannable) {
-      throw new Error("Cette classe est abstraite et ne peut pas être instanciée directement");
-    }
-  };
-
-  scanner(document) {
-    throw new Error("La méthode scanner doit être implémentée");
-  };
-};
-
-// Interface pour l'envoi de fax
-class FaxEnvoyable {
-  constructor() {
-    if (this.constructor === FaxEnvoyable) {
-      throw new Error("Cette classe est abstraite et ne peut pas être instanciée directement");
-    };
-  };
-
-  envoyerFax(document) {
-    throw new Error("La méthode envoyerFax doit être implémentée");
-  };
-};
-
-// Implémentation d'une imprimante simple
-class ImprimanteRefactoree extends Imprimable {
-  imprimer(document) {
-    console.log(`Impression du document: ${document}`);
-    return true;
-  };
-};
-
-// Implémentation d'un scanner simple
-class ScannerRefactore extends Scannable {
-  scanner(document) {
-    console.log(`Numérisation du document: ${document}`);
-    return `${document}_scanned`;
-  };
-};
-
-// Implémentation d'un télécopieur simple
-class TelecopieurRefactore extends FaxEnvoyable {
-  envoyerFax(document) {
-    console.log(`Envoi du document par fax: ${document}`);
-    return true;
-  };
-};
-
-// Un appareil multifonction qui implémente plusieurs interfaces
-class AppareilMultifonctionRefactore extends Imprimable {
-  constructor() {
-    super();
-    this._scanner = new ScannerRefactore();
-    this._fax = new TelecopieurRefactore();
-  };
-
-  imprimer(document) {
-    console.log(`Impression du document par l'appareil multifonction: ${document}`);
-    return true;
-  };
-
-  scanner(document) {
-    return this._scanner.scanner(document);
-  };
-
-  envoyerFax(document) {
-    return this._fax.envoyerFax(document);
-  };
-  
-  photocopier(document) {
-    const documentScanne = this.scanner(document);
-    this.imprimer(documentScanne);
-    console.log(`Photocopie du document: ${document}`);
-    return true;
-  };
-};
-
-function demonstrateGoodApproach() {
-  // Utilisation d'une imprimante simple
-  const imprimante = new ImprimanteRefactoree();
-  imprimante.imprimer("rapport.pdf");
-  
-  // Utilisation d'un scanner simple
-  const scanner = new ScannerRefactore();
-  scanner.scanner("facture.pdf");
-  
-  // Utilisation d'un télécopieur simple
-  const fax = new TelecopieurRefactore();
-  fax.envoyerFax("contrat.pdf");
-  
-  // Utilisation d'un appareil multifonction
-  const multifonction = new AppareilMultifonctionRefactore();
-  multifonction.imprimer("document1.pdf");
-  multifonction.scanner("document2.pdf");
-  multifonction.envoyerFax("document3.pdf");
-  multifonction.photocopier("document4.pdf");
-  
-  console.log("\nUtilisation polymorphique:");
-  
-  // Démonstration de polymorphisme avec des interfaces spécifiques
-  const imprimables = [imprimante, multifonction];
-  imprimables.forEach(imprimable => {
-    imprimable.imprimer("document_polymorphique.pdf");
-  });
-};
-
-demonstrateGoodApproach();
+const device = new Multifonction();
+device.imprimer("facture.pdf");
+device.scanner("facture.pdf");
 ```
 Avantages : 
 1. Chaque classe n'implémente que les méthodes dont elle a besoin.
@@ -722,58 +389,23 @@ Le bénéfice majeur est la **testabilité** : on peut remplacer la vraie base d
 `UserService` crée lui-même une `MySQLDatabase` : il est soudé à une implémentation précise.
 
 ```js
-// Classe de bas niveau: gère les détails spécifiques de la sauvegarde en base de données MySQL
+// Bas niveau : détail technique
 class MySQLDatabase {
-    save(donnees) {
-      console.log(`Sauvegarde des données dans MySQL: ${JSON.stringify(donnees)}`);
-      return true;
-    }
+  save(data) { console.log(`Sauvegarde dans MySQL : ${JSON.stringify(data)}`); }
 }
 
-// Classe de haut niveau: service utilisateur qui dépend directement de MySQLDatabase
+// Haut niveau : soudé à une implémentation précise via « new »
 class UserService {
   constructor() {
-    // Dépendance directe sur une implémentation concrète
-    this.database = new MySQLDatabase();
+    this.database = new MySQLDatabase(); // dépendance directe
   }
-  
   registerUser(name, email) {
-    const user = { name, email };
-    
-    // La logique métier est directement couplée à l'implémentation MySQL
-    return this.database.save(user);
+    this.database.save({ name, email });
   }
 }
 
-function demonstrateBadApproach() {
-  const service = new UserService();
-  service.registerUser("Jean Dupont", "jean@exemple.fr");
-  
-  console.log("Pour changer de base de données, il faut modifier la classe ServiceUtilisateur.");
-}
-
-// Si nous voulons utiliser MongoDB, nous devons créer une nouvelle classe
-class MongoDB {
-  save(donnees) {
-    console.log(`Sauvegarde des données dans MongoDB: ${JSON.stringify(donnees)}`);
-    return true;
-  }
-}
-
-// Et nous devrions créer une nouvelle version du service ou modifier l'existant
-class UserServiceWithMongoDB {
-  constructor() {
-    // Nouvelle dépendance directe
-    this.database = new MongoDB();
-  }
-  
-  registerUser(name, email) {
-    const user = { name, email };
-    return this.database.save(user);
-  }
-}
-
-demonstrateBadApproach();
+new UserService().registerUser("Jean Dupont", "jean@exemple.fr");
+// Passer à MongoDB obligerait à modifier UserService.
 ```
 Problèmes : 
 1. Le ServiceUtilisateur dépend directement de l'implémentation concrète de MySQLDatabase.
@@ -786,78 +418,39 @@ Problèmes :
 On définit une abstraction `DatabaseInterface`, et `UserService` reçoit sa base de données par **injection de dépendance**. On peut alors brancher MySQL, MongoDB ou un mock sans modifier le service.
 
 ```js
-// 1. Définir une abstraction (interface) pour la base de données
+// 1. Une abstraction commune
 class DatabaseInterface {
-  save(data) {
-    throw new Error("Cette méthode doit être implémentée");
-  }
+  save(data) { throw new Error("non implémenté"); }
 }
 
-// 2. Implémentations concrètes qui respectent l'interface
+// 2. Implémentations concrètes
 class MySQLDatabase extends DatabaseInterface {
-  save(data) {
-    console.log(`Sauvegarde des données dans MySQL: ${JSON.stringify(data)}`);
-    return true;
-  }
+  save(data) { console.log(`MySQL : ${JSON.stringify(data)}`); }
 }
-
 class MongoDB extends DatabaseInterface {
-  save(data) {
-    console.log(`Sauvegarde des données dans MongoDB: ${JSON.stringify(data)}`);
-    return true;
-  }
+  save(data) { console.log(`MongoDB : ${JSON.stringify(data)}`); }
 }
 
-// 3. Service de haut niveau qui dépend de l'abstraction, pas de l'implémentation
+// 3. Haut niveau : dépend de l'abstraction, reçue par injection
 class UserService {
-  // Injection de dépendance: la base de données est passée en paramètre
   constructor(database) {
-    if (!(database instanceof DatabaseInterface)) {
-      throw new Error("La base de données doit implémenter l'interface DatabaseInterface");
-    }
-    this.database = database;
+    this.database = database; // injection de dépendance
   }
-  
   registerUser(name, email) {
-    const user = { name, email };
-    return this.database.save(user);
+    this.database.save({ name, email });
   }
 }
 
-function demonstrateGoodApproach() {
-  // Utiliser MySQL
-  const mysqlDB = new MySQLDatabase();
-  const serviceMySQL = new UserService(mysqlDB);
-  serviceMySQL.registerUser("Jean Dupont", "jean@exemple.fr");
-  
-  // Changer pour MongoDB sans modifier le service
-  const mongoDB = new MongoDB();
-  const serviceMongo = new UserService(mongoDB);
-  serviceMongo.registerUser("Marie Martin", "marie@exemple.fr");
-  
-  // Facilité de test avec un mock
-  class MockDatabase extends DatabaseInterface {
-    constructor() {
-      super();
-      this.saved = [];
-    }
-    
-    save(data) {
-      console.log("Utilisation de la base de données mock pour les tests");
-      this.saved.push(data);
-      return true;
-    }
-  }
-  
-  const mockDB = new MockDatabase();
-  const serviceTest = new UserService(mockDB);
-  serviceTest.registerUser("Test Utilisateur", "test@exemple.fr");
-  
-  console.log("Données enregistrées dans le mock:", mockDB.saved);
-}
+// On branche l'implémentation voulue sans modifier UserService
+new UserService(new MySQLDatabase()).registerUser("Jean", "jean@exemple.fr");
+new UserService(new MongoDB()).registerUser("Marie", "marie@exemple.fr");
 
-demonstrateGoodApproach();
-``` 
+// ... et un mock pour les tests, sans toucher au service
+class MockDatabase extends DatabaseInterface {
+  constructor() { super(); this.saved = []; }
+  save(data) { this.saved.push(data); }
+}
+```
 Avantages :
 1. Le `UserService` ne dépend que de l'abstraction (`DatabaseInterface`), pas des détails d'implémentation.
 2. On peut facilement changer l'implémentation de la base de données sans modifier le service.
@@ -865,43 +458,6 @@ Avantages :
 4. Les modules sont faiblement couplés, ce qui améliore la flexibilité et la réutilisabilité.
 5. Les composants de haut et de bas niveau dépendent tous deux de l'abstraction.
 
-Pour aller plus loin : Factory pour créer des dépendances
-```js
-// Une factory pour créer des instances de base de données
-class DataBaseFactory {
-  static createDataBase(type) {
-    switch (type) {
-      case 'mysql':
-        return new MySQLDatabase();
-      case 'mongodb':
-        return new MongoDB();
-      default:
-        throw new Error(`Type de base de données non supporté: ${type}`);
-    }
-  }
-}
-
-// Configuration par injection de dépendance
-function configureApp(typeDB) {
-  const database = DataBaseFactory.createDataBase(typeDB);
-  const service = new UserService(database);
-  
-  return service;
-}
-
-function demonstrateFactoryPattern() {
-  console.log("\nUtilisation d'une Factory pour l'inversion de dépendance:");
-  
-  // Configuration basée sur l'environnement ou les paramètres
-  const serviceMySQL = configureApp('mysql');
-  serviceMySQL.registerUser("Pierre Durand", "pierre@exemple.fr");
-  
-  const serviceMongo = configureApp('mongodb');
-  serviceMongo.registerUser("Sophie Leroy", "sophie@exemple.fr");
-}
-
-demonstrateFactoryPattern();
-```
 Conclusion : 
 1. Les modules de haut niveau (logique métier) et de bas niveau (détails techniques) devraient dépendre d'abstractions (interfaces).
 2. L'inversion de dépendance est facilitée par l'injection de dépendance.
