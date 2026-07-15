@@ -7,12 +7,12 @@ Pour créer des objets à partir d'une classe, il faut définir un constructeur.
 Un constructeur est une fonction intégrée comme élément d'une classe.
 
 ```
-CLASSE Personnage {
-    nom : CHAINE DE CARACTERES
-    age : ENTIER
-    sexe : BOOLEEN
+CLASS Personnage {
+    nom : STRING
+    age : INTEGER
+    sexe : BOOLEAN
     
-    FONCTION constructeur() {
+    FUNCTION constructor() {
     }
 }
 ```
@@ -33,16 +33,16 @@ Le mot clé `new` permet de créer un objet d'une classe (= instancier une class
 
 Exemple : à partir de la classe personnage, on va créer un algorithme permettant d'instancier de nouveaux personnages :
 ```
-ALGORITHME main
+ALGORITHM main
 VARIABLES
     perso1 : Personnage
     perso2 : Personnage
     perso3 : Personnage
-DEBUT
+START
     perso1 <- new Personnage()
     perso2 <- new Personnage()
     perso3 <- new Personnage()
-FIN
+END
 ```
 Chaque personnage créé aura la structure de la classe Personnage : avec un nom, un âge et un sexe.
 Chaque objet personnage créé sera du type Personnage (provenant de la classe Personnage).<br>
@@ -53,12 +53,12 @@ On pourra ensuite remplir ces objets grâce au concept d'hydratation.<br>
 
 Pour obtenir des objets remplis, on va compléter le constructeur de classe :
 ```
-CLASSE Personnage {
-    nom : CHAINE DE CARACTERES (STRING)
-    age : ENTIER (INTEGER)
-    sexe : BOOLEEN (BOOLEAN)
+CLASS Personnage {
+    nom : STRING
+    age : INTEGER
+    sexe : BOOLEAN
     
-    FONCTION constructeur(nom, age, sexe) {
+    FUNCTION constructor(nom, age, sexe) {
         this.nom <- nom
         this.age <- age
         this.sexe <- sexe
@@ -70,16 +70,16 @@ On peut traduire ce mot clé par "mon" : mon nom, mon age, mon sexe.
 
 L'algorithme d'instanciation qui en découle sera donc le suivant :
 ```
-ALGORITHME main
+ALGORITHM main
 VARIABLES
     perso1 : Personnage
     perso2 : Personnage
     perso3 : Personnage
-DEBUT
-    perso1 <- new Personnage("Romain", 34, VRAI)
-    perso2 <- new Personnage("Flora", 38, FAUX)
-    perso3 <- new Personnage("Katia", 40, FAUX)
-FIN
+START
+    perso1 <- new Personnage("Romain", 34, TRUE)
+    perso2 <- new Personnage("Flora", 38, FALSE)
+    perso3 <- new Personnage("Katia", 40, FALSE)
+END
 ```
 Les paramètres de la fonction "constructeur" devront être renseignés au moment de son appel dans l'algorithme d'instanciation.<br>
 l'objet créé à partir de la classe aura donc les attributs de la classe.
@@ -140,7 +140,7 @@ CLASS Book {
   coverColor: STRING
   isTranslatedInEnglish: BOOLEAN
 
-  FUNCTION Constructor (t, nop, cc, isTr) {
+  FUNCTION constructor (t, nop, cc, isTr) {
     this.title <- t
     this.nbOfPages <- nop
     this.coverColor <- cc
@@ -153,7 +153,7 @@ ALGORITHM main
 VARIABLES
     book1 : Book
     book2 : Book
-    book3 : book
+    book3 : Book
 START
     book1 <- new Book("L'algorithmique selon H2PROG", 500, "black", TRUE)
     book2 <- new Book("Le virus Asiatique", 300, "red", FALSE)

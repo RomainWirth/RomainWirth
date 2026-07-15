@@ -39,7 +39,7 @@ Il existe plusieurs manières de mettre en oeuvre les relations entre ces deux p
 ## La logique de la POO
 
 En POO, on va se poser des questions sur les éléments ayant une "existence propre".<br>
-Cela induit un questionnement sur ce qui est nécessaire à la réalisation du programmae.<br>
+Cela induit un questionnement sur ce qui est nécessaire à la réalisation du programme.<br>
 
 exemple :<br>
 On souhaite créer une application qui gère une concession automobile et va permettre aux clients d'achater des voitures.<br>
@@ -57,7 +57,7 @@ Quels sont les traitements associés à mes entités ?
 * Client : réserver, modifier les infos personnelles, commander...
 * Parc auto : lister les voitures, ajouter une voiture, supprimer une voiture...
 
-**On va créer des blocs logiques qui donnreont lieu à des "objets".**<br>
+**On va créer des blocs logiques qui donneront lieu à des "objets".**<br>
 Par exemple, pour les voitures, nous aurons un objet voiture qui aura :<br>
 * une marque
 * un nom de modèle

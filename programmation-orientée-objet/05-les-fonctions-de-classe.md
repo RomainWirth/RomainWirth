@@ -11,7 +11,7 @@ Ainsi, lors de l'instanciation d'un objet, celui-ci pourra utiliser la fonction 
 ```
 CLASS Character {
     name: STRING
-    age: INTERGER
+    age: INTEGER
     sex: BOOLEAN
 
     FUNCTION constructor(name, age, sex) {...}
@@ -39,7 +39,7 @@ Des fonctions peuvent appeler d'autres fonctions
 ```
 CLASS Character {
     name: STRING
-    age: INTERGER
+    age: INTEGER
     sex: BOOLEAN
 
     FUNCTION constructor(name, age, sex) {...}
@@ -66,14 +66,14 @@ END
 ```
 CLASS Character {
     name: STRING
-    age: INTERGER
+    age: INTEGER
     sex: BOOLEAN
 
     FUNCTION constructor(name, age, sex) {...}
     FUNCTION birthday(){
         SHOW "It's my birthday "
         this.addOneYear()
-        SHOW "I am ", 
+        SHOW "I am ", this.age, " years old."
     }
     FUNCTION addOneYear() {
         this.age <- this.age + 1
@@ -123,11 +123,11 @@ CLASS Character {
         this.sex <- sex
         this.allianceForces <- allianceForces
     }
-    FUNCTION calculateDammages() {
+    FUNCTION calculateDamages() {
         RETURN this.pv / 100 * this.attack + 1
     }
-    FUNCTION displayDammages() {
-        SHOW this.calculateDammages(), " dammage distributed."
+    FUNCTION displayDamages() {
+        SHOW this.calculateDamages(), " damage distributed."
     }
 }
 ENDCLASS
@@ -135,17 +135,17 @@ ENDCLASS
 ALGORITHM main
 VARIABLES
     character1, character2, character3, character4 : Character 
-    tab[char] : ARRAY OF Character
+    tab : ARRAY OF Character
 
 START
     character1 <- new Character("Thirlond", "dwarf", "warrior", 10, 100, TRUE, TRUE)
     character2 <- new Character("Lalayn", "elf", "archer", 5, 50, FALSE, TRUE)
     character3 <- new Character("Thakluf", "orc", "archer", 5, 55, FALSE, FALSE)
     character4 <- new Character("Kelb", "gobelin", "thief", 2, 10, TRUE, FALSE)
-    characters <- tab[character1, character2, character3, character4]
+    tab <- [character1, character2, character3, character4]
 
     FOR i FROM 0 TO size(tab)-1 BY STEP OF 1 DO 
-        characters[i].displayDammage()
+        tab[i].displayDamages()
     ENDFOR 
 END
 ```
@@ -181,11 +181,11 @@ CLASS Book {
         this.isTranslatedInEnglish <- NOT this.isTranslatedInEnglish
     }
     FUNCTION displayBook() {
-        SHOW book1.title, "of ", book1.nbOfPages, " pages, with a ", book1.coverColor, " cover,",
-        IF NOT book1.isTranslatedInEnglish THEN
+        SHOW this.title, "of ", this.nbOfPages, " pages, with a ", this.coverColor, " cover,",
+        IF NOT this.isTranslatedInEnglish THEN
             SHOW " not "
         ENDIF
-        SHOW "translated in english".
+        SHOW "translated in english"
     }
 }
 ENDCLASS
@@ -229,8 +229,8 @@ CLASS Car {
         this.isElectric <- elec
     }
     FUNCTION displayCar() {
-        SHOW tab[i].brand, tab[i].model, tab[i].color, tab[i].nbOfDoors, " doors,"
-        IF NOT tab[i].isElectric THEN
+        SHOW this.brand, this.model, this.color, this.nbOfDoors, " doors,"
+        IF NOT this.isElectric THEN
             SHOW " not"
         ENDIF
         SHOW " electric"
@@ -241,18 +241,18 @@ ENDCLASS
 ALGORITHM main
 VARIABLES
     car1, car2, car3 : Car
-    tab[car] : ARRAY OF Car
+    tab : ARRAY OF Car
 
 START
     car1 <- new Car("Yotota", "Ryas", "black", 5, TRUE)
     car2 <- new Car("Yotota", "Risau", "red", 3, FALSE)
     car3 <- new Car("Troen", "5C", "red", 5, TRUE)
-    tab <- new [car1, car2, car3]
+    tab <- [car1, car2, car3]
 
     FOR i FROM 0 TO size(tab)-1 BY STEP OF 1 DO
         tab[i].displayCar()
     ENDFOR
-    displayBrandCar(tab, "Yotota")
+    displayBrandCars(tab, "Yotota")
 END
 
 FUNCTION displayBrandCars(tab, brand)

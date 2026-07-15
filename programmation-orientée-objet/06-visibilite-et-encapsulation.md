@@ -1,6 +1,6 @@
 # PROGRAMMATION ORIENTEE OBJET - Visibilité des informations (Public / Private & Getter / Setter)
 
-## Visbilité : Public vs Private
+## Visibilité : Public vs Private
 
 Afin de permettre ou non d'accéder à des attributs d'une classe, on utilisera les mots clés "Public" et "Private".
 
@@ -31,9 +31,9 @@ CLASS Character {
   }
 }
 ```
-De manière générale, on va plutôt provilegier le fait de mettre en `private` les informations,  
+De manière générale, on va plutôt privilégier le fait de mettre en `private` les informations,  
 c'est à dire de rendre inaccessible certaines informations par n'importe qui, depuis n'importe où.  
-En résumé, le mot clé `private` perrmet d'empêcher l'accès des informations (attributs ou fonctions) depuis des algorithmes extérieurs à l'objet.
+En résumé, le mot clé `private` permet d'empêcher l'accès des informations (attributs ou fonctions) depuis des algorithmes extérieurs à l'objet.
 
 On peut cependant accéder à la totalité des attributs et fonctions au sein même de l'objet, grâce au mot clé `this`. 
 
@@ -56,7 +56,7 @@ En pratique, les attributs seront très souvent en `private` et la majorité des
 
 En règle générale, on définira tous les attributs de la classe en `PRIVATE`, afin d'éviter que n'importe qui ne puisse faire n'importe quoi sur les objets.
 
-Afin de toujours accéder aux attributs, on mettra en place des fonctions permettant d'obtenir la valeur `"Getter"`, et de mofidier la valeur `"Setter"`.
+Afin de toujours accéder aux attributs, on mettra en place des fonctions permettant d'obtenir la valeur `"Getter"`, et de modifier la valeur `"Setter"`.
 
 ```
 CLASS Character {
@@ -75,13 +75,13 @@ CLASS Character {
         RETURN this.name
     }
     PUBLIC FUNCTION setName(newName) {
-        RETURN this.name <- newName
+        this.name <- newName
     }
     PUBLIC FUNCTION getAge() {
         RETURN this.age
     }
     PUBLIC FUNCTION setAge(newAge) {
-        RETURN this.age <- newAge
+        this.age <- newAge
     }
     PUBLIC FUNCTION displayAge() {
         SHOW "I am ", this.age, " years old."
@@ -110,7 +110,7 @@ END
 
 I. Modifier la classe `Character` pour que tous les attributs ne soient directement qu'au travers des objets et non depuis "l'extérieur".
 
-Empêcher l'utilisation de la fonction calculateDammage() depuis l'extérieur
+Empêcher l'utilisation de la fonction calculateDamages() depuis l'extérieur
 
 Modifier si nécessaire l'algorithme principal pour créer les affichages réalisés dans la partie précédente.
 
@@ -133,10 +133,10 @@ CLASS Character {
         this.sex <- sex
         this.allianceForces <- allianceForces
     }
-    PUBLIC FUNCTION displayDammages() {
-        SHOW this.calculateDammages(), " dammage distributed."
+    PUBLIC FUNCTION displayDamages() {
+        SHOW this.calculateDamages(), " damage distributed."
     }
-    PRIVATE FUNCTION calculateDammages() {
+    PRIVATE FUNCTION calculateDamages() {
         RETURN this.pv / 100 * this.attack + 1
     }
 }
@@ -145,17 +145,17 @@ ENDCLASS
 ALGORITHM main
 VARIABLES
     character1, character2, character3, character4 : Character 
-    tab[char] : ARRAY OF Character
+    tab : ARRAY OF Character
 
 START
     character1 <- new Character("Thirlond", "dwarf", "warrior", 10, 100, TRUE, TRUE)
     character2 <- new Character("Lalayn", "elf", "archer", 5, 50, FALSE, TRUE)
     character3 <- new Character("Thakluf", "orc", "archer", 5, 55, FALSE, FALSE)
     character4 <- new Character("Kelb", "gobelin", "thief", 2, 10, TRUE, FALSE)
-    characters <- tab[character1, character2, character3, character4]
+    tab <- [character1, character2, character3, character4]
 
     FOR i FROM 0 TO size(tab)-1 BY STEP OF 1 DO 
-        characters[i].displayDammage()
+        tab[i].displayDamages()
     ENDFOR 
 END
 ```
@@ -170,13 +170,13 @@ Empêcher que n'importe qui puisse modifier le booléen (pour les fonctions perm
 Laisser la possibilité de modifier le titre et le nombre de pages du livre directement depuis l'attribut
 
 ```
-CLASS Book 
+CLASS Book {
     title: PUBLIC STRING
     nbOfPages: PUBLIC INTEGER
     coverColor: PRIVATE STRING
     isTranslatedInEnglish: PRIVATE BOOLEAN
 
-    PUBLIC FUNCTION Constructor (name, nbOfPages, coverColor, isTranslated) {
+    PUBLIC FUNCTION constructor (name, nbOfPages, coverColor, isTranslated) {
         this.title <- name
         this.nbOfPages <- nbOfPages
         this.coverColor <- coverColor
@@ -186,14 +186,14 @@ CLASS Book
         this.coverColor <- newColor
     }
     PRIVATE FUNCTION englishTranslation() {
-        this.isTranslatedInEnglish = TRUE
+        this.isTranslatedInEnglish <- TRUE
     }
     PUBLIC FUNCTION displayBook() {
-        SHOW book1.title, "of ", book1.nbOfPages, " pages, with a ", book1.coverColor, " cover,",
-        IF NOT book1.isTranslatedInEnglish THEN
+        SHOW this.title, "of ", this.nbOfPages, " pages, with a ", this.coverColor, " cover,",
+        IF NOT this.isTranslatedInEnglish THEN
             SHOW " not "
         ENDIF
-        SHOW "translated in english".
+        SHOW "translated in english"
     }
     PUBLIC FUNCTION addPages(nbToAdd) {
         this.nbOfPages += nbToAdd
@@ -203,6 +203,7 @@ CLASS Book
         this.addPages(5)
         this.setCoverColor("green")
     }
+}
 ENDCLASS
 ```
 Indiquer dans l'algorithme ci-dessous si c'est possible ou non : 
@@ -270,8 +271,8 @@ CLASS Car {
         this.isElectric <- newIsElectric
     }
     PUBLIC FUNCTION displayCar() {
-        SHOW tab[i].brand, tab[i].model, tab[i].color, tab[i].nbOfDoors, " doors,"
-        IF NOT tab[i].isElectric THEN
+        SHOW this.brand, this.model, this.color, this.nbOfDoors, " doors,"
+        IF NOT this.isElectric THEN
             SHOW " not"
         ENDIF
         SHOW " electric"
@@ -282,18 +283,18 @@ ENDCLASS
 ALGORITHM main
 VARIABLES
     car1, car2, car3 : Car
-    tab[car] : ARRAY OF Car
+    tab : ARRAY OF Car
 
 START
     car1 <- new Car("Yotota", "Ryas", "black", 5, TRUE)
     car2 <- new Car("Yotota", "Risau", "red", 3, FALSE)
     car3 <- new Car("Troen", "5C", "red", 5, TRUE)
-    tab <- new [car1, car2, car3]
+    tab <- [car1, car2, car3]
 
     FOR i FROM 0 TO size(tab)-1 BY STEP OF 1 DO
         tab[i].displayCar()
     ENDFOR
-    displayBrandCar(tab, "Yotota")
+    displayBrandCars(tab, "Yotota")
 END
 
 FUNCTION displayBrandCars(tab, brand)

@@ -19,12 +19,12 @@ Pour connaître ce que contient la variable, il faudra lui attribuer un nom.<br>
 
 Règles générales pour nommer une variables :<br>
 1. **Le nom de la variable doit être descriptif**<br>
-Il s'agit d'une règle fondammentale. Le nom doit être à la fois descriptif et concis.<br> 
+Il s'agit d'une règle fondamentale. Le nom doit être à la fois descriptif et concis.<br> 
 On doit pouvoir comprendre de quoi il s'agit sans avoir à lire une phrase complète.
 2. **Le nom de la variable doit être complet**<br>
 Il faut éviter d'abréger ou de raccourcir les mots, même si une version plus courte semble évidente.<br>
 3. **Le nom doit suivre une convention d'appellation commune**<br>
-L'une des conventions d'appelletion les plus populaires est le **Camel Case** :<br>
+L'une des conventions d'appellation les plus populaires est le **Camel Case** :<br>
 Une phrase composée de plusieurs mots sans espaces ni ponctuation.<br> 
 Le premier mot est écrit en minuscule et tous les autres mots commencent par une majuscule.<br>
 
@@ -39,7 +39,7 @@ Pour rappel, il existe 3 types primaires :<br>
 3. Les booléen : **BOOLEAN**
 
 L'une des problématiques qu'on peut avoir est le nombre de variables pour stocker les informations.<br>
-On risque de se retrouve rapidement avec un grand nombre de variables pour véhiculer les données, ce qui peut devenir ingérable.<br>
+On risque de se retrouver rapidement avec un grand nombre de variables pour véhiculer les données, ce qui peut devenir ingérable.<br>
 Quand on se retrouve avec la même structure d'information, on va utiliser les objets pour remédier à cela.
 
 ## Les objets et les classes
@@ -48,7 +48,7 @@ Concrètement, pour simplifier l'utilisation des informations, on va les regroup
 
 Cette super variable s'appelle un **objet**.<br>
 
-Pour créer un objet, on va devoir définit sa structure.<br> 
+Pour créer un objet, on va devoir définir sa structure.<br> 
 la structure s'appelle une _**"Classe"**_.
 
 On peut assimiler la classe comme un moule à gâteau qui permet d'indiquer les différentes informations que contiendront les futurs objets.<br>
@@ -58,16 +58,16 @@ La classe va définir la structure globale des objets.
 ```
 
 Par exemple :<br>
-Pour avoir plusieurs personnages qui ont chacuns un nom, une taille, un age etc., on pourra créer une classe personnage :
+Pour avoir plusieurs personnages qui ont chacun un nom, une taille, un age etc., on pourra créer une classe personnage :
 ```
-CLASSE Personnage
-    nom : CHAINE DE CARACTERES
-    taille : ENTIER
-    age : ENTIER
-    sexe : BOOLEEN
-FIN CLASSE
+CLASS Personnage
+    nom : STRING
+    taille : INTEGER
+    age : INTEGER
+    sexe : BOOLEAN
+ENDCLASS
 ```
-Par convention, une classe commence toujours pas une majuscule.<br>
+Par convention, une classe commence toujours par une majuscule.<br>
 Les informations d'une classe sont appelées des attributs.<br>
 
 Les objets vont découler des classes.<br>

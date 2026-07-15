@@ -21,16 +21,16 @@ CLASS Character {
     this.attack <- attack
     this.healthPoints <- hp
   }
-  PRIVATE FUNCTION calculateDammages() {
+  PRIVATE FUNCTION calculateDamages() {
     RETURN this.healthPoints / 100 * this.attack + 1
   }
-  PUBLIC FUNCTION displayDammages() {
-    SHOW this.calculateDammages(), " distributed dammages."
+  PUBLIC FUNCTION displayDamages() {
+    SHOW this.calculateDamages(), " distributed damages."
   }
   PUBLIC FUNCTION getName() {
     RETURN this.name
   }
-  PUBLIC FUNCTION setName(newname) {
+  PUBLIC FUNCTION setName(newName) {
     this.name <- newName
   }
 }

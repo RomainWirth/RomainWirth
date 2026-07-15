@@ -70,7 +70,7 @@ VARIABLES
 START
     character1 <- new Character("Thirlond", "dwarf", "warrior", 10, 100, TRUE, TRUE)
 
-    SHOW character1.name, "is a ", character1.race, " ", character1.class, "with and attack of ", character1.attack, "and ", character1.pv, "health points, from "
+        SHOW character1.name, "is a ", character1.race, " ", character1.class, "with an attack of ", character1.attack, "and ", character1.pv, "health points, from "
     IF character1.allianceForces THEN
         SHOW "the alliance"
     ELSE
@@ -91,7 +91,7 @@ END
 II. À partir de la classe `Book`, réaliser les affichages suivants :
 * L'algorithmique selon H2PROG, de 500 pages, couverture noire, traduit en anglais.
 * Le virus Asiatique, de 300 pages, couverture rouge, non traduit en anglais.
-* La France du 19ème, de 500 pages, couverture bleu, traduit en anglais
+* La France du 19ème, de 500 pages, couverture bleue, traduit en anglais
 
 ```
 CLASS Book {
@@ -128,7 +128,7 @@ START
 END
 ```
 
-III. À partir de la classe `Voiture`, ajouter le constructeur nécessaire pour créer les objets suivants : 
+III. À partir de la classe `Car`, réaliser les affichages suivants : 
 * Yotota Ryas noire 5 portes électrique
 * Yotota Risau rouge 3 portes non électrique
 * Troen 5C rouge 5 portes électrique
@@ -154,13 +154,13 @@ ENDCLASS
 ALGORITHM main
 VARIABLES
     car1, car2, car3 : Car
-    tab[car] : ARRAY OF Car
+    tab : ARRAY OF Car
 
 START
     car1 <- new Car("Yotota", "Ryas", "black", 5, TRUE)
     car2 <- new Car("Yotota", "Risau", "red", 3, FALSE)
     car3 <- new Car("Troen", "5C", "red", 5, TRUE)
-    tab <- new [car1, car2, car3]
+    tab <- [car1, car2, car3]
 
     FOR i FROM 0 TO size(tab)-1 BY STEP OF 1 DO
         SHOW tab[i].brand, tab[i].model, tab[i].color, tab[i].nbOfDoors, " doors,"
