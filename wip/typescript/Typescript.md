@@ -54,10 +54,10 @@ nodejs -v
 sudo apt install npm
 ```
 
-ATTENTION : Si la version de node n'est pas la LTS et qu'on arrive pas à l'installer sur Linux,<br> 
-suivre les instructions sur ce repo git :<br>
-https://github.com/nvm-sh/nvm#installing-and-updating<br>
-On utilisera le gestionnaire de version de node : nvm afin d'installer, upgrade et utiliser une version de node souhaitée.<br>
+> ATTENTION : Si la version de node n'est pas la LTS et qu'on arrive pas à l'installer sur Linux,
+> suivre les instructions sur ce repo git :
+> https://github.com/nvm-sh/nvm#installing-and-updating  
+> On utilisera le gestionnaire de version de node : nvm afin d'installer, upgrade et utiliser une version de node souhaitée.
 
 Une fois Node.js installé, créer un nouveau dossier où on le souhaite dans l'ordinateur, y entrer et y lancer un terminal.<br>
 
