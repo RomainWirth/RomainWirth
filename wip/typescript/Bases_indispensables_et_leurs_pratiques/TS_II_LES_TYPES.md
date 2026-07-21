@@ -575,7 +575,119 @@ Le mot clé interface permet, quand à lui, de préciser qu'on travaille avec de
 Par convention, dès lors qu'on utilise des objets et des classes, on utilisera le mot clé `interface`, et si on doit définir des types un peu plus simple, on pourra utiliser le mot clé `type`.
 
 ## J. L'UNION ET LES OBJETS
+
+L'union `|` peut s'utiliser autant sur le typage que sur les objets (même fonctionnement avec les interfaces) : 
+```TypeScript
+type Character = {
+  name: string;
+  sex: boolean;
+  strength: number;
+  healthPoints: number;
+  manaPoints: number;
+}
+
+type Hero = {
+  name: string;
+  class: string;
+}
+
+type Player = Character | Hero;
+```
+
+Lorsqu'on réalise une fonction pour afficher un objet d'un type ayant utilisé une union, il est nécessaire de faire des vérifications sur les propriétés. 
+Pour cela, on utilisera le mot clé `in` :
+```TypeScript
+function displayPayer(player: Player): void {
+  console.log("name : " + player.name);
+  if("age" in player) {
+    console.log("age : " + player.age);
+    console.log("sex : " + (player.sexe ? "Male" : "Female"));
+  }
+  if ("class" in player) {
+    console.log("character class : " + player.class);
+  }
+}
+```
+
+On peut aussi utiliser le mot clé `extends` pour qu'un type hérite d'un autre type : 
+```TypeScript
+interface Character {
+  name: string;
+  sex: boolean;
+  healthPoints: number;
+}
+
+interface Hero extends Character {
+  age: number;
+  class: string;
+}
+
+interface Monster extends Character {
+  type: string;
+}
+```
+
+Pour faciliter l'utilisation de type Union sur des objets, on pourra rajouter une propriété permettant de faire la distinction de type : le type littéral.
+Le type littéral permet de définir des propriétés d'objet, ou même une variable comme ayant une valeur fixe.
+```TypeScript
+interface Animal {
+  family: "animal";
+  name: string;
+}
+
+interface Bird extends Animal {
+  class: "bird";
+  hasWings: boolean;
+  canFly: boolean;
+}
+
+interface Fish extends Animal {
+  class: "fish";
+  hasBranchia: boolean;
+  canBreatheUnderWater: boolean;
+}
+
+type Wildlife = Bird | Fish;
+
+function displayWildLife(_wildlife: Wildlife) {
+  console.log("Family : " + _wildlife.family);
+  if (_wildlife.class === "bird") {
+    console.log("Can fly : " + _wildlife.canFly);
+  }
+  if (_wildlife.class === "fish") {
+    console.log("Can swim : " + _wildlife.canBreatheUnderWater)
+  }
+}
+```
+Écrit de manière plus efficace : 
+```TypeScript
+const Class = "fish" | "bird";
+
+interface Animal {
+  family: "animal";
+  class: Class;
+  name: string;
+}
+
+interface Bird extends Animal {
+  class: "bird";
+  hasWings: boolean;
+  canFly: boolean;
+}
+
+interface Fish extends Animal {
+  class: "fish";
+  hasBranchia: boolean;
+  canBreatheUnderWater: boolean;
+}
+
+```
+<!-- Mes exemples ne sont pas efficace... il faut les modifier -->
+
 ## K. L'INTERSECTION
+
+ 
+
 ## L. TYPAGE DE PROPRIÉTÉS
 ## M. LE TYPE ÉNUMÉRATION
 ## N. AUTRES FONCTIONNALITÉS
