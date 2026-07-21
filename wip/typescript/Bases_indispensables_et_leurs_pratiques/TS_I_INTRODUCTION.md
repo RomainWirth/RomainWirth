@@ -57,8 +57,8 @@ function add(n1, n2) {
 <div class="results"></div>
 <script src="mainJs.js"></script>
 ```
-_**Avec ce code, le résultat n'est pas une addition, mais une concaténation.**_  
-_**La récupération d'informations dans un champs de formulaire est de type 'string' (chaîne de caractères) : si on indique 3 pour nb1 et 4 pour nb2, le résultat ne sera pas 7 mais 34.**_
+> _**Avec ce code, le résultat n'est pas une addition, mais une concaténation.**_  
+> _**La récupération d'informations dans un champs de formulaire est de type 'string' (chaîne de caractères) : si on indique 3 pour nb1 et 4 pour nb2, le résultat ne sera pas 7 mais 34.**_
 
 Corrections possibles :
 ```JS
@@ -219,4 +219,4 @@ Le code dans ce fichier est au format ES5, on ne voit plus les contrôles qui on
 Ce n'est pas important puisque le fichier js n'est plus géré directement par le développeur.
 On ne va s'intéresser qu'au fichier TypeScript.
 
-En résumé, TypeScript a permis ici d'écrire du code plus robuste en faisant en sorte de forcer le développeur à utiliser le bon type d'informations. 
+En résumé, TypeScript a permit ici d'écrire du code plus robuste en faisant en sorte de forcer le développeur à utiliser le bon type d'informations. 
