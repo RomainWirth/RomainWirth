@@ -520,9 +520,60 @@ const coordinates: {x: number, y: number}[] = [
 
 ## H. LES TYPES PRÉDÉFINIS
 
+En TypeScript, il est possible de créer ses propres types. Cette fonctionnalité est associée aux objets.
+Par exemple, on peut créer un type `Address` qui sera un objet contenant plusieurs caractéristiques : `street` de type string, `city` également de type string, et `postalCode` de type number.
+```TypeScript
+const Address = {
+  street: string,
+  city: string,
+  postalCode: number
+};
+```
 
+On pourra ensuite utiliser ce type prédéfini pour renseigner un objet : 
+```TypeScript
+const address: Address = {
+  street: "rue des mouettes",
+  city: "LALALAND",
+  postalCode: 12345
+}
+
+const displayAddress = function (_address: Address): void {
+  console.log("Rue : " + address.street);
+  console.log("Code postal : " + address.postalCode);
+  console.log("Ville : " + address.city);
+}
+```
 
 ## I. LES OBJETS ET LES INTERFACES
+
+Les interfaces sont également des déclarations de type prédéfini : 
+```TypeScript
+type Character = {
+  name: string;
+  sex: string;
+  class: string;
+  strength: number;
+  healthPoints: number;
+  manaPoints: number;
+}
+
+interface Character {
+  name: string;
+  sex: string;
+  class: string;
+  strength: number;
+  healthPoints: number;
+  manaPoints: number;
+}
+```
+
+L'interface permettent d'effectuer le même travail que le type.
+Par contre, le mot clé `type` est plus flexible : il permet d'effectuer des unions, des intersections, etc.
+Le mot clé interface permet, quand à lui, de préciser qu'on travaille avec des objets et des classes, c'est pour cela qu'on choisira en règle générale de créer des interfaces pour être utilisées avec des classes et des objets. L'utilisation de `type` est plutôt associé avec des types simples.
+
+Par convention, dès lors qu'on utilise des objets et des classes, on utilisera le mot clé `interface`, et si on doit définir des types un peu plus simple, on pourra utiliser le mot clé `type`.
+
 ## J. L'UNION ET LES OBJETS
 ## K. L'INTERSECTION
 ## L. TYPAGE DE PROPRIÉTÉS
