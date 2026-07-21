@@ -419,9 +419,65 @@ console.log(test(false)); // output = Femme
 
 ## F. SURCHARGE DE FONCTION
 
+Les surcharges de fonctions permettent de définir des fonctions génériaques qui peuvent ensuite être utilisées de manière plus précise grâce à la surcharge de fonction.
+Grâce à cette fonctionnalité, TypeScript sera capable de détecter le type d'informations retournées.
 
+exemple : 
+```TypeScript
+let firstName = "Mario";
+let age = 32;
+let sex = true;
+const sports = ["tennis", "karting"];
+const address = {
+  street: "10 rue des lilas",
+  city: "Paris",
+  zipCode: 75000,
+};
+
+function add(e1: number | string, e2: number | string): number | string {
+  if (typeof e1 === 'number' && typeof e2 === 'number') {
+    return e1 + e2;
+  }
+
+  return e1.toString() + " " + e2.toString();
+}
+
+let sum = add(5,15);  
+```
+fonction basique "add" qui permet soit de faire de la concaténation si on envoit des informations de type chaîne de caratères (string), soit un calcul, une addition si les informations transférées sont de type number.
+Si on utilise pas la notion de surcharge de fonction ici, TypeScript va perdre le type et ne sera pas comment bien utiliser l'information retournée.
+
+Dans notre exemple, on sait intuitivement que 'sum' retourne une variable de type number. 
+Pourtant, dans l'état actuel, TypeScript n'est pas capable d'identifier qu'il s'agit d'un number. 
+En effet, la fonction add retourne soit un 'number' soit une 'string' (`number | string`).
+Il sera donc impossible d'utiliser une méthode qui va utiliser une variable de type number sur la variable `sum`, comme `Math.floot(sum)`. 
+
+Pour corriger ce problème, on va utiliser la surcharge de fonction : `function add(e1: number, e2: number): number;`.
+Cela indique que si les paramètres de la fonction sont de type number, la fonction va retourner un résultat de type number.
+La surcharge de fonction se déclare au dessus de la fonction concernée.
+```TypeScript
+function add(e1: number, e2: number): number;
+function add(e1: number | string, e2: number | string): number | string {
+  if (typeof e1 === 'number' && typeof e2 === 'number') {
+    return e1 + e2;
+  }
+
+  return e1.toString() + " " + e2.toString();
+}
+```
+
+De la même manière, on pourra faire une autre surcharge de fonction pour le type string : `function add(e1: string, e2: string): string;`.
+Cela permettra d'écrire ceci : 
+```TypeScript
+let concat = add("Mario", "Bros.");
+```
+Ainsi, on pourra utiliser les méthodes javascript sur les strings sur la variable concat comme `concat.toUpperCase()`.
+
+Comme la surcharge comprenant une variable de type number et une variable de type string n'existe pas, on ne pourra pas mélanger les types des variables en paramètres : `let test = add("Mario", 10);` fera planter le programme.
 
 ## G. LES TABLEAUX
+
+
 ## H. LES TYPES PRÉDÉFINIS
 ## I. LES OBJETS ET LES INTERFACES
 ## J. L'UNION ET LES OBJETS
