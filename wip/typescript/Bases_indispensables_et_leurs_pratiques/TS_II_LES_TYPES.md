@@ -477,8 +477,51 @@ Comme la surcharge comprenant une variable de type number et une variable de typ
 
 ## G. LES TABLEAUX
 
+TypeScript offre plus de possibilités en ce qui concerne les tableaux.
+Comme en JavaScript, on va pouvoir définir des tableaux de type simple, c'est à dire contenant "string", "number", "boolean", ou alors des tableaux de type complexes, à savoir réaliser des tableaux de tableaux, des tableaux contenant des objets JavaScript ou des tableaux contenant des objets issus de classes.
+
+Lors de la déclaration de la variable, on pourra indiquer explicitement le type souhaité ou bien laisser TypeScript le détecter automatiquement à partir de l'initialisation de la variable.
+Grâce au symbole de l'union `|`, il sera possible de faire des tableaux contenant uniquement des valeurs de certains types : 
+```TypeScript
+let tab: (number | string)[];
+tab = ["Mario", 5];
+tab[0] = "Luigi";
+tab[1] = 10;
+```
+
+On peut également combiner des tableaux de type `any`, même s'il est préférable d'éviter cette solution dès lors que c'est possible. En effet, any revient à faire du JavaScript.
+
+On peut aussi déclarer des tableaux de taille fixe, qu'on appelle des `tuple`. La taille ainsi que les types seront fixes et il sera impossible de modifier ces caractéristiques. 
+```TypeScript
+let tabTuple: [string, number] = ["Mario", 10]; // la tableau contient deux éléments : index 0 de type string et index 1 de type number. 
+tabTuple[0] = 10; // retourne une erreur : la variable à l'index 0 est de type string.
+tabTuple[2] = 12; // retourne une erreur : le tableau a une taille de 2, l'index max est 1.
+
+let tabTriple: [string, number, boolean] = ["Mario", 10, true];
+console.log(tableTriple);
+```
+
+Un tuple est fixe et est donc beacoup moins polyvalent qu'un tableau : 
+```TypeScript
+const player: (string | number)[] = ["John", 30]; // Peut aussi être déclaré [30, "John"] ou encore [10, "John", 40]
+const playerTuple: [number, string] = ["John", 30]; // retourne une erreur : la variable à l'index 0 est de type number et à l'index 1 est de type string.
+const playerTupleCorrect: [string, number] = ["John", 30];
+```
+le tableau player peut contenir soit des variables de type `string`, soit des variables de type `number` dans n'importe quel ordre, et peut être de la taille qu'on souhaite : 1, 2, 10 éléments.
+
+On peut aussi déclarer des tableaux d'objets : 
+```TypeScript
+const coordinates: {x: number, y: number}[] = [
+    { x: 10, y: 20 },
+    { x: 30, y: 40 },
+    { x: 50, y: 60 }
+];
+```
 
 ## H. LES TYPES PRÉDÉFINIS
+
+
+
 ## I. LES OBJETS ET LES INTERFACES
 ## J. L'UNION ET LES OBJETS
 ## K. L'INTERSECTION
