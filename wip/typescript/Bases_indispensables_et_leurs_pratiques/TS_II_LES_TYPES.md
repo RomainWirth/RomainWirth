@@ -686,8 +686,94 @@ interface Fish extends Animal {
 
 ## K. L'INTERSECTION
 
- 
+L'intersection permet de combiner les types à l'aide de l'opérateur `&`. Ainsi, si une variable combine deux types avec l'intersection, il sera alors des deux types.
+```TypeScript
+type Animal = {
+  family: "animal";
+  class: Class;
+  name: string;
+}
+
+type Bird = {
+  class: "bird";
+  hasWings: boolean;
+  canFly: boolean;
+}
+
+type duck = Bird & Animal;
+```
+
+Ce type ne sera réellement utilisable qu'avec des objets. 
+L'intersection permet de créer de nouveaux types en combinant des types existants, le nouveau type ayant toutes les caractéristiques réunies des types qui lui sont déclarés.
+
+Concernant la déclaration avec le mot clé `interface`, la syntaxe sera légèrement différente, en utilisant le mot clé `extends`.
+Extends va créer un héritage sur les interfaces concernées, séparées par des virgules : `interface duck extends Animal, Bird {};`.
+
+> N.B.: Lorsqu'on va écrire des classes et qu'on voudra étendre une classe mère ou une interface, on ne pourra le faire que sur une seule. Cependant, il sera possible de le faire sur autant d'interfaces que nécessaire.
+
+exemple avec type :
+```TypeScript
+type Character = {
+  name: string;
+  age: number;
+}
+
+type Human = {
+  name: string; // redondant et inutile dans notre exemple
+  class: string;
+}
+
+type Male = Character & Human;
+
+const mario: Male = {
+  name: "Mario",
+  age: 30,
+  class: "plumber",
+}
+```
+
+exemple avec interface :
+```TypeScript
+interface Character {
+  name: string;
+  age: number;
+}
+
+interface Human {
+  class: string;
+}
+
+interface Male extends Character, Human {};
+
+const mario: Male = {
+  name: "Mario",
+  age: 30,
+  class: "plumber",
+}
+```
+Cette syntaxe n'est pas forcément ce qu'il faut utiliser en permanence. Il faut adapter selon le contexte, si par exemple on souhaite utiliser de manière dissociée un type. 
+
+Dans notre exemple, ce n'est pas le plus pertinent, puisqu'on pourrait écrire plus simplement de cette manière : 
+```TypeScript
+interface Character {
+  name: string;
+  age: number;
+}
+
+interface Human extends Character {
+  class: string;
+}
+
+const mario: Human = {
+  name: "Mario",
+  age: 30,
+  class: "plumber",
+}
+```
 
 ## L. TYPAGE DE PROPRIÉTÉS
+
+
+
 ## M. LE TYPE ÉNUMÉRATION
 ## N. AUTRES FONCTIONNALITÉS
