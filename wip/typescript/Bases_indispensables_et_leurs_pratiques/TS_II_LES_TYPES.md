@@ -818,8 +818,37 @@ const player: Character = {
 }
 ```
 
-## M. LE TYPE ÉNUMÉRATION
+## M. LE TYPE ÉNUMÉRATION `enum`
+
+En programmation, les développeurs utilisent souvent des constantes pour définir des listes de valeur possibles : 
+```TypeScript
+const VISITOR = 0;
+const USER = 1;
+const ADMIN = 2;
+```
+Le type `Enum` est une propriété intéressante pour travailler avec les objets, il va permettre de regrouper les constantes : 
+```TypeScript
+enum Role{VISITOR, USER, ADMIN};
+``` 
+Les valeurs de l'énumération partent de 0 et sont incrémentés de 1 en 1.
+Il est possible de préciser ces valeurs : 
+```TypeScript
+enum Role{VISITOR=2, USER=1, ADMIN=0};
+```
+Pour utiliser les valeurs de l'enum, il suffit d'utiliser la syntaxe objet : `console.log(Role.USER);`.
+
+exemple : 
+```TypeScript
+enum IdentityGuidelines {PRIMARY="#123456", SECONDARY="#234567", TERTIARY="#345678"};
+document.querySelector("h1").style.color = IdentityGuiledines.PRIMARY;
+document.querySelector("h2").style.color = IdentityGuiledines.SECONDARY;
+document.querySelector("p").style.color = IdentityGuiledines.TERTIARY;
+```
+
+À noter que cela fonctionne aussi avec les interfaces.
+
+## N. Type `unknown`& `never`
 
 
 
-## N. AUTRES FONCTIONNALITÉS
+## O. AUTRES FONCTIONNALITÉS
