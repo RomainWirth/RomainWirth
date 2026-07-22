@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertisseur de Devises</title>
+</head>
+<body>
+    <form>
+        <div>
+            <label for="amount">Montant :</label>
+            <input type="number" id="amount" name="amount" required>
+        </div>
+        <div>
+            <label for="sourceCurrency">Devise source :</label>
+            <select id="sourceCurrency" name="sourceCurrency" required>
+            </select>
+        </div>
+        <div>
+            <label for="targetCurrency">Devise cible :</label>
+            <select id="targetCurrency" name="targetCurrency" required>
+            </select>
+        </div>
+        <button type="submit">Convertir</button>
+    </form>
+    <div id="result"></div>
+    <script src="dist/main.js"></script>
+</body>
+</html>
