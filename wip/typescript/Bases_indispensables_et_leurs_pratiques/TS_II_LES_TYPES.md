@@ -798,6 +798,26 @@ const serverError: Error = {
 }
 ```
 
+Attention, la définition `[props: string]: string` impacte toutes les autres propriétés du type déclaré : 
+```TypeScript
+type Character = {
+  name: string;
+  age: number;
+  // [props: string]: string; // ne fonctionne pas !
+  [props: string]: string | number; // manière correcte 
+}
+```
+En utilisant cette syntaxe, cela permet d'ajouter autant de propriétés que l'on veut lors de la définition de l'objet : 
+```TypeScript
+const player: Character = {
+  name: "Mario",
+  age: 30,
+  sizeCm: 156,
+  class: "plumber",
+  // ajout d'autant de propriétés de type string ou number que l'on souhaite.
+}
+```
+
 ## M. LE TYPE ÉNUMÉRATION
 
 
