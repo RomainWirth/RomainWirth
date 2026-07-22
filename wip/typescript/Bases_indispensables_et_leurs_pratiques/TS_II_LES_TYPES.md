@@ -773,7 +773,33 @@ const mario: Human = {
 
 ## L. TYPAGE DE PROPRIÉTÉS
 
+Typescript offre une autre possibilité liée aux objets : la déclaration d'une propriété dynamique. 
+Cela permet d'ajouter autant de propriétés de nécessaire à l'objet de manière dynamique après son initialisation, sans pour autant que cela soit défini à l'avance. 
 
+Lorsque l'on défini un objet par l'intermédiaire du mot clé `type`, ou via une interface, il est possible de définir le type de propriété que pourra contenir l'objet : 
+```TypeScript
+type Error = {
+  code: string;
+  [props: string]: string;
+}
+```
+Dans cet exemple, les objets de type `error` pourront avoir autant de propriétés que nécessaire, mais toutes du type string.
+
+```TypeScript
+const notFound: Error = {
+  code: "404",
+  message: "Oups, page doesn't exists",
+  image: "page404.jpg"
+}
+
+const serverError: Error = {
+  code: "500",
+  message: "Internal server error",
+}
+```
 
 ## M. LE TYPE ÉNUMÉRATION
+
+
+
 ## N. AUTRES FONCTIONNALITÉS
