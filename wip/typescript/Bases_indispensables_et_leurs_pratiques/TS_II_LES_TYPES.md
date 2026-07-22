@@ -895,3 +895,85 @@ La fonction va faire automatiquement un `return` de "rien".
 
 ## O. AUTRES FONCTIONNALITÉS
 
+### Indiquer qu'un élément ne peut pas être `null` : `!`
+
+Pour indiquer qu'un élément ne peut pas être null, on va ajouter `!` après sa déclaration. 
+Cela indique que l'élément ne peut pas être nullable, et que TypeScript ne le considérera jamais comme null.
+Cela est à utiliser avec précaution et uniquement si on est certain que l'élément ne peut pas être null.
+Attention cela peut occasionner une erreur lors de la compilation.
+```html
+<label>Prénom :</label>
+<input type="text" id="firstName" />
+```
+
+```TypeScript
+const firstName = document.querySelector("input")!;
+firstName.value = "Mario";
+// équivaut à 
+const firstName = document.querySelector("input");
+if (firstName) {
+  firstName.value = "Mario";
+}
+```
+
+### Transtyper le type d'un élément avec `as`
+
+`as` suivi du type permet d'indiquer le type au lieu d'utiliser le type encadré de chevrons devant un élément.
+```html
+<label>Prénom :</label>
+<input type="text" id="firstName" />
+<label>Nom :</label>
+<input type="text" id="lastName" />
+```
+
+```TypeScript
+const firstName = document.querySelector("#firstName")! as HTMLInputElement;
+firstName.value = "Mario";
+// préférable à :
+const firstName = <HTMLInputElement>querySelector("#firstName")!;
+firstName.value = "Mario";
+```
+
+### Le paramètre optionnel `?`
+
+```TypeScript
+function test(a: number, b?:number) {
+  console.log("A : " + a);
+  if (b) console.log("B : " + b);
+}
+
+test(1,2) // retourne "A : 1" et "B : 2" 
+test(10) // retourne "A : 10"
+```
+
+### Vérifier si une valeur est `null` ou `undefined` avec `??`
+
+Cas undefined :
+```TypeScript
+let nameInput;
+const player = nameInput ?? "Mario"; 
+
+console.log(player); // retourne Mario
+```
+
+Cas null :
+```TypeScript
+let nameInput = null;
+const player = nameInput ?? "Mario"; 
+
+console.log(player); // retourne Mario
+```
+
+Cela équivaut à : 
+```TypeScript
+let nameInput = null;
+let player = ""; 
+
+if (nameInput === null || nameInput === undefined) {
+  player = "Mario";
+} else {
+  player = nameInput;
+}
+
+console.log(player);
+```
