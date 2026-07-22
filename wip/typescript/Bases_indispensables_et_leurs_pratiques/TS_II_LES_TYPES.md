@@ -849,6 +849,49 @@ document.querySelector("p").style.color = IdentityGuiledines.TERTIARY;
 
 ## N. Type `unknown`& `never`
 
+### `Unknown`
 
+Le type `unknown` indique que le type de la variable n'est pas connu à l'avance. Il est plus restrictif que `any`.
+Pour rappel, il est préférable d'éviter le type `any` puisqu'il enlève l'intérêt d'utiliser typescript.
+
+Là ou le type `any` peut créer des incohérences : 
+```TypeScript
+let varUnknown: any;
+varUnknown = 32;
+varUnknown = "Mario";
+let age: number = varUnknown; // engendre une incohérence
+```
+`unknown` va engendrer une erreur :  
+```TypeScript
+let varUnknown: unknown;
+varUnknown = 32;
+varUnknown = "Mario";
+let age: number = varUnknown; // engendre une erreur de type
+```
+
+Ainsi, cela force à mieux coder : 
+```TypeScript
+let varUnknown: unknown;
+varUnknown = 32;
+varUnknown = "Mario";
+if (typeof varUnknown === "string") {
+  let prenom: string = varUnknown;
+}
+if (typeof varUnknown === "number") {
+  let age: number = varUnknown;
+}
+```
+
+### `never`
+
+Le type `never` est associé aux fonctions et peut être retourné par une fonction de type `void` (vide). `never` indique que la fonction ne retourne jamais rien, alors que void indique que la fonction retourne `vide`.
+L'utilisation de ce type est intéresant lorsqu'on crée une fonction pour générer des exceptions : 
+```TypeScript
+function throwException(_message: string, _errorCode: number): never {
+  throw {message: _message, errorCode: _errorCode};
+}
+```
+La fonction va faire automatiquement un `return` de "rien".
 
 ## O. AUTRES FONCTIONNALITÉS
+
