@@ -48,8 +48,8 @@ Un fichier `tsconfig.json` va être créé. maintenant, en utilisant la commande
 
 Le fichier `tsconfig.json` contient beaucoup de propriétés, avec une majorité qui est commentée. On aura la possibilité des les activer en temps voulu, simplement en décommentant la ligne concernée.
 On va s'attarder sur plusieurs points : 
-* `"target": "es2016",`, qu'on va faire passer à `es6` pour avoir la dernières version de JavaScript en compilé.
-*  `"lib": []` va permettre de renseigner toutes les librairies que TypeScript va intégrer dans le projet. De base, le projet intègre certaines librairies par défaut. En décommentant cette ligne, il va falloir spécifier les librairies nécessaires qu'on doit intégrer. Les informations de base sont : `["DOM", "DOM.Iterable", "ES6", "ScriptHost"]`.
+* `"target": "es2016",`, qui correspond à la version de javascript, ici, c'est la dernière version.
+*  `"lib": []` va permettre de renseigner toutes les librairies que TypeScript va intégrer dans le projet. De base, le projet intègre certaines librairies par défaut. En décommentant cette ligne, il va falloir spécifier les librairies nécessaires qu'on doit intégrer. Les informations de base sont : `["DOM", "DOM.Iterable", "ES2016", "ScriptHost"]`.
 
 Si on ajoute d'autre fichiers `.ts` au projet, et qu'on ne souhaite pas que ces fichiers soient compilés en `.js`, on va ajouter une propriété `"exclude": []` en dehors de l'objet `"compilerOptions"`. Le tableau devra contenir les fichiers qu'on ne souhaite pas prendre en compte. Par exemple, si on ajoute un fichier `test.ts` au projet et qu'on ajoute ce nom au tableau exclude, en relançant la commande `tsc`, seul le fichier `main.js` va être créé.
 Au contraire, si on souhaite inclure d'autres fichiers, on ajoutera la propriété `"include": []`.
