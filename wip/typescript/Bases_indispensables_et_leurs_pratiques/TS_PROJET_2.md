@@ -230,7 +230,6 @@ type ResponseData = {
         svg: string;
         png: string;
     };
-    [props: string]: any;
 }
 ```
 * La fonction startApplication devra itérer sur le set de données passées en paramètre pour mettre ces données formatées dans notre tableau `countriesList`
@@ -313,7 +312,7 @@ let allAnswers = [correctAnswer, ...wrongAnswers];
 ```
 * Il faudra aussi mettre un ordre aléatoire au tableau, pour cela, on va faire appel à l'algorithme de `Fisher-Yates` que l'on va mettre dans une fonction annexe `shuffleStringArray` : 
 ```TypeScript
-function shuffleStringArray(array: any[]) {
+function shuffleStringArray(array: string[]): string {
     let randomArray = array;
     // algorithme de `Fisher-Yates`
     for(let i = randomArray.length - 1; i > 0; i--){
