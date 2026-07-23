@@ -104,31 +104,31 @@ type CurrencyType = {
 }
 
 const dollar: CurrencyType = {
-    name = "Dollar",
-    code = "USD",
-    symbol = "$",
-    rate = 1
+    name: "Dollar",
+    code: "USD",
+    symbol: "$",
+    rate: 1
 }
 
 const euro: CurrencyType = {
-    name = "Euro",
-    code = "EUR",
-    symbol = "€",
-    rate = 0.88
+    name: "Euro",
+    code: "EUR",
+    symbol: "€",
+    rate: 0.88
 }
 
 const pound: CurrencyType = {
-    name = "Pound",
-    code = "GBP",
-    symbol = "£",
-    rate = 0.75
+    name: "Pound",
+    code: "GBP",
+    symbol: "£",
+    rate: 0.75
 }
 
 const dollar: CurrencyType = {
-    name = "Yen",
-    code = "YEN",
-    symbol = "¥",
-    rate = 163.11
+    name: "Yen",
+    code: "YEN",
+    symbol: "¥",
+    rate: 163.11
 }
 
 const currencies: CurrencyType[] = [dollar, euro, pound, yen];
@@ -213,7 +213,7 @@ targetCurrencySelect.addEventListener('change', () => {
 });
 ```
 
-## Étape : Finalisation du projet
+## Étape 6 : Finalisation du projet
 
 ### Instruction
 
@@ -244,7 +244,7 @@ function displayResult() {
     * troisième paramètre : la devise cible (`targetCurrency` de type `string`)
 ```TypeScript
 function getCurrency(currencyCode: string, currencyTypes: CurrencyType[]): CurrencyType | null {
-    for (let currency in currencyTypes) {
+    for (let currency of currencyTypes) {
         if (currencyCode === currency.code) {
             return currency
         }
@@ -252,21 +252,21 @@ function getCurrency(currencyCode: string, currencyTypes: CurrencyType[]): Curre
     return null;
 }
 
-function calculateResult(amount: number, sourceCurrencyValue: CurrencyCode, targetCurrencyValue: CurrencyCode): number {
-    let sourceCurrencyObject: unknown = getCurrency(sourceCurrencyValue, currencies);
-
+function calculateResult(amount: number, sourceCurrencyValue: string, targetCurrencyValue: string): number {
+    let sourceCurrencyObject: CurrencyType | null = getCurrency(sourceCurrencyValue, currencies);
     let sourceCurrency: CurrencyType;
     if (sourceCurrencyObject) {
         sourceCurrency = sourceCurrencyObject as CurrencyType;
     } else {
-        throw { message: "source currency is not correct"}
+        throw new Error("source currency is not correct");
     }
 
-    let targetCurrencyObject: unknown = getCurrency(targetCurrencyValue, currencies);
+    let targetCurrencyObject: CurrencyType | null = getCurrency(targetCurrencyValue, currencies);
+    let targetCurrency: CurrencyType;
     if (targetCurrencyObject) {
         targetCurrency = targetCurrencyObject as CurrencyType;
     } else {
-        throw { message: "target currency is not correct"}
+        throw new Error("target currency is not correct.");
     }
 
     return (amount * targetCurrency.rate) / sourceCurrency.rate;
@@ -276,7 +276,16 @@ function calculateResult(amount: number, sourceCurrencyValue: CurrencyCode, targ
 ```TypeScript
 ...
 function displayResult() {
-    resultHTMLElement.innerHTML = "Résultat : " + calculateResult(amount, sourceCurrencySelectValue, targetCurrencySelectValue);
+    try {
+        const result = calculateResult(amount, sourceCurrencySelectValue, targetCurrencySelectValue);
+        resultHTMLElement.innerHTML = "Résultat : " + result;
+    } catch (error) {
+        if (error instanceof Error) {
+            resultHTMLElement.innerHTML = "Error : " + error.message
+        } else {
+            resultHTMLElement.innerHTML = "An inknown error occured.";
+        }
+    }
 }
 ...
 sourceCurrencySelect.addEventListener('change', () => {
