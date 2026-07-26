@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste d'Aliments</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Liste d'Aliments</h1>
+        <div>
+            Afficher les aliments de 
+            <select id="health-score-select">
+                <option value="all">Toutes</option>
+                <option value="bad">Mauvaises</option>
+                <option value="average">Moyennes</option>
+                <option value="good">Bonnes</option>
+            </select>
+             valeur nutritionnelle.
+        </div>
+        <table id="food-table" style="border:1px solid black;">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Calories</th>
+                    <th>Lipides</th>
+                    <th>Glucides</th>
+                    <th>Protéines</th>
+                    <th>Classe</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody id="food-table-body">
+                <!-- Les lignes de la table seront générées ici -->
+            </tbody>
+        </table>
+    </div>
+    <script src="dist/classes/Food.class.js"></script>
+    <script src="dist/classes/Fruit.class.js"></script>
+    <script src="dist/classes/Meat.class.js"></script>
+    <script src="dist/classes/Cheese.class.js"></script>
+    <script src="dist/main.js"></script>
+</body>
+</html>
