@@ -68,7 +68,7 @@ let busTwo = new Vehicule("YY-2222-YY", "bus");
 let carOne = new Vehicule("AA-1111-AA", "car");
 let carTwo = new Vehicule("BB-2222-BB", "car");
 
-console.log({ busOne, busTwo, carOne, carThow });
+console.log({ busOne, busTwo, carOne, carTwo });
 ```
 On va maintenant créer une énumération pour les véhicules, afin d'uniformiser les données : 
 * création de l'enum
@@ -102,7 +102,7 @@ Il est temps maintenant de créer nos classes spécifiques `Bus` et `Car` qui au
 ```TypeScript
 class Bus extends Vehicule {
     constructor (
-        registration: string;
+        registration: string,
     ) {
         super(registration, VehiculeType.BUS)
     }
@@ -110,7 +110,7 @@ class Bus extends Vehicule {
 
 class Car extends Vehicule {
     constructor (
-        registration: string;
+        registration: string,
     ) {
         super(registration, VehiculeType.CAR)
     }
