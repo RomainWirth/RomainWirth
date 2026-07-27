@@ -627,7 +627,10 @@ class VehiculeList<T> {
     }
 
     rentVehicule(vehicule: T) {
-        this._fleet.splice(this._fleet.indexOf(vehicule), 1);
+        const index = this._fleet.indexOf(vehicule);
+        if (index !== -1) {
+            this._fleet.splice(index, 1);
+        }
     }
 }
 
