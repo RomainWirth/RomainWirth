@@ -1,6 +1,6 @@
-# PROJET 1 : Convertisseur de devise
+# 9. Projet : convertisseur de devises
 
-Objectif : créer un convertisseur de devises basé sur le dollar US.
+Ce premier projet pratique met en application les modules 1 à 3 (introduction, les types, structure d'un projet) sur un cas concret : un convertisseur de devises basé sur le dollar US.
 
 Il s'agit d'un projet simple contenant une structure html basique avec 
 * un input text pour inscrire le montant à convertir, 
@@ -20,6 +20,16 @@ Ex. : Euro en Livre : Euro -> Dollar -> Livre
 
 Optionnel : ajouter du CSS
 
+## Sommaire
+
+- [Étape 1 : préparer la structure du projet et initialiser](#etape-1--preparer-la-structure-du-projet-et-initialiser)
+- [Étape 2 : préparer le HTML](#etape-2--preparer-le-html)
+- [Étape 3 : Créer les 4 devises dans TypeScript](#etape-3--creer-les-4-devises-dans-typescript)
+- [Étape 4 : Les listes déroulantes](#etape-4--les-listes-deroulantes)
+- [Étape 5 : Récupérer les valeurs](#etape-5--recuperer-les-valeurs)
+- [Étape 6 : Finalisation du projet](#etape-6--finalisation-du-projet)
+- [Bonus : Clean Code](#bonus--clean-code)
+
 ## Étape 1 : préparer la structure du projet et initialiser
 
 ### Instruction
@@ -31,7 +41,7 @@ Optionnel : ajouter du CSS
 * Dans le dossier `src`, ajouter le fichier `main.ts`
 * Lancer `tsc --watch` dans le terminal
 
-## Etape 2 : préparer le HTML
+## Étape 2 : préparer le HTML
 
 N.B.: la structure html ci-dessous est à titre indicatif et sera modifiée au fur et à mesure.
 
@@ -124,7 +134,7 @@ const pound: CurrencyType = {
     rate: 0.75
 }
 
-const dollar: CurrencyType = {
+const yen: CurrencyType = {
     name: "Yen",
     code: "YEN",
     symbol: "¥",

@@ -1,6 +1,6 @@
-# Projet 2 : Deviner le drapeau d'un pays
+# 10. Projet : deviner le drapeau d'un pays
 
-Objectif : Créer une application simple permettant à l'utilisateur d'identifier le pays d'un drapeau affiché à l'écran parmis 4 choix.
+Ce second projet pratique met, comme le précédent, en application les modules 1 à 3 (introduction, les types, structure d'un projet), avec en plus une première manipulation d'un appel réseau (`fetch`). Objectif : créer une application simple permettant à l'utilisateur d'identifier le pays d'un drapeau affiché à l'écran parmi 4 choix.
 
 Il s'agit d'un projet simple contenant une structure html basique avec
 * Un titre
@@ -13,6 +13,16 @@ Pour ce POC, l'application utilisera l'API gratuite [countries](https://countrie
 
 Optionnel : ajouter du CSS, bootstrap ou autre (tailwind)
 
+## Sommaire
+
+- [Étape 1 : préparer la structure du projet et initialiser](#etape-1--preparer-la-structure-du-projet-et-initialiser)
+- [Étape 2 : préparer le HTML](#etape-2--preparer-le-html)
+- [Étape 3 : récupérer les données de l'API](#etape-3--recuperer-les-donnees-de-lapi)
+- [Étape 4 : Traiter les données](#etape-4--traiter-les-donnees)
+- [Étape 5 : Le jeu](#etape-5--le-jeu)
+- [Étape 6 : rechargement du jeu](#etape-6--rechargement-du-jeu)
+- [Bonus : Clean Code](#bonus--clean-code)
+
 ## Étape 1 : préparer la structure du projet et initialiser
 
 ### Instruction
@@ -24,7 +34,7 @@ Optionnel : ajouter du CSS, bootstrap ou autre (tailwind)
 * Dans le dossier `src`, ajouter le fichier `main.ts`
 * Lancer `tsc --watch` dans le terminal
 
-## Etape 2 : préparer le HTML
+## Étape 2 : préparer le HTML
 
 ### Instructions
 
@@ -312,7 +322,7 @@ let allAnswers = [correctAnswer, ...wrongAnswers];
 ```
 * Il faudra aussi mettre un ordre aléatoire au tableau, pour cela, on va faire appel à l'algorithme de `Fisher-Yates` que l'on va mettre dans une fonction annexe `shuffleStringArray` : 
 ```TypeScript
-function shuffleStringArray(array: string[]): string {
+function shuffleStringArray(array: string[]): string[] {
     let randomArray = array;
     // algorithme de `Fisher-Yates`
     for(let i = randomArray.length - 1; i > 0; i--){

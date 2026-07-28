@@ -1,6 +1,6 @@
-# Projet 3 :
+# 11. Projet : liste d'aliments
 
-Objectif : créer une liste d'aliments et permettre à l'utilisateur de filtrer en fonction de la classe d'aliments. 
+Ce troisième projet pratique met en application le module 4 (la programmation orientée objet) : créer une liste d'aliments et permettre à l'utilisateur de filtrer en fonction de la classe d'aliments. 
 
 Qualité nutritionnelle : 
 * A. Bonne
@@ -9,6 +9,14 @@ Qualité nutritionnelle :
 * Toutes
 
 En prendra aussi en considération les macros : protéines, lipide, glucides. 
+
+## Sommaire
+
+- [Étape 1 : préparer la structure du projet et initialiser](#etape-1--preparer-la-structure-du-projet-et-initialiser)
+- [Étape 2 : préparer le HTML](#etape-2--preparer-le-html)
+- [Étape 3 : Création de la classe pour les Aliments](#etape-3--creation-de-la-classe-pour-les-aliments)
+- [Étape 4 : Création des classes viande et fruit](#etape-4--creation-des-classes-viande-et-fruit)
+- [Étape 5 : Finalisation](#etape-5--finalisation)
 
 ## Étape 1 : préparer la structure du projet et initialiser
 
@@ -21,7 +29,7 @@ En prendra aussi en considération les macros : protéines, lipide, glucides.
 * Dans le dossier `src`, ajouter le fichier `main.ts`
 * Lancer `tsc --watch` dans le terminal
 
-## Etape 2 : préparer le HTML
+## Étape 2 : préparer le HTML
 
 ### Instructions
 
@@ -173,16 +181,15 @@ let food1 = new Food("Apple", 52, 0.3, 14, 0.2, HealthScoreClass.GOOD, "apple.jp
 let food2 = new Food("Pear", 57, 0.4, 15, 0.1, HealthScoreClass.GOOD, "pear.jpg");
 ```
 
-## Étape 4 : Création des classes "viande", "fromage" et "fruit"
+## Étape 4 : Création des classes viande et fruit
 
 ### Instructions 
 
-* Créer les classes viande, fromage et fruit qui héritent de la classe aliment. 
+* Créer les classes viande et fruit qui héritent de la classe aliment. 
 * Lors de l'instanciation de l'un des aliments, la qualité nutritionnelle sera définie comme suit : 
     * viande : moyenne
-    * fromage : mauvaise
     * fruit : bonne
-* Les trois classes permettent d'accéder directement à la liste de leurs aliments.
+* Les deux classes permettent d'accéder directement à la liste de leurs aliments.
 * La classe aliments ne pourra pas être instanciée.
 * Mettre chaque classe dans un fichier dédié
 
@@ -469,7 +476,6 @@ index.html
     <script src="dist/classes/Food.class.js"></script>
     <script src="dist/classes/Fruit.class.js"></script>
     <script src="dist/classes/Meat.class.js"></script>
-    <script src="dist/classes/Cheese.class.js"></script>
     <script src="dist/main.js"></script>
 </body>
 </html>
@@ -670,7 +676,6 @@ index.html :
     <script src="dist/classes/Food.class.js"></script>
     <script src="dist/classes/Fruit.class.js"></script>
     <script src="dist/classes/Meat.class.js"></script>
-    <script src="dist/classes/Cheese.class.js"></script>
     <script src="dist/main.js"></script>
 </body>
 </html>
@@ -731,3 +736,12 @@ function getWantedFood(healthScore: string): Food[] {
     }
 }
 ```
+
+## Pour aller plus loin : modulariser ce projet (chapitre 7)
+
+Le code ci-dessus fonctionne, mais toutes les classes (`Food`, `Fruit`, `Meat`) restent accessibles globalement via de simples balises `<script>` dans `index.html`, dans le bon ordre. Une fois le chapitre 7 vu (imports de fichiers), ce même projet est repris et modularisé de deux façons différentes dans [Projets-de-cours/](../Projets-de-cours/) :
+
+- **P3-food-list-refacto-with-imports** : chaque classe est déplacée dans son propre fichier, avec de vrais `export`/`import` ES modules.
+- **P3-food-list-refacto-with-namespaces** : la même séparation en fichiers, mais avec des `namespace` TypeScript et des directives `/// <reference path="..." />`, l'approche legacy présentée dans le chapitre 7.
+
+Comparer les deux versions est un bon exercice pour bien comprendre pourquoi les modules ES sont aujourd'hui l'approche recommandée.

@@ -1,8 +1,19 @@
-# PROJET 4 : Parc Automobile
+# 12. Projet : parc automobile
 
-Objectif : créer un parc automobile contenant des bus et des voitures.
+Ce dernier projet pratique met en application le module 5 (les génériques), en réutilisant les acquis du module 4 (POO) vus dans le projet précédent : créer un parc automobile contenant des bus et des voitures.
 
 Il sera possible d'ajouter ou de retirer des véhicules du parc.
+
+## Sommaire
+
+- [Étape 1 : préparer la structure du projet et initialiser](#etape-1--preparer-la-structure-du-projet-et-initialiser)
+- [Étape 2 : préparer le HTML](#etape-2--preparer-le-html)
+- [Étape 3 : Créer les classes de véhicules](#etape-3--creer-les-classes-de-vehicules)
+- [Étape 4 : Listes de véhicules](#etape-4--listes-de-vehicules)
+- [Étape 5 : Création du parc automobile](#etape-5--creation-du-parc-automobile)
+- [Étape 6 : Manipuler le DOM](#etape-6--manipuler-le-dom)
+- [Étape 7 : Finalisation du projet](#etape-7--finalisation-du-projet)
+- [Bonus : refactorisation](#bonus--refactorisation)
 
 ## Étape 1 : préparer la structure du projet et initialiser
 
@@ -559,7 +570,7 @@ rentButtonElement.addEventListener("click", () => {
 });
 ```
 
-## BONUS : refactorisation
+## Bonus : refactorisation
 
 ```html
 <!DOCTYPE html>
