@@ -76,22 +76,30 @@ Ce script est un exemple de mini-île de JavaScript vanilla, sans besoin de Reac
 
 ## Solution 3 : SSR pour un besoin plus avancé (à connaître, pas prioritaire)
 
-Si un client a besoin d'une vraie logique serveur (enregistrement en base de données, envoi conditionnel, anti-spam avancé côté serveur), Astro permet de passer en mode SSR :
+Si un client a besoin d'une vraie logique serveur (enregistrement en base de données, envoi conditionnel, anti-spam avancé côté serveur), Astro permet de passer en mode SSR.
+
+> **Note de version** : depuis Astro 5, il n'y a plus que deux modes de sortie (`static` et `server`) — l'ancien mode `hybrid` a été fusionné dans `static`. Concrètement, tu restes en mode `static` (celui par défaut, déjà en place dans ton `astro.config.mjs` depuis le module 02) et tu ajoutes un adaptateur, sans changer le champ `output`. Le passage en rendu serveur se fait ensuite route par route, pas globalement.
 
 ```javascript
 // astro.config.mjs
+import { defineConfig } from 'astro/config';
+import node from '@astrojs/node';
+
 export default defineConfig({
-  output: 'server', // ou 'hybrid' pour ne rendre que certaines routes en SSR
-  adapter: node(), // ou l'adapter correspondant à l'hébergeur
+  // output: 'static' reste la valeur par défaut, pas besoin de la changer
+  adapter: node({ mode: 'standalone' }), // ou l'adapter correspondant à l'hébergeur
 });
 ```
 
+Pour qu'une route précise soit rendue à la demande (SSR) plutôt qu'au build, il suffit d'ajouter cet export dans le fichier de la page concernée :
+
+```astro
+---
+export const prerender = false;
+// le reste de la logique serveur de la page (accès BDD, envoi conditionnel...)
+---
+```
+
+Toutes les autres pages du site restent générées statiquement au build, comme avant. C'est l'équivalent de ce que faisait l'ancien mode `hybrid`, mais géré finement page par page plutôt que par un réglage global.
+
 Ça implique un hébergement capable d'exécuter du Node.js (pas un simple mutualisé statique comme o2switch en usage basique), donc un changement d'infrastructure. Pour la majorité de tes clients actuels, ce n'est pas nécessaire : la solution 1 ou 2 suffit largement.
-
-## À tester
-
-1. Crée un compte gratuit sur Web3Forms (ou Formspree) pour obtenir une clé de test.
-2. Construis le formulaire HTML de la solution 1, teste l'envoi, vérifie la réception de l'email.
-3. Passe à la solution 2 avec l'interception JavaScript, vérifie que la page ne recharge plus et que le message de confirmation s'affiche.
-4. Teste le comportement en désactivant JavaScript dans le navigateur (devtools) : vérifie que le formulaire fonctionne quand même en repli sur la solution 1 (soumission classique), ce qui est un bon réflexe de robustesse.
-5. Ajoute une validation HTML native (`required`, `type="email"`) et observe les messages d'erreur natifs du navigateur avant tout envoi.

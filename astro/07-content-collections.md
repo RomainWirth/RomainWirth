@@ -12,15 +12,20 @@ Dans le module précédent, la liste d'articles était codée en dur dans le fic
 
 Pour un site vitrine simple, les Content Collections évitent d'avoir besoin d'un CMS headless : le client ajoute un fichier Markdown pour publier un nouvel article, sans toucher au code.
 
+> **Note de version** : depuis Astro 5, les Content Collections reposent sur la Content Layer API. Le principe reste le même (schéma Zod + fichiers Markdown), mais la syntaxe de déclaration a changé par rapport aux versions antérieures (Astro 2 à 4) : on utilise désormais un **loader** plutôt qu'un simple `type: 'content'`. Si tu croises un tutoriel ou du contenu généré avec l'ancienne syntaxe, c'est cette différence qu'il faut corriger.
+
 ## Définir le schéma
 
-`src/content/config.ts` :
+Le fichier de configuration se place désormais directement à la racine de `src/`, et non plus dans `src/content/`.
+
+`src/content.config.ts` :
 
 ```typescript
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
   schema: z.object({
     titre: z.string(),
     description: z.string(),
@@ -32,7 +37,9 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-Ce schéma garantit qu'un fichier Markdown mal formé (date manquante, titre absent) provoque une erreur au build plutôt qu'un bug silencieux en production. C'est un vrai filet de sécurité quand un client alimente lui-même le contenu.
+Le loader `glob()` indique à Astro où chercher les fichiers et selon quel motif (ici, tous les `.md` du dossier `src/content/blog`). C'est ce loader qui génère automatiquement un `id` unique pour chaque entrée, à partir du nom de fichier.
+
+Ce schéma garantit toujours qu'un fichier Markdown mal formé (date manquante, titre absent) provoque une erreur au build plutôt qu'un bug silencieux en production. C'est un vrai filet de sécurité quand un client alimente lui-même le contenu.
 
 ## Écrire du contenu
 
@@ -52,7 +59,7 @@ Le contenu de l'article en Markdown classique, avec titres, listes, liens...
 Du texte normal.
 ```
 
-Le frontmatter du fichier Markdown est validé automatiquement contre le schéma Zod défini plus haut.
+Le frontmatter du fichier Markdown est validé automatiquement contre le schéma Zod défini plus haut. Le nom du fichier (`bienfaits-reflexologie.md`) devient l'`id` de l'entrée, donc son identifiant dans les fonctions de requête.
 
 ## Lire le contenu : getCollection() et getEntry()
 
@@ -68,40 +75,40 @@ const articles = await getCollection('blog');
 <ul>
   {articles.map((article) => (
     <li>
-      <a href={`/blog/${article.slug}`}>{article.data.titre}</a>
+      <a href={`/blog/${article.id}`}>{article.data.titre}</a>
     </li>
   ))}
 </ul>
 ```
 
-Pour récupérer un article précis (par exemple dans une route dynamique) :
+Pour récupérer un article précis (par exemple dans une route dynamique), l'affichage du contenu passe désormais par une fonction `render()` importée depuis `astro:content`, plutôt que par une méthode `.render()` sur l'entrée :
 
 ```astro
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const articles = await getCollection('blog');
   return articles.map((article) => ({
-    params: { slug: article.slug },
+    params: { slug: article.id },
   }));
 }
 
 const { slug } = Astro.params;
 const article = await getEntry('blog', slug);
-const { Content } = await article.render();
+const { Content } = await render(article);
 ---
 
 <h1>{article.data.titre}</h1>
 <Content />
 ```
 
-`article.render()` retourne un composant `Content` qui affiche le corps Markdown transformé en HTML.
+Le paramètre de route s'appelle encore `slug` par habitude (tu peux le renommer `id` si tu préfères, ce n'est qu'un nom de paramètre), mais la valeur qu'on lui passe est bien `article.id`, pas `article.slug` (qui n'existe plus sur l'objet retourné).
 
 ## À tester
 
-1. Crée `src/content/config.ts` avec le schéma ci-dessus.
+1. Crée `src/content.config.ts` (et non plus `src/content/config.ts`) avec le schéma ci-dessus.
 2. Crée 2-3 fichiers Markdown dans `src/content/blog/`, avec un frontmatter volontairement incomplet sur l'un d'eux (par exemple sans date) pour observer l'erreur de validation Zod au build.
-3. Corrige l'erreur, puis crée une page `src/pages/blog/index.astro` qui liste tous les articles via `getCollection()`.
-4. Crée `src/pages/blog/[slug].astro` qui affiche un article complet via `getEntry()` et `.render()`.
+3. Corrige l'erreur, puis crée une page `src/pages/blog/index.astro` qui liste tous les articles via `getCollection()`, en utilisant `article.id` pour construire les liens.
+4. Crée `src/pages/blog/[slug].astro` qui affiche un article complet via `getEntry()` et la fonction `render()` importée.
 5. Compare avec le module précédent : constate que tu n'as plus besoin de coder la liste en dur, elle vient directement des fichiers Markdown.

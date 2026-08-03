@@ -79,11 +79,41 @@ Cette approche est celle à privilégier pour ta charte perso (Raleway + Atkinso
 
 ## Intégration Tailwind
 
+> **Note de version** : depuis Tailwind CSS v4 (et Astro 5.2+), l'intégration passe par le plugin Vite officiel de Tailwind plutôt que par l'ancien package `@astrojs/tailwind`, qui est désormais déprécié. La commande `npx astro add tailwind` reste la bonne porte d'entrée, mais elle installe maintenant ce plugin Vite plutôt que l'ancienne intégration.
+
 ```bash
 npx astro add tailwind
 ```
 
-Ça installe et configure automatiquement Tailwind, y compris la génération d'un fichier `tailwind.config.mjs`.
+Ça installe et configure automatiquement Tailwind : le plugin Vite est ajouté à `astro.config.mjs`, et un fichier CSS d'import est généré.
+
+```javascript
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  vite: {
+    plugins: [tailwindcss()],
+  },
+});
+```
+
+`src/styles/global.css` :
+
+```css
+@import "tailwindcss";
+```
+
+Ce fichier est ensuite importé une fois dans le layout principal, comme n'importe quel CSS global :
+
+```astro
+---
+import '../styles/global.css';
+---
+```
+
+Utilisation dans le template :
 
 ```astro
 <div class="p-4 rounded-lg bg-gray-100">
@@ -91,28 +121,23 @@ npx astro add tailwind
 </div>
 ```
 
-Pour reprendre ta charte graphique perso, tu peux étendre la config Tailwind avec tes couleurs :
+### Personnaliser le thème (charte graphique)
 
-```javascript
-// tailwind.config.mjs
-export default {
-  content: ['./src/**/*.{astro,html,js,jsx,md,mdx}'],
-  theme: {
-    extend: {
-      colors: {
-        sauge: '#4A7A74',
-        bordeaux: '#5C2E42',
-      },
-      fontFamily: {
-        titre: ['Raleway', 'sans-serif'],
-        corps: ['Atkinson Hyperlegible', 'sans-serif'],
-      },
-    },
-  },
-};
+Différence importante par rapport aux versions précédentes de Tailwind : il n'y a plus de fichier `tailwind.config.mjs`. La configuration du thème (couleurs, polices, etc.) se fait directement en CSS, dans `global.css`, via un bloc `@theme` :
+
+```css
+/* src/styles/global.css */
+@import "tailwindcss";
+
+@theme {
+  --color-sauge: #4A7A74;
+  --color-bordeaux: #5C2E42;
+  --font-titre: 'Raleway', sans-serif;
+  --font-corps: 'Atkinson Hyperlegible', sans-serif;
+}
 ```
 
-Utilisable ensuite via `class="text-sauge font-titre"`.
+Tailwind génère automatiquement les classes utilitaires correspondantes à partir de ces variables (`bg-sauge`, `text-bordeaux`, `font-titre`, `font-corps`), utilisables ensuite via `class="text-sauge font-titre"`, exactement comme avec n'importe quelle couleur ou police native de Tailwind.
 
 ## Choisir entre styles scopés et Tailwind
 
@@ -132,6 +157,6 @@ Quelques réflexes à intégrer systématiquement, cohérents avec ta typographi
 
 1. Ajoute un bloc `<style>` scopé à un composant, vérifie dans l'inspecteur du navigateur que la classe générée est unique à ce composant.
 2. Crée `src/styles/global.css` avec tes couleurs et polices, importe-le dans le layout.
-3. Installe Tailwind avec `npx astro add tailwind`, ajoute tes couleurs personnalisées dans `tailwind.config.mjs`.
+3. Installe Tailwind avec `npx astro add tailwind`, ajoute tes couleurs et polices personnalisées dans le bloc `@theme` de `global.css`.
 4. Reprends une carte de service et stylise-la une fois avec du CSS scopé, une fois avec Tailwind, pour comparer les deux approches.
 5. Vérifie au clavier (touche Tab) que tous les liens et boutons de ta page ont un focus visible.
