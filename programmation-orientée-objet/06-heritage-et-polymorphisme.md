@@ -156,6 +156,57 @@ Lorsque la relation est plutôt **« a un »**, on préfère la **composition** 
 
 Règle simple : n'utilise l'héritage que si la phrase « l'enfant **est un** parent » a du sens.
 
+### La composition en pratique
+
+Concrètement, la composition se traduit par un attribut dont le **type est lui-même une classe**, et non un type primaire (`STRING`, `INTEGER`...).<br>
+Cela permet à un objet de **délèguer** une partie de son comportement à l'objet qu'il contient.
+
+```
+CLASS Engine {
+    horsePower : PRIVATE INTEGER
+    fuelType : PRIVATE STRING
+
+    PUBLIC FUNCTION constructor(horsePower, fuelType) {
+        this.horsePower <- horsePower
+        this.fuelType <- fuelType
+    }
+    PUBLIC FUNCTION displayEngine() {
+        SHOW this.horsePower, " chevaux, moteur ", this.fuelType
+    }
+}
+ENDCLASS
+
+CLASS Car {
+    brand : PRIVATE STRING
+    engine : PRIVATE Engine    // l'attribut est du type d'une autre classe
+
+    PUBLIC FUNCTION constructor(brand, engine) {
+        this.brand <- brand
+        this.engine <- engine   // on injecte un objet Engine déjà créé
+    }
+    PUBLIC FUNCTION displayCar() {
+        SHOW this.brand, " - "
+        this.engine.displayEngine()   // Car délègue l'affichage du moteur à Engine
+    }
+}
+ENDCLASS
+
+ALGORITHM main
+VARIABLES
+    myEngine : Engine
+    myCar : Car
+START
+    myEngine <- new Engine(150, "essence")
+    myCar <- new Car("Troen", myEngine)
+    myCar.displayCar()
+    // => "Troen - 150 chevaux, moteur essence"
+END
+```
+
+Deux points essentiels à retenir sur la composition :
+* On instancie d'abord l'objet "contenu" (`Engine`), puis on le passe à l'objet "conteneur" (`Car`) au moment de sa création.
+* `Car` ne connaît pas les détails internes du moteur : elle appelle simplement `this.engine.displayEngine()`, sans savoir comment cette fonction est implémentée. C'est une autre forme d'abstraction : `Car` délègue, elle n'a pas besoin de tout gérer elle-même.
+
 ## Exercices
 
 I. À partir de la classe `Character`, créer deux classes enfants `Warrior` et `Archer` :
@@ -257,7 +308,7 @@ ALGORITHM main
 VARIABLES
     audio1 : AudioBook
 START
-    audio1 <- new AudioBook("L'algorithmique selon H2PROG", 500, 630, "Romain")
+    audio1 <- new AudioBook("Apprendre l'algorithmique", 500, 630, "Romain")
     audio1.displayBook()
 END
 ```
@@ -307,4 +358,49 @@ START
 END
 ```
 
-En résumé, l'héritage évite la duplication de code (une classe enfant réutilise le parent), la **redéfinition** permet de spécialiser un comportement, et le **polymorphisme** permet de traiter uniformément des objets de types différents tout en laissant chacun répondre à sa manière.
+IV. En reprenant l'exemple `Car` / `Engine` vu plus haut, créer une classe `Garage` qui contient un `Engine` (composition) et propose une fonction `installEngine(newEngine)` permettant de remplacer le moteur en réparation. Afficher le moteur avant et après le remplacement.
+
+```
+CLASS Engine {
+    horsePower : PRIVATE INTEGER
+
+    PUBLIC FUNCTION constructor(horsePower) {
+        this.horsePower <- horsePower
+    }
+    PUBLIC FUNCTION getHorsePower() {
+        RETURN this.horsePower
+    }
+}
+ENDCLASS
+
+CLASS Garage {
+    engineInRepair : PRIVATE Engine
+
+    PUBLIC FUNCTION constructor(engine) {
+        this.engineInRepair <- engine
+    }
+    PUBLIC FUNCTION installEngine(newEngine) {
+        this.engineInRepair <- newEngine
+    }
+    PUBLIC FUNCTION displayCurrentEngine() {
+        SHOW "Moteur actuel : ", this.engineInRepair.getHorsePower(), " chevaux"
+    }
+}
+ENDCLASS
+
+ALGORITHM main
+VARIABLES
+    oldEngine, newEngine : Engine
+    garage : Garage
+START
+    oldEngine <- new Engine(90)
+    garage <- new Garage(oldEngine)
+    garage.displayCurrentEngine()   // Moteur actuel : 90 chevaux
+
+    newEngine <- new Engine(150)
+    garage.installEngine(newEngine)
+    garage.displayCurrentEngine()   // Moteur actuel : 150 chevaux
+END
+```
+
+En résumé, l'héritage évite la duplication de code (une classe enfant réutilise le parent), la **redéfinition** permet de spécialiser un comportement, la **composition** permet à un objet de déléguer une partie de son comportement à un autre objet qu'il contient, et le **polymorphisme** permet de traiter uniformément des objets de types différents tout en laissant chacun répondre à sa manière.

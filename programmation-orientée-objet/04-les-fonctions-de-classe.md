@@ -168,7 +168,7 @@ CLASS Book {
     coverColor: STRING
     isTranslatedInEnglish: BOOLEAN
 
-    FUNCTION Constructor (name, nbOfPages, coverColor, isTranslated) {
+    FUNCTION constructor (name, nbOfPages, coverColor, isTranslated) {
         this.title <- name
         this.nbOfPages <- nbOfPages
         this.coverColor <- coverColor
@@ -194,7 +194,7 @@ ALGORITHM main
 VARIABLES
     book1, book2, book3 : Book
 START
-    book1 <- new Book("L'algorithmique selon H2PROG", 500, "black", TRUE)
+    book1 <- new Book("Apprendre l'algorithmique", 500, "black", TRUE)
     book2 <- new Book("Le virus Asiatique", 300, "red", FALSE)
     book3 <- new Book("La France du 19ème", 500, "blue", TRUE)
 
@@ -206,8 +206,6 @@ START
     book3.displayBook()
 END
 ```
-Dans ce dernier exemple, la fonction `changeColor()`est un `setter`.  
-Et la fonction `displayBook()` est en fait la création de la fonction `toString()`.
 
 III. Créer une fonction qui permet d'afficher une voiture
 

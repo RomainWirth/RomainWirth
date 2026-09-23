@@ -2,10 +2,14 @@
 
 ## Qu'est ce que la POO ?
 
-<a href="https://course.valentinflgt.fr/#/c/2023/poo/1.-introduction#classe">source</a>
-
 La POO (ou OOP en anglais = Object Oriented Programming).<br>
 C'est un modèle de programmation qui repose sur le concept de `class` et `d'objet`.
+
+La POO est une manière de modéliser les concepts et les traitements pertinents pour le problème qu'on résout, en s'inspirant souvent (mais pas toujours) d'objets ou d'entités du monde réel.<br>
+On appelle ça l'**abstraction** : on garde ce qui compte pour le programme, on ignore le reste.
+
+Concrètement, cela se traduit par une façon d'organiser son code autour d'**objets** plutôt qu'autour d'une simple suite d'instructions.<br>
+Au lieu de manipuler des données et des fonctions séparément, on les regroupe dans des objets qui représentent ces concepts et traitements — un personnage, un livre, une voiture, etc.
 
 ```
 On mettra l'accent sur la donnée et les objets, et leur représentation
@@ -17,7 +21,7 @@ La POO s'articule autour de deux briques de base - **les objets** et **les class
 * **L'héritage** : réutiliser et spécialiser une classe existante à partir d'une autre.
 * **Le polymorphisme** : permettre à des objets différents de répondre à une même fonction, chacun à sa manière.
 
-Ces principes sont introduits progressivement tout au long du cours (voir la [synthèse](./08-synthese.md) pour la vue d'ensemble).
+Ces principes sont introduits progressivement tout au long du cours (voir la [synthèse](./10-synthese.md) pour la vue d'ensemble).
 
 ## Rappels de la programmation 
 

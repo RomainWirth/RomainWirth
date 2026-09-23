@@ -6,12 +6,14 @@ Cours d'introduction à la Programmation Orientée Objet (POO). Les concepts son
 
 1. [01-introduction.md](./01-introduction.md)
 2. [02-des-variables-aux-objets.md](./02-des-variables-aux-objets.md)
-3. [03-creer-des-objets.md](./03-creer-des-objets.md)
-4. [04-acceder-aux-attributs.md](./04-acceder-aux-attributs.md)
-5. [05-les-fonctions-de-classe.md](./05-les-fonctions-de-classe.md)
-6. [06-visibilite-et-encapsulation.md](./06-visibilite-et-encapsulation.md)
-7. [07-heritage-et-polymorphisme.md](./07-heritage-et-polymorphisme.md)
-8. [08-synthese.md](./08-synthese.md)
+3. [03-creer-et-manipuler-des-objets.md](./03-creer-et-manipuler-des-objets.md)
+4. [04-les-fonctions-de-classe.md](./04-les-fonctions-de-classe.md)
+5. [05-visibilite-et-encapsulation.md](./05-visibilite-et-encapsulation.md)
+6. [06-heritage-et-polymorphisme.md](./06-heritage-et-polymorphisme.md)
+7. [07-interactions-entre-objets.md](./07-interactions-entre-objets.md)
+8. [08-abstraction-en-pratique.md](./08-abstraction-en-pratique.md)
+9. [09-mini-projet-modelisation-libre.md](./09-mini-projet-modelisation-libre.md)
+10. [10-synthese.md](./10-synthese.md)
 
 ## Contenu du dossier
 
@@ -23,33 +25,37 @@ Qu'est-ce que la POO : différence entre programmation procédurale et orientée
 
 Rappel sur les variables (nommage, camelCase, types primaires STRING/INTEGER/BOOLEAN) et passage des variables isolées à la notion d'objet regroupé par une classe.
 
-### [03-creer-des-objets.md](./03-creer-des-objets.md)
+### [03-creer-et-manipuler-des-objets.md](./03-creer-et-manipuler-des-objets.md)
 
-Le constructeur, l'instanciation avec le mot clé `new`, le rôle de `this` et l'hydratation des objets.
+Le constructeur, l'instanciation avec le mot clé `new`, le rôle de `this`, l'hydratation des objets, l'accès aux attributs via `objet.attribut`, et le parcours d'un tableau d'objets avec une boucle.
 
-### [04-acceder-aux-attributs.md](./04-acceder-aux-attributs.md)
+### [04-les-fonctions-de-classe.md](./04-les-fonctions-de-classe.md)
 
-Accès aux attributs d'un objet via la notation `objet.attribut` et parcours de tableaux d'objets avec une boucle.
+Définition de fonctions (méthodes) à l'intérieur d'une classe et appels d'une fonction par une autre.
 
-### [05-les-fonctions-de-classe.md](./05-les-fonctions-de-classe.md)
+### [05-visibilite-et-encapsulation.md](./05-visibilite-et-encapsulation.md)
 
-Définition de fonctions (méthodes) à l'intérieur d'une classe, appels d'une fonction par une autre, première approche des getters/setters et de la fonction d'affichage (`toString`).
+Visibilité `public` / `private`, principe d'encapsulation, mise en place des getters et setters pour un accès contrôlé aux attributs, et nuance sur les limites d'un usage systématique des getters/setters.
 
-### [06-visibilite-et-encapsulation.md](./06-visibilite-et-encapsulation.md)
+### [06-heritage-et-polymorphisme.md](./06-heritage-et-polymorphisme.md)
 
-Visibilité `public` / `private`, principe d'encapsulation, et mise en place des getters et setters pour un accès contrôlé aux attributs.
+Héritage (`EXTENDS`, `super`, `PROTECTED`), redéfinition de fonctions, polymorphisme, distinction entre héritage (« est un ») et composition (« a un »), avec un exemple et un exercice pratiques de composition (`Car`/`Engine`, `Garage`).
 
-### [07-heritage-et-polymorphisme.md](./07-heritage-et-polymorphisme.md)
+### [07-interactions-entre-objets.md](./07-interactions-entre-objets.md)
 
-Héritage (`EXTENDS`, `super`, `PROTECTED`), redéfinition de fonctions, polymorphisme, et distinction entre héritage (« est un ») et composition (« a un »).
+Un objet qui gère une collection d'autres objets (`Library` et ses `Book`, `Garage` et sa flotte de `Car`), et un objet qui agit directement sur un autre objet passé en paramètre (combat entre deux `Character`).
 
-### [08-synthese.md](./08-synthese.md)
+### [08-abstraction-en-pratique.md](./08-abstraction-en-pratique.md)
 
-Glossaire des notions clés, exemple récapitulatif complet et présentation des 4 piliers de la POO (encapsulation, abstraction, héritage, polymorphisme).
+L'abstraction concrétisée par `ABSTRACT CLASS` (classe non instanciable, fonctions abstraites) et `INTERFACE` (`IMPLEMENTS`), appliquées aux fils rouges `Character` et `Car`.
 
-## Fichier complémentaire
+### [09-mini-projet-modelisation-libre.md](./09-mini-projet-modelisation-libre.md)
 
-- [synthèsev1.pdf](./synthèsev1.pdf) — fiche de synthèse d'origine (version PDF).
+Mini-projet de modélisation sans squelette de classe fourni (système de vélos en libre-service), pour pratiquer la démarche complète de conception : identifier les entités, leurs attributs, leurs traitements et leurs interactions.
+
+### [10-synthese.md](./10-synthese.md)
+
+Glossaire des notions clés (y compris composition, classe abstraite et interface), exemple récapitulatif complet et présentation des 4 piliers de la POO (encapsulation, abstraction, héritage, polymorphisme).
 
 ## Conseil de progression
 

@@ -8,9 +8,10 @@
 * `Private / Public` = "Private" permet de rendre inaccessible une information (attribut ou fonction), depuis l'extérieur de l'objet. Le mot clef "public" à l'inverse, le permet.
 * `Getter / Setter` = Les fonctions de "getters" permettent d'accéder à un attribut placé en "private" et un "setter" de le modifier.
 * `ENCAPSULATION` = principe consistant à protéger les données d'un objet en les rendant `private`, et à ne les exposer qu'au travers de fonctions publiques (getters/setters). C'est ce que mettent en œuvre `private/public` et les getters/setters.
-* `HÉRITAGE` = mécanisme permettant à une classe (classe "enfant") de récupérer les attributs et les fonctions d'une autre classe (classe "parent"), afin de réutiliser du code et de spécialiser un comportement.
+* `HÉRITAGE` = mécanisme permettant à une classe (classe "enfant") de récupérer les attributs et les fonctions d'une autre classe (classe "parent"), afin de réutiliser du code et de spécialiser un comportement. Exprime une relation « est un ».
+* `COMPOSITION` = mécanisme permettant à un objet de contenir un autre objet (ou une collection d'objets) en attribut, et de lui déléguer une partie de son comportement. Exprime une relation « a un ».
 * `POLYMORPHISME` = capacité d'objets de classes différentes à répondre à une même fonction (même nom) avec un comportement qui leur est propre.
-* `ABSTRACTION` = fait de ne modéliser que les informations et traitements utiles au programme, en masquant les détails internes de fonctionnement.
+* `ABSTRACTION` = fait de ne modéliser que les informations et traitements utiles au programme, en masquant les détails internes de fonctionnement. Peut se traduire concrètement par une `ABSTRACT CLASS` (classe non instanciable, qui peut imposer des fonctions abstraites à ses enfants) ou une `INTERFACE` (contrat de comportement pur, qu'une classe peut implémenter en plus de son héritage classique).
 
 ## Exemple 
 
@@ -64,14 +65,18 @@ Depuis l'extérieur de l'objet :
 Toutes les notions du cours se regroupent autour de 4 grands principes :
 
 1. **L'encapsulation** : regrouper données et traitements dans un même objet, et protéger l'accès aux données (`private` + getters/setters). C'est l'objet des chapitres sur les classes et la visibilité.
-2. **L'abstraction** : ne modéliser que ce qui est utile au programme et masquer les détails internes (l'utilisateur d'un objet appelle `displayDamages()` sans connaître le calcul interne).
-3. **L'héritage** : réutiliser et spécialiser une classe existante en créant une classe enfant (chapitre 07).
-4. **Le polymorphisme** : permettre à des objets différents de répondre à une même fonction de manière adaptée (chapitre 07).
+2. **L'abstraction** : ne modéliser que ce qui est utile au programme et masquer les détails internes (l'utilisateur d'un objet appelle `displayDamages()` sans connaître le calcul interne ; ou, plus formellement, une `ABSTRACT CLASS`/`INTERFACE` impose un comportement sans en fixer l'implémentation — chapitre 08).
+3. **L'héritage** : réutiliser et spécialiser une classe existante en créant une classe enfant (chapitre 06).
+4. **Le polymorphisme** : permettre à des objets différents de répondre à une même fonction de manière adaptée (chapitre 06).
+
+À ces 4 piliers s'ajoute un mécanisme tout aussi central en pratique : la **composition**, qui permet à des objets de collaborer sans lien d'héritage entre eux (chapitres 06 et 07).
 
 ## En résumé
 
-* On **modélise** le réel sous forme de **classes** (les moules) et d'**objets** (les instances).
+* On **modélise** le réel sous forme de **classes** (les moules) et d'**objets** (les instances), en ne retenant que ce qui est pertinent pour le problème à résoudre.
 * Une classe regroupe des **attributs** (données) et des **fonctions** (traitements).
 * Le **constructeur** initialise chaque objet ; `this` désigne l'objet courant.
-* La **visibilité** (`public`/`private`) protège les données ; les **getters/setters** offrent un accès contrôlé.
-* L'**héritage** et le **polymorphisme** permettent de réutiliser et d'étendre le code sans le dupliquer.
+* La **visibilité** (`public`/`private`/`protected`) protège les données ; les **getters/setters** offrent un accès contrôlé (sans que ce soit systématiquement la seule bonne solution).
+* L'**héritage** et le **polymorphisme** permettent de réutiliser et d'étendre le code sans le dupliquer ; la **composition** permet à des objets de collaborer sans hériter les uns des autres.
+* Un programme orienté objet prend toute sa valeur quand les objets **interagissent** entre eux plutôt que de vivre isolés.
+* Face à un nouveau problème, la bonne démarche reste toujours la même : identifier les entités, choisir leurs attributs et traitements pertinents, puis déterminer comment elles doivent interagir — avant d'écrire la moindre ligne de code.

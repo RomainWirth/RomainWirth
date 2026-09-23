@@ -106,6 +106,17 @@ END
 ```
 => résultat : "Mario" puis "Luigi".
 
+### Nuance : faut-il TOUJOURS un getter et un setter ?
+
+Ce cours présente le "un attribut private + un getter + un setter" comme la pratique par défaut, car c'est la manière la plus simple d'apprendre le principe d'encapsulation.<br>
+Dans la pratique professionnelle, ce n'est cependant **pas une règle universelle** :
+
+* Générer systématiquement un getter et un setter pour chaque attribut, sans réflexion, revient parfois à recréer un accès public "déguisé" : si tout attribut a son setter, l'encapsulation ne protège plus grand-chose.
+* Certains langages et frameworks encouragent au contraire des objets qui exposent surtout des **comportements** (des fonctions métier, comme `deposit(montant)` plutôt qu'un simple `setSolde(nouveauSolde)`), et réservent les attributs entièrement privés aux détails internes qui n'ont pas à être modifiés de l'extérieur.
+* La bonne question à se poser pour chaque attribut n'est donc pas "dois-je faire un getter/setter ?" par réflexe, mais plutôt : "cette information a-t-elle réellement besoin d'être lue et/ou modifiée depuis l'extérieur de l'objet, et si oui, sous quelle forme (valeur brute ou action métier) ?"
+
+Pour ce cours, on continuera à utiliser systématiquement des getters/setters car c'est le plus lisible pour apprendre le principe. Garde simplement en tête qu'il s'agit d'un point de départ pédagogique, pas d'une règle absolue.
+
 ## Exercices
 
 I. Modifier la classe `Character` pour que tous les attributs ne soient directement qu'au travers des objets et non depuis "l'extérieur".
@@ -212,12 +223,12 @@ ALGORITHM main
 VARIABLES
     book1, book2, book3 : Book
 START
-    book1 <- new Book("L'algorithmique selon H2PROG", 500, "black", TRUE) => possible
-    book1.title <- "algo H2PROG" => possible
+    book1 <- new Book("Apprendre l'algorithmique", 500, "black", TRUE) => possible
+    book1.title <- "Apprendre l'algo" => possible
     book1.nbOfPages <- 10 => possible
     book1.displayBook() => possible
     book1.addPages(10) => possible
-    book1.coverColor("blue") => PAS possible
+    book1.coverColor <- "blue" => PAS possible
     book1.englishTranslation() => PAS possible
     book1.setCoverColor("pink") => possible
     book1.switchToEnglish() => possible
