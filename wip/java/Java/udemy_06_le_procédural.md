@@ -12,7 +12,7 @@ L'IDE permet de lancer le programme en mode `debug`.
 On pourra de cette manière exécuter le code pas à pas, de point d'arrêt en point d'arrêt, permettant de vérifier la bonne exécution du programme. 
 
 Dans intellij, on a les fonctionnalités suivantes : 
--  `rerun debug` :
+- `rerun debug` :
 - `stop` : 
 - `resume` : 
 - `step over` : 
