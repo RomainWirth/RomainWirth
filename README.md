@@ -28,6 +28,8 @@ The repository is organized by major learning areas:
 - Data: SQL, NoSQL, database modeling
 - Foundations: algorithms, OOP, Linux, testing, agile methods, systems and networking
 
+UNDER CONSTRUCTION
+<!--
 For a complete overview, see:
 
 - [SOMMAIRE.md](./SOMMAIRE.md)
@@ -51,7 +53,7 @@ Main sections:
 - [Methodes_Agiles](./Methodes_Agiles/)
 - [Systèmes_et_Réseaux](./Systèmes_et_Réseaux/)
 - [STRAPI](./STRAPI/)
-
+-->
 ---
 
 ## Tech Stack
