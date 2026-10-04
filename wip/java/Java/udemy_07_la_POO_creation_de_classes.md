@@ -1,6 +1,10 @@
-# Les bases de la POO
+# POO : La Création des classes en Java
 
-## Rappel sur la POO
+## Les bases de la Programmation Orientée Objet en Java
+
+### Rappels sur la POO
+
+(Voir cours sur la Programmation Orientée Objet)
 
 La POO est une manière de modéliser les concepts et comportements pertinents pour le problème qu'on résout, en s'inspirant souvent (mais pas toujours) d'objets ou d'entités du monde réel. On appelle ça l'abstraction : on garde ce qui compte pour l'application, on ignore le reste.
 
@@ -20,7 +24,7 @@ En résumé : la POO = modéliser le code comme un ensemble d'objets qui interag
 
 Java est un langage de programmation orienté objet.
 
-## Exemple
+### Exemple
 
 créer un programme permettant de schématiser une rue composée de plusieurs terrains situés le long de cette rue.
 
@@ -50,7 +54,7 @@ Avec cette méthode, on comprends que si on veut ajouter un nouveau terrain, on 
 
 C'est maintenant que la programmation orientée objet et son paradigme entrent en jeu pour résoudre ce genre de problèmes. 
 
-## Création d'une classe `Field`
+### Création d'une classe `Field`
 
 Le premier avantage est la possibilité de créer son propre type. Pour cela, en java, on va créer une nouvelle classe.
 Cette classe sera appelée `Field` et représentera ce qu'est un terrain. 
@@ -63,7 +67,7 @@ public class Field {
 }
 ```
 
-## Phase 1 : Déclaration
+### Phase 1 : Déclaration
 
 On pourra ainsi modifier notre classe `Main` en déclarant deux objets de type `Field` : 
 ```java
@@ -80,7 +84,7 @@ public class Main {
 Ici, la "variable" `myFieldOne` est du type `Field`. Il s'agit d'un objet typé en Field. Contrairement au type primitif `int`, `Field` est à écrire avec une majuscule. 
 Avec un type primitif, on parlera de variable, et avec un type de classe, on parlera d'objet. 
 
-## Phase 2 : Initialisation 
+### Phase 2 : Initialisation 
 
 Pour initialiser les objets, on utilisera le mot clé `new` en faisant appel à la fonction constructeur : `new Field();`.  
 L'objectif d'un constructeur est d'allouer un espace mémoire afin de placer à l'intérieur ce que va contenir l'objet.
@@ -104,7 +108,7 @@ public class Main {
 }
 ```
 
-## Phase 3 : utilisation
+### Phase 3 : utilisation
 
 Pour l'instant, notre classe `Field` est vide, elle ne définit pas grand chose. On va maintenant populer notre classe en regardant ce que l'on peut y mettre. 
 
@@ -151,7 +155,7 @@ Ici, j'attibue une valeur de 12 à la largeur et 32 à la longueur de mon premie
 
 Nos deux objets sont du même type, ils ont la même structure, mais il ne sont pas dans le même état, puisque leurs valeurs sont différentes. 
 
-## Les méthodes de classes
+### Les méthodes de classes
 
 Notre prochaine question va être centrée sur les capacités de notre classe et sur la définition de son comportement.  
 On va donc déclarer des fonctions (appelées méthodes) qui vont permettre de définir le comportement de notre objet.
@@ -204,7 +208,7 @@ La classe `Main` et sa méthode `main` contient l'utilisation de nos objets de t
 
 La définition n'est faite qu'une seule fois et est ensuite compilée. Après, au lancement du programme, on utilise des objets que l'on va créer, on en crée autant que l'on veut et ces objets sont la concrétisation en mémoire de ce que l'on a défini dans la classe.  
 
-## La construction de l'objet
+### La construction de l'objet
 
 On va pouvoir approfondir la classe en définissant un ou plusieurs constructeurs permettant de dire comment on va construire notre objet. 
 Si un constructeur n'est pas défini pas dans la classe, il existe un constructeur par défaut qui ne prend rien en paramètre. Il s'agit de celui que l'on a déjà appelé depuis la méthode `main` avec le mot clé `new` : `new Field()`. 
@@ -312,7 +316,7 @@ Si on ne connaît pas à l'avance les données, on utilisera le premier construc
 Cet exemple n'est pas très cohérent mais c'était pour mettre en avant les possibilités de constructeur. En effet, définir des valeurs par défaut n'est pas très cohérent pour la définition d'un terrain. 
 On pourrait supprimer le constructeur initialisant les valeurs par défaut et ne garder que celui demandant les paramètres largeur et longueur. Cela implique que pour construire un objet de type `Field`, il faudra forcément renseigner ces valeurs. Autrement, ce ne sera pas possible. 
 
-## Structure de classe
+### Structure de classe
 
 ```java
 public class Field {
@@ -341,7 +345,7 @@ En réalité, comme le code est compilé, il n'est pas obligatoire de respecter 
 
 La POO en Java fonctionne de cette manière : la classe servira de moule pour nos objets, qui seront ensuite créés autant de fois que nécessaire lors de l'appel du type de classe.  
 
-## Autres méthodes
+### Autres méthodes
 
 On peut ajouter autant de méthodes que l'on souhaite, tant est si bien qu'elles sont cohérentes avec l'utilisation de notre classe. 
 
@@ -486,3 +490,234 @@ public class Main {
 }
 ```
 
+## Les visibilités
+
+Nous allons découvrir deux nouveaux mots clés qui vont nous permettre de jouer avec la visibilité des éléments que l'on retrouve dans une classe. 
+
+Dans la classe, nous avons déclaré des attributs qui définissent la structur, un constructeur qui définit la façcon de construire un nouveau terrain et puis des méthodes permettant de définir le comportement de notre objet. 
+
+Il y a également une visibilité qu'on va définir pour chacun de ces éléments. Cette visibilité va se placer devant l'élément. 
+
+Les deux mots clés sont `public` et `private` :
+- un élément `public` indique qu'il est accessible à l'intérieur et à l'extérieur de la classe. Cela signifie qu'on peut y accéder et l'utiliser/la manipuler depuis n'importe quelle autre classe dans l'application, grâce à l'opérateur `.`. L'accès pourra être fait en lecture et en écriture.  
+- un élément `private` indique que cet élément n'est accessible que depuis l'intérieur de la classe à laquelle il appartient. On pourra également accéder et manipuler cet élément grâce à l'opétateur `.`. 
+
+Pour l'exemple, dans notre class `Field`, on va indiquer que notre largeur `width` a une visibilité `public` et que la longueur `length` a une visibilité `private`. 
+`myFieldOne.width` sera utilisable dans la classe `Field` mais aussi dans la classe `main`, alors que `myFieldOne.length` ne sera utilisable que dans la classe `Field`. 
+
+La décision de rendre `public`ou `private` un élément se fera lors de la conception de l'application, si on décide ou non de rendre un élément de classe accessible ou non. 
+
+De manière générale, on va déclarer le constructeur en `public`. Il est également possible de le déclarer en `private` dans certains cas.
+
+On pourra appliquer le même principe sur les méthodes. On gardera une méthode privée lorsqu'elle est utilitaire à l'intérieur de la classe et qu'elle n'a pas pour vocation à être appelée depuis l'extérieur de la classe. 
+
+## Le principe d'encapsulation
+
+### Définition
+
+Pour rappel, la POO est fondée sur quatre fondamentaux qui sont l'encapsulation, l'abstraction, l'héritage et le polymorphisme.
+
+Le principe d'encapsulation va chercher à protéger notre code afin que celui ci ne devienne pas incohérent. 
+Par incohérent, on entend que le code autoriserait l'objet créé à évoluer dans un état qui ne serait plus correct. 
+
+Dans notre exemple, cela se traduirait par quelque chose comme un cas ou notre terrain aurait une largeur ou une longueur négative. Une valeur négative ne provoquerait pas d'erreur, mais cela engendrerait un résultat avec une incohérence lors de l'exécution du programme. 
+
+En déclarant une largeur `public`, cela permet à n'importe qui qui accède au programme de déclarer une valeur négative, puisqu'il n'existe aucun contrôle. 
+En plus de la modification, cette valeur est également disponible en lecture simple. 
+
+Le principe d'encapsulation consiste à déclarer les attributs privés afin de ne pas pouvoir y accéder directement depuis l'objet : on protège les attributs de classe. 
+En effet, seul le développeur doit prendre les responsabilités sur la façon dont la classe doit être développée.
+De cette manière, on va protéger la classe qui sera utilisée ailleurs dans le programme par d'autres développeurs qui pourraient utiliser des objets du type de la classe créée. 
+
+Grâce au principe d'encapsulation, on protège la définition de ce qu'est la classe en interdisant la manipulation directe de ses attributs. De ce fait, l'objet va cacher ses attributs et n'autorisera personne à le manipuler n'importe comment. 
+
+### Les getters
+
+Le principe d'encapsulation indique que les attributs d'une classe doivent être privés. 
+Pour y accéder, on va créer une méthode : un `getter` (`accesseur` en français).
+
+Par convention, un getter sera écrit : `get` + nom de l'attribut, tout attaché, en camelCase, suivi de parenthèses.
+`getWidth()`, `getLength()`, etc. 
+
+Point important, un getter doit être déclaré `public` pour permettre d'accéder depuis n'importe ou dans l'application.
+
+```java
+public int getWidth() {
+    return width;
+}
+
+public int getLength() {
+    return length;
+}
+```
+
+Pour accéder au getter depuis une autre classe comme la classe `main`, on utilisera le nom de l'objet, suivi de l'opérateur `.`, et enfin le getter
+
+```java
+myFieldOne.getWidth();
+myFieldOne.getLength();
+```
+
+### Les setters
+
+De la même manière que pour la lecture, on ne pourra pas modifier directement un attribut. 
+Pour cela, on fera appel aux setters (ou mutateur en français). 
+
+Le setter fonctionnera de la même manière que le getter : `set` + nom de l'attribut attaché en camelCase suivi des parenthèses, déclaré en `public`. 
+
+En revanche, cette méthode ne retourne rien : `void`, et prend en paramètre une valeur qui va venir modifier l'attribut associé. 
+
+```java
+public void setWidth(int newWidth) {
+    width = newWidth;
+}
+
+public void setLength(int newLength) {
+    length = newLength;
+}
+```
+
+Comme cette méthode est `public`, on va pouvoir l'utiliser depuis une autre classe telle que `main`.
+
+```java
+myFieldOne.setWidth(14);
+```
+
+Il y a un intérêt tour particulier à utiliser un setter : en utilisant une telle méthode, on peut ajouter du code permettant de contrôler la manière dont on va modifier l'attribut. Par exemple, si on ne souhaite pas de valeur négative pour une longueur ou une largeur, ou encore une valeur beaucoup trop grande, on peut ajouter des séries de tests et ajouter une instruction permettant de lever une exception/erreur (point qu'on abordera dans un prochain chapitre).
+
+```java
+public void setWidth(int newWidth) {
+    if (newWidth < 0) {
+        // throw exception
+    } else {
+        width = newWidth;
+    }
+}
+```
+
+En résumé, le principe d'encapsulation est le fait d'enfermer à l'intérieur de la classe sa représentation faite par ses attributs et d'offrir par un accès public à ses attributs seulement par des méthodes. 
+Afin de pouvoir lire la valeur de cet attribut, on utilise la méthode get (getter), et pour modifier la valeur de cet attribut, on utilise la méthode set (setter) avec la possibilité d'ajouter des points de contrôles lors de la modification.
+
+Point important, les getters et setters ne sont pas du tout obligatoire. On peut d'ailleurs faire des méthodes 'get' dans méthodes 'set' et inversement.
+La responsabilité de protéger la classe est attribuée au développeur de cette classe et c'est à lui d'autoriser ou non les accès aux attributs via des getters et des setters. 
+
+### Générer les getters et setters automatiquement avec IntelliJ
+
+l'IDE IntelliJ permet de générer automatiquement les getters et setters. 
+Pour cela, on va utiliser la souris avec un clic droit dans la classe, puis `generate`, puis `Getter et Setter`, et enfin sélectionner les attributs pour lesquels on souhaite générer les getters et setters.
+
+On pourra remarquer que les setters utilisent le mot clé `this`. Nous verrons plus en détail ce mot clé dans le paragraphe dédié. 
+
+## Surcharge de méthode : overloading
+
+La surcharge (overloading) consiste à définir plusieurs méthodes portant le même nom dans une même classe, à condition que leur liste de paramètres diffère. 
+
+Le compilateur choisit la bonne version selon les arguments passés à l'appel.
+```java
+public void increaseLength() { 
+    length++; 
+}
+public void increaseLength(int value) { 
+    length += value; 
+}
+```
+à l'appel, on utilisera une méthode ou l'autre en fonction du paramètre "optionnel" qui sera passé ou non : 
+```java 
+myFieldOne.increaseLength();     // → version sans paramètre (+1)
+myFieldOne.increaseLength(20);   // → version avec int (+20)
+```
+Le choix est fait à la compilation (liaison statique) d'après le nombre et le type des arguments.
+
+### Ce qui compte pour la signature :
+
+La signature d'une méthode = nom + types/nombre/ordre des paramètres. Pour surcharger, il faut que l'un de ces éléments change :
+```java
+void display()                    // 0 paramètre
+void display(String prefix)       // 1 paramètre
+void display(int a, String b)     // types différents
+void display(String b, int a)     // ordre différent : valide aussi
+```
+
+### Ce qui ne suffit PAS
+
+- Changer uniquement le type de retour : erreur de compilation.
+```java
+int area() { ... }
+double area() { ... }   // => même signature
+```
+- Changer uniquement le nom des paramètres : `f(int a)` et `f(int b)` sont identiques.
+- Changer uniquement les modificateurs (`public`, `static`...) ou la clause `throws`.
+
+### Les constructeurs peuvent aussi se surcharger
+
+Les constructeurs se surchargent de la même façon, ce qui est très courant. 
+```java
+public Field() {
+    this(10, 10);          // appelle l'autre constructeur
+}
+
+public Field(int paramWidth, int paramLength) {
+    width = paramWidth;
+    length = paramLength;
+}
+```
+`this(...)` permet de réutiliser un constructeur depuis un autre et d'éviter la duplication.
+
+### Réduire la duplication entre surcharges
+
+les deux versions de increaseLength pourraient se déléguer :
+```java
+public void increaseLength() {
+    increaseLength(1);
+}
+
+public void increaseLength(int value) {
+    length += value;
+}
+```
+Si la logique évolue (par exemple une validation), on ne la modifie qu'à un seul endroit.
+
+### Pièges à connaître
+
+1. **Conversion implicite de types**. Java choisit la surcharge la plus spécifique, en élargissant au besoin (int → long → double) :
+```java
+void show(long x)   { System.out.println("long"); }
+void show(double x) { System.out.println("double"); }
+
+show(5);   // affiche "long" (int est élargi vers long en priorité)
+```
+2. **Ambiguïté**. Si aucune version n'est clairement meilleure, le compilateur refuse :
+```java
+void f(int a, double b) { }
+void f(double a, int b) { }
+
+f(1, 2);   // ❌ ambigu
+```
+
+3. **Le choix dépend du type déclaré, pas du type réel**. Contrairement au polymorphisme (redéfinition / overriding), la surcharge est résolue sur le **type statique** :
+```java
+void print(Object o) { System.out.println("Object"); }
+void print(String s) { System.out.println("String"); }
+
+Object x = "hello";
+print(x);   // affiche "Object", car x est déclaré Object
+```
+
+### Surcharge vs redéfinition
+
+|            |Surcharge (overload)      | Redéfinition (override) |
+| ---------- | ------------------------ | ----------------------- |
+| Où         | Même classe (ou héritée) | Sous-classe             |
+| Signature  | **Différente**           | **Identique**           |
+| Résolution | Compilation              | Exécution               |
+| Annotation | aucune                   | `@Override`             | 
+
+## Le mot clé `this`
+
+## Le mot clé `static`
+
+## Le mot clé `final`
+
+## Combinaison de `static` et `final`
+
+## La `javadoc`
