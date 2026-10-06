@@ -714,7 +714,76 @@ print(x);   // affiche "Object", car x est déclaré Object
 
 ## Le mot clé `this`
 
+### Définition
+
+this est une référence à l'instance courante, c'est-à-dire l'objet sur lequel une méthode ou un constructeur est en train de s'exécuter.
+- Dans une méthode, this désigne l'objet qui a appelé la méthode. Avec myFieldOne.display(), this vaut myFieldOne dans le corps de display.
+- Dans un constructeur, this désigne l'objet en cours d'initialisation. Quand new est appelé, la mémoire est allouée sur le tas, les champs reçoivent leurs valeurs par défaut, puis le constructeur s'exécute avec this pointant vers cet objet.
+
+### Les 4 usages
+
+1. **Accéder aux champs de l'instance** : `this.width`
+2. **Lever l'ambiguïté (masquage / shadowing)** quand un paramètre porte le même nom qu'un champ
+3. **Appeler un autre constructeur** de la même classe : `this(...)`
+4. **Retourner l'instance courante** : `return this`, ce qui permet d'enchaîner les appels (method chaining)
+
+Et une limite : `this` n'existe pas dans un contexte `static`.
+
+### Exemple 
+
+```java
+public class Field {
+    private int width;
+    private int length;
+
+    // Usage 2 : paramètres = noms des champs → this lève l'ambiguïté
+    public Field(int width, int length) {
+        this.width = width;
+        this.length = length;
+    }
+
+    // Usage 3 : délégation à un autre constructeur (1re instruction)
+    public Field() {
+        this(10, 10);
+    }
+
+    // Usage 4 : on retourne l'instance courante pour chaîner
+    public Field increaseLength(int value) {
+        this.length += value;
+        return this;
+    }
+
+    // Usage 1 : accès explicite à un champ
+    public int area() {
+        return this.width * this.length;
+    }
+
+    // static : pas d'instance, donc pas de this
+    public static Field square(int side) {
+        return new Field(side, side);
+    }
+}
+```
+
+```java
+Field a = new Field(12, 32);
+Field b = new Field();                    // 10 x 10
+a.increaseLength(5).increaseLength(3);    // 12 x 40
+```
+
+**Masquage**. Dans `Field(int width, int length)`, le nom `width` désigne le paramètre, car la variable locale prend le dessus sur le champ. Sans `this`, `width = width;` affecte le paramètre à lui-même : le code compile, mais les champs restent à `0`. `this.width` désigne explicitement le champ de l'objet.
+
+`this(...)`. `Field()` ne duplique aucune logique : il délègue à `Field(int, int)`. L'appel doit être la première instruction du constructeur, et un constructeur ne peut pas s'appeler lui-même, directement ou en cycle.
+
+`return this`. Dans `a.increaseLength(5).increaseLength(3)`, chaque appel renvoie `a` lui-même : il n'y a aucune copie, c'est le même objet modifié deux fois. C'est la base du method chaining (très utilisé dans le pattern Builder).
+
+`this` **dépend de l'appelant**. Le code de `area()` existe une seule fois, mais `this` pointe vers `a` ou `b` selon l'appel, ce qui permet à chaque instance d'avoir ses propres valeurs.
+
+**Pas de `this` en `static`**. Une méthode statique appartient à la classe, pas à une instance : elle ne peut ni utiliser `this`, ni accéder directement aux champs d'instance.
+
 ## Le mot clé `static`
+
+
 
 ## Le mot clé `final`
 
