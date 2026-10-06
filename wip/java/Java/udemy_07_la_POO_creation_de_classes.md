@@ -781,9 +781,138 @@ a.increaseLength(5).increaseLength(3);    // 12 x 40
 
 **Pas de `this` en `static`**. Une méthode statique appartient à la classe, pas à une instance : elle ne peut ni utiliser `this`, ni accéder directement aux champs d'instance.
 
-## Le mot clé `static`
+## Le mot-clé `static`
 
+`static` est omniprésent en Java : la méthode `main` en est un exemple.
 
+### Définition
+
+Un membre `static` (attribut ou méthode) appartient à la **classe**, et non à une instance.
+
+- **Attribut d'instance** (sans `static`) : chaque objet a sa propre copie.
+- **Attribut de classe** (`static`) : une seule copie, créée à l'initialisation de la classe (à sa première utilisation) et partagée par toutes les instances. Il ne fait pas partie de la structure d'un objet et existe même si aucune instance n'a été créée.
+
+```java
+public class Field {
+    private static int width;   // partagé par tous les Field
+    private int length;         // propre à chaque Field
+
+    public Field(int paramWidth, int paramLength) {
+        width = paramWidth;     // écrase la valeur pour TOUTES les instances
+        length = paramLength;
+    }
+
+    public void display() {
+        System.out.println(width + " x " + length);
+    }
+}
+```
+
+```java
+Field one = new Field(12, 32);
+Field two = new Field(15, 42);
+one.display();   // 15 x 32 : width a été écrasée par la 2e construction
+```
+
+### Intérêt
+
+Une valeur commune n'est stockée qu'une fois, et la modifier une seule fois se répercute sur toutes les instances. Par exemple, des terrains qui doivent tous avoir la même largeur (largeur de la rue divisée par le nombre de terrains).
+
+Usages typiques :
+
+```java
+public static final int MAX_WIDTH = 100;   // constante (UPPER_SNAKE_CASE)
+private static int count = 0;              // compteur d'instances (count++ dans le constructeur)
+```
+
+**Attention** : un attribut `static` modifiable est un état global, partagé par tout le programme. Il rend le code plus difficile à tester et n'est pas sûr en contexte multi-thread. On privilégie les constantes (`static final`).
+
+### Accès à un attribut static
+
+On y accède par le **nom de la classe** : `Field.width`. Passer par une instance (`one.width`) ou par `this.width` compile, mais prête à confusion : à éviter. Il vaut mieux éviter aussi un attribut `public` (encapsulation) et passer par un accesseur.
+
+### Les méthodes static
+
+```java
+public static void methodStatic() { ... }
+ClassAssociated.methodStatic();   // appel sans objet
+```
+
+Une méthode `static` convient quand son traitement ne dépend d'aucune instance.
+
+Restrictions :
+
+- Pas de `this` : il n'y a pas d'instance courante.
+- Accès **direct** uniquement aux membres `static` (attributs et méthodes). Pour atteindre un membre d'instance, il faut une référence à un objet (`obj.display()`).
+- L'inverse est permis : une méthode d'instance peut utiliser librement les membres `static`.
+
+Par convention, on rend `static` les getters et setters d'un attribut `static`.
+
+```java
+public class Field {
+    private static int width;
+    private int length;
+
+    public Field(int length) { this.length = length; }
+
+    // paramètre = nom du champ, et this est interdit : on utilise Field.width
+    public static void setWidth(int width) { Field.width = width; }
+
+    public int area() { return Field.width * this.length; }
+}
+```
+
+```java
+Field.setWidth(100 / 2);    // appel via la classe, sans objet
+Field a = new Field(32);
+a.area();                   // 50 * 32 = 1600
+```
+
+### Erreurs fréquentes
+
+```java
+public static void display() {
+    System.out.println(this.length);   // ❌ non-static variable this cannot be referenced from a static context
+    area();                            // ❌ non-static method area() cannot be referenced from a static context
+}
+```
+
+Appeler une méthode statique via une instance (`field.display()`) compile avec un avertissement : préférer `Field.display()`. Éviter aussi de nommer une variable comme sa classe (`Field Field`) : le compilateur interprète alors `Field.` comme la variable plutôt que comme la classe.
+
+### La méthode `main`
+
+```java
+public static void main(String[] args)
+```
+
+- `public` : accessible par la JVM.
+- `static` : la JVM l'appelle sans créer d'instance. C'est le point d'entrée du programme, d'où l'aspect « procédural » du départ.
+- `void` : ne retourne rien.
+- `String[] args` : arguments de la ligne de commande.
+
+Le nom `Main` est une convention : n'importe quelle classe peut contenir un `main`. Depuis `main`, on appelle directement les méthodes `static`, mais on peut aussi créer des objets et appeler leurs méthodes d'instance (`myFieldOne.display()`).
+
+> À vérifier selon ta version de Java : les versions récentes (préversion à partir de Java 21) assouplissent cette signature, notamment avec des `main` d'instance. La forme ci-dessus reste la forme classique.
+
+**Compilation et lancement** (IntelliJ fait cela pour toi et place les `.class` dans `out/production/<module>`) :
+
+```bash
+javac -d out src/*.java    # .java → .class (bytecode)
+java -cp out Main          # lance la JVM sur la classe Main (nom de classe, sans .class)
+```
+
+Avec des packages, il faut le nom complet de la classe : `java -cp out com.exemple.Main`.
+
+### Les classes utilitaires
+
+`Math` ne contient que des membres `static`. Sa classe est `final` et son constructeur est `private` : `new Math()` est impossible depuis l'extérieur.
+
+- Constantes : `Math.PI`, `Math.E` (`public static final double`)
+- Méthodes : `Math.max`, `Math.sqrt`, `Math.pow`, `Math.abs`...
+
+Pour écrire sa propre classe utilitaire : classe `final`, constructeur `private`, méthodes `static`.
+
+`Arrays` suit le même principe et propose des méthodes pour manipuler les tableaux : `Arrays.toString(tab)`, `Arrays.sort(tab)`, `Arrays.fill(tab, v)`, `Arrays.copyOf(tab, n)`, `Arrays.equals(a, b)`.
 
 ## Le mot clé `final`
 
