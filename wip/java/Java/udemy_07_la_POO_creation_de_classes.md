@@ -914,8 +914,98 @@ Pour écrire sa propre classe utilitaire : classe `final`, constructeur `private
 
 `Arrays` suit le même principe et propose des méthodes pour manipuler les tableaux : `Arrays.toString(tab)`, `Arrays.sort(tab)`, `Arrays.fill(tab, v)`, `Arrays.copyOf(tab, n)`, `Arrays.equals(a, b)`.
 
-## Le mot clé `final`
+## Le mot-clé `final`
+
+### Définition
+
+`final` indique qu'une variable ne peut être **affectée qu'une seule fois**. Une fois la valeur donnée, on ne peut plus la modifier.
+
+```java
+private final int width;
+```
+
+Un attribut `final` doit obligatoirement être initialisé, sinon le code ne compile pas (`variable width not initialized in the default constructor`). Il peut l'être :
+
+- **à la déclaration** : `private final int width = 10;`
+- **dans le constructeur** : chaque constructeur doit l'affecter, exactement une fois.
+- (plus rare) dans un bloc d'initialisation.
+
+```java
+public class Field {
+    private final int width;
+
+    public Field(int width) {
+        this.width = width;
+    }
+}
+```
+
+Toute tentative de réaffectation est une erreur de compilation :
+
+```java
+public void increaseWidth() {
+    this.width++;   // Cannot assign a value to final variable width
+}
+```
+
+### `final` ne signifie pas `static`
+
+Un attribut `final` n'est **pas partagé**, contrairement à `static` : chaque instance a son propre emplacement mémoire, avec sa propre valeur, fixée une fois pour toutes à la construction.
+
+| | Partagé entre les instances | Modifiable |
+|---|---|---|
+| `private int width` | non | oui |
+| `private static int width` | oui | oui |
+| `private final int width` | non | non (après initialisation) |
+| `public static final int MAX_WIDTH` | oui | non |
+
+On parle de **constante** pour un attribut `static final`, par convention nommé en `UPPER_SNAKE_CASE` (`Math.PI`). Un attribut `final` d'instance est plutôt un attribut **non modifiable** : sa valeur peut différer d'un objet à l'autre.
+
+### Intérêt : les objets immuables
+
+Une classe dont tous les attributs sont `final` produit des objets **immuables** : une fois construits, leur état ne change plus. C'est plus sûr (pas de modification inattendue), plus simple à raisonner et sans risque en contexte multi-thread. `String` en est l'exemple le plus courant.
+
+Avec l'encapsulation, on fournit des **getters**, mais **pas de setters** (IntelliJ ne propose d'ailleurs pas de générer un setter pour un attribut `final`).
+
+Pour une classe immuable, on déclare aussi souvent la classe elle-même `final` (voir plus bas).
+
+**Piège : `final` n'implique pas l'immuabilité de ce qu'il référence.** `final` empêche de *réaffecter* la variable, pas de modifier l'objet vers lequel elle pointe.
+
+```java
+private final int[] values = new int[3];
+
+values[0] = 5;            // autorisé : on modifie le contenu du tableau
+values = new int[5];      // interdit : on réaffecte la référence
+```
+
+Il en va de même pour une `List`, un objet mutable, etc. Une classe n'est réellement immuable que si ses attributs `final` sont eux-mêmes de types immuables (`int`, `String`...), ou si elle en fait des copies défensives.
+
+### `final` en paramètre de méthode
+
+Un paramètre peut être déclaré `final` : on ne peut alors pas lui réaffecter une valeur dans la méthode.
+
+```java
+public Field(final int width, final int length) {
+    width = -1;              // ❌ cannot assign a value to final parameter width
+    this.width = width;
+    this.length = length;
+}
+```
+
+Cela garantit que la valeur reçue n'est pas écrasée par erreur dans le corps de la méthode. Cela ne change rien pour l'appelant : Java passe les arguments **par valeur**, sa variable n'est de toute façon jamais modifiée par une réaffectation du paramètre. Comme pour les attributs, si le paramètre est un objet, `final` interdit de changer la référence, pas de modifier l'objet.
+
+En pratique, cet usage est peu répandu : beaucoup de projets préfèrent ne pas réaffecter leurs paramètres sans l'écrire.
+
+### Autres usages (aperçu)
+
+- **Variable locale** : `final int max = 10;` (affectée une seule fois).
+- **Méthode `final`** : ne peut pas être redéfinie (*override*) dans une sous-classe.
+- **Classe `final`** : ne peut pas être étendue (`String`, `Math`...).
+
+Les deux derniers usages relèvent de l'héritage : à reprendre dans le chapitre correspondant.
 
 ## Combinaison de `static` et `final`
+
+
 
 ## La `javadoc`
