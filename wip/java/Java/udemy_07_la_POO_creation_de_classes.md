@@ -986,7 +986,7 @@ Un paramètre peut être déclaré `final` : on ne peut alors pas lui réaffecte
 
 ```java
 public Field(final int width, final int length) {
-    width = -1;              // ❌ cannot assign a value to final parameter width
+    width = -1;              // cannot assign a value to final parameter width
     this.width = width;
     this.length = length;
 }
@@ -1006,6 +1006,215 @@ Les deux derniers usages relèvent de l'héritage : à reprendre dans le chapitr
 
 ## Combinaison de `static` et `final`
 
+Ces deux mots-clés se combinent.
 
+- `static` : l'attribut appartient à la classe et est **partagé** par toutes les instances.
+- `final` : l'attribut ne peut être affecté qu'**une seule fois**.
 
-## La `javadoc`
+Ensemble, ils définissent une **constante de classe** : une valeur unique, partagée, qui ne change jamais.
+
+```java
+private static final int WIDTH = 12;
+```
+
+### Initialisation
+
+L'attribut doit être initialisé, et il ne peut **pas** l'être dans un constructeur : le constructeur s'exécute à chaque création d'objet, alors qu'un attribut `static` n'appartient à aucun objet en particulier.
+
+```java
+public Field(int width) {
+    WIDTH = width;   // cannot assign a value to final variable WIDTH
+}
+```
+
+Deux endroits sont possibles :
+
+- **à la déclaration** (le cas courant) : `private static final int WIDTH = 12;`
+- dans un **bloc d'initialisation statique** (plus rare, utile si l'initialisation demande plusieurs instructions) :
+
+```java
+private static final int WIDTH;
+
+static {
+    WIDTH = 12;
+}
+```
+
+Initialiser à la déclaration n'est pas propre à `static final` : n'importe quel attribut peut l'être (`private int length = 10;`).
+
+### Convention de nommage
+
+Une constante s'écrit en **`UPPER_SNAKE_CASE`** : majuscules, mots séparés par des `_` (`WIDTH`, `MAX_WIDTH`, `DEFAULT_LENGTH`). C'est une convention de la communauté Java, pas une obligation du compilateur.
+
+### Visibilité
+
+- **`private`** : la constante ne sert qu'à l'intérieur de la classe.
+- **`public`** : elle est accessible depuis l'extérieur, par le nom de la classe.
+
+```java
+public class Field {
+    public static final int MAX_WIDTH = 100;   // accessible : Field.MAX_WIDTH
+    private static final int MIN_WIDTH = 1;    // usage interne
+
+    private final int width;
+
+    public Field(int width) {
+        this.width = Math.max(MIN_WIDTH, Math.min(width, MAX_WIDTH));
+    }
+}
+```
+
+```java
+System.out.println(Field.MAX_WIDTH);   // 100, sans créer d'objet
+```
+
+Pas besoin de getter pour une constante `public` : comme elle ne peut pas être modifiée, l'exposer ne casse pas l'encapsulation. On retrouve ce principe dans `Math.PI` ou `Integer.MAX_VALUE`.
+
+### Intérêt
+
+- **Éviter les « nombres magiques »** : `MAX_WIDTH` est plus lisible que `100` répété dans le code.
+- **Un seul endroit à modifier** si la valeur change.
+- **Une seule copie en mémoire**, partagée par toutes les instances.
+
+### Points d'attention
+
+- **`final` ne rend pas l'objet pointé immuable.** Une constante `public static final` de type tableau ou `List` reste modifiable dans son contenu. Réservé aux types immuables (`int`, `String`...) pour les constantes publiques.
+
+```java
+public static final int[] SIZES = {10, 20};
+
+Field.SIZES[0] = 99;   // compile : le contenu du tableau est modifiable
+```
+
+- **Valeurs recopiées à la compilation.** Pour une constante de type primitif ou `String` initialisée avec une valeur littérale, le compilateur recopie la valeur dans les classes qui l'utilisent. Si on la modifie, il faut **recompiler** les classes qui en dépendent.
+
+## La `Javadoc`
+
+### Contexte : les commentaires en Java
+
+Commenter son code apporte du contexte et des explications quand c'est nécessaire. Java propose trois formes de commentaires :
+
+```java
+// commentaire sur une ligne
+
+/* commentaire
+   sur plusieurs lignes */
+
+/**
+ * Commentaire de documentation (Javadoc)
+ */
+```
+
+Les deux premiers sont ignorés par le compilateur : ils n'existent que dans le fichier source et disparaissent du bytecode (`.class`). Ils servent à celui qui **lit** le code, en général pour expliquer le *pourquoi* d'un choix.
+
+La **Javadoc** (`/** ... */`) est aussi ignorée à l'exécution, mais elle est reconnue par des outils (l'IDE, l'outil `javadoc`) qui l'exploitent pour documenter la classe à celui qui **utilise** le code, sans qu'il ait à lire l'implémentation.
+
+### Définition
+
+La Javadoc est un commentaire spécifique qui sert de **notice d'utilisation** d'une classe, d'un attribut, d'un constructeur ou d'une méthode : ce qu'ils représentent ou font, ce qu'ils attendent en paramètre, ce qu'ils retournent.
+
+Elle commence par `/**` et se termine par `*/`. Par convention, chaque ligne intermédiaire commence par `*`. Elle se place **juste au-dessus** de l'élément documenté (et avant ses annotations, comme `@Override`).
+
+```java
+/**
+ * Représente un terrain rectangulaire.
+ */
+public class Field {
+    ...
+}
+```
+
+La **première phrase** est le résumé : c'est elle qui apparaît dans les listes de la documentation générée. On la rédige comme une phrase complète, qui se termine par un point.
+
+### Où la voit-on ?
+
+- **Dans l'IDE** : en survolant le nom d'une classe, d'une méthode ou d'un attribut, une fenêtre affiche sa documentation, sans ouvrir le fichier. Dans IntelliJ, taper `/**` puis `Entrée` au-dessus d'une méthode génère le squelette avec les `@param` et `@return`.
+- **En HTML** : l'outil `javadoc` génère un site de documentation à partir des commentaires. Dans IntelliJ : menu *Tools → Generate JavaDoc*, ou en ligne de commande :
+
+```bash
+javadoc -d doc src/*.java    # génère la documentation HTML dans le dossier doc
+```
+
+Pour une classe déjà compilée (par exemple une bibliothèque), le survol ne fonctionne que si l'IDE a accès aux sources ou à la documentation associée : les commentaires ne sont pas dans le `.class`.
+
+### Les balises (`@tag`)
+
+Au-delà de la description, on utilise des balises qui commencent par `@` :
+
+| Balise | S'applique à | Rôle |
+|---|---|---|
+| `@param nom description` | méthode, constructeur | décrit un paramètre (une balise par paramètre) |
+| `@return description` | méthode non `void` | décrit la valeur retournée |
+| `@throws Exception description` | méthode, constructeur | exception pouvant être levée |
+| `@author` | classe | auteur(s) |
+| `@version` | classe | version |
+| `@since` | classe, méthode | version à partir de laquelle l'élément existe |
+| `@see` | tous | renvoie vers un autre élément |
+| `@deprecated` | tous | élément à ne plus utiliser (avec l'alternative à utiliser) |
+
+Remarques :
+
+- `@author` et `@version` sont de moins en moins utilisées : le gestionnaire de versions (Git) conserve déjà ces informations. L'outil `javadoc` ne les affiche d'ailleurs que si on le demande (options `-author` et `-version`).
+- On peut insérer du code dans le texte avec `{@code ...}` et un lien avec `{@link Field}`.
+
+### Exemple complet
+
+```java
+/**
+ * Représente un terrain rectangulaire.
+ *
+ * @author John DOE
+ * @version 1
+ */
+public class Field {
+    /** Largeur du terrain, en mètres. */
+    private int width;
+
+    /** Longueur du terrain, en mètres. */
+    private int length;
+
+    /**
+     * Crée un terrain à partir de ses dimensions.
+     *
+     * @param width  la largeur du terrain, en mètres
+     * @param length la longueur du terrain, en mètres
+     */
+    public Field(int width, int length) {
+        this.width = width;
+        this.length = length;
+    }
+
+    /**
+     * Calcule la superficie du terrain.
+     *
+     * @return la superficie, en m²
+     */
+    public int area() {
+        return width * length;
+    }
+
+    /**
+     * Augmente la longueur du terrain de 1 mètre.
+     */
+    public void increaseLength() {
+        length++;
+    }
+
+    /**
+     * Augmente la longueur du terrain du nombre de mètres indiqué.
+     *
+     * @param value le nombre de mètres à ajouter
+     */
+    public void increaseLength(int value) {
+        length += value;
+    }
+}
+```
+
+Pour une méthode surchargée (comme `increaseLength`) ou plusieurs constructeurs, chaque version a **sa propre Javadoc**, qui précise ce qui la distingue des autres : c'est elle qui permet de savoir laquelle choisir.
+
+### Bonnes pratiques
+
+- **Documenter ce qui est utilisé par d'autres** : classes, constructeurs et méthodes `public` (et `protected`). Par défaut, l'outil `javadoc` ne génère d'ailleurs la documentation que pour ces éléments ; les attributs `private` n'y figurent pas, même si leur commentaire reste utile dans le code.
+- **Décrire le contrat** (ce que fait l'élément, ses paramètres, son résultat, ses cas d'erreur), pas répéter le code. Une Javadoc du type « Retourne la largeur » sur `getWidth()` n'apporte rien.
+- **Maintenir la Javadoc à jour** : à chaque modification d'une méthode (paramètres, comportement, retour), mettre à jour sa documentation. Une documentation fausse est pire que pas de documentation.
