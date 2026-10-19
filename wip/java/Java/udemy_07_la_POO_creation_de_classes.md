@@ -1,4 +1,4 @@
-# POO : La Création des classes en Java
+# POO : La création des classes en Java
 
 ## Les bases de la Programmation Orientée Objet en Java
 
@@ -6,33 +6,38 @@
 
 (Voir cours sur la Programmation Orientée Objet)
 
-La POO est une manière de modéliser les concepts et comportements pertinents pour le problème qu'on résout, en s'inspirant souvent (mais pas toujours) d'objets ou d'entités du monde réel. On appelle ça l'abstraction : on garde ce qui compte pour l'application, on ignore le reste.
+La POO est une manière de modéliser les concepts et comportements pertinents pour le problème qu'on résout, en s'inspirant souvent (mais pas toujours) d'objets ou d'entités du monde réel. On appelle ça l'**abstraction** : on garde ce qui compte pour l'application, on ignore le reste.
 
-Concrètement, cela se traduit par une façon d'organiser son code autour d'objets plutôt qu'autour d'une simple suite d'instructions. Au lieu de manipuler des données et des fonctions séparément, on les regroupe dans des objets qui représentent ces concepts et comportements : une voiture, un utilisateur, une commande, etc.
+Concrètement, on organise son code autour d'**objets** plutôt qu'autour d'une simple suite d'instructions. Au lieu de manipuler des données et des fonctions séparément, on les regroupe dans des objets qui représentent ces concepts : une voiture, un utilisateur, une commande, etc.
 
 Chaque objet a :
-- des attributs (ses données, ce qu'il est). ex : un utilisateur a un nom, un email
-- des méthodes (ses comportements, ce qu'il fait). ex : un utilisateur peut se connecter, changer son mot de passe
+
+- des **attributs** (ses données, ce qu'il est). Ex : un utilisateur a un nom, un email ;
+- des **méthodes** (ses comportements, ce qu'il fait). Ex : un utilisateur peut se connecter, changer son mot de passe.
+
+Une **classe** est le plan (le moule) qui décrit les attributs et les méthodes d'un type d'objets. Un **objet**, ou **instance**, est une réalisation concrète de ce plan, avec ses propres valeurs. À partir d'une classe, on peut créer autant d'objets que nécessaire.
 
 Les 4 grands principes habituellement cités :
-1. Encapsulation : les données d'un objet sont protégées, on n'y accède que via ses méthodes (pas de manipulation directe et anarchique)
-2. Héritage : une classe peut hériter des attributs/méthodes d'une autre (ex : Chien hérite de Animal)
-3. Polymorphisme : des objets différents peuvent répondre à un même appel de méthode chacun à leur façon (ex : .crier() fait "Whaou" pour un chien, "Miaou" pour un chat)
-4. Abstraction : on expose seulement ce qui est nécessaire à l'utilisation de l'objet, on cache la complexité interne
 
-En résumé : la POO = modéliser le code comme un ensemble d'objets qui interagissent entre eux, chacun responsable de ses propres données et comportements, en ne retenant de chaque concept que ce qui est pertinent pour le problème à résoudre.
+1. **Encapsulation** : les données d'un objet sont protégées, on n'y accède que via ses méthodes (pas de manipulation directe et anarchique).
+2. **Héritage** : une classe peut hériter des attributs et méthodes d'une autre (ex : `Chien` hérite de `Animal`).
+3. **Polymorphisme** : des objets différents peuvent répondre à un même appel de méthode chacun à leur façon (ex : `.crier()` fait « Whaou » pour un chien, « Miaou » pour un chat).
+4. **Abstraction** : on expose seulement ce qui est nécessaire à l'utilisation de l'objet, on cache la complexité interne.
 
-Java est un langage de programmation orienté objet.
+En résumé : la POO consiste à modéliser le code comme un ensemble d'objets qui interagissent entre eux, chacun responsable de ses propres données et comportements, en ne retenant de chaque concept que ce qui est pertinent pour le problème à résoudre.
+
+Java est un langage orienté objet, même si ses types primitifs (`int`, `double`...) ne sont pas des objets.
 
 ### Exemple
 
-créer un programme permettant de schématiser une rue composée de plusieurs terrains situés le long de cette rue.
+On veut créer un programme permettant de schématiser une rue composée de plusieurs terrains situés le long de cette rue.
 
-on va avoir besoin d'un code composé de plusieurs terrains et un terrain sera défini par une largeur sur la rue et une longueur correspondant à sa profondeur. Par soimplicité, on dira qu'un terrain a une forme rectangulaire. 
+Un terrain est défini par une **largeur** (sur la rue) et une **longueur** (sa profondeur). Par simplicité, on dira qu'un terrain a une forme rectangulaire.
 
-De manière séquentielle, on pourrait déclarer de cette manière :
+De manière séquentielle, on pourrait écrire :
 
-Main.java
+`Main.java`
+
 ```java
 public class Main {
     public static void main(String[] args) {
@@ -43,82 +48,108 @@ public class Main {
 
         System.out.println("Mon terrain 1 a une largeur de " + widthFieldOne + "m et une longueur de " + lengthFieldOne + "m");
 
-        int widthFieldTwo = 12;
-        int lengthFieldTwo = 32;
+        int widthFieldTwo = 15;
+        int lengthFieldTwo = 42;
 
         System.out.println("Mon terrain 2 a une largeur de " + widthFieldTwo + "m et une longueur de " + lengthFieldTwo + "m");
     }
 }
 ```
-Avec cette méthode, on comprends que si on veut ajouter un nouveau terrain, on va devoir dupliquer du code. Cela rend le programme difficile à maintenir et compliqué à faire évoluer.
 
-C'est maintenant que la programmation orientée objet et son paradigme entrent en jeu pour résoudre ce genre de problèmes. 
+Avec cette méthode, pour ajouter un terrain, il faut dupliquer du code (les variables et l'affichage). De plus, rien ne relie la largeur et la longueur d'un même terrain : ce sont des variables indépendantes. Le programme devient difficile à maintenir et à faire évoluer.
+
+C'est là que la programmation orientée objet intervient pour résoudre ce genre de problèmes.
 
 ### Création d'une classe `Field`
 
-Le premier avantage est la possibilité de créer son propre type. Pour cela, en java, on va créer une nouvelle classe.
-Cette classe sera appelée `Field` et représentera ce qu'est un terrain. 
-À chaque complilation, un `Field.class` sera créé et à chaque modification que l'on fera dans cette classe terrain, le compilateur régénère ce `.class` afin d'apporter à l'intérieur les modifications. 
+Le premier avantage de la POO est la possibilité de **créer son propre type**. En Java, on crée pour cela une nouvelle classe. Cette classe, appelée `Field`, représente ce qu'est un terrain.
 
-Field.java
+`Field.java`
+
 ```java
 public class Field {
     ...
 }
 ```
 
+Règles :
+
+- une classe `public` est écrite dans un fichier du **même nom** (`Field.java`) ;
+- par convention, un nom de classe commence par une majuscule (`PascalCase`) ;
+- à la compilation, chaque classe produit un fichier `.class` (le bytecode). Le compilateur le régénère à chaque modification de la classe.
+
 ### Phase 1 : Déclaration
 
-On pourra ainsi modifier notre classe `Main` en déclarant deux objets de type `Field` : 
+On peut maintenant déclarer, dans `Main`, deux variables de type `Field` :
+
 ```java
 public class Main {
     public static void main(String[] args) {
         System.out.println("Terrains");
 
-        // délcaration de deux objets de type Field
+        // déclaration de deux variables de type Field
         Field myFieldOne;
         Field myFieldTwo;
     }
 }
 ```
-Ici, la "variable" `myFieldOne` est du type `Field`. Il s'agit d'un objet typé en Field. Contrairement au type primitif `int`, `Field` est à écrire avec une majuscule. 
-Avec un type primitif, on parlera de variable, et avec un type de classe, on parlera d'objet. 
 
-### Phase 2 : Initialisation 
+Ici, `myFieldOne` est une variable dont le **type** est `Field`. Contrairement au type primitif `int`, qui s'écrit en minuscules, `Field` commence par une majuscule : c'est une classe.
 
-Pour initialiser les objets, on utilisera le mot clé `new` en faisant appel à la fonction constructeur : `new Field();`.  
-L'objectif d'un constructeur est d'allouer un espace mémoire afin de placer à l'intérieur ce que va contenir l'objet.
-Celui ci va retourner l'adresse de cet espace mémoire qui va finalement être stocké dans notre objet "myFieldOne".
-En d'autre mots, `myFieldOne` est en quelque sorte un pointeur vers cet espace mémoire.  
-En Java, on appelle cette adresse une référence.  
-Si un objet n'est pas initialisé, il ne pointe alors vers aucun espace mémoire. On dit alors que cet objet est nul.
+Une variable d'un type primitif contient **la valeur** ; une variable d'un type classe contient une **référence** vers un objet (voir plus loin).
+
+À ce stade, aucun objet n'existe : la variable est seulement déclarée. L'utiliser avant de l'avoir initialisée est une erreur de compilation.
+
+### Phase 2 : Initialisation
+
+Pour créer un objet, on utilise le mot-clé `new` suivi du **constructeur** : `new Field()`.
+
+`new` effectue plusieurs opérations :
+
+1. il **alloue** de la mémoire pour l'objet (sur le tas, ou *heap*) ;
+2. il initialise ses attributs à leurs valeurs par défaut ;
+3. il **exécute le constructeur**, qui finit d'initialiser l'objet ;
+4. il **retourne une référence** vers l'objet créé.
+
+Cette référence est rangée dans la variable : `myFieldOne` ne contient pas l'objet, mais de quoi le retrouver. On peut la voir comme un pointeur vers l'emplacement mémoire de l'objet (Java n'expose pas l'adresse elle-même, il ne manipule que des références).
+
 ```java
 public class Main {
     public static void main(String[] args) {
         System.out.println("Terrains");
 
-        // initialisation de deux objets de type Field
         Field myFieldOne;
         Field myFieldTwo;
 
-        // initialisation par le constructeur : 
+        // initialisation par le constructeur :
         myFieldOne = new Field();
         myFieldTwo = new Field();
+
+        // déclaration et initialisation peuvent aussi s'écrire en une ligne :
+        // Field myFieldOne = new Field();
     }
 }
 ```
 
-### Phase 3 : utilisation
+Une variable de type classe peut aussi **ne référencer aucun objet** : elle vaut alors `null`.
 
-Pour l'instant, notre classe `Field` est vide, elle ne définit pas grand chose. On va maintenant populer notre classe en regardant ce que l'on peut y mettre. 
+```java
+Field myFieldThree = null;
+myFieldThree.display();   // 💥 NullPointerException à l'exécution
+```
 
-Qu'est ce qui définit un terrain ? Pour y répondre, on va faire appel aux attributs. 
-Les attributs vont permettre de représenter ce qu'est l'objet. Dans notre cas, un terrain se définit par une largeur et une longueur. 
-On va donc définir dans le corps de notre classe une largeur `width` de type int et une longueur `length` de type int également. `Ces attributs définissent la structure de l'objet`. Un attribut est également appelé un `champs` (field en anglais).
+Une variable locale non initialisée est refusée par le compilateur, alors que `null` est une valeur explicite. Utiliser une variable qui vaut `null` provoque une `NullPointerException` (voir le chapitre sur la composition).
 
-Lorsque le constructeur sera appelé, cela va se concrétiser par une allocation mémoire avec la structure de deux cases : une pour la largeur, et une pour la longueur. 
+### Phase 3 : Utilisation
 
-Field.java
+Pour l'instant, la classe `Field` est vide. Qu'est-ce qui définit un terrain ? Pour répondre, on utilise des **attributs**.
+
+Un terrain se définit par une largeur `width` et une longueur `length`, toutes deux de type `int`. Ces attributs définissent la **structure** de l'objet. Un attribut est aussi appelé un **champ** (*field* en anglais : coïncidence de vocabulaire avec le nom de notre classe).
+
+Chaque objet créé aura ses propres emplacements mémoire pour `width` et `length`.
+
+`Field.java`
+
 ```java
 public class Field {
     int width;
@@ -126,43 +157,33 @@ public class Field {
 }
 ```
 
-Pour attribuer des valeurs à mes objets, je vais faire appel à l'opérateur `.` depuis l'objet
+(Ces attributs n'ont pas de modificateur d'accès pour l'instant : on verra plus loin qu'on les déclare normalement `private`.)
 
-Main.java
+Un attribut non initialisé reçoit une **valeur par défaut** : `0` pour `int`, `0.0` pour `double`, `false` pour `boolean`, `null` pour un type classe. Cela ne vaut que pour les attributs, pas pour les variables locales.
+
+Pour accéder aux attributs d'un objet, on utilise l'opérateur `.` sur la variable :
+
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
+Field myFieldOne = new Field();
+Field myFieldTwo = new Field();
 
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
+myFieldOne.width = 12;
+myFieldOne.length = 32;
 
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field();
-
-        // utilisation avec l'opérateur . depuis mon objet :
-        myFieldOne.width = 12;
-        myFieldOne.length = 32;
-
-        myFieldTwo.width = 15;
-        myFieldTwo.length = 42;
-    }
-}
+myFieldTwo.width = 15;
+myFieldTwo.length = 42;
 ```
-Ici, j'attibue une valeur de 12 à la largeur et 32 à la longueur de mon premier terrain, et une largeur de 14 et une longueur de 42 pour mon deuxième terrain. 
 
-Nos deux objets sont du même type, ils ont la même structure, mais il ne sont pas dans le même état, puisque leurs valeurs sont différentes. 
+On attribue ici une largeur de 12 et une longueur de 32 au premier terrain, et une largeur de 15 et une longueur de 42 au second.
+
+Les deux objets sont du même type et ont la même structure, mais ils ne sont pas dans le même **état**, puisque leurs valeurs diffèrent.
 
 ### Les méthodes de classes
 
-Notre prochaine question va être centrée sur les capacités de notre classe et sur la définition de son comportement.  
-On va donc déclarer des fonctions (appelées méthodes) qui vont permettre de définir le comportement de notre objet.
-La méthode sera appelée directement depuis nos objets.
+Il reste à définir les **capacités** de la classe, c'est-à-dire son comportement. On déclare pour cela des fonctions appelées **méthodes**, que l'on appelle depuis les objets avec l'opérateur `.`.
 
-Qu'est-il possible de faire avec notre terrain ? 
-On peut par exemple calculer la superficie du terrain. On va donc déclarer une méthode `area` qui va retourner un type `int`, et qui calculera la superficie du terrain : longueur x largeur. 
+Que peut-on faire avec un terrain ? Par exemple calculer sa superficie. On déclare une méthode `area` qui retourne un `int` : longueur × largeur.
+
 ```java
 public class Field {
     int width;
@@ -176,46 +197,34 @@ public class Field {
 }
 ```
 
-Pour obtenir un résultat exploitable, on va déclarer une variable de type `int` qui va recevoir le résultat de notre méthode. À noter qu'il n'est pas obligatoire de passer par une variable nommée. Cela sera préférable si on est amené à réutiliser la variable plusieurs fois. 
+On appelle la méthode sur un objet. Le résultat peut être rangé dans une variable (préférable s'il est réutilisé), ou utilisé directement :
+
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
-
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
-
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field();
-
-        // utilisation avec l'opérateur . depuis mon objet :
-        myFieldOne.width = 12;
-        myFieldOne.length = 32;
-
-        myFieldTwo.width = 15;
-        myFieldTwo.length = 42;
-        
-        int areaFieldOne = myFieldOne.area();
-        System.out.println("Superficie du terrain 1 : " + areaFieldOne + "m2.");
-        System.out.println("Superficie du terrain 2 : " + myFieldTwo.area() + "m2.");
-    }
-}
+int areaFieldOne = myFieldOne.area();
+System.out.println("Superficie du terrain 1 : " + areaFieldOne + "m2.");
+System.out.println("Superficie du terrain 2 : " + myFieldTwo.area() + "m2.");
 ```
 
-La classe `Main` et sa méthode `main` contient l'utilisation de nos objets de type `Field` et la classe `Field` contient la définition de notre type `Field` qui contient la définition de ce qu'est un terrain. 
-
-La définition n'est faite qu'une seule fois et est ensuite compilée. Après, au lancement du programme, on utilise des objets que l'on va créer, on en crée autant que l'on veut et ces objets sont la concrétisation en mémoire de ce que l'on a défini dans la classe.  
+La classe `Main` contient l'**utilisation** des objets `Field`, alors que la classe `Field` contient la **définition** de ce qu'est un terrain. La définition n'est écrite et compilée qu'une fois ; au lancement du programme, on crée autant d'objets que nécessaire, qui sont la concrétisation en mémoire de cette définition. Chaque objet a ses propres valeurs d'attributs, mais le code des méthodes n'existe qu'en un seul exemplaire.
 
 ### La construction de l'objet
 
-On va pouvoir approfondir la classe en définissant un ou plusieurs constructeurs permettant de dire comment on va construire notre objet. 
-Si un constructeur n'est pas défini pas dans la classe, il existe un constructeur par défaut qui ne prend rien en paramètre. Il s'agit de celui que l'on a déjà appelé depuis la méthode `main` avec le mot clé `new` : `new Field()`. 
-Ce compilateur par défaut est automatiquement ajouté par le compilateur. Ce constructeur fait son travail : il alloue un espace mémoire structuré tel que la classe est définie.
+Un **constructeur** définit comment construire un objet.
 
-Le constructeur a le même nom que la classe. C'est une méthode particulière qui ne possède pas de type de retour. 
-Il est possible dans le constructeur d'initialiser les variables définies dans notre classe. Cela donnera des valeurs par défaut à tout objet initialisé mais non attribué. 
+Si aucun constructeur n'est écrit dans la classe, le compilateur ajoute automatiquement un **constructeur par défaut**, sans paramètre : c'est celui qu'on a appelé jusqu'ici avec `new Field()`. Dès qu'on écrit **au moins un** constructeur, le constructeur par défaut n'est plus généré.
+
+Un constructeur ressemble à une méthode, mais :
+
+- il porte **le même nom que la classe** ;
+- il n'a **pas de type de retour** (pas même `void`) ;
+- il n'est appelé qu'avec `new`.
+
+```java
+public void Field() { }   // ❌ ce n'est pas un constructeur : c'est une méthode nommée Field (à cause de void)
+```
+
+Le constructeur permet d'initialiser les attributs, par exemple avec des valeurs par défaut :
+
 ```java
 public class Field {
     int width;
@@ -235,35 +244,16 @@ public class Field {
 ```
 
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
-
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
-
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field();
-
-        // utilisation avec l'opérateur . depuis mon objet :
-        // myFieldOne.width = 12;
-        // myFieldOne.length = 32;
-
-        myFieldTwo.width = 15;
-        myFieldTwo.length = 42;
-        
-        int areaFieldOne = myFieldOne.area();
-        System.out.println("Superficie du terrain 1 : " + areaFieldOne + "m2.");
-        System.out.println("Superficie du terrain 2 : " + myFieldTwo.area() + "m2.");
-    }
-}
+Field myFieldOne = new Field();   // 8 x 10, valeurs du constructeur
+Field myFieldTwo = new Field();
+myFieldTwo.width = 15;            // écrase la valeur du constructeur
+myFieldTwo.length = 42;
 ```
 
-De cette manière, `myFieldOne` aura pour longueur et largeur les valeurs définies dans le constructeur de classe, alors que `myFieldTwo` contiendra les valeurs attribuées après l'initialisation dans `main`, puisque ces valeurs écrasent celles attribuées dans le constructeur. 
+`myFieldOne` a les valeurs définies dans le constructeur, alors que `myFieldTwo` a les valeurs attribuées après sa création, qui écrasent celles du constructeur.
 
-On peut ajouter un nouveau constructeur qui prendra deux paramètres de cette manière : 
+On peut ajouter un second constructeur qui prend des paramètres (c'est une **surcharge**, voir plus loin) :
+
 ```java
 public class Field {
     int width;
@@ -279,42 +269,18 @@ public class Field {
         length = paramLength;
     }
 
-    int area() {
-        int fieldArea = length * width;
-
-        return fieldArea;
-    }
+    // ...
 }
 ```
-La construction de notre deuxième objet pourra se faire ainsi : 
+
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
-
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
-
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field(15, 42);
-
-        // utilisation avec l'opérateur . depuis mon objet :
-        // myFieldOne.width = 12;
-        // myFieldOne.length = 32;
-        
-        int areaFieldOne = myFieldOne.area();
-        System.out.println("Superficie du terrain 1 : " + areaFieldOne + "m2.");
-        System.out.println("Superficie du terrain 2 : " + myFieldTwo.area() + "m2.");
-    }
-}
+Field myFieldOne = new Field();            // 8 x 10
+Field myFieldTwo = new Field(15, 42);      // 15 x 42
 ```
-L'utilisation de l'un ou de l'autre constructeur se fera en fonction des informations que l'on connaît. 
-Si on ne connaît pas à l'avance les données, on utilisera le premier constructeur, qui donnera des valeurs par défaut, et au contraire, si les données sont connues à l'avance, on pourra utiliser le second. 
 
-Cet exemple n'est pas très cohérent mais c'était pour mettre en avant les possibilités de constructeur. En effet, définir des valeurs par défaut n'est pas très cohérent pour la définition d'un terrain. 
-On pourrait supprimer le constructeur initialisant les valeurs par défaut et ne garder que celui demandant les paramètres largeur et longueur. Cela implique que pour construire un objet de type `Field`, il faudra forcément renseigner ces valeurs. Autrement, ce ne sera pas possible. 
+On choisit le constructeur selon les informations dont on dispose : valeurs par défaut si on ne connaît pas les données, constructeur avec paramètres si elles sont connues.
+
+Cet exemple n'est pas très cohérent : une largeur et une longueur « par défaut » n'ont guère de sens pour un terrain. On pourrait supprimer le constructeur sans paramètre et ne garder que celui qui demande la largeur et la longueur. Pour construire un `Field`, il faudrait alors **obligatoirement** les renseigner : `new Field()` ne compilerait plus.
 
 ### Structure de classe
 
@@ -335,211 +301,137 @@ public class Field {
     }
 }
 ```
-On a ici une bonne représentation de structure de classe : 
-* en premier les attributs de la classe
-* ensuite le/les constructeur de classe
-* enfin, les méthodes
 
-Cette structure est important à respecter visuellement. Cela va nous permettre facilement de nous retrouver dans une classe. 
-En réalité, comme le code est compilé, il n'est pas obligatoire de respecter cet ordre. Ce sera plus par convention, par bonne pratique et par souci de lisibilité. 
+On a ici une bonne représentation de la structure d'une classe :
 
-La POO en Java fonctionne de cette manière : la classe servira de moule pour nos objets, qui seront ensuite créés autant de fois que nécessaire lors de l'appel du type de classe.  
+1. les **attributs** ;
+2. le ou les **constructeurs** ;
+3. les **méthodes**.
+
+Ce n'est pas une obligation du compilateur, mais une convention de lisibilité qui permet de se repérer facilement dans une classe.
+
+La classe sert de **moule** : les objets sont créés autant de fois que nécessaire en appelant son constructeur avec `new`.
 
 ### Autres méthodes
 
-On peut ajouter autant de méthodes que l'on souhaite, tant est si bien qu'elles sont cohérentes avec l'utilisation de notre classe. 
+On peut ajouter autant de méthodes que l'on souhaite, pourvu qu'elles soient cohérentes avec le rôle de la classe.
 
-Par exemple, on peut ajouter une méthode d'affichage : 
+Par exemple, une méthode d'affichage :
+
 ```java
 void display() {
     System.out.println("Terrain de taille : " + width + " x " + length);
 }
 ```
 
-on pourra ensuite appeler cette méthode dans notre `main`, en faisant attention à l'appeler après l'initialisation de l'objet : 
+On l'appelle depuis `main`, **après** l'initialisation de l'objet (sans quoi la variable n'est pas initialisée) :
+
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
+myFieldOne.display();
+myFieldTwo.display();
+```
 
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
+Une méthode peut en appeler une autre de la même classe. Appelée sans préfixe, elle s'applique à l'**objet courant** (voir `this`). Par exemple, `display` peut appeler `area` pour afficher aussi la superficie :
 
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field(15, 42);
+```java
+void display() {
+    System.out.println("Terrain de taille : " + width + " x " + length + ", superficie : " + area() + "m2");
+}
+```
 
-        myFieldOne.display();
-        myFieldTwo.display();
+Cela évite d'appeler `area()` dans `main` pour afficher la superficie.
 
-        int areaFieldOne = myFieldOne.area();
-        System.out.println("Superficie du terrain 1 : " + areaFieldOne + "m2.");
-        int areaFieldTwo = myFieldTwo.area();
-        System.out.println("Superficie du terrain 2 : " + areaFieldTwo + "m2.");
+Une méthode peut aussi recevoir des **paramètres**. Par exemple, une méthode qui indique si la superficie du terrain est supérieure à une valeur donnée :
+
+```java
+boolean hasGreaterAreaThan(int value) {
+    if (area() > value) {
+        return true;
+    } else {
+        return false;
     }
 }
 ```
 
-On peut aussi faire appel à une autre méthode au sein d'une méthode. 
-Par exemple, la méthode `display` peut faire appel à la méthode `area` pour afficher également la superficie du terrain : 
+Le `if` / `else` peut se simplifier, car la condition est déjà un booléen :
+
 ```java
-public class Field {
-    int width;
-    int length;
-
-    Field() {
-        width = 8;
-        length = 10;
-    }
-
-    Field(int paramWidth, int paramLength) {
-        width = paramWidth;
-        length = paramLength;
-    }
-
-    int area() {
-        int fieldArea = length * width;
-
-        return fieldArea;
-    }
-
-    void display() {
-        System.out.println("Terrain de taille : " + width + " x " + length + ", superficie : " + area() + "m2");
-    }
-}
-```
-Cela va permettre d'éviter de devoir appeler la méthode `area()` dans `main` afin d'afficher la superficie : 
-```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
-
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
-
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field(15, 42);
-
-        myFieldOne.display();
-        myFieldTwo.display();
-    }
+boolean hasGreaterAreaThan(int value) {
+    return area() > value;
 }
 ```
 
-On peut ajouter une nouvelle méthode qui va contenir des paramètres. Par exemple, une méthode permettant de vérifier si la superficie du terrain est plus grande que la valeur passée en paramètre de la méthode : 
-```java
-public class Field {
-    int width;
-    int length;
-
-    Field() {
-        width = 8;
-        length = 10;
-    }
-
-    Field(int paramWidth, int paramLength) {
-        width = paramWidth;
-        length = paramLength;
-    }
-
-    int area() {
-        int fieldArea = length * width;
-
-        return fieldArea;
-    }
-
-    void display() {
-        System.out.println("Terrain de taille : " + width + " x " + length + ", superficie : " + area() + "m2");
-    }
-
-    boolean hasGreaterAreaThan(int value) {
-        if (area() > value) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
-```
+Utilisation depuis `main` :
 
 ```java
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Terrains");
-
-        // déclaration de deux objets de type terrain :
-        Field myFieldOne;
-        Field myFieldTwo;
-
-        // initialisation des objet par le constructeur :
-        myFieldOne = new Field();
-        myFieldTwo = new Field(15, 42);
-
-        myFieldOne.display();
-        myFieldTwo.display();
-
-        if (myFieldOne.hasGreaterAreaThan(400)) {
-            System.out.println("Mon terrain 1 a une superficie plus grande que 400 m2.");
-        } else {
-            System.out.println("Mon terrain 1 n'a pas une superficie plus grande que 400 m2.");
-        }
-    }
+if (myFieldOne.hasGreaterAreaThan(400)) {
+    System.out.println("Mon terrain 1 a une superficie plus grande que 400 m2.");
+} else {
+    System.out.println("Mon terrain 1 n'a pas une superficie plus grande que 400 m2.");
 }
 ```
 
 ## Les visibilités
 
-Nous allons découvrir deux nouveaux mots clés qui vont nous permettre de jouer avec la visibilité des éléments que l'on retrouve dans une classe. 
+Les éléments d'une classe (attributs, constructeurs, méthodes) ont chacun une **visibilité**, qui se place devant leur déclaration. Elle indique **qui peut les utiliser**. Deux mots-clés à connaître pour commencer :
 
-Dans la classe, nous avons déclaré des attributs qui définissent la structur, un constructeur qui définit la façcon de construire un nouveau terrain et puis des méthodes permettant de définir le comportement de notre objet. 
+- **`public`** : l'élément est accessible à l'intérieur **et** à l'extérieur de la classe. On peut l'utiliser depuis n'importe quelle autre classe de l'application avec l'opérateur `.` (en lecture et en écriture pour un attribut).
+- **`private`** : l'élément n'est accessible que **depuis l'intérieur de la classe** qui le contient.
 
-Il y a également une visibilité qu'on va définir pour chacun de ces éléments. Cette visibilité va se placer devant l'élément. 
+Par exemple, avec `width` en `public` et `length` en `private` :
 
-Les deux mots clés sont `public` et `private` :
-- un élément `public` indique qu'il est accessible à l'intérieur et à l'extérieur de la classe. Cela signifie qu'on peut y accéder et l'utiliser/la manipuler depuis n'importe quelle autre classe dans l'application, grâce à l'opérateur `.`. L'accès pourra être fait en lecture et en écriture.  
-- un élément `private` indique que cet élément n'est accessible que depuis l'intérieur de la classe à laquelle il appartient. On pourra également accéder et manipuler cet élément grâce à l'opétateur `.`. 
+```java
+public class Field {
+    public int width;
+    private int length;
+    // ...
+}
+```
 
-Pour l'exemple, dans notre class `Field`, on va indiquer que notre largeur `width` a une visibilité `public` et que la longueur `length` a une visibilité `private`. 
-`myFieldOne.width` sera utilisable dans la classe `Field` mais aussi dans la classe `main`, alors que `myFieldOne.length` ne sera utilisable que dans la classe `Field`. 
+```java
+myFieldOne.width = 12;    // ✅ public : accessible depuis Main
+myFieldOne.length = 32;   // ❌ length has private access in Field
+```
 
-La décision de rendre `public`ou `private` un élément se fera lors de la conception de l'application, si on décide ou non de rendre un élément de classe accessible ou non. 
+`private` s'applique à la **classe** et non à l'instance : à l'intérieur de `Field`, une méthode peut accéder aux attributs privés d'un **autre** `Field`.
 
-De manière générale, on va déclarer le constructeur en `public`. Il est également possible de le déclarer en `private` dans certains cas.
+```java
+boolean hasSameWidthAs(Field other) {
+    return this.width == other.width;   // ✅ même classe : l'accès à other.width est autorisé
+}
+```
 
-On pourra appliquer le même principe sur les méthodes. On gardera une méthode privée lorsqu'elle est utilitaire à l'intérieur de la classe et qu'elle n'a pas pour vocation à être appelée depuis l'extérieur de la classe. 
+Le choix de rendre un élément `public` ou `private` se fait à la **conception** de l'application, selon ce qu'on souhaite exposer.
+
+- **Constructeurs** : on les déclare en général `public`. Un constructeur `private` est possible dans certains cas, par exemple pour empêcher la création d'objets (c'est le cas de `Math`, voir plus loin).
+- **Méthodes** : on garde `private` une méthode utilitaire interne, qui n'a pas vocation à être appelée de l'extérieur.
+
+Deux autres niveaux existent : la **visibilité package** (aucun modificateur) et `protected` (lié à l'héritage). Ils sont vus avec les packages et l'héritage.
 
 ## Le principe d'encapsulation
 
 ### Définition
 
-Pour rappel, la POO est fondée sur quatre fondamentaux qui sont l'encapsulation, l'abstraction, l'héritage et le polymorphisme.
+Pour rappel, la POO est fondée sur quatre principes : encapsulation, abstraction, héritage et polymorphisme.
 
-Le principe d'encapsulation va chercher à protéger notre code afin que celui ci ne devienne pas incohérent. 
-Par incohérent, on entend que le code autoriserait l'objet créé à évoluer dans un état qui ne serait plus correct. 
+Le principe d'**encapsulation** protège la classe pour qu'elle ne devienne pas **incohérente**, c'est-à-dire pour qu'un objet ne puisse pas se retrouver dans un **état invalide**.
 
-Dans notre exemple, cela se traduirait par quelque chose comme un cas ou notre terrain aurait une largeur ou une longueur négative. Une valeur négative ne provoquerait pas d'erreur, mais cela engendrerait un résultat avec une incohérence lors de l'exécution du programme. 
+Dans notre exemple, ce serait un terrain avec une largeur ou une longueur négative. Une valeur négative ne provoquerait aucune erreur du compilateur, mais le programme produirait des résultats absurdes (une superficie négative, par exemple).
 
-En déclarant une largeur `public`, cela permet à n'importe qui qui accède au programme de déclarer une valeur négative, puisqu'il n'existe aucun contrôle. 
-En plus de la modification, cette valeur est également disponible en lecture simple. 
+Si la largeur est `public`, n'importe quel code peut y écrire n'importe quelle valeur, puisqu'aucun contrôle n'existe. Elle est aussi lisible par tous.
 
-Le principe d'encapsulation consiste à déclarer les attributs privés afin de ne pas pouvoir y accéder directement depuis l'objet : on protège les attributs de classe. 
-En effet, seul le développeur doit prendre les responsabilités sur la façon dont la classe doit être développée.
-De cette manière, on va protéger la classe qui sera utilisée ailleurs dans le programme par d'autres développeurs qui pourraient utiliser des objets du type de la classe créée. 
+Le principe d'encapsulation consiste à :
 
-Grâce au principe d'encapsulation, on protège la définition de ce qu'est la classe en interdisant la manipulation directe de ses attributs. De ce fait, l'objet va cacher ses attributs et n'autorisera personne à le manipuler n'importe comment. 
+- déclarer les **attributs `private`**, pour interdire l'accès direct depuis l'extérieur ;
+- n'offrir l'accès à l'objet que par des **méthodes publiques**, qui peuvent contrôler ce qui est lu et modifié.
+
+Le développeur de la classe garde ainsi la maîtrise de son fonctionnement : les autres développeurs qui l'utilisent ne peuvent pas la manipuler n'importe comment.
 
 ### Les getters
 
-Le principe d'encapsulation indique que les attributs d'une classe doivent être privés. 
-Pour y accéder, on va créer une méthode : un `getter` (`accesseur` en français).
+Pour lire un attribut privé, on crée une méthode : un **getter** (*accesseur* en français).
 
-Par convention, un getter sera écrit : `get` + nom de l'attribut, tout attaché, en camelCase, suivi de parenthèses.
-`getWidth()`, `getLength()`, etc. 
-
-Point important, un getter doit être déclaré `public` pour permettre d'accéder depuis n'importe ou dans l'application.
+Par convention, son nom est `get` suivi du nom de l'attribut avec une majuscule (camelCase), avec des parenthèses : `getWidth()`, `getLength()`. Pour un attribut booléen, on utilise plutôt `is` (`isEmpty()`). Un getter est en général `public`, pour être utilisable partout dans l'application.
 
 ```java
 public int getWidth() {
@@ -551,7 +443,7 @@ public int getLength() {
 }
 ```
 
-Pour accéder au getter depuis une autre classe comme la classe `main`, on utilisera le nom de l'objet, suivi de l'opérateur `.`, et enfin le getter
+Depuis une autre classe, on l'appelle sur l'objet :
 
 ```java
 myFieldOne.getWidth();
@@ -560,12 +452,9 @@ myFieldOne.getLength();
 
 ### Les setters
 
-De la même manière que pour la lecture, on ne pourra pas modifier directement un attribut. 
-Pour cela, on fera appel aux setters (ou mutateur en français). 
+De même, on ne modifie pas directement un attribut privé. On passe par un **setter** (*mutateur* en français).
 
-Le setter fonctionnera de la même manière que le getter : `set` + nom de l'attribut attaché en camelCase suivi des parenthèses, déclaré en `public`. 
-
-En revanche, cette méthode ne retourne rien : `void`, et prend en paramètre une valeur qui va venir modifier l'attribut associé. 
+Il est nommé `set` suivi du nom de l'attribut en camelCase, est en général `public`, ne retourne rien (`void`) et prend en paramètre la nouvelle valeur.
 
 ```java
 public void setWidth(int newWidth) {
@@ -577,60 +466,61 @@ public void setLength(int newLength) {
 }
 ```
 
-Comme cette méthode est `public`, on va pouvoir l'utiliser depuis une autre classe telle que `main`.
-
 ```java
 myFieldOne.setWidth(14);
 ```
 
-Il y a un intérêt tour particulier à utiliser un setter : en utilisant une telle méthode, on peut ajouter du code permettant de contrôler la manière dont on va modifier l'attribut. Par exemple, si on ne souhaite pas de valeur négative pour une longueur ou une largeur, ou encore une valeur beaucoup trop grande, on peut ajouter des séries de tests et ajouter une instruction permettant de lever une exception/erreur (point qu'on abordera dans un prochain chapitre).
+L'intérêt d'un setter est de pouvoir **contrôler** la modification : refuser une valeur négative ou trop grande, par exemple, en levant une exception (notion vue dans un prochain chapitre).
 
 ```java
 public void setWidth(int newWidth) {
     if (newWidth < 0) {
-        // throw exception
-    } else {
-        width = newWidth;
+        throw new IllegalArgumentException("La largeur ne peut pas être négative");
     }
+    width = newWidth;
 }
 ```
 
-En résumé, le principe d'encapsulation est le fait d'enfermer à l'intérieur de la classe sa représentation faite par ses attributs et d'offrir par un accès public à ses attributs seulement par des méthodes. 
-Afin de pouvoir lire la valeur de cet attribut, on utilise la méthode get (getter), et pour modifier la valeur de cet attribut, on utilise la méthode set (setter) avec la possibilité d'ajouter des points de contrôles lors de la modification.
+Attention : si le setter contrôle la valeur mais pas le **constructeur**, on peut quand même créer un objet invalide avec `new Field(-5, 10)`. Le constructeur doit appliquer les mêmes règles.
 
-Point important, les getters et setters ne sont pas du tout obligatoire. On peut d'ailleurs faire des méthodes 'get' dans méthodes 'set' et inversement.
-La responsabilité de protéger la classe est attribuée au développeur de cette classe et c'est à lui d'autoriser ou non les accès aux attributs via des getters et des setters. 
+En résumé, l'encapsulation consiste à enfermer dans la classe la représentation de l'objet (ses attributs), et à n'y donner accès que par des méthodes : un getter pour lire, un setter pour modifier, avec la possibilité d'ajouter des contrôles.
 
-### Générer les getters et setters automatiquement avec IntelliJ
+Les getters et setters ne sont **pas obligatoires** : on peut avoir un getter sans setter (attribut en lecture seule), ou l'inverse. C'est le développeur de la classe qui décide ce qu'il autorise. Un setter sans aucun contrôle n'apporte guère plus qu'un attribut `public`, avec pour seul avantage de pouvoir ajouter un contrôle plus tard sans changer le code qui l'appelle. Quand c'est possible, on préfère une méthode qui exprime une action (`increaseLength(5)`) à un simple setter.
 
-l'IDE IntelliJ permet de générer automatiquement les getters et setters. 
-Pour cela, on va utiliser la souris avec un clic droit dans la classe, puis `generate`, puis `Getter et Setter`, et enfin sélectionner les attributs pour lesquels on souhaite générer les getters et setters.
+### Générer les getters et setters avec IntelliJ
 
-On pourra remarquer que les setters utilisent le mot clé `this`. Nous verrons plus en détail ce mot clé dans le paragraphe dédié. 
+IntelliJ peut générer les getters et setters automatiquement : clic droit dans la classe, puis *Generate*, puis *Getter and Setter* (raccourci habituel : `Alt + Insert`, qui dépend de la configuration), puis sélection des attributs concernés.
+
+Les setters générés utilisent le mot-clé `this`, expliqué plus loin.
 
 ## Surcharge de méthode : overloading
 
-La surcharge (overloading) consiste à définir plusieurs méthodes portant le même nom dans une même classe, à condition que leur liste de paramètres diffère. 
+La surcharge (*overloading*) consiste à définir **plusieurs méthodes portant le même nom dans une même classe**, à condition que leur **liste de paramètres diffère**.
 
 Le compilateur choisit la bonne version selon les arguments passés à l'appel.
+
 ```java
-public void increaseLength() { 
-    length++; 
+public void increaseLength() {
+    length++;
 }
-public void increaseLength(int value) { 
-    length += value; 
+public void increaseLength(int value) {
+    length += value;
 }
 ```
-à l'appel, on utilisera une méthode ou l'autre en fonction du paramètre "optionnel" qui sera passé ou non : 
-```java 
+
+À l'appel, on utilise l'une ou l'autre version selon l'argument passé ou non. Java n'a pas de paramètres optionnels : la surcharge permet de les simuler.
+
+```java
 myFieldOne.increaseLength();     // → version sans paramètre (+1)
 myFieldOne.increaseLength(20);   // → version avec int (+20)
 ```
-Le choix est fait à la compilation (liaison statique) d'après le nombre et le type des arguments.
 
-### Ce qui compte pour la signature :
+Le choix est fait **à la compilation** (liaison statique) d'après le nombre et le type des arguments.
 
-La signature d'une méthode = nom + types/nombre/ordre des paramètres. Pour surcharger, il faut que l'un de ces éléments change :
+### Ce qui compte pour la signature
+
+La signature d'une méthode = **nom + types/nombre/ordre des paramètres**. Pour surcharger, il faut que l'un de ces éléments change :
+
 ```java
 void display()                    // 0 paramètre
 void display(String prefix)       // 1 paramètre
@@ -640,17 +530,20 @@ void display(String b, int a)     // ordre différent : valide aussi
 
 ### Ce qui ne suffit PAS
 
-- Changer uniquement le type de retour : erreur de compilation.
+- Changer uniquement le **type de retour** : erreur de compilation.
+
 ```java
 int area() { ... }
 double area() { ... }   // => même signature
 ```
-- Changer uniquement le nom des paramètres : `f(int a)` et `f(int b)` sont identiques.
-- Changer uniquement les modificateurs (`public`, `static`...) ou la clause `throws`.
+
+- Changer uniquement le **nom des paramètres** : `f(int a)` et `f(int b)` sont identiques.
+- Changer uniquement les **modificateurs** (`public`, `static`...) ou la clause `throws`.
 
 ### Les constructeurs peuvent aussi se surcharger
 
-Les constructeurs se surchargent de la même façon, ce qui est très courant. 
+Les constructeurs se surchargent de la même façon, ce qui est très courant.
+
 ```java
 public Field() {
     this(10, 10);          // appelle l'autre constructeur
@@ -661,11 +554,13 @@ public Field(int paramWidth, int paramLength) {
     length = paramLength;
 }
 ```
+
 `this(...)` permet de réutiliser un constructeur depuis un autre et d'éviter la duplication.
 
 ### Réduire la duplication entre surcharges
 
-les deux versions de increaseLength pourraient se déléguer :
+Les deux versions de `increaseLength` peuvent se déléguer :
+
 ```java
 public void increaseLength() {
     increaseLength(1);
@@ -675,18 +570,22 @@ public void increaseLength(int value) {
     length += value;
 }
 ```
+
 Si la logique évolue (par exemple une validation), on ne la modifie qu'à un seul endroit.
 
 ### Pièges à connaître
 
-1. **Conversion implicite de types**. Java choisit la surcharge la plus spécifique, en élargissant au besoin (int → long → double) :
+1. **Conversion implicite de types**. Java choisit la surcharge la plus spécifique, en élargissant au besoin (`int` → `long` → `double`) :
+
 ```java
 void show(long x)   { System.out.println("long"); }
 void show(double x) { System.out.println("double"); }
 
 show(5);   // affiche "long" (int est élargi vers long en priorité)
 ```
+
 2. **Ambiguïté**. Si aucune version n'est clairement meilleure, le compilateur refuse :
+
 ```java
 void f(int a, double b) { }
 void f(double a, int b) { }
@@ -694,7 +593,8 @@ void f(double a, int b) { }
 f(1, 2);   // ❌ ambigu
 ```
 
-3. **Le choix dépend du type déclaré, pas du type réel**. Contrairement au polymorphisme (redéfinition / overriding), la surcharge est résolue sur le **type statique** :
+3. **Le choix dépend du type déclaré, pas du type réel**. Contrairement au polymorphisme (redéfinition / *overriding*), la surcharge est résolue sur le **type statique** :
+
 ```java
 void print(Object o) { System.out.println("Object"); }
 void print(String s) { System.out.println("String"); }
@@ -705,31 +605,32 @@ print(x);   // affiche "Object", car x est déclaré Object
 
 ### Surcharge vs redéfinition
 
-|            |Surcharge (overload)      | Redéfinition (override) |
-| ---------- | ------------------------ | ----------------------- |
-| Où         | Même classe (ou héritée) | Sous-classe             |
-| Signature  | **Différente**           | **Identique**           |
-| Résolution | Compilation              | Exécution               |
-| Annotation | aucune                   | `@Override`             | 
+| | Surcharge (*overload*) | Redéfinition (*override*) |
+|---|---|---|
+| Où | Même classe (ou héritée) | Sous-classe |
+| Signature | **Différente** | **Identique** |
+| Résolution | Compilation | Exécution |
+| Annotation | aucune | `@Override` |
 
-## Le mot clé `this`
+## Le mot-clé `this`
 
 ### Définition
 
-this est une référence à l'instance courante, c'est-à-dire l'objet sur lequel une méthode ou un constructeur est en train de s'exécuter.
-- Dans une méthode, this désigne l'objet qui a appelé la méthode. Avec myFieldOne.display(), this vaut myFieldOne dans le corps de display.
-- Dans un constructeur, this désigne l'objet en cours d'initialisation. Quand new est appelé, la mémoire est allouée sur le tas, les champs reçoivent leurs valeurs par défaut, puis le constructeur s'exécute avec this pointant vers cet objet.
+`this` est une référence à l'**instance courante**, c'est-à-dire l'objet sur lequel une méthode ou un constructeur est en train de s'exécuter.
+
+- Dans une **méthode**, `this` désigne l'objet qui a appelé la méthode. Avec `myFieldOne.display()`, `this` vaut `myFieldOne` dans le corps de `display`.
+- Dans un **constructeur**, `this` désigne l'objet en cours d'initialisation. Quand `new` est appelé, la mémoire est allouée sur le tas, les champs reçoivent leurs valeurs par défaut, puis le constructeur s'exécute avec `this` pointant vers cet objet.
 
 ### Les 4 usages
 
 1. **Accéder aux champs de l'instance** : `this.width`
-2. **Lever l'ambiguïté (masquage / shadowing)** quand un paramètre porte le même nom qu'un champ
+2. **Lever l'ambiguïté (masquage / *shadowing*)** quand un paramètre porte le même nom qu'un champ
 3. **Appeler un autre constructeur** de la même classe : `this(...)`
-4. **Retourner l'instance courante** : `return this`, ce qui permet d'enchaîner les appels (method chaining)
+4. **Retourner l'instance courante** : `return this`, ce qui permet d'enchaîner les appels (*method chaining*)
 
-Et une limite : `this` n'existe pas dans un contexte `static`.
+Et une limite : `this` n'existe **pas** dans un contexte `static`.
 
-### Exemple 
+### Exemple
 
 ```java
 public class Field {
@@ -771,15 +672,15 @@ Field b = new Field();                    // 10 x 10
 a.increaseLength(5).increaseLength(3);    // 12 x 40
 ```
 
-**Masquage**. Dans `Field(int width, int length)`, le nom `width` désigne le paramètre, car la variable locale prend le dessus sur le champ. Sans `this`, `width = width;` affecte le paramètre à lui-même : le code compile, mais les champs restent à `0`. `this.width` désigne explicitement le champ de l'objet.
+**Masquage.** Dans `Field(int width, int length)`, le nom `width` désigne le paramètre, car la variable locale prend le dessus sur le champ. Sans `this`, `width = width;` affecte le paramètre à lui-même : le code compile, mais les champs restent à `0`. `this.width` désigne explicitement le champ de l'objet.
 
-`this(...)`. `Field()` ne duplique aucune logique : il délègue à `Field(int, int)`. L'appel doit être la première instruction du constructeur, et un constructeur ne peut pas s'appeler lui-même, directement ou en cycle.
+**`this(...)`.** `Field()` ne duplique aucune logique : il délègue à `Field(int, int)`. L'appel doit être la première instruction du constructeur, et un constructeur ne peut pas s'appeler lui-même, directement ou en cycle.
 
-`return this`. Dans `a.increaseLength(5).increaseLength(3)`, chaque appel renvoie `a` lui-même : il n'y a aucune copie, c'est le même objet modifié deux fois. C'est la base du method chaining (très utilisé dans le pattern Builder).
+**`return this`.** Dans `a.increaseLength(5).increaseLength(3)`, chaque appel renvoie `a` lui-même : il n'y a aucune copie, c'est le même objet modifié deux fois. C'est la base du *method chaining* (très utilisé dans le pattern *Builder*).
 
-`this` **dépend de l'appelant**. Le code de `area()` existe une seule fois, mais `this` pointe vers `a` ou `b` selon l'appel, ce qui permet à chaque instance d'avoir ses propres valeurs.
+**`this` dépend de l'appelant.** Le code de `area()` existe une seule fois, mais `this` pointe vers `a` ou `b` selon l'appel, ce qui permet à chaque instance d'avoir ses propres valeurs.
 
-**Pas de `this` en `static`**. Une méthode statique appartient à la classe, pas à une instance : elle ne peut ni utiliser `this`, ni accéder directement aux champs d'instance.
+**Pas de `this` en `static`.** Une méthode statique appartient à la classe, pas à une instance : elle ne peut ni utiliser `this`, ni accéder directement aux champs d'instance.
 
 ## Le mot-clé `static`
 
@@ -892,9 +793,9 @@ public static void main(String[] args)
 
 Le nom `Main` est une convention : n'importe quelle classe peut contenir un `main`. Depuis `main`, on appelle directement les méthodes `static`, mais on peut aussi créer des objets et appeler leurs méthodes d'instance (`myFieldOne.display()`).
 
-> À vérifier selon ta version de Java : les versions récentes (préversion à partir de Java 21) assouplissent cette signature, notamment avec des `main` d'instance. La forme ci-dessus reste la forme classique.
+> À vérifier selon la version de Java utilisée : les versions récentes (préversion à partir de Java 21) assouplissent cette signature, notamment avec des `main` d'instance. La forme ci-dessus reste la forme classique.
 
-**Compilation et lancement** (IntelliJ fait cela pour toi et place les `.class` dans `out/production/<module>`) :
+**Compilation et lancement** (IntelliJ fait cela automatiquement et place les `.class` dans `out/production/<module>`) :
 
 ```bash
 javac -d out src/*.java    # .java → .class (bytecode)
@@ -913,6 +814,179 @@ Avec des packages, il faut le nom complet de la classe : `java -cp out com.exemp
 Pour écrire sa propre classe utilitaire : classe `final`, constructeur `private`, méthodes `static`.
 
 `Arrays` suit le même principe et propose des méthodes pour manipuler les tableaux : `Arrays.toString(tab)`, `Arrays.sort(tab)`, `Arrays.fill(tab, v)`, `Arrays.copyOf(tab, n)`, `Arrays.equals(a, b)`.
+
+## Variables, références et passage des arguments
+
+### Ce que contient une variable
+
+Une variable est une **boîte**. Ce qu'elle contient dépend de son type :
+
+- **type primitif** (`int`, `double`, `boolean`...) : la boîte contient **la valeur** ;
+- **type classe** (`Field`, `String`...) : la boîte contient une **référence**, c'est-à-dire une « flèche » vers l'objet, qui est rangé ailleurs en mémoire.
+
+Une variable n'est donc **pas** un objet : c'est un moyen d'y accéder. L'objet (l'**instance**) est créé par `new`, qui retourne une référence rangée dans la variable. Une variable peut pointer vers un objet, en changer, ou ne pointer vers aucun objet (`null`).
+
+```java
+Field field1 = new Field(12, 32);
+```
+
+```
+  field1 ┌───┐         ┌─────────────────┐
+         │ ──┼───────▶ │ Field           │
+         └───┘         │ width  : 12     │
+                       │ length : 32     │
+                       └─────────────────┘
+```
+
+### Copier une variable : valeur ou référence
+
+L'affectation `=` copie **le contenu de la boîte**. Le résultat dépend donc du type.
+
+**Type primitif : on copie la valeur.** Les deux variables sont indépendantes.
+
+```java
+int a = 5;
+int b = a;       // b reçoit une copie de la valeur
+b = 6;           // a vaut toujours 5
+```
+
+**Type classe : on copie la référence.** Il n'y a **aucun nouvel objet** : les deux variables pointent vers le même.
+
+```java
+Field field2 = field1;      // copie de la flèche, pas de l'objet
+field2.setWidth(20);
+System.out.println(field1.getWidth());   // 20 : c'est le même objet
+```
+
+```
+  field1 ┌───┐
+         │ ──┼───┐
+         └───┘   │      ┌─────────────────┐
+                 ├────▶ │ Field           │
+  field2 ┌───┐   │      │ width  : 20     │
+         │ ──┼───┘      │ length : 32     │
+         └───┘          └─────────────────┘
+```
+
+Conséquence : `==` sur deux variables d'objets compare les **références** (les flèches), pas le contenu. Deux terrains de mêmes dimensions, créés par deux `new`, sont deux objets distincts.
+
+```java
+Field f1 = new Field(12, 32);
+Field f2 = new Field(12, 32);
+System.out.println(f1 == f2);   // false : deux objets différents
+```
+
+### Passer une variable à une méthode
+
+Java passe **toujours** les arguments **par valeur** : à l'appel, le **paramètre** (la variable déclarée dans la signature de la méthode) reçoit une **copie du contenu** de l'**argument** (la variable passée à l'appel). C'est comme si on écrivait, au début de la méthode, `paramètre = argument;`.
+
+Pour un type primitif (voir le chapitre sur le procédural), la valeur est copiée : la méthode ne peut pas modifier la variable de l'appelant. Pour un objet, c'est **la référence** qui est copiée, pas l'objet.
+
+Le paramètre est une variable **locale** : elle est créée à l'appel et supprimée à la fin de la méthode.
+
+```java
+public class Main {
+    static void widen(Field paramField) {
+        paramField.setWidth(20);
+    }
+
+    static void replace(Field paramField) {
+        paramField = new Field(1, 1);
+    }
+
+    public static void main(String[] args) {
+        Field field1 = new Field(12, 32);
+        // ...
+    }
+}
+```
+
+À l'appel d'une de ces méthodes avec `field1`, on obtient **deux flèches vers un seul objet** :
+
+```
+  field1     ┌───┐
+  (main)     │ ──┼───┐
+             └───┘   │      ┌─────────────────┐
+                     ├────▶ │ Field           │
+  paramField ┌───┐   │      │ width  : 12     │
+  (méthode)  │ ──┼───┘      │ length : 32     │
+             └───┘          └─────────────────┘
+```
+
+Avec la flèche copiée, on peut faire **deux choses très différentes**.
+
+#### A. Suivre la flèche et modifier l'objet
+
+```java
+widen(field1);
+System.out.println(field1.getWidth());   // 20
+```
+
+```
+  field1     ──┐
+               ├──▶ [ Field | width : 20 | length : 32 ]   ◀ l'objet a été modifié
+  paramField ──┘
+```
+
+Les deux flèches mènent au même objet : la modification est **visible depuis l'appelant**. La méthode n'a pas modifié la variable `field1` (la flèche), mais l'objet vers lequel elle pointe.
+
+#### B. Changer la flèche elle-même
+
+```java
+replace(field1);
+System.out.println(field1.getWidth());   // 20 : field1 n'a pas bougé
+```
+
+```
+  field1     ─────▶ [ Field 1 | width : 20 | length : 32 ]    ◀ inchangé
+  paramField ─────▶ [ Field 2 | width : 1  | length : 1  ]    ◀ nouvel objet
+```
+
+`paramField` pointe désormais vers un **autre** objet, mais seule la **copie** de la flèche a changé : `field1` n'a pas bougé. À la fin de la méthode, `paramField` disparaît : le nouvel objet n'est plus accessible, et Java le supprime automatiquement (*ramasse-miettes*, ou *garbage collector*).
+
+Les deux actions peuvent se succéder dans une même méthode. Tant que le paramètre n'est pas réaffecté, il partage l'objet de l'appelant. Dès qu'il l'est, **le lien est coupé** : ce qu'on fait ensuite avec lui n'affecte plus l'appelant.
+
+```java
+static void demo(Field paramField) {
+    paramField.setWidth(30);                  // 1. même objet que l'appelant : visible chez lui
+    paramField = new Field(1, 1);             // 2. paramField pointe vers un nouvel objet
+    paramField.setWidth(99);                  // 3. modifie seulement le nouvel objet
+}
+```
+
+### Retourner un objet
+
+Une méthode ne peut **jamais** réaffecter la variable de l'appelant. Elle peut en revanche **retourner** une référence, que l'appelant range où il veut (comme `x = increment(x)` pour un primitif) :
+
+```java
+static Field createDefaultField() {
+    return new Field(10, 10);
+}
+
+field1 = createDefaultField();   // field1 pointe maintenant vers le nouvel objet
+```
+
+### À retenir
+
+| Dans la méthode, on... | Primitif | Objet |
+|---|---|---|
+| modifie la valeur du paramètre | aucun effet sur l'original | (sans objet) |
+| modifie l'**objet** pointé (`paramField.setWidth(...)`) | (sans objet) | **visible** depuis l'appelant |
+| **réaffecte** le paramètre (`paramField = ...`) | aucun effet sur l'original | aucun effet sur l'original |
+
+- Un paramètre est une **copie** de l'argument : pour un objet, une copie de la **référence**, pas de l'objet.
+- Deux variables qui pointent vers le **même objet** le **partagent** : une modification faite via l'une est visible via l'autre. On le retrouvera avec la composition (un objet qui en contient un autre).
+- Déclarer un paramètre `final` interdit de le réaffecter dans la méthode (cas B), mais pas de modifier l'objet qu'il référence (cas A).
+- Le terme « adresse mémoire » est une simplification : Java manipule des références et n'expose pas d'adresses.
+
+### Observer le passage d'un objet avec le debug
+
+Avec un point d'arrêt sur l'appel `widen(field1);` et `Step Into` (`F7`) :
+
+- le panneau **Variables** affiche `paramField = {Field@715}` ;
+- en remontant à `main` dans **Frames**, il affiche `field1 = {Field@715}`.
+
+Le même identifiant (ici `@715`, un nombre qui varie d'une exécution à l'autre) indique que les deux variables pointent vers **le même objet**. Après `paramField = new Field(1, 1);` dans `replace`, `paramField` affiche un autre identifiant, alors que `field1` garde le sien.
 
 ## Le mot-clé `final`
 
@@ -992,7 +1066,7 @@ public Field(final int width, final int length) {
 }
 ```
 
-Cela garantit que la valeur reçue n'est pas écrasée par erreur dans le corps de la méthode. Cela ne change rien pour l'appelant : Java passe les arguments **par valeur**, sa variable n'est de toute façon jamais modifiée par une réaffectation du paramètre. Comme pour les attributs, si le paramètre est un objet, `final` interdit de changer la référence, pas de modifier l'objet.
+Cela garantit que la valeur reçue n'est pas écrasée par erreur dans le corps de la méthode. Cela ne change rien pour l'appelant : Java passe les arguments **par valeur** (voir la section précédente), sa variable n'est de toute façon jamais modifiée par une réaffectation du paramètre. Comme pour les attributs, si le paramètre est un objet, `final` interdit de changer la référence, pas de modifier l'objet.
 
 En pratique, cet usage est peu répandu : beaucoup de projets préfèrent ne pas réaffecter leurs paramètres sans l'écrire.
 
