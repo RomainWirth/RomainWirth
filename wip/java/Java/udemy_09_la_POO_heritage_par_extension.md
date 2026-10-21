@@ -504,7 +504,7 @@ public class Housing extends Building {
 
 C'est le moyen pour la mère d'imposer un comportement à toutes ses filles.
 
-### Compléments (non abordés dans la transcription)
+### Compléments
 
 - La redéfinition ne peut pas **réduire la visibilité** : une méthode `public` de la mère reste `public` dans la fille. Elle peut en revanche l'élargir (`protected` => `public`).
 - Une méthode `private` n'est pas héritée, donc elle ne peut pas être redéfinie.
