@@ -247,6 +247,110 @@ De même, une énumération reste adaptée quand les types ne diffèrent que par
 
 ## La visibilité `protected`
 
+### Rappel : l'héritage ne casse pas l'encapsulation
 
+Le principe d'encapsulation reste valable : on déclare les attributs `private` et on donne accès à leur valeur par des getters et des setters.
+
+Un attribut `private` de la mère fait bien partie de la **structure** de la fille, mais il n'est manipulable que **dans la classe qui le définit**. La classe mère décide de ce qu'elle autorise, et `private` n'autorise pas la fille :
+
+```java
+public class Housing extends Building {
+    public Housing(int constructionYear, int area, int bedroomCount) {
+        super(constructionYear);
+        this.constructionYear = constructionYear;   // constructionYear has private access in Building
+        // ...
+    }
+}
+```
+
+### Les deux extrêmes
+
+- **`private`** : la fille hérite de l'attribut mais ne peut pas le manipuler.
+- **`public`** : la fille peut le lire et le modifier, mais **tout le reste du code** aussi. N'importe quel code qui possède un `Building` ou un `Housing` peut changer l'année de construction après l'initialisation, sans aucun contrôle.
+
+`public` est donc trop permissif : on voudrait ouvrir l'accès à la fille, sans l'ouvrir à tout le monde.
+
+### Les méthodes suivent la même logique
+
+- Une méthode `public` de la mère est héritée : on peut l'appeler de l'extérieur, mais aussi **dans le corps de la fille**, que ce soit dans son constructeur ou dans une autre de ses méthodes (c'est `this` qui se cache devant l'appel).
+- Une méthode `private` de la mère n'est pas utilisable par la fille.
+
+```java
+public class Housing extends Building {
+    public Housing(int constructionYear, int area, int bedroomCount) {
+        super(constructionYear);
+        System.out.println(getConstructionYear());   // accesseur public hérité
+        // ...
+    }
+
+    public boolean isRecent() {
+        return getAge() < 10;   // si getAge() est public (ou protected) dans Building
+    }
+}
+```
+
+Si `getAge()` devient `private` dans `Building`, l'appel dans `isRecent()` ne compile plus.
+
+### Le mot-clé `protected`
+
+Entre `private` et `public`, il existe une visibilité faite pour l'héritage : **`protected`**. Un membre (attribut, méthode ou constructeur) `protected` dans la mère est **accessible aux classes filles**, comme s'il était public pour elles, mais **pas au reste du code**.
+
+```java
+public class Building {
+    protected int constructionYear;   // accessible dans Building et dans ses filles
+    // ...
+    protected int getAge() { ... }
+}
+```
+
+```java
+public class Housing extends Building {
+    public void rebuild(int year) {
+        constructionYear = year;      // lecture et écriture autorisées
+        int age = getAge();
+    }
+}
+```
+
+Depuis du code extérieur (par exemple `main`, dans un autre package), le membre reste inaccessible :
+
+```java
+Shop shop1 = new Shop(1990, "Boulangerie");
+shop1.constructionYear;   // has protected access in Building
+shop1.getAge();           // has protected access in Building
+```
+
+C'est la classe mère qui choisit, dans sa définition, d'ouvrir un membre à ses futures filles. L'héritage va dans un seul sens : **la fille connaît sa mère, la mère ne connaît pas ses filles**. En déclarant un membre `protected`, la mère le prévoit pour des filles qu'elle ne connaît pas encore.
+
+### Tableau récapitulatif
+
+| Visibilité | Même classe | Même package | Classe fille (autre package) | Reste du code |
+|---|---|---|---|---|
+| `private` | | | | |
+| *(rien)* : package | | | | |
+| `protected` | | | | |
+| `public` | | | | |
+
+> Attention : `protected` donne **aussi** l'accès au **package**, exactement comme l'absence de modificateur. Une classe du même package que la mère, même sans lien d'héritage, peut donc accéder à un membre `protected`. Le mot-clé est surtout utile quand on hérite d'une classe située dans **un autre package** que la sienne.
+
+Complément (non abordé dans la transcription) : dans une classe fille située dans un **autre package**, l'accès à un membre `protected` se fait sur l'objet en cours (`this`) ou sur une référence du type de la fille, mais pas sur une simple référence de type `Building`.
+
+### Que choisir ?
+
+Il n'y a pas de règle absolue : les visibilités permettent d'ouvrir ou de fermer l'accès selon le besoin. Le principe d'encapsulation conseille toutefois de **commencer fermé** :
+
+1. **Par défaut, `private`** pour les attributs, avec des getters et des setters. Leur visibilité les rend utilisables par la fille, qui accède donc à sa structure **par les méthodes**, sans pouvoir y faire n'importe quoi.
+2. **`protected`** seulement quand la mère veut explicitement laisser ses filles manipuler directement un membre.
+
+Avec `protected`, le développeur qui écrit la fille peut faire ce qu'il veut de l'attribut. Le **contrôle des valeurs** devient alors la responsabilité de la classe mère : si une fille affecte une année de construction absurde (négative, dans le futur), c'est `getAge()` de la mère qui produira un résultat faux. Avec un setter `private` ou `protected` qui valide la valeur, la mère garde la maîtrise de son état.
+
+### À retenir
+
+- L'héritage ne remet pas en cause l'encapsulation : un attribut `private` de la mère reste inaccessible à la fille, qui passe par les méthodes.
+- `public` ouvre l'accès à la fille mais aussi à tout le code : souvent trop permissif.
+- `protected` ouvre l'accès aux **classes filles** (et au **package**), mais pas au reste du code. Il s'applique aux attributs, aux méthodes et aux constructeurs.
+- C'est la **classe mère** qui décide, dans sa définition, de ce qu'elle laisse aux filles.
+- Par défaut : `private` + accesseurs. On utilise `protected` en connaissance de cause, en sachant que la mère doit alors contrôler les valeurs.
 
 ## Redéfinition de méthodes `@Override`
+
