@@ -197,7 +197,7 @@ public class Shop extends Building {
 // constructor Building in class Building cannot be applied to given types
 ```
 
-Le plus simple est d'ajouter à la fille un constructeur qui reçoit les informations nécessaires et les transmet à `super(...)`. IntelliJ peut le générer : *Code → Generate → Constructor* (raccourci selon le système), en choisissant les attributs à initialiser. S'il y a plusieurs constructeurs dans la mère, il propose lequel appeler.
+Le plus simple est d'ajouter à la fille un constructeur qui reçoit les informations nécessaires et les transmet à `super(...)`. IntelliJ peut le générer : *Code => Generate => Constructor* (raccourci selon le système), en choisissant les attributs à initialiser. S'il y a plusieurs constructeurs dans la mère, il propose lequel appeler.
 
 #### Ordre de construction
 
@@ -354,3 +354,167 @@ Avec `protected`, le développeur qui écrit la fille peut faire ce qu'il veut d
 
 ## Redéfinition de méthodes `@Override`
 
+### Rappel : la surcharge (*overload*)
+
+La **surcharge** consiste à définir plusieurs méthodes de **même nom** mais de **paramètres différents** (en nombre ou en type). Jusqu'ici, on l'a vue dans une même classe. Elle fonctionne aussi entre une mère et sa fille.
+
+```java
+public class Building {
+    public void method(int a) {
+        System.out.println("méthode de Building");
+    }
+}
+
+public class Housing extends Building {
+    public void method(int a, int b) {   // même nom, paramètres différents
+        System.out.println("méthode de Housing");
+    }
+}
+```
+
+```java
+Building building1 = new Building(1992);
+Housing housing1 = new Housing(2008, 100, 3);
+
+building1.method(1);       // "méthode de Building"
+housing1.method(1);        // "méthode de Building" (héritée)
+housing1.method(1, 2);     // "méthode de Housing"
+building1.method(1, 2);    // Building ne connaît pas cette version
+```
+
+Il n'y a pas d'ambiguïté : `Housing` possède **deux** méthodes, celle qu'elle hérite et celle qu'elle définit, et les paramètres de l'appel déterminent laquelle est utilisée.
+
+### La redéfinition (*override*)
+
+Si la fille déclare une méthode avec le **même nom et exactement les mêmes paramètres** que la mère, on ne surcharge plus : on **redéfinit** la méthode.
+
+```java
+public class Housing extends Building {
+    @Override
+    public void method(int a) {
+        System.out.println("méthode de Housing");
+    }
+}
+```
+
+```java
+building1.method(1);   // "méthode de Building"
+housing1.method(1);    // "méthode de Housing"
+```
+
+`Housing` n'a alors **plus qu'une seule** méthode `method(int)` : la sienne, qui **masque** celle de la mère. L'objet étant de type `Housing`, c'est la version de la fille qui est appelée. La Javadoc générée indique d'ailleurs que la méthode redéfinit celle de `Building` (« Overrides »).
+
+| | Surcharge (*overload*) | Redéfinition (*override*) |
+|---|---|---|
+| Nom | identique | identique |
+| Paramètres | **différents** | **identiques** |
+| Où | même classe, ou mère et fille | classe fille uniquement |
+| Résultat | plusieurs méthodes disponibles | la méthode de la fille remplace celle de la mère |
+
+### L'annotation `@Override`
+
+On place `@Override` juste au-dessus de la méthode redéfinie. Elle **n'est pas obligatoire**, mais elle est très utile :
+
+- **Vérification par le compilateur** : elle précise qu'on veut redéfinir une méthode de la mère. S'il n'existe pas de méthode avec cette signature exacte dans la mère (faute de frappe sur le nom, paramètre ajouté ou modifié), le code **ne compile pas**.
+- **Protection lors des modifications** : si on renomme ou modifie une méthode dans la mère, les filles annotées `@Override` ne compilent plus, ce qui oblige à les mettre à jour (en pratique, via un *refactor* de l'IDE). Sans l'annotation, la fille définirait silencieusement une **nouvelle** méthode et ne redéfinirait plus rien, sans aucune erreur.
+- **Lisibilité** : en parcourant la fille, on voit immédiatement quelles méthodes redéfinissent celles de la mère, et lesquelles lui sont propres (`getArea()` et `getBedroomCount()` n'ont pas d'annotation).
+
+```java
+public class Housing extends Building {
+    @Override
+    public void method(int a, int b) { ... }   // method does not override or implement a method from a supertype
+}
+```
+
+### Exemple : `display()` et appel à la méthode de la mère avec `super`
+
+Ajoutons dans `Building` une méthode d'affichage :
+
+```java
+public class Building {
+    // ...
+    public void display() {
+        System.out.println("Ce bâtiment a été construit en " + constructionYear);
+    }
+}
+```
+
+Elle est héritée par `Housing`. Mais un `Housing` a aussi une superficie et un nombre de chambres : on redéfinit donc `display()` dans la fille.
+
+```java
+public class Housing extends Building {
+    @Override
+    public void display() {
+        System.out.println("Superficie : " + area + " m², chambres : " + bedroomCount);
+    }
+}
+```
+
+Problème : `housing1.display()` n'affiche plus l'année de construction. On voudrait afficher **tout ce qu'est une habitation**, donc réutiliser le `display()` de la mère. Mais écrire `display()` dans la fille appelle… la méthode de la fille elle-même :
+
+```java
+@Override
+public void display() {
+    display();   // équivaut à this.display() : appel récursif infini
+    System.out.println("Superficie : " + area + " m², chambres : " + bedroomCount);
+}
+```
+
+Rappel : sans rien devant, il y a implicitement `this`. La méthode s'appelle donc indéfiniment, jusqu'à une erreur à l'exécution : **`StackOverflowError`** (la JVM a empilé trop d'appels de méthodes). Pour appeler la version de la **mère**, on utilise le mot-clé **`super`** :
+
+```java
+@Override
+public void display() {
+    super.display();   // d'abord ce que faisait la mère
+    System.out.println("Superficie : " + area + " m², chambres : " + bedroomCount);
+}
+```
+
+```java
+housing1.display();
+// Ce bâtiment a été construit en 2008
+// Superficie : 100 m², chambres : 3
+```
+
+### Appeler `super.méthode()` : un choix, pas une obligation
+
+Contrairement au constructeur, qui **doit** appeler celui de la mère, une méthode redéfinie n'est **pas obligée** d'appeler la version de la mère. Elle peut l'appeler zéro fois, une fois, plusieurs fois, au début, au milieu ou à la fin : c'est la fille qui prend la responsabilité de redéfinir le comportement comme elle le souhaite.
+
+En revanche, quand on veut la version de la mère, le préfixe `super.` est **indispensable**, sinon on retombe dans la récursion infinie.
+
+### Générer la redéfinition avec IntelliJ
+
+- Dans le corps de la fille, taper le début du nom d'une méthode de la mère (par exemple `d`) : l'autocomplétion propose de la redéfinir, et *Entrée* ajoute automatiquement `@Override` et l'appel à `super.méthode()`.
+- Ou via le menu *Code => Generate => Override Methods…* (raccourci selon le système), qui liste les méthodes de la mère à redéfinir.
+
+### Les méthodes `final` ne se redéfinissent pas
+
+Une méthode déclarée `final` dans la mère est bien héritée, mais la fille **ne peut pas la redéfinir** : le code ne compile pas.
+
+```java
+public class Building {
+    public final void display() { ... }
+}
+
+public class Housing extends Building {
+    @Override
+    public void display() { ... }   // display() in Housing cannot override display() in Building ; overridden method is final
+}
+```
+
+C'est le moyen pour la mère d'imposer un comportement à toutes ses filles.
+
+### Compléments (non abordés dans la transcription)
+
+- La redéfinition ne peut pas **réduire la visibilité** : une méthode `public` de la mère reste `public` dans la fille. Elle peut en revanche l'élargir (`protected` => `public`).
+- Une méthode `private` n'est pas héritée, donc elle ne peut pas être redéfinie.
+- Une méthode `static` ne se redéfinit pas : la fille qui en déclare une de même signature la **masque** (*hiding*), ce qui est un mécanisme différent.
+- Toute classe étend implicitement `Object` : redéfinir `toString()` ou `equals()` est donc une redéfinition, et `@Override` s'y applique.
+
+### À retenir
+
+- **Surcharge** (*overload*) : même nom, paramètres **différents** => plusieurs méthodes disponibles.
+- **Redéfinition** (*override*) : même nom, paramètres **identiques**, dans la fille => la méthode de la fille remplace celle de la mère pour les objets de type fille.
+- `@Override` n'est pas obligatoire, mais permet au compilateur de vérifier la redéfinition, protège lors des modifications de la mère et rend la classe plus lisible. On l'utilise systématiquement.
+- `super.méthode()` appelle la version de la mère. Il est facultatif, mais sans `super.` l'appel est récursif et finit en `StackOverflowError`.
+- Une méthode `final` de la mère ne peut pas être redéfinie.
