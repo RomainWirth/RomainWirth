@@ -85,7 +85,7 @@ housing1.getConstructionYear();   // héritée de Building
 housing1.getAge();                // héritée de Building
 housing1.getArea();               // propre à Housing
 
-building1.getArea();              // cannot find symbol : Building ne connaît pas getArea()
+building1.getArea();              // erreur : cannot find symbol : Building ne connaît pas getArea()
 ```
 
 La classe fille est plus **spécialisée** que la mère : elle contient plus d'informations (un objet `Housing` occupe donc plus de mémoire qu'un objet `Building`). Dans l'autocomplétion d'IntelliJ, les membres propres à la classe de l'objet apparaissent en gras, et les membres hérités en normal.
@@ -105,7 +105,7 @@ Un attribut `private` de la mère existe bien dans l'objet fille, mais le code d
 ```java
 public class Housing extends Building {
     public void display() {
-        System.out.println(constructionYear);   // constructionYear has private access in Building
+        System.out.println(constructionYear);   // erreur : constructionYear has private access in Building
         System.out.println(getConstructionYear());   // via l'accesseur public
     }
 }
@@ -125,7 +125,7 @@ Les constructeurs ne sont **pas hérités**. Chaque classe définit les siens. E
 public class Housing extends Building {
     // ...
     public Housing(int constructionYear, int area, int bedroomCount) {
-        this.constructionYear = constructionYear;   // private dans Building : impossible
+        this.constructionYear = constructionYear;   // erreur : private dans Building : impossible
         this.area = area;
         this.bedroomCount = bedroomCount;
     }
@@ -194,10 +194,10 @@ Dans notre cas, `Building` n'a qu'un constructeur à un paramètre (`int`). Le c
 public class Shop extends Building {
     // aucun constructeur écrit : le compilateur ajoute un constructeur par défaut qui appelle super()
 }
-// constructor Building in class Building cannot be applied to given types
+// erreur : constructor Building in class Building cannot be applied to given types
 ```
 
-Le plus simple est d'ajouter à la fille un constructeur qui reçoit les informations nécessaires et les transmet à `super(...)`. IntelliJ peut le générer : *Code => Generate => Constructor* (raccourci selon le système), en choisissant les attributs à initialiser. S'il y a plusieurs constructeurs dans la mère, il propose lequel appeler.
+Le plus simple est d'ajouter à la fille un constructeur qui reçoit les informations nécessaires et les transmet à `super(...)`. IntelliJ peut le générer : *Code → Generate → Constructor* (raccourci selon le système), en choisissant les attributs à initialiser. S'il y a plusieurs constructeurs dans la mère, il propose lequel appeler.
 
 #### Ordre de construction
 
@@ -257,7 +257,7 @@ Un attribut `private` de la mère fait bien partie de la **structure** de la fil
 public class Housing extends Building {
     public Housing(int constructionYear, int area, int bedroomCount) {
         super(constructionYear);
-        this.constructionYear = constructionYear;   // constructionYear has private access in Building
+        this.constructionYear = constructionYear;   // erreur : constructionYear has private access in Building
         // ...
     }
 }
@@ -316,8 +316,8 @@ Depuis du code extérieur (par exemple `main`, dans un autre package), le membre
 
 ```java
 Shop shop1 = new Shop(1990, "Boulangerie");
-shop1.constructionYear;   // has protected access in Building
-shop1.getAge();           // has protected access in Building
+shop1.constructionYear;   // erreur : has protected access in Building
+shop1.getAge();           // erreur : has protected access in Building
 ```
 
 C'est la classe mère qui choisit, dans sa définition, d'ouvrir un membre à ses futures filles. L'héritage va dans un seul sens : **la fille connaît sa mère, la mère ne connaît pas ses filles**. En déclarant un membre `protected`, la mère le prévoit pour des filles qu'elle ne connaît pas encore.
@@ -326,14 +326,14 @@ C'est la classe mère qui choisit, dans sa définition, d'ouvrir un membre à se
 
 | Visibilité | Même classe | Même package | Classe fille (autre package) | Reste du code |
 |---|---|---|---|---|
-| `private` | | | | |
-| *(rien)* : package | | | | |
-| `protected` | | | | |
-| `public` | | | | |
+| `private` | oui | non | non | non |
+| *(rien)* : package | oui | oui | non | non |
+| `protected` | oui | oui | oui | non |
+| `public` | oui | oui | oui | oui |
 
 > Attention : `protected` donne **aussi** l'accès au **package**, exactement comme l'absence de modificateur. Une classe du même package que la mère, même sans lien d'héritage, peut donc accéder à un membre `protected`. Le mot-clé est surtout utile quand on hérite d'une classe située dans **un autre package** que la sienne.
 
-Complément (non abordé dans la transcription) : dans une classe fille située dans un **autre package**, l'accès à un membre `protected` se fait sur l'objet en cours (`this`) ou sur une référence du type de la fille, mais pas sur une simple référence de type `Building`.
+Complément : dans une classe fille située dans un **autre package**, l'accès à un membre `protected` se fait sur l'objet en cours (`this`) ou sur une référence du type de la fille, mais pas sur une simple référence de type `Building`.
 
 ### Que choisir ?
 
@@ -351,6 +351,7 @@ Avec `protected`, le développeur qui écrit la fille peut faire ce qu'il veut d
 - `protected` ouvre l'accès aux **classes filles** (et au **package**), mais pas au reste du code. Il s'applique aux attributs, aux méthodes et aux constructeurs.
 - C'est la **classe mère** qui décide, dans sa définition, de ce qu'elle laisse aux filles.
 - Par défaut : `private` + accesseurs. On utilise `protected` en connaissance de cause, en sachant que la mère doit alors contrôler les valeurs.
+
 
 ## Redéfinition de méthodes `@Override`
 
@@ -379,7 +380,7 @@ Housing housing1 = new Housing(2008, 100, 3);
 building1.method(1);       // "méthode de Building"
 housing1.method(1);        // "méthode de Building" (héritée)
 housing1.method(1, 2);     // "méthode de Housing"
-building1.method(1, 2);    // Building ne connaît pas cette version
+building1.method(1, 2);    // erreur : Building ne connaît pas cette version
 ```
 
 Il n'y a pas d'ambiguïté : `Housing` possède **deux** méthodes, celle qu'elle hérite et celle qu'elle définit, et les paramètres de l'appel déterminent laquelle est utilisée.
@@ -422,7 +423,7 @@ On place `@Override` juste au-dessus de la méthode redéfinie. Elle **n'est pas
 ```java
 public class Housing extends Building {
     @Override
-    public void method(int a, int b) { ... }   // method does not override or implement a method from a supertype
+    public void method(int a, int b) { ... }   // erreur : method does not override or implement a method from a supertype
 }
 ```
 
@@ -455,7 +456,7 @@ Problème : `housing1.display()` n'affiche plus l'année de construction. On vou
 ```java
 @Override
 public void display() {
-    display();   // équivaut à this.display() : appel récursif infini
+    display();   // erreur : équivaut à this.display() : appel récursif infini
     System.out.println("Superficie : " + area + " m², chambres : " + bedroomCount);
 }
 ```
@@ -485,7 +486,7 @@ En revanche, quand on veut la version de la mère, le préfixe `super.` est **in
 ### Générer la redéfinition avec IntelliJ
 
 - Dans le corps de la fille, taper le début du nom d'une méthode de la mère (par exemple `d`) : l'autocomplétion propose de la redéfinir, et *Entrée* ajoute automatiquement `@Override` et l'appel à `super.méthode()`.
-- Ou via le menu *Code => Generate => Override Methods…* (raccourci selon le système), qui liste les méthodes de la mère à redéfinir.
+- Ou via le menu *Code → Generate → Override Methods…* (raccourci selon le système), qui liste les méthodes de la mère à redéfinir.
 
 ### Les méthodes `final` ne se redéfinissent pas
 
@@ -498,7 +499,7 @@ public class Building {
 
 public class Housing extends Building {
     @Override
-    public void display() { ... }   // display() in Housing cannot override display() in Building ; overridden method is final
+    public void display() { ... }   // erreur : display() in Housing cannot override display() in Building ; overridden method is final
 }
 ```
 
@@ -506,15 +507,15 @@ C'est le moyen pour la mère d'imposer un comportement à toutes ses filles.
 
 ### Compléments
 
-- La redéfinition ne peut pas **réduire la visibilité** : une méthode `public` de la mère reste `public` dans la fille. Elle peut en revanche l'élargir (`protected` => `public`).
+- La redéfinition ne peut pas **réduire la visibilité** : une méthode `public` de la mère reste `public` dans la fille. Elle peut en revanche l'élargir (`protected` → `public`).
 - Une méthode `private` n'est pas héritée, donc elle ne peut pas être redéfinie.
 - Une méthode `static` ne se redéfinit pas : la fille qui en déclare une de même signature la **masque** (*hiding*), ce qui est un mécanisme différent.
 - Toute classe étend implicitement `Object` : redéfinir `toString()` ou `equals()` est donc une redéfinition, et `@Override` s'y applique.
 
 ### À retenir
 
-- **Surcharge** (*overload*) : même nom, paramètres **différents** => plusieurs méthodes disponibles.
-- **Redéfinition** (*override*) : même nom, paramètres **identiques**, dans la fille => la méthode de la fille remplace celle de la mère pour les objets de type fille.
+- **Surcharge** (*overload*) : même nom, paramètres **différents** → plusieurs méthodes disponibles.
+- **Redéfinition** (*override*) : même nom, paramètres **identiques**, dans la fille → la méthode de la fille remplace celle de la mère pour les objets de type fille.
 - `@Override` n'est pas obligatoire, mais permet au compilateur de vérifier la redéfinition, protège lors des modifications de la mère et rend la classe plus lisible. On l'utilise systématiquement.
 - `super.méthode()` appelle la version de la mère. Il est facultatif, mais sans `super.` l'appel est récursif et finit en `StackOverflowError`.
 - Une méthode `final` de la mère ne peut pas être redéfinie.
