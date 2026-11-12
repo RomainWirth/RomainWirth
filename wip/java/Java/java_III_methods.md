@@ -16,7 +16,7 @@ Lorsqu'on comprend ce qu'une méthode réalise, mais qu'on ne sait pas de quelle
 ## Définir une méthode
 
 Prenons l'exemple suivant :
-```
+```java
 public void checkBalance(){
   System.out.println("Hello!");
   System.out.println("Your balance is " + balance);
@@ -36,7 +36,7 @@ Le corps de la méthode comprends tout ce qui se situe entre les accolades `{` e
 Lorsqu'on appelle une méthode "non-static" dans une classe, elle peut être utilisée dans un objet de cette classe.<br>
 Afin d'avoir une exécution des méthodes, il faut les appeler dans l'objet qu'on a créé.<br>
 exemple :
-```
+```java
 class Car {
   String color;
  
@@ -65,7 +65,7 @@ That was one fast car!
 ```
 
 Dans la méthode `main`, nous faison appel à la méthode `startEngine()` de cette manière :
-```
+```java
 myFastCar.startEngine();
 ```
 Premièrement, on fait référence à l'objet `myFastCar`, puis on utiliser l'opérateur `.` pour appeler la méthode `startEngine()`.<br>
@@ -89,7 +89,7 @@ Le domaine est appelé "la portée" (ou scope en anglais).<br>
 
 On ne peut pas accéder aux variables qui sont déclarées dans la méthode et qui sont en dehors du scope de cette méthode.<br>
 exemple :
-```
+```java
 class Car {
   String color;
   int milesDriven;
@@ -122,7 +122,7 @@ Le scope d'une méthode nous empêche d'utiliser des variables déclarées dans 
 
 De la même manière qu'on a ajouté des paramètres aux constructeurs, on peut customiser toutes les autres méthodes pour accepter des paramètres.<br>
 exemple : 
-```
+```java
 class Car {
  
   String color;
@@ -158,7 +158,7 @@ N.B. : comme pour les constructeurs, les arguments passés lors de l'appel de la
 Grâce à la "surcharge" des méthodes, les programmes Java peuvent contenir plusieurs méthodes portant le même nom,<br> 
 tant que la liste des paramètres de chaque méthode est _unique_.
 exemple :
-```
+```java
 // Method 1
 public void startRadio(double stationNum, String stationName) {
   System.out.println("Turning on the radio to " + stationNum + ", " + stationName + "!");
@@ -183,7 +183,7 @@ public static void main(String[] args){
 ## Réassigner les propriétés
 
 exemple :
-```
+```java
 public class SavingsAccount{
   double balance;
   public SavingsAccount(double startingBalance){
@@ -208,7 +208,7 @@ Nous avons deux méthodes qui changent l'état de cette variable : `deposit()` e
 Elles ont pour but de changer la valeur de `balance` en ajoutant ou en enlevant une valeur.<br>
 
 On peut réassigner à `balance` une nouvelle valeur en utilisant l'opérateur `=` :
-```
+```java
 public void deposit(double amountToDeposit){
   double updatedBalance = balance + amountToDeposit;
   balance = updatedBalance;
@@ -216,7 +216,7 @@ public void deposit(double amountToDeposit){
 ```
 
 En appelant `deposit()`, cela devrait changer la valeur de la propriété `balance` :
-```
+```java
 public static void main(String[] args){
   SavingsAccount myAccount = new SavingsAccount(2000);
   System.out.println(myAccount.balance);
@@ -236,7 +236,7 @@ Rappel : les variables n'existent que dans le scope dans lequel elles sont décl
 On peut utiliser une valeur en degors de la méthode dans laquelle elle a été créée si on la retourne depuis cette méthode.<br>
 
 Pour retourner une valeur, on utilise le mot clé `return` :
-```
+```java
 public int numberOfTires() {
    int tires = 4;
    // return statement
@@ -273,7 +273,7 @@ Lorsqu'on retourne une valeur primitive, une copie de cette valeur est retourné
 En revanche, lorsqu'on retourne un objet, on retourne une **référence** à l'objet au lieu d'une copie de cet objet.<br>
 
 exemple : création d'une seconde classe `carLot` qui prend `Car` en paramètre et contient une méthode qui retourne un objet `Car`
-```
+```java
 class CarLot {
     Car carInLot;
     public CarLot(Car givenCar) {
@@ -308,7 +308,7 @@ Cela n'indique rien à propos de l'élément qui pourrait nous être utile.<br>
 On peut ajouter une méthode aux classes qui permettent de rendre le print plus descriptif.
 
 Quand on définit une méthode _toString()_ pour une classe, on peut retourner une `String` qui sera imprimé lors du print de l'objet :
-```
+```java
 class Car {
  
     String color;

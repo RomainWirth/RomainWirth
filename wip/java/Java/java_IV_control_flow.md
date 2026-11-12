@@ -15,14 +15,14 @@ Les **_conditions_** vérifient un `booléen` et exécutent un bloc de code qui 
 Les accolades `{}` définissent le scope du bloc conditionnel.<br>
 
 exemple :
-```
+```java
 if (true) {
   System.out.println("Hello World!");
 }
 ```
 Si la condition est `true` (vrai), alors le bloc sera exécuté : `hello World!` sera imprimé dans la console.<br>
 
-```
+```java
 if (false) {
   System.out.println("Hello World!");
 }
@@ -34,7 +34,7 @@ On parle ici de déclaration "if-then" : if (condition = true), alors fait quelq
 ## If-Then
 
 Le _if-then_ est le flux de contrôle le plus simple à écrire. Il vérifie si une expression est vraie et exécute du code sur cette base.<br>
-```
+```java
 if (flip == 1) {
   System.out.println("Heads!");
 }
@@ -47,7 +47,7 @@ On peut également remplacer la condition entre parenthèses par des variables q
 
 La condition booléenne est suivie par l'ouverture et la fermeture d'accolades qui englobent un bloc de code.<br>
 Ce bloc ne sera exécuté que si et uniquement si le booléen est `true`.
-```
+```java
 boolean isValidPassword = true;
 if (isValidPassword) {
   System.out.println("Password accepted!");
@@ -62,7 +62,7 @@ if (numberOfItemsInCart > 12) {
 ```
 
 N.B. : si une condition est brève, on peut ne pas utiliser les accolades :
-```
+```java
 if (true) System.out.println("Brevity is the soul of wit");
 ```
 
@@ -70,7 +70,7 @@ if (true) System.out.println("Brevity is the soul of wit");
 
 Ce genre de déclaration permet dans un premier temps de vérifier si une condition est vraie et d'exécuter un bloc de code,<br>
 et dans le cas contraire d'exécuter un autre bloc de code.<br>
-```
+```java
 if (hasPrerequisite) {
   // Enroll in course
 } else {
@@ -89,7 +89,7 @@ Si elle est fausse, on vérifie la seconde condition, si cette condition est vra
 etc.
 
 Il s'agit de conditions multiples qui sont évaluées de haut en bas :
-```
+```java
 String course = "Theatre";
 if (course.equals("Biology")) {
   // Enroll in Biology course
@@ -102,7 +102,7 @@ if (course.equals("Biology")) {
 }
 ```
 ou encore :
-```
+```java
 int testScore = 72;
 if (testScore >= 90) {
   System.out.println("A");
@@ -123,7 +123,7 @@ Seul le premier bloc de code sera exécuté.
 ## Nested Conditional Statements
 
 On peut créer des structures conditionnelles plus complexes en incluant des conditions dans des conditions (le nesting).<br>
-```
+```java
 if (outer condition) {
   if (nested condition) {
     Instruction to execute if both conditions are true
@@ -135,7 +135,7 @@ Quand on implémente une condition dans une autre, on évalue d'abord la premiè
 Si cette première condition est `true`, on évalue alors la condition à l'intérieur.<br>
 
 exemple :
-```
+```java
 int temp = 45;
 boolean raining = true;
  
@@ -163,7 +163,7 @@ Il existe une alternative aux conditions _if-then-else_ : le _switch_.
 Cette condition vérifie une valeur donnée avec un certain nombre de conditions et exécute le bloc de code partout ou il y a une correspondance.<br>
 
 exemple :
-```
+```java
 String course = "History";
  
 switch (course) {
@@ -195,7 +195,7 @@ C'est l'équivalent du `else`.
 Les blocs `switch` sont différents des autres blocs de code car ils ne sont pas encadrés par des accolades.<br>
 De plus, on utilise le mot-clé `break` pour sortir du switch.<br>
 Sans le `break`, tout le code sera exécuté, y compris celui sous les autres labels `case`.
-```
+```java
 String course = "Biology";
  
 switch (course) {
@@ -219,7 +219,7 @@ switch (course) {
 Les conditions apportent des chemins au programme.<br>
 On utilise des conditions pour prendre des décisions dans le programme pour que différentes entrées produisent des résultats différents.<br>
 Les conditions ont une structure générale :
-```
+```java
 if (condition) {
     // consequent path
 } else {

@@ -41,7 +41,7 @@ Par exemple, nous avons parfois besoin du comportement opposé d'un `if-then` : 
 
 Il est possible d'étendre les expressions booléennes en utilisant de multiples opérateurs conditionnels en une seule expression.<br>
 exemple : 
-```
+```java
 boolean foo = true && !(false || !true)
 ```
 Comment fonctionne l'évaluation de l'expression dans le compiler ?<br>
@@ -52,7 +52,7 @@ Il y a un ordre d'évaluation des opérateurs conditionnels :
 4. OR : `||`
 
 exemple : 
-```
+```java
 true && !(false || !true)
 ```
 D'abord, on évalue `(false || !true)`: 

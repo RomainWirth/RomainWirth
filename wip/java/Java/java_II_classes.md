@@ -44,7 +44,7 @@ Les classes sont les "plueprints" des objets. Elles définissent leur structure 
 ### Les classes : La syntaxe
 
 Une classe sera construire ainsi :
-```
+```java
 public class Store {
   // instance fields
   String productType;
@@ -80,7 +80,7 @@ Le constructor est défini au sein de la classe.<br>
 
 Afin de créer une instance, on devra appeler (ou invoquer) le constructeur dans la méthode "main()".<br>
 exemple :
-```
+```java
 public class Car {
     // Constructor method
     public Car() {
@@ -99,7 +99,7 @@ Dans cet exemple, au lieu d'être déclarée avec un type de donnée primitif (i
 ### Les classes : Les champs d'instance
 
 Ce code :
-```
+```java
 public class Store {
   
   // new method: constructor!
@@ -139,7 +139,7 @@ Lorsqu'on souhaite modifier les caractéristiques des différentes instances (ob
 les champs d'instance.
 
 exemple :
-``` 
+```java
 public class Store {
   // declare instance fields here!
   String productType;
@@ -171,7 +171,7 @@ On fera référence à ces propriétés dans le constructeur de classe en y ajou
 Pour cela, il faudra passer en paramètre de cette fonction la référence à la propriété.<br>
 
 Exemple :
-```
+```java
 public class Car {
   String color; // propriété de la classe
   // constructor method with a parameter
@@ -190,7 +190,7 @@ Il s'agit d'un paramètre "formal".
 Il existe deux types de paramètres : "formal" & "actual".<br>
 1. un paramètre "formal" spécifie le type et nom de la donnée qui peut être passé dans la method (fonction).<br>
    Les paramètres passés à la fonction permettent au compileur de différencier quelle méthode de constructeur utiliser lors de la construction de l'objet.<br>
-```
+```java
 public class Car {
   String color;
   int mpg;
@@ -213,7 +213,7 @@ Quand on initialise un objet, le compiler saura quel constructeur utiliser grâc
 par exemple : `Car myCar = new Car(true, 40)` sera créé par le second constructeur car les arguments correspondent au type et à l'ordre des paramètres passés au second constructeur.<br>
 Si on ne définit par de constructeur, le compileur java générera un constructeur par défaut qui ne contient aucuns arguments, et assignera à l'objet des valeurs par défaut.<br>
 Des valeurs par défaut peuvent être créées en assignant des valeurs aux propriétés lors de leur délaration :
-```
+```java
 public class Car {
   String color = "red";
   boolean isElectric = false;
@@ -229,7 +229,7 @@ public class Car {
    Lorsque le constructeur possède des paramètres, on doit passer des valeurs lors de l'appel de la méthode.<br>
    Ces valeurs s'appellent des arguments. Une fois passés, ils seront utilisés pour donner aux propriétés une valeur initiale.<br>
    exemple :
-```
+```java
 public class Car {
   String color;
  
@@ -252,7 +252,7 @@ Plusieurs points à noter :
 * L'objet `ferrari` contient l'état de `color` comme une propriété faisant référence à la valeur `"red"`.
 
 Pour accéder à la valeur de ce champs, on utilisera l'opérateur `( . )` :
-```
+```java
 /*
 accessing a field:
 objectName.fieldName
@@ -267,7 +267,7 @@ ferrari.color;
 les objets ne sont pas limités à un seul champs d'instance.<br>
 On peut déclarer autant de champs qui sont nécessaire à la réalisation du programme.<br>
 Dans l'exemple ci-dessous, on trouvera trois propriétés à la classe `Car` : une chaîne de caractères, un booléen, un nombre entier.
-```
+```java
 public class Car {
   String color;
   // new fields!
@@ -297,7 +297,7 @@ public class Car {
 Le constructeur a maintenant plusieurs paramètres pour recevoir des valeurs pour les nouveaux champs.<br>
 Il est nécessaire de spécifier les types et les noms de chaque paramètre à passer à la méthode.<br>
 A noter que l'ordre est important aussi. Il faudra passer les valeurs dans le bon ordre lors de l'appel du constructeur.<br>
-```
+```java
 // values match types, no error
 Car honda = new Car("green", false, 0);
  
