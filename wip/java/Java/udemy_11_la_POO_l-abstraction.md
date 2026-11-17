@@ -168,31 +168,76 @@ Comparaison avec `display()`, redéfinie dans `Housing` :
 La fille est une classe **instanciable** : on peut faire `new Housing(...)`, et l'objet possède bien une méthode `specificName()` avec un corps à exécuter.
 
 ### Le polymorphisme continue de s'appliquer
-
-Même si on ne peut plus faire `new Building(...)`, on continue d'utiliser le **type** `Building`, notamment pour le polymorphisme. `Field` reste composée d'un `Building` : derrière ce type se cache nécessairement une fille (`Housing` ou `Shop`).
-
+ 
+On ne peut plus écrire `new Building(...)`, mais le **type** `Building` reste utilisable pour déclarer des variables, des attributs et des paramètres. Une variable de type `Building` peut référencer n'importe laquelle de ses filles.
+ 
+#### Premier exemple : deux variables, un même appel
+ 
+On suppose que `Housing` et `Shop` ont chacune écrit leur propre version de `specificName()` (voir plus haut).
+ 
 ```java
-public void display() {
-    System.out.println("Ce terrain mesure " + width + " x " + length);
-    if (building != null) {
-        System.out.println("Il est composé d'un bâtiment de type " + building.specificName());
+Building building1 = new Housing(2008, 100, 3);
+Building building2 = new Shop(1990, "Boulangerie");
+ 
+System.out.println(building1.specificName());   // Habitation avec 3 chambres
+System.out.println(building2.specificName());   // Commerce, enseigne Boulangerie
+```
+ 
+Les deux variables ont le **même type** (`Building`) et les deux lignes appellent la **même méthode**, pourtant le résultat est différent. Voici ce qui se passe, en deux temps :
+ 
+1. **À la compilation**, Java ne regarde que le **type de la variable** : `Building`. Il vérifie que `Building` possède bien une méthode `specificName()`. C'est le cas (elle est déclarée abstraite), donc l'appel est accepté.
+2. **À l'exécution**, Java regarde l'**objet réellement présent en mémoire** et exécute la version de **cet objet** :
+```
+building1 (type Building) ──▶ [ objet Housing ] ──▶ exécute le corps de specificName() écrit dans Housing
+building2 (type Building) ──▶ [ objet Shop    ] ──▶ exécute le corps de specificName() écrit dans Shop
+```
+ 
+#### Pourquoi on ne risque jamais d'appeler une méthode sans corps
+ 
+Dans `Building`, `specificName()` n'a pas de corps. On pourrait craindre d'appeler « du vide ». Ce n'est jamais le cas : comme `Building` est abstraite, **aucun objet de type `Building` ne peut exister**. Derrière une variable de type `Building`, il y a donc toujours un objet d'une **fille concrète** (`Housing`, `Shop`...), et cette fille a l'**obligation** d'avoir écrit le corps de la méthode.
+ 
+#### Deuxième exemple : `Field` n'a pas besoin de savoir qui est le bâtiment
+ 
+`Field` possède un attribut de type `Building` :
+ 
+```java
+public class Field {
+    private int width;
+    private int length;
+    private Building building;   // le type de la classe abstraite
+ 
+    // constructeur : Field(int width, int length, Building building)
+ 
+    public void display() {
+        System.out.println("Ce terrain mesure " + width + " x " + length);
+        if (building != null) {
+            System.out.println("Il est composé d'un bâtiment de type " + building.specificName());
+        }
     }
 }
 ```
-
-L'appel `building.specificName()` est légal, bien que la méthode soit abstraite dans `Building`. À l'exécution, c'est **forcément la méthode de la fille** qui est appelée, puisqu'il n'existe aucun objet de type `Building` pur :
-
+ 
+Le code de `display()` est écrit **une seule fois**. Il ne mentionne ni `Housing` ni `Shop` : il demande simplement au bâtiment son `specificName()`. La réponse dépend de l'objet donné à la construction du terrain :
+ 
 ```java
-new Field(10, 20, new Housing(2008, 100, 3)).display();
+Field field1 = new Field(10, 20, new Housing(2008, 100, 3));
+field1.display();
 // Ce terrain mesure 10 x 20
 // Il est composé d'un bâtiment de type Habitation avec 3 chambres
-
-new Field(10, 20, new Shop(1990, "Boulangerie")).display();
+ 
+Field field2 = new Field(10, 20, new Shop(1990, "Boulangerie"));
+field2.display();
 // Ce terrain mesure 10 x 20
 // Il est composé d'un bâtiment de type Commerce, enseigne Boulangerie
 ```
-
-On crée une classe abstraite pour en hériter, et dès qu'il y a de l'héritage, il y a du polymorphisme.
+ 
+Si on ajoute plus tard une nouvelle fille (par exemple `Chalet`), qui doit elle aussi écrire `specificName()`, la classe `Field` fonctionne **sans aucune modification**.
+ 
+#### À retenir sur ce point
+ 
+- Le **type de la variable** (`Building`) détermine **ce qu'on a le droit d'appeler** (vérifié à la compilation).
+- L'**objet réel** (`Housing`, `Shop`...) détermine **quelle version** s'exécute (décidé à l'exécution).
+- Avec une classe abstraite, l'objet réel est toujours une fille qui a écrit le corps : l'appel est donc toujours valide.
 
 ### L'idée d'abstraction
 
@@ -283,8 +328,8 @@ C'est la déclaration d'un **nouveau type** : « une annonce, c'est quelque chos
 
 Dans une interface :
 
-- toutes les méthodes sont **abstraites** : une signature, pas de corps. Écrire `abstract` est donc **redondant** (permis mais inutile) ;
-- toutes les méthodes sont **publiques**. Écrire `public` est aussi redondant. Il n'existe pas de visibilité package dans une interface : puisqu'une interface décrit des fonctionnalités offertes, elles sont forcément publiques.
+- toutes les méthodes sont **abstraites** : une signature, pas de corps. Déclarer `abstract` devant la méthode est donc **redondant** (permis mais inutile) ;
+- toutes les méthodes sont **publiques**. Déclarer `public` devant la méthode est aussi redondant. Il n'existe pas de visibilité package dans une interface : puisqu'une interface décrit des fonctionnalités offertes, elles sont forcément publiques.
 
 On peut maintenant écrire la méthode utilitaire avec **un seul** paramètre :
 
@@ -392,6 +437,93 @@ Derrière la variable, c'est un `Shop` qui est réellement créé, mais vu à tr
 > Compléments :
 > - Une classe peut implémenter plusieurs interfaces, séparées par des virgules : `class Shop extends Building implements Announcement, Comparable<Shop>`.
 > - Depuis Java 8, une interface peut aussi contenir des méthodes avec corps (`default` et `static`) et des constantes. Dans ce cours, on se limite au cas des méthodes abstraites.
+
+### Combiner classe abstraite et interface
+
+Classe abstraite et interface ne s'excluent pas : on les utilise souvent ensemble. La classe abstraite factorise ce qui est commun à des classes liées par un « est un », et l'interface exprime un contrat que d'autres classes, sans lien avec elles, peuvent aussi respecter.
+
+Une classe **abstraite** qui implémente une interface n'est **pas obligée** de définir toutes ses méthodes : elle peut en implémenter certaines, celles qui sont communes à toutes ses filles, et laisser les autres à ses filles concrètes.
+
+On peut l'illustrer en **faisant évoluer** le code de la section précédente, où `Shop` déclarait elle-même `implements Announcement` et définissait `getTitle()` et `getContent()`. Si `Housing` doit aussi être une `Announcement`, la même implémentation serait à répéter dans chaque fille de `Building`. Or une partie du contrat est commune à tous les bâtiments : on remonte donc l'implémentation d'`Announcement` dans `Building`.
+
+Avant (section précédente) :
+
+```java
+public class Shop extends Building implements Announcement {
+    @Override public String getTitle()   { /* ... */ }
+    @Override public String getContent() { /* ... */ }
+}
+```
+
+Après (évolution) :
+
+```java
+public abstract class Building implements Announcement {
+    // ...
+
+    @Override
+    public String getContent() {   // commun à tous les bâtiments : implémenté ici
+        return "Construit en " + getConstructionYear() + " (" + getAge() + " ans)";
+    }
+
+    // getTitle() n'est pas définie : Building est abstraite, elle n'y est pas obligée
+}
+
+public class Housing extends Building {
+    @Override
+    public String getTitle() {
+        return "Habitation avec " + bedroomCount + " chambres";
+    }
+}
+
+public class Shop extends Building {
+    @Override
+    public String getTitle() {
+        return "Commerce, enseigne " + shopName;
+    }
+}
+```
+
+Les filles n'ont plus besoin d'écrire `implements Announcement` : elles le sont déjà, par héritage de `Building`. Elles doivent en revanche respecter tout le contrat : si `Housing` ne définissait pas `getTitle()`, le code ne compilerait pas (*Housing is not abstract and does not override abstract method getTitle() in Announcement*). Elles héritent en revanche de `getContent()` sans rien écrire.
+
+`Housing`, `Shop` et `Field` (qui n'a aucun lien avec `Building`) sont alors tous des `Announcement` :
+
+```java
+AnnouncementUtils.generate(housing1);
+AnnouncementUtils.generate(shop1);
+AnnouncementUtils.generate(field1);
+```
+
+Ce découpage répartit les rôles : la classe abstraite apporte la structure et le comportement commun, l'interface apporte la compatibilité entre des classes sans lien, et le compilateur vérifie que chaque classe concrète fournit tout ce qu'on attend d'elle. Ajouter un nouveau type (un `Chalet`, par exemple) revient à écrire une fille qui complète ce qui manque.
+
+### Choisir la fille à la création, pas dans la classe
+
+Plutôt que de mettre plusieurs comportements dans une même classe, qui se comporterait différemment selon la façon dont ses attributs sont initialisés, on crée une classe fille par comportement. Le choix du type se fait **au moment de la création de l'objet**, et on manipule ensuite l'objet par le type de la classe mère :
+
+```java
+Building building;                           // déclaré avant le if (portée) et typé par la mère
+if (isShop) {
+    building = new Shop(1990, "Boulangerie");
+} else {
+    building = new Housing(2008, 100, 3);
+}
+Field field = new Field(10, 20, building);   // une seule fois, quel que soit le type choisi
+```
+
+Déclarer `building` avant le `if` évite de dupliquer la suite du code dans chaque branche : c'est le polymorphisme qui permet de n'écrire cette suite qu'une seule fois.
+
+#### Quelques règles pour choisir
+
+- Les classes ont une **structure ou un comportement commun**, avec une relation « est un » : **héritage**, avec une classe abstraite si la mère ne peut pas tout implémenter.
+- Des classes **sans lien** doivent pouvoir être utilisées par le même code : **interface**.
+- Un attribut de la mère que les filles doivent modifier : le déclarer `protected`. Sinon, le laisser `private` et passer par des accesseurs.
+- Le code commun à toutes les filles : le **remonter dans la mère**, par exemple en extrayant une méthode `protected` que les filles appellent.
+- Après chaque réorganisation de ce type, **relancer le programme** pour vérifier qu'on n'a rien cassé.
+
+#### Ajouts possibles pour « À retenir »
+
+- Une classe abstraite peut implémenter une interface sans définir toutes ses méthodes : les filles concrètes complètent.
+- On choisit la classe fille à la création de l'objet, puis on le manipule par le type de la mère ou de l'interface.
 
 ### À retenir
 
