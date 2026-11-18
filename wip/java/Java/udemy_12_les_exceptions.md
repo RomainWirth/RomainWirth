@@ -101,7 +101,7 @@ L'objet reçu par le `catch` donne des informations :
 
 ```java
 try {
-...
+    ...
 } catch (ArithmeticException e) {
     System.out.println(e.getMessage());   // "/ by zero"
     e.printStackTrace();                  // écrit la trace complète dans la console
@@ -217,6 +217,175 @@ Ces trois exceptions héritent de `RuntimeException` (la méthode n'est pas soul
 
 > Complément : les trois types sont `InputMismatchException` (saisie invalide ou hors limites d'un `int`), `NoSuchElementException` (plus de saisie disponible) et `IllegalStateException` (scanner fermé).
 
+## Cas pratique : redemander une saisie jusqu'à ce qu'elle soit valide
+
+On veut une méthode utilitaire `choose` qui demande un entier à l'utilisateur et ne rend la main que lorsque la valeur est **à la fois un entier et comprise entre deux bornes**. Elle prend en paramètres le nom de la variable à renseigner et les bornes `min` et `max`.
+
+### Première version : vérifier les bornes
+
+```java
+public static int choose(String variableName, int min, int max) {
+    Scanner scanner = new Scanner(System.in);
+    int value = 0;
+    boolean validChoice = false;
+
+    do {
+        System.out.print("Saisir une valeur pour " + variableName
+                + " entre " + min + " et " + max + " : ");
+        value = scanner.nextInt();
+
+        if (value < min || value > max) {
+            System.out.println("Attention, la valeur n'est pas entre " + min + " et " + max);
+        } else {
+            validChoice = true;
+        }
+    } while (!validChoice);
+
+    return value;
+}
+```
+
+- Une boucle `do ... while` convient bien : on demande **d'abord** la saisie, puis on boucle tant que le choix n'est pas valide.
+- `!validChoice` est la négation de `validChoice == false`, et se lit mieux.
+- Pour une valeur sans borne supérieure, on peut passer `Integer.MAX_VALUE`, la plus grande valeur d'un `int`.
+
+Cette version gère les valeurs hors bornes (`-3`, `34`), mais pas les saisies qui ne sont pas des entiers : avec `abc`, `nextInt()` lance une exception et le programme s'arrête.
+
+### Deuxième version : attraper l'exception dans la boucle
+
+`nextInt()` ne renvoie pas de valeur arbitraire quand elle ne peut pas lire un entier : elle lève une exception (ici `InputMismatchException`, indiquée dans sa Javadoc). On place donc l'appel, **et tout ce qui utilise sa valeur**, dans un `try` : si l'appel échoue, le test des bornes n'a aucun sens. Le `catch` indique que le choix n'est pas valide, et la boucle continue :
+
+```java
+do {
+    System.out.print("Saisir une valeur pour " + variableName
+            + " entre " + min + " et " + max + " : ");
+    try {
+        value = scanner.nextInt();
+        if (value < min || value > max) {
+            System.out.println("Attention, la valeur n'est pas entre " + min + " et " + max);
+        } else {
+            validChoice = true;
+        }
+    } catch (InputMismatchException e) {
+        System.out.println("Attention, la valeur n'est pas un entier");
+    }
+} while (!validChoice);
+```
+
+### Le piège : la boucle infinie
+
+Avec cette version, une saisie comme `abc` provoque une **boucle infinie** qui répète « la valeur n'est pas un entier ». Pourquoi ?
+
+Quand `nextInt()` échoue, elle **ne consomme pas** la saisie : `abc` reste dans la mémoire tampon (le *buffer*) du scanner. À l'itération suivante, `nextInt()` relit le même texte et échoue pour la même raison, et ainsi de suite.
+
+Le `catch` doit donc **corriger l'erreur**, pas seulement l'attraper : il doit consommer la saisie invalide. Comme c'est une chaîne de caractères, on utilise `next()` :
+
+```java
+} catch (InputMismatchException e) {
+    System.out.println("Attention, la valeur n'est pas un entier");
+    scanner.next();   // consomme la saisie invalide : le buffer est vide à l'itération suivante
+}
+```
+
+À l'itération suivante, `nextInt()` attend une nouvelle saisie.
+
+On teste les trois cas : une valeur correcte (le `catch` est ignoré), une valeur hors bornes (message puis nouvelle demande), et une saisie qui n'est pas un entier (message puis nouvelle demande). Ce `try` / `catch` est bien à sa place : la méthode `choose` sait quoi faire en cas d'erreur, redemander la saisie, et reste « enfermée » à l'intérieur tant que la valeur n'est pas valide.
+
+## Lancer une exception : `throw`
+
+Jusqu'ici, on a attrapé des exceptions lancées par d'autres. Une méthode ou un constructeur peut aussi **lancer** les siennes, quand elle ne peut pas faire ce qu'on lui demande. Par exemple, un constructeur qui reçoit des paramètres incohérents refuse de créer l'objet.
+
+### Créer et lancer : `new` et `throw`
+
+Une exception est un objet : on la **crée** avec `new` (avec un message qui explique la cause), puis on la **lance** avec le mot-clé `throw` :
+
+```java
+Exception exception = new Exception("La largeur doit être strictement positive");
+throw exception;
+
+// écriture habituelle, plus courte
+throw new Exception("La largeur doit être strictement positive");
+```
+
+Ne pas confondre `throw` (lance une exception) et `throws` (déclare dans la signature qu'une méthode peut en lancer).
+
+Dès que `throw` est exécuté, la méthode **s'arrête** : le code qui suit n'est pas exécuté.
+
+### Exemple : un constructeur qui se protège
+
+```java
+public class Field {
+    private int width;
+    private int length;
+
+    /**
+     * Crée un terrain.
+     *
+     * @param width  la largeur, strictement positive
+     * @param length la longueur, strictement positive
+     * @throws Exception si la largeur ou la longueur n'est pas strictement positive
+     */
+    public Field(int width, int length) throws Exception {
+        if (width <= 0) {
+            throw new Exception("La largeur doit être strictement positive");
+        }
+        if (length <= 0) {
+            throw new Exception("La longueur doit être strictement positive");
+        }
+        this.width = width;
+        this.length = length;
+    }
+}
+```
+
+On écrit un `if` par vérification, pour que chaque cas ait son propre message. Si l'exception est lancée, le constructeur s'arrête : l'**objet n'est pas créé** et on n'obtient aucune référence. Il ne peut donc pas être manipulé par la suite : la classe se protège des états invalides.
+
+### Qui doit traiter l'exception ?
+
+`Exception` fait partie des exceptions **obligatoires à surveiller** (voir plus haut), donc :
+
+- dans la méthode qui lance l'exception, on a deux possibilités : l'entourer d'un `try` / `catch`, ou ajouter **`throws Exception`** à sa signature. Entourer d'un `try` / `catch` un `throw` qu'on écrit soi-même n'a pas de sens, puisqu'on dit explicitement que la méthode peut échouer. On choisit donc `throws` ;
+- l'appelant doit alors à son tour surveiller l'appel : `try` / `catch`, ou `throws`.
+
+À l'appel, on place le `try` / `catch` autour de la création, et on n'utilise l'objet que **dans le `try`**, là où la création a réussi :
+
+```java
+try {
+    Field field1 = new Field(10, -5);
+    field1.display();   // exécuté seulement si le constructeur n'a rien lancé
+} catch (Exception e) {
+    System.out.println("Impossible de créer le terrain : " + e.getMessage());
+}
+```
+
+`e.getMessage()` retourne le message passé au constructeur de l'exception.
+
+Il ne faut **pas** ajouter `throws Exception` à la méthode `main` pour faire disparaître le souligné rouge : personne ne surveille `main` (elle est appelée directement par la machine virtuelle), donc l'exception ferait simplement planter le programme. L'appelant doit prendre ses responsabilités avec un `try` / `catch`.
+
+### Lancer une exception non vérifiée
+
+Avec `throws Exception`, tous les appelants sont obligés de surveiller le constructeur. On peut à la place lancer une exception qui hérite de **`RuntimeException`**, comme **`IllegalArgumentException`**, adaptée à un paramètre incorrect :
+
+```java
+public Field(int width, int length) {   // pas de throws obligatoire
+    if (width <= 0) {
+        throw new IllegalArgumentException("La largeur doit être strictement positive");
+    }
+    if (length <= 0) {
+        throw new IllegalArgumentException("La longueur doit être strictement positive");
+    }
+    this.width = width;
+    this.length = length;
+}
+```
+
+- La signature n'a plus besoin de `throws` (on peut tout de même l'écrire pour informer le lecteur).
+- À l'appel, plus aucun `try` / `catch` n'est **obligatoire** : le code est plus simple à écrire.
+
+Mais l'absence d'obligation ne veut pas dire que le risque a disparu. Si on appelle `new Field(10, -5)` sans `try` / `catch`, l'exception est lancée, non attrapée, et **remonte jusqu'à `main` qui plante**. C'est au développeur de décider de surveiller l'appel pour corriger ou signaler l'erreur. La **Javadoc** devient alors essentielle : c'est elle qui indique que le constructeur peut lancer une `IllegalArgumentException` et dans quel cas (`@throws IllegalArgumentException si la largeur ou la longueur n'est pas strictement positive`). On prend donc le temps de **lire la documentation** des constructeurs et méthodes qu'on utilise.
+
+La classe doit enfin **se protéger elle-même**, même si l'appelant a déjà vérifié ses valeurs (avec `choose`, par exemple) : rien n'oblige l'appelant à passer par cette vérification, il peut très bien écrire n'importe quelle valeur dans le code.
+
 ## À retenir
 
 - Une **exception** est une erreur **à l'exécution** (le code a compilé). Non traitée, elle **arrête brutalement** le programme : le code qui suit n'est pas exécuté.
@@ -229,3 +398,7 @@ Ces trois exceptions héritent de `RuntimeException` (la méthode n'est pas soul
 - Une méthode qui ne sait pas corriger l'erreur ne l'attrape pas : elle la déclare avec **`throws`** et la documente dans sa **Javadoc** (`@throws`). Ne pas renvoyer de valeur de remplacement trompeuse (`0`, `-1`).
 - Les exceptions héritant de **`RuntimeException`** (comme `ArithmeticException`) **ne sont pas obligatoires à surveiller** ; celles héritant directement de `Exception` le sont.
 - Lire la Javadoc des méthodes qu'on utilise : elle indique si elles peuvent planter et pourquoi.
+- Une méthode qui ne peut pas faire ce qu'on lui demande **lance** une exception : `throw new Type("message")`. Elle s'arrête, et un constructeur qui lance une exception **ne crée pas l'objet**.
+- `throw` lance une exception, `throws` la déclare dans la signature. Avec une exception vérifiée (`Exception`), on ajoute `throws` à la méthode, et l'appelant doit surveiller l'appel. On ne met pas `throws Exception` sur `main`.
+- Avec une exception non vérifiée (`IllegalArgumentException`, qui hérite de `RuntimeException`), aucun `try` / `catch` n'est obligatoire, mais l'exception remonte jusqu'à `main` si on ne la surveille pas : la Javadoc (`@throws`) doit l'indiquer.
+- Une boucle de saisie met le `try` / `catch` **dans** la boucle. Le `catch` doit corriger l'erreur : `nextInt()` ne consomme pas la saisie invalide, il faut la consommer (`next()`) sinon on tourne indéfiniment.
