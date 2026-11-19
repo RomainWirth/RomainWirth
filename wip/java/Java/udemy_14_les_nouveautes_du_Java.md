@@ -147,6 +147,40 @@ display(new Announcement() {
 
 Le code fonctionne, mais il n'est pas le plus simple à lire : il faut bien respecter l'ordre des parenthèses, des accolades et du point-virgule qui termine l'appel de la méthode.
 
+### Dans quels cas l'utiliser
+
+Une classe anonyme sert à **fournir un comportement à une méthode, à un endroit précis du programme**. Beaucoup de méthodes attendent en paramètre un objet qui dit « comment faire » : comment comparer deux éléments, quoi exécuter dans un thread, quoi faire lorsqu'on clique sur un bouton. Ce comportement est souvent propre à l'endroit où on l'écrit : créer pour lui une classe nommée, dans son propre fichier, serait disproportionné.
+
+L'exemple le plus courant est le **tri d'une liste**. La méthode `sort` attend un objet de type `Comparator`, interface qui décrit comment comparer deux éléments :
+
+```java
+buildings.sort(new Comparator<Building>() {
+
+    @Override
+    public int compare(Building first, Building second) {
+        return Integer.compare(first.getConstructionYear(), second.getConstructionYear());
+    }
+});
+```
+
+Ici on veut trier les bâtiments par année de construction, à cet endroit précis du programme. Une classe `ConstructionYearComparator` publique n'aurait pas de raison d'exister : on n'en a besoin qu'une fois, et elle serait accessible partout. Cet exemple suppose que `Building` possède un accesseur `getConstructionYear()`.
+
+On retrouve le même besoin avec :
+
+- `Runnable`, pour indiquer le code à exécuter dans un thread ;
+- les écouteurs d'événements des interfaces graphiques (clic sur un bouton, par exemple) ;
+- les rappels (callbacks) que l'on passe à une méthode pour qu'elle les appelle plus tard.
+
+#### Et aujourd'hui ?
+
+Dans tous ces exemples, l'interface n'a **qu'une seule méthode**. Depuis Java 8, on écrit alors une expression lambda, beaucoup plus courte : c'est l'objet de la section suivante. La classe anonyme n'a pas disparu pour autant. Elle reste utile lorsque :
+
+- l'interface possède **plusieurs méthodes** (comme `Announcement`, avec `getTitle` et `getContent`) : une lambda ne peut remplacer qu'une seule méthode ;
+- on veut instancier une **classe abstraite**, ce qu'une lambda ne permet pas ;
+- l'objet a besoin de ses **propres attributs** pour conserver un état.
+
+La classe anonyme est donc à la fois un outil encore utilisé et une étape pour comprendre les expressions lambda, qui en sont une écriture simplifiée.
+
 ### Vers les expressions lambda
 
 Une classe anonyme doit redéfinir toutes les méthodes de l'interface : avec cinq méthodes, il faut un corps de cinq méthodes. Mais lorsque l'interface n'a **qu'une seule méthode**, la classe anonyme n'en contient qu'une, et cette écriture lourde peut être réduite : c'est le rôle des **expressions lambda**, présentées dans la section suivante.
@@ -169,7 +203,8 @@ Une classe anonyme doit redéfinir toutes les méthodes de l'interface : avec ci
 - Une classe nommée dans un fichier est accessible partout (publique ou package) ; une classe interne peut être privée, mais reste nommée.
 - Une classe anonyme se crée par un `new` sur une interface (ou une classe abstraite), suivi d'un corps où l'on redéfinit les méthodes. Le point-virgule final est obligatoire.
 - Elle sert à créer une seule instance, sans classe nommée, vue sous la forme du type abstrait.
-- Elle doit définir toutes les méthodes de l'interface : l'écriture devient lourde, ce que les expressions lambda vont simplifier lorsque l'interface n'a qu'une seule méthode.
+- On l'utilise pour fournir un comportement à usage unique à une méthode (tri avec `Comparator`, `Runnable`, écouteurs d'événements), sans créer de classe nommée.
+- Elle doit définir toutes les méthodes de l'interface : l'écriture devient lourde, ce que les expressions lambda vont simplifier lorsque l'interface n'a qu'une seule méthode. Les classes anonymes restent utiles pour une interface à plusieurs méthodes, une classe abstraite ou un objet avec son propre état.
 
 ---
 
