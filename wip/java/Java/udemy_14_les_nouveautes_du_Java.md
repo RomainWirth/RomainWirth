@@ -872,6 +872,19 @@ La classe `Optional` a elle aussi été introduite avec **Java 8**. Elle permet 
 
 Reprenons la liste de prénoms et cherchons le **premier prénom de plus de 3 lettres**. On filtre avec le stream, puis on utilise `findFirst`, qui récupère le premier élément :
 
+Comme pour les autres opérations, on écrit d'abord la classe anonyme du `Predicate`, puis on la réduit en lambda :
+
+```java
+names.stream()
+        .filter(new Predicate<String>() {
+            @Override
+            public boolean test(String name) {
+                return name.length() > 3;
+            }
+        })
+        .findFirst();
+```
+
 ```java
 names.stream()
         .filter(name -> name.length() > 3)
@@ -909,7 +922,18 @@ if (first.isPresent()) {
 
 On est ainsi protégé : on n'accède à la valeur que lorsqu'on sait qu'elle existe.
 
-**ifPresent().** Plus concis : on passe l'action à exécuter (un `Consumer`) uniquement si la valeur est présente.
+**ifPresent().** Plus concis : on passe l'action à exécuter uniquement si la valeur est présente. Elle attend un `Consumer<String>`, dont la méthode `accept` reçoit la valeur et ne retourne rien. La classe anonyme :
+
+```java
+first.ifPresent(new Consumer<String>() {
+    @Override
+    public void accept(String name) {
+        System.out.println(name);
+    }
+});
+```
+
+Réduite en lambda :
 
 ```java
 first.ifPresent(name -> System.out.println(name));
@@ -917,7 +941,25 @@ first.ifPresent(name -> System.out.println(name));
 
 S'il n'y a aucun prénom correspondant, il ne se passe rien : pas d'affichage, et surtout pas de `NullPointerException`. Cette écriture évite le `if` sur plusieurs lignes.
 
-**ifPresentOrElse().** On peut aussi prévoir l'action pour le cas où la valeur est absente. Le second paramètre est une action sans argument :
+**ifPresentOrElse().** On peut aussi prévoir l'action pour le cas où la valeur est absente. Cette méthode attend deux paramètres : un `Consumer<String>` pour le cas présent, et un `Runnable` pour le cas absent. L'interface `Runnable` a une unique méthode `run`, sans paramètre ni retour. Avec des classes anonymes :
+
+```java
+first.ifPresentOrElse(
+        new Consumer<String>() {
+            @Override
+            public void accept(String name) {
+                System.out.println(name);
+            }
+        },
+        new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Il n'y a pas de prénom");
+            }
+        });
+```
+
+Réduit en lambda, le `Runnable` n'ayant aucun paramètre, la lambda commence par `()` :
 
 ```java
 first.ifPresentOrElse(
@@ -931,10 +973,26 @@ Avec un filtre à 3 lettres, le prénom trouvé est affiché ; avec un filtre à
 
 Pour les types primitifs, il existe des variantes : `OptionalInt`, `OptionalDouble` et `OptionalLong`. Elles servent de type de retour aux opérations des streams numériques, comme `max` ou `average` sur un `IntStream` :
 
+La méthode `ifPresent` d'un `OptionalInt` attend un `IntConsumer`, dont la méthode `accept` reçoit un `int`. La classe anonyme :
+
 ```java
 names.stream()
         .mapToInt(name -> name.length())
         .max()                                    // OptionalInt
+        .ifPresent(new IntConsumer() {
+            @Override
+            public void accept(int max) {
+                System.out.println(max);
+            }
+        });
+```
+
+Réduite en lambda :
+
+```java
+names.stream()
+        .mapToInt(name -> name.length())
+        .max()
         .ifPresent(max -> System.out.println(max));
 ```
 
@@ -950,9 +1008,24 @@ On reprend la liste de résultats d'une recherche (`ArrayList<Building>`), obten
 ArrayList<Building> results = criteria.result();
 ```
 
+Pour chaque opération, on suit la même démarche : classe anonyme, puis lambda.
+
 #### Les noms de tous les bâtiments
 
-On part d'un stream de `Building` et on veut un stream de noms : c'est un `map`.
+On part d'un stream de `Building` et on veut un stream de noms : c'est un `map`, qui attend une `Function<Building, String>`. La classe anonyme :
+
+```java
+results.stream()
+        .map(new Function<Building, String>() {
+            @Override
+            public String apply(Building building) {
+                return building.getName();
+            }
+        })
+        .forEach(name -> System.out.println(name));
+```
+
+Réduite en lambda :
 
 ```java
 results.stream()
@@ -970,7 +1043,26 @@ List<String> names = results.stream()
 
 #### Le tarif moyen
 
-On transforme les bâtiments en tarifs avec `mapToInt`, puis on calcule la moyenne, qui retourne un `OptionalDouble`.
+On transforme les bâtiments en tarifs avec `mapToInt` (une `ToIntFunction<Building>`), puis on calcule la moyenne, qui retourne un `OptionalDouble`, dont `ifPresent` attend un `DoubleConsumer`. Avec des classes anonymes :
+
+```java
+results.stream()
+        .mapToInt(new ToIntFunction<Building>() {
+            @Override
+            public int applyAsInt(Building building) {
+                return building.getPricePerNight();
+            }
+        })
+        .average()
+        .ifPresent(new DoubleConsumer() {
+            @Override
+            public void accept(double average) {
+                System.out.println("Tarif moyen : " + average);
+            }
+        });
+```
+
+Réduit en lambdas :
 
 ```java
 results.stream()
@@ -984,6 +1076,29 @@ Le résultat est un `OptionalDouble` car il peut n'y avoir aucun bâtiment à mo
 #### Le délai moyen de réponse des propriétaires, sans doublons
 
 Plusieurs bâtiments peuvent appartenir au même propriétaire : pour éviter de compter plusieurs fois le même, on supprime les doublons avec `distinct()`.
+
+Deux lambdas sont nécessaires : un `map` (`Function<Building, Owner>`) pour récupérer les propriétaires, puis un `mapToInt` (`ToIntFunction<Owner>`) pour récupérer leur délai de réponse. En classes anonymes :
+
+```java
+results.stream()
+        .map(new Function<Building, Owner>() {
+            @Override
+            public Owner apply(Building building) {
+                return building.getOwner();
+            }
+        })
+        .distinct()
+        .mapToInt(new ToIntFunction<Owner>() {
+            @Override
+            public int applyAsInt(Owner owner) {
+                return owner.getResponseTime();
+            }
+        })
+        .average()
+        .ifPresent(average -> System.out.println("Délai moyen : " + average));
+```
+
+Réduit en lambdas :
 
 ```java
 results.stream()
@@ -1000,7 +1115,20 @@ Quand une ligne devient trop longue ou trop complexe, on aère le code. Les ench
 
 #### Le bâtiment de plus grande capacité
 
-`max` attend un `Comparator` et retourne un `Optional` du type des éléments :
+`max` attend un `Comparator` et retourne un `Optional` du type des éléments. La classe anonyme :
+
+```java
+results.stream()
+        .max(new Comparator<Building>() {
+            @Override
+            public int compare(Building first, Building second) {
+                return Integer.compare(first.getMaxTravelers(), second.getMaxTravelers());
+            }
+        })
+        .ifPresent(building -> System.out.println(building));
+```
+
+Réduite en lambda (la méthode `ifPresent` attend un `Consumer<Building>`, comme vu plus haut) :
 
 ```java
 results.stream()
@@ -1012,7 +1140,20 @@ On a ici le bâtiment qui peut accueillir le plus de voyageurs. En élargissant 
 
 #### Trier selon le prix au mètre carré
 
-Pour trier avec `sorted()` sans paramètre, la classe `Building` devrait implémenter `Comparable`. Sinon, on fournit un critère avec un `Comparator`. La classe `Comparator` propose des méthodes statiques pratiques, comme `comparingDouble`, qui prend une fonction retournant un `double` :
+Pour trier avec `sorted()` sans paramètre, la classe `Building` devrait implémenter `Comparable`. Sinon, on fournit un critère avec un `Comparator`. La classe `Comparator` propose des méthodes statiques pratiques, comme `comparingDouble`, qui prend une `ToDoubleFunction`, c'est-à-dire une fonction retournant un `double` à partir d'un élément. La classe anonyme :
+
+```java
+List<Building> sorted = results.stream()
+        .sorted(Comparator.comparingDouble(new ToDoubleFunction<Building>() {
+            @Override
+            public double applyAsDouble(Building building) {
+                return (double) building.getPricePerNight() / building.getSurface();
+            }
+        }))
+        .toList();
+```
+
+Réduite en lambda :
 
 ```java
 List<Building> sorted = results.stream()
@@ -1027,7 +1168,20 @@ Le `(double)` est important : le tarif et la surface sont des entiers, et sans c
 
 #### Compter les maisons avec jardin
 
-On filtre les bâtiments qui sont des maisons avec un jardin de surface strictement positive, puis on compte avec `count()` (un `long`).
+On filtre les bâtiments qui sont des maisons avec un jardin de surface strictement positive (un `Predicate<Building>`), puis on compte avec `count()` (un `long`). La classe anonyme :
+
+```java
+long count = results.stream()
+        .filter(new Predicate<Building>() {
+            @Override
+            public boolean test(Building building) {
+                return building instanceof House house && house.getGardenArea() > 0;
+            }
+        })
+        .count();
+```
+
+Réduite en lambda :
 
 ```java
 long count = results.stream()
@@ -1039,17 +1193,42 @@ System.out.println("Il y a " + count + " maisons avec jardin");
 
 #### Regrouper les bâtiments par propriétaire
 
-`Collectors.groupingBy` regroupe les éléments d'un stream selon un critère. Elle retourne une `Map` : une collection associative clé-valeur, ici avec comme clé un propriétaire et comme valeur la liste de ses bâtiments.
+`Collectors.groupingBy` regroupe les éléments d'un stream selon un critère. Ce critère est une `Function<Building, Owner>` qui indique, pour chaque bâtiment, sous quelle clé le ranger. Le résultat est une `Map` : une collection associative clé-valeur, ici avec comme clé un propriétaire et comme valeur la liste de ses bâtiments. La classe anonyme :
+
+```java
+Map<Owner, List<Building>> byOwner = results.stream()
+        .collect(Collectors.groupingBy(new Function<Building, Owner>() {
+            @Override
+            public Owner apply(Building building) {
+                return building.getOwner();
+            }
+        }));
+```
+
+Réduite en lambda :
 
 ```java
 Map<Owner, List<Building>> byOwner = results.stream()
         .collect(Collectors.groupingBy(building -> building.getOwner()));
-
-byOwner.forEach((owner, buildings) ->
-        System.out.println(owner + " possède " + buildings.size() + " bâtiment(s)"));
 ```
 
-Le `forEach` d'une `Map` attend deux paramètres : la clé et la valeur. La lambda a donc deux paramètres, d'où les parenthèses. Les bâtiments étant regroupés par propriétaire, chaque propriétaire n'apparaît qu'une seule fois. Là encore, cela repose sur `equals` et `hashCode` de `Owner`.
+Pour afficher le résultat, on parcourt la `Map` avec son `forEach`, qui attend un `BiConsumer<Owner, List<Building>>` : une méthode `accept` à **deux paramètres** (la clé et la valeur), qui ne retourne rien. La classe anonyme :
+
+```java
+byOwner.forEach(new BiConsumer<Owner, List<Building>>() {
+    @Override
+    public void accept(Owner owner, List<Building> buildings) {
+        System.out.println(owner + " possède " + buildings.size() + " bâtiment(s)");
+    }
+});
+```
+
+Réduite en lambda : avec deux paramètres, les parenthèses sont obligatoires.
+
+```java
+byOwner.forEach((owner, buildings) ->
+        System.out.println(owner + " possède " + buildings.size() + " bâtiment(s)"));
+``` Les bâtiments étant regroupés par propriétaire, chaque propriétaire n'apparaît qu'une seule fois. Là encore, cela repose sur `equals` et `hashCode` de `Owner`.
 
 ### Compléments
 
@@ -1074,3 +1253,333 @@ Le `forEach` d'une `Map` attend deux paramètres : la clé et la valeur. La lamb
 ---
 
 ## Les références de méthodes
+
+### Contexte
+
+Les références de méthodes sont une dernière évolution de Java 8 dans la lignée des classes anonymes et des expressions lambda. Elles forment un **troisième niveau de réduction** :
+
+1. la **classe anonyme** écrit tout : `new`, interface, méthode, paramètres, corps ;
+2. l'**expression lambda** réduit la classe anonyme à `paramètres -> corps` ;
+3. la **référence de méthode** réduit encore la lambda, quand celle-ci se contente d'appeler une méthode.
+
+Une référence de méthode s'écrit avec l'opérateur `::` (deux fois deux-points) : `NomDeClasse::nomDeLaMéthode`, sans parenthèses ni paramètres.
+
+### Quand peut-on l'utiliser ?
+
+Une lambda peut être remplacée par une référence de méthode **uniquement si elle ne fait rien d'autre qu'appeler une méthode**, avec les paramètres que la lambda reçoit, tels quels. Il existe deux configurations principales :
+
+- **Configuration 1 : la méthode reçoit les paramètres.** La lambda est de la forme `param -> méthode(param)`.
+- **Configuration 2 : la méthode est appelée sur le premier paramètre.** La lambda est de la forme `param -> param.méthode()`.
+
+Dans les deux cas, le corps ne contient **rien de plus** que cet appel : pas de calcul, pas d'opération supplémentaire sur le paramètre.
+
+On utilise, pour illustrer, de petites interfaces fonctionnelles.
+
+### Configuration 1 : on passe les paramètres à une méthode
+
+#### Sans paramètre
+
+Une interface fonctionnelle dont la méthode ne prend rien et ne retourne rien :
+
+```java
+@FunctionalInterface
+public interface Action {
+    void run();
+}
+```
+
+Et une méthode, dans la classe `Main`, qui accepte une `Action` :
+
+```java
+private static void execute(Action action) {
+    action.run();
+}
+
+private static void sayHello() {
+    System.out.println("Bonjour");
+}
+```
+
+La classe anonyme :
+
+```java
+execute(new Action() {
+    @Override
+    public void run() {
+        sayHello();
+    }
+});
+```
+
+La lambda : il n'y a pas de paramètre, le corps appelle `sayHello()` :
+
+```java
+execute(() -> sayHello());
+```
+
+La lambda ne fait qu'appeler une méthode qui reçoit les mêmes paramètres (aucun) : on la réduit en référence de méthode. La méthode se trouvant dans la classe `Main`, on écrit :
+
+```java
+execute(Main::sayHello);
+```
+
+La référence indique **où** se trouve la méthode (`Main`) et **laquelle** (`sayHello`). Que la méthode soit statique ou non n'a pas d'incidence sur cette écriture.
+
+On peut aussi viser une méthode du JDK. Ici, `println()` sans paramètre convient : `System.out` est un attribut statique de `System`, et on écrit :
+
+```java
+execute(() -> System.out.println());   // lambda
+execute(System.out::println);          // référence de méthode
+```
+
+En survolant `println` dans l'IDE, on constate que c'est la version sans paramètre qui est utilisée.
+
+#### Avec un paramètre
+
+Changeons l'interface pour que sa méthode prenne un `int` :
+
+```java
+@FunctionalInterface
+public interface IntAction {
+    void run(int i);
+}
+```
+
+La classe anonyme, la lambda, puis la référence de méthode, avec une méthode `display(int i)` dans `Main` :
+
+```java
+// classe anonyme
+execute(new IntAction() {
+    @Override
+    public void run(int i) {
+        display(i);
+    }
+});
+
+// lambda
+execute(i -> display(i));
+
+// référence de méthode
+execute(Main::display);
+```
+
+Même principe avec `println` : la version qui prend un `int` est utilisée.
+
+```java
+execute(i -> System.out.println(i));   // lambda
+execute(System.out::println);          // référence de méthode
+```
+
+La méthode visée doit **respecter l'interface fonctionnelle** : mêmes paramètres, et un type de retour compatible. Si la méthode de l'interface retourne un `int`, la lambda doit retourner un `int`, et la méthode référencée aussi. Avec une interface qui retourne un `int` :
+
+```java
+@FunctionalInterface
+public interface IntOperation {
+    int apply(int i);
+}
+```
+
+`Math.abs` prend un `int` et retourne un `int` : elle convient.
+
+```java
+operate(new IntOperation() {
+    @Override
+    public int apply(int i) {
+        return Math.abs(i);
+    }
+});
+
+operate(i -> Math.abs(i));   // lambda
+operate(Math::abs);          // référence de méthode
+```
+
+En revanche, `println` ne convient pas ici : elle ne retourne rien.
+
+#### Quand la réduction n'est pas possible
+
+Dès que la lambda fait autre chose que d'appeler la méthode avec le paramètre, on ne peut plus la réduire :
+
+```java
+operate(i -> Math.abs(i) + 1);   // on ajoute 1 au résultat : pas de référence de méthode
+```
+
+Le paramètre n'est pas simplement transmis à une méthode : il y a quelque chose en plus dans le corps de la lambda.
+
+### Configuration 2 : on appelle une méthode sur le paramètre
+
+Prenons une interface dont la méthode prend un `String` et retourne un `int` :
+
+```java
+@FunctionalInterface
+public interface TextMeasure {
+    int measure(String text);
+}
+```
+
+On veut retourner la longueur de la chaîne :
+
+```java
+// classe anonyme
+use(new TextMeasure() {
+    @Override
+    public int measure(String text) {
+        return text.length();
+    }
+});
+
+// lambda
+use(text -> text.length());
+
+// référence de méthode
+use(String::length);
+```
+
+La lambda est de la forme `param -> param.méthode()` : on appelle une méthode **depuis** le paramètre. On écrit `String::length`, où `String` est la classe du paramètre et `length` la méthode appelée.
+
+La méthode `length` **n'est pas statique** : elle est appelée sur un objet, à savoir le paramètre reçu. `String::length` se lit : « la méthode `length` de la classe `String`, appelée sur chaque élément reçu ».
+
+Là encore, s'il y a quelque chose de plus dans le corps de la lambda (`text -> text.length() + 1`), la réduction n'est plus possible.
+
+### Avec plusieurs paramètres
+
+Le même raisonnement s'applique avec plusieurs paramètres. Prenons une interface qui reçoit un `String` et un `int` et retourne un `String` :
+
+```java
+@FunctionalInterface
+public interface Cutter {
+    String cut(String text, int index);
+}
+```
+
+**Premier cas : les deux paramètres sont passés à une méthode.** Avec une méthode `truncate(String text, int index)` dans `Main` qui retourne un `String` :
+
+```java
+cut(new Cutter() {
+    @Override
+    public String cut(String text, int index) {
+        return truncate(text, index);
+    }
+});
+
+cut((text, index) -> truncate(text, index));  // lambda
+cut(Main::truncate);                          // référence de méthode
+```
+
+**Second cas : on appelle une méthode sur le premier paramètre, en lui passant le second.** La méthode `substring(int)` de `String` prend un `int` et retourne un `String` :
+
+```java
+cut(new Cutter() {
+    @Override
+    public String cut(String text, int index) {
+        return text.substring(index);
+    }
+});
+
+cut((text, index) -> text.substring(index));  // lambda
+cut(String::substring);                       // référence de méthode
+```
+
+Si l'on faisait quelque chose de plus (`text.substring(index + 1)`), la référence ne serait pas possible.
+
+### La bonne pratique : extraire la logique dans une méthode
+
+Une lambda s'écrit le plus simplement possible, et on évite d'y mettre plusieurs lignes. Lorsqu'on a besoin de plusieurs opérations (mettre en majuscules, puis extraire une partie du résultat...), on **extrait ce code dans une méthode**, qui reçoit les mêmes paramètres que la lambda. La lambda se réduit alors à l'appel de cette méthode, et on peut la remplacer par une référence de méthode.
+
+C'est une bonne pratique : le code est découpé en méthodes nommées, plus lisibles et testables, et l'appel dans le stream s'écrit en quelques mots.
+
+En pratique, on écrit souvent la lambda d'abord, puis on la réduit en référence de méthode quand la configuration le permet. IntelliJ aide : il signale par un avertissement qu'une lambda peut être remplacée par une référence de méthode, et propose la transformation.
+
+### Application : simplifier les streams
+
+On reprend les streams des sections précédentes. Chaque lambda qui ne fait qu'appeler une méthode peut être réduite.
+
+**Les noms des bâtiments :**
+
+```java
+// avant
+results.stream()
+        .map(building -> building.getName())
+        .forEach(name -> System.out.println(name));
+
+// après
+results.stream()
+        .map(Building::getName)
+        .forEach(System.out::println);
+```
+
+- `building -> building.getName()` est de la forme `param -> param.méthode()` : on écrit `Building::getName`. On la lit : « la méthode `getName` de `Building` », appelée sur chaque bâtiment (la méthode n'est pas statique) ;
+- `name -> System.out.println(name)` transmet son paramètre à `println` : on écrit `System.out::println`, sans même citer le paramètre. Cette écriture est plus délicate à lire au début, car on ne voit plus le paramètre de la méthode de l'interface fonctionnelle que l'on réduit. On s'y habitue avec la pratique.
+
+Pour s'y retrouver, on se laisse guider par l'IDE : l'auto-complétion propose d'écrire une référence de méthode, et le type attendu (par exemple une méthode qui retourne un `int` pour `mapToInt`) limite les suggestions aux méthodes qui conviennent.
+
+**Les tarifs :**
+
+```java
+results.stream()
+        .mapToInt(Building::getPricePerNight)
+        .average()
+        .ifPresent(average -> System.out.println("Tarif moyen : " + average));
+```
+
+`mapToInt` est réduite. En revanche, la dernière lambda **ne peut pas** l'être : elle construit une phrase avant d'afficher. Seul l'affichage direct de la valeur (`average -> System.out.println(average)`) pourrait devenir `System.out::println`.
+
+**Le délai moyen de réponse des propriétaires :**
+
+```java
+results.stream()
+        .map(Building::getOwner)
+        .distinct()
+        .mapToInt(Owner::getResponseTime)
+        .average()
+        .ifPresent(average -> System.out.println("Délai moyen : " + average));
+```
+
+Presque chaque étape est réduite en référence de méthode.
+
+**Le bâtiment de plus grande capacité :**
+
+```java
+results.stream()
+        .max(Comparator.comparingInt(Building::getMaxTravelers))
+        .ifPresent(System.out::println);
+```
+
+L'IDE suggère ici de remplacer la lambda `(first, second) -> Integer.compare(...)` par `Comparator.comparingInt`. Cette méthode attend un critère qui retourne un entier, et on lui passe directement `Building::getMaxTravelers` : le critère de comparaison, pour chaque bâtiment, est son nombre maximum de voyageurs.
+
+**Le regroupement par propriétaire :**
+
+```java
+Map<Owner, List<Building>> byOwner = results.stream()
+        .collect(Collectors.groupingBy(Building::getOwner));
+```
+
+**Ce qui reste en lambda :**
+
+- le tri par prix au mètre carré : la valeur retournée est **calculée** (division), il n'y a pas seulement un appel de méthode ;
+- le filtre sur les maisons avec jardin : la condition (`instanceof` et comparaison) est trop riche pour se réduire à un appel de méthode, sauf si on l'extrait dans une méthode dédiée.
+
+### Compléments
+
+**Complément :** il existe quatre formes de références de méthodes :
+
+| Forme | Exemple | Lambda équivalente |
+|---|---|---|
+| méthode statique | `Math::abs` | `i -> Math.abs(i)` |
+| méthode d'un objet précis | `System.out::println` | `x -> System.out.println(x)` |
+| méthode du type du paramètre | `String::length` | `text -> text.length()` |
+| constructeur | `ArrayList::new` | `() -> new ArrayList<>()` |
+
+**Complément :** `ArrayList::new`, rencontré dans `Collectors.toCollection(ArrayList::new)`, est une référence de constructeur : elle fournit une nouvelle liste vide à chaque appel. Elle remplace la lambda `() -> new ArrayList<>()`.
+
+**Complément :** quand une méthode existe en plusieurs versions (surcharge), comme `println`, c'est le contexte (les paramètres de l'interface fonctionnelle) qui détermine celle qui est appelée. Survoler la méthode dans l'IDE permet de vérifier laquelle est retenue.
+
+**Complément :** une référence de méthode est du même ordre que la lambda qu'elle remplace : elle ne change pas le comportement, seulement l'écriture. Elle cache toujours une lambda, qui cache elle-même une classe anonyme sur une interface fonctionnelle.
+
+### À retenir
+
+- Une référence de méthode (`Classe::méthode`) est une réduction d'une lambda qui se contente d'appeler une méthode.
+- Elle est possible dans deux configurations : `param -> méthode(param)` (la méthode reçoit les paramètres) et `param -> param.méthode()` (la méthode est appelée sur le paramètre). Avec plusieurs paramètres, le principe est le même.
+- Elle n'est possible que si le corps de la lambda ne fait rien de plus : un calcul ou une opération supplémentaire l'interdit.
+- Elle s'écrit avec `::`, sans parenthèses ni paramètres, et la méthode doit respecter l'interface fonctionnelle (paramètres et type de retour).
+- Quand une lambda devient longue, on extrait la logique dans une méthode, puis on y fait référence.
+- Une référence de méthode reste une réduction : elle cache une lambda, qui cache elle-même une classe anonyme.
